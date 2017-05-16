@@ -1,0 +1,113 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_section_voting.views_default.inc: n/a
+#  ag_section_voting.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2014-09-01 12:39+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: ag_section_voting.views_default.inc:130
+msgid "Master"
+msgstr ""
+
+#: ag_section_voting.views_default.inc:131
+msgid "Contenido más votado de la comunidad"
+msgstr ""
+
+#: ag_section_voting.views_default.inc:132
+msgid "más"
+msgstr ""
+
+#: ag_section_voting.views_default.inc:133
+msgid "Aplicar"
+msgstr ""
+
+#: ag_section_voting.views_default.inc:134
+msgid "Reiniciar"
+msgstr ""
+
+#: ag_section_voting.views_default.inc:135
+msgid "Ordenar por"
+msgstr ""
+
+#: ag_section_voting.views_default.inc:136
+msgid "Asc"
+msgstr ""
+
+#: ag_section_voting.views_default.inc:137
+msgid "Desc"
+msgstr ""
+
+#: ag_section_voting.views_default.inc:138
+msgid "Elementos por página"
+msgstr ""
+
+#: ag_section_voting.views_default.inc:139
+msgid "- Todos -"
+msgstr ""
+
+#: ag_section_voting.views_default.inc:140
+msgid "Desplazamiento"
+msgstr ""
+
+#: ag_section_voting.views_default.inc:141
+msgid "« primera"
+msgstr ""
+
+#: ag_section_voting.views_default.inc:142
+msgid "‹ anterior"
+msgstr ""
+
+#: ag_section_voting.views_default.inc:143
+msgid "siguiente ›"
+msgstr ""
+
+#: ag_section_voting.views_default.inc:144
+msgid "última »"
+msgstr ""
+
+#: ag_section_voting.views_default.inc:145
+msgid "No hay contenidos votados en esta comunidad"
+msgstr ""
+
+#: ag_section_voting.views_default.inc:146
+msgid "Suscripción OG de node"
+msgstr ""
+
+#: ag_section_voting.views_default.inc:147
+msgid "Todo(s)"
+msgstr ""
+
+#: ag_section_voting.views_default.inc:148
+msgid "Community most voted content"
+msgstr ""
+
+#: ag_section_voting.views_default.inc:149
+msgid "Vista panel"
+msgstr ""
+
+#: ag_section_voting.info:0
+msgid "Ag section voting"
+msgstr ""
+
+#: ag_section_voting.info:0
+msgid "Feature will views, and config of voting content"
+msgstr ""
+
+#: ag_section_voting.info:0
+msgid "Agrega2"
+msgstr ""
+

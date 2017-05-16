@@ -1,0 +1,363 @@
+<?php
+/**
+ * @file
+ * Code for the ag_section_questions_answers feature.
+ */
+
+include_once 'ag_section_questions_answers.features.inc';
+
+/**
+ * Implements hook_entity_info_alter().
+ */
+function ag_section_questions_answers_entity_info_alter(&$entity_info){
+  $entity_info['node']['view modes']['lasts'] = array(
+    'label' => t('Last items'),
+    'custom settings' => TRUE,
+  );
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function ag_section_questions_answers_preprocess_node(&$vars) {
+  if ($vars['type'] == 'answer') {
+    // Get question.
+    if (isset($vars['field_question_ref']['und'][0]['target_id'])) {
+      $question = $vars['field_question_ref']['und'][0]['target_id'];
+
+      $query = db_select('node', 'n')
+        ->fields('n', array('title', 'nid'))
+        ->condition('n.nid', $question, '=')
+        ->execute()
+        ->fetchAssoc();
+
+      $vars['question'] = $query;
+    }
+  }
+
+  $vars['created'] = date('d/m/Y', $vars['node']->created);
+  $vars['time_ago'] = format_interval(time() - $vars['node']->created, 1);
+  if ($vars['view_mode'] == 'lasts') {
+    $vars['theme_hook_suggestions'][] = 'node__' . $vars['type'] . '__lasts';
+  }
+
+  // If we're showning teaser or newsletter, load answers count.
+  if (in_array($vars['view_mode'], array('teaser', 'newsletter'), TRUE)) {
+    $total = 0;
+    $node_url = 'node/' . $vars['node']->nid;
+    if ($vars['type'] == 'question') {
+      $total = db_select('field_data_field_question_ref', 'f')
+        ->fields('f', array('field_question_ref_target_id'))
+        ->condition('field_question_ref_target_id', $vars['nid'])
+        ->execute()
+        ->rowCount();
+      $vars['total_answers'] = l(t('@total_answers answers', array('@total_answers' => $total)), $node_url);
+    }
+    else if ($vars['type'] == 'debate') {
+      $vars['total_answers'] = l(t('@total_answers answers', array('@total_answers' => $vars['comment_count'])), $node_url);
+    }
+  }
+
+  if ($vars['type'] == 'answer' || $vars['type'] == 'question') {
+    if (isset($vars['content']['total_answers'])) {
+      unset($vars['content']['total_answers']);
+    }
+  }
+  
+  if ($vars['type'] == 'question' && $vars['view_mode'] == 'full') {
+    // Get new answer block.
+    $block = module_invoke('ag_section_questions_answers', 'block_view', 'add_new_answer');
+    $vars['add_new_answer_block_subject'] = render($block['subject']);
+    if (user_access('create answer content')) {
+      $vars['add_new_answer_block_content'] = render($block['content']);
+    }
+
+    // Get answer list view.
+    $view = views_embed_view('agrega2_answers', 'panel_pane_1', $vars['nid']);
+    $vars['answers_list'] = $view;
+  }
+}
+
+/**
+ * Implements hook_entity_view().
+ */
+function ag_section_questions_answers_entity_view($entity, $type, $view_mode, $langcode) {
+  $is_content_type = ($entity->content['#bundle'] == 'question' ||
+    $entity->content['#bundle'] == 'answer' ||
+    $entity->content['#bundle'] == 'debate');
+  $is_view_mode = ($view_mode == 'lasts' || $view_mode == 'full');
+  if (($is_content_type) && ($is_view_mode)) {
+    //We need to count the number of answers
+    if ($entity->content['#bundle'] != 'debate') {
+      $total = db_select('field_data_field_question_ref', 'f')
+        ->fields('f', array('field_question_ref_target_id'))
+        ->condition('field_question_ref_target_id', $entity->nid)
+        ->execute()
+        ->rowCount();
+
+      $wrapped_total = "<span>" . $total . "</span>";
+
+      $entity->content['total_answers'] = array(
+        '#prefix' => '<span class="answers-count">',
+        '#markup' => $total == 0 ? t('There is no answers yet') : t('The number of answers is !total ', array('!total' => $wrapped_total)),
+        '#suffix' => '</span>',
+      );
+    }
+    //In last view mode, remove the opportunity to insert a new comment
+    //The $content['links']['comment'] will be present for debates
+    if (isset($entity->content['links']['comment'])) {
+      unset($entity->content['links']['comment']);
+    }
+  }
+
+  if (($entity->content['#bundle'] == 'question' && $view_mode == 'full') && !user_is_logged_in()) {
+    $items = array(
+        array(
+            'data' => '<span>' . t('<a href="@login">Log in</a> or <a href="@register">register</a> to reply', array('@login' => url('user/login'), '@register' => url('user/register'))) . '</span>',
+            'class' => array('comment_forbidden'),
+        ),
+    );
+    $user_link_answer = array(
+        '#theme' => 'item_list',
+        '#items' => $items,
+        '#attributes' => array(
+            'html' => TRUE,
+            'class' => array('links', 'social-links'),
+        ),
+    );
+
+    $entity->content['user_link_answer'] = $user_link_answer;
+  }
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function ag_section_questions_answers_block_info() {
+  //Block definition to show a form inside
+  $blocks['selector_question_debate'] = array(
+    'info' => t('Selector block to choose between Question or Debate'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+
+  $blocks['add_new_answer'] = array(
+    'info' => t('New block for add a new answer in the view of a question'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function ag_section_questions_answers_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    //Set the form inside the block
+    case 'selector_question_debate':
+      $block['subject'] = t('Selector block to choose between Question or Debate');
+      $block['content'] = drupal_get_form('questions_debates_form');
+      break;
+
+    case 'add_new_answer':
+      if(!function_exists('node_add')) {
+        module_load_include('inc', 'node', 'node.pages');
+      }
+      $block['subject'] = t('Answer');
+      //Add user picture
+      global $user;
+      $block['content'] = theme('user_picture', array($user));
+      //Add the form
+      $form = node_add('answer');
+      $block['content'] .= drupal_render($form);
+      break;
+  }
+
+  return $block;
+}
+
+/**
+ * Definition for the form that we need to use in the panel of questions and debate's section
+ */
+function questions_debates_form() {
+  //Options for choices in the form
+  $content_types = array(0 => t('Question'), 1 => t('Debate'));
+
+  $form['content_types'] = array(
+    '#type' => 'radios',
+    '#title' => t(''), //If we remove the title, the options won't show it inline
+    '#options' => $content_types,
+    '#access' => TRUE,
+  );
+  $form['title'] = array(
+    '#title' => t('Title'),
+    '#type' => 'textfield',
+    '#size' => '60',
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Continue'),
+    '#submit' => array('create_specific_content'),
+  );
+
+  return $form;
+}
+
+/**
+ * Function for make the validation of the form
+ */
+function questions_debates_form_validate(&$form, &$form_state) {
+
+  //One of the radios must be selected
+  if ($form_state['values']['content_types'] == NULL) {
+    form_set_error('content types', t('You must select one of the options: \'Question\' or \'Debate\' '));
+  }
+
+  //Validate if the user is registered
+  global $user;
+  if (!$user->uid) {
+    form_set_error('anonymous', t('You must be a register user to ask a question or start a new debate '));
+  }
+}
+
+/**
+ * Set the URL for redirecting based on selected option.
+ * Moreover pass by querystring the title inserted in the form
+ */
+function create_specific_content($form, &$form_state) {
+  switch ($form_state['input']['content_types']) {
+    //Question
+    case 0:
+      $form_state['redirect'] = array('node/add/question', array('query' => array(
+        'title' => $form_state['input']['title'],
+      )));
+      break;
+    //Debate
+    case 1:
+      $form_state['redirect'] = array('node/add/debate', array('query' => array(
+        'title' => $form_state['input']['title'],
+      )));
+      break;
+  }
+  //Get the context. The group ID is inside the array with the key 'gid'
+  $group = og_context();
+  if (isset($group['gid'])) {
+    $form_state['redirect'][1]['query']['og_group_ref'] = $group['gid'];
+  }
+
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function ag_section_questions_answers_form_alter(&$form, &$form_state, $form_id) {
+  //Check if the form is the for add a new debate or question
+  if ($form_id == 'debate_node_form' || $form_id == 'question_node_form') {
+    $params = drupal_get_query_parameters();
+    if (isset($params['title'])) {
+      //Set the value of the field withe the title param given in the URL
+      $form['title_field']['und'][0]['value']['#default_value'] = check_plain($params['title']);
+    }
+
+    if (isset($form['field_question_state'])) {
+      $form['field_question_state']['#access'] = user_access('administer content');
+    }
+    if (isset($form['field_debate_state'])) {
+      $form['field_debate_state']['#access'] = user_access('administer content');
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_validate().
+ */
+function ag_section_questions_answers_form_answer_node_form_alter(&$form, &$form_state, $form_id) {
+  //Hide the title in the awswer because the form is presented when the user is viewing a question
+  $form['title_field']['#type'] = 'hidden';
+
+  //set a validation method for the form
+  $form['#validate'][] = 'answer_form_validate';
+  $form['actions']['submit']['#submit'][] = 'answer_form_submit';
+}
+
+/**
+ * Implements hook_form_FORM_ID_validate().
+*/
+function ag_section_questions_answers_form_comment_node_debate_form_alter(&$form, &$form_state, $form_id) {
+  $form['author']['#type'] = 'hidden';
+
+  global $user;
+
+  $render_picture = array(
+    '#theme' => 'user_picture',
+    '#account' => $user,
+  );
+
+  $form['user_picture'] = array(
+    '#type' => 'markup',
+    '#markup' => render($render_picture),
+    '#weight' => -2,
+  );
+
+}
+
+/**
+ * Function to validate the answer's form
+ */
+function answer_form_validate(&$form, &$form_state) {
+  //Build a title based on the first words of the body (4 words)
+  $body_text = $form['body']['und'][0]['value']['#value'];
+
+  //Split the body and take the first four words
+  $words = preg_split("/[\s,]+/", $body_text, 5);
+  $new_title = "";
+  $length = 0;
+  foreach ($words as $key => $value) {
+    $new_title = $new_title . " " . $value;
+    $length = $length +1;
+    if ($length == 4) {
+      break;
+    }
+  }
+  //Set the title
+  $form_state['values']['title_field']['und'][0]['value'] = check_plain($new_title);
+
+}
+
+/**
+ * Submit function for redirecting the user to the question after answer it.
+ */
+function answer_form_submit(&$form, &$form_state) {
+  //Redirect to the question that we are answering
+  $nid_redirection = "node/" . $form_state['values']['field_question_ref']['und'][0]['target_id'];
+  $form_state['redirect'] = $nid_redirection;
+}
+
+/**
+ * Implements hook_entityreference_prepopulate_providers_info()
+ * This info is in entityreference_prepopulate.api
+ */
+function ag_section_questions_answers_entityreference_prepopulate_providers_info() {
+  return array(
+    //Provider definition
+    'node' => array(
+      'title' => t('Node'),
+      'description' => t('Prepopulate from node that we are viewing'),
+      'callback' => 'questions_get_values_from_node',
+    ),
+  );
+}
+
+/**
+ * Callback for the provider for prepopulate the nid
+*/
+function questions_get_values_from_node($field, $instance){
+  $node = menu_get_object();
+  //find the node type inside target_bundles
+  if (isset($node) && in_array($node->type, $field['settings']['handler_settings']['target_bundles'])) {
+    //The nid
+    return array($node->nid);
+  }
+}

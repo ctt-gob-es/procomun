@@ -1,0 +1,424 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the ag visualization ode module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function ag_visualization_ode_schema() {
+  $schema['odecount_anon'] = array(
+    'description' => 'Ode count visits without node',
+    'fields' => array(
+      'solrid' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Ode Solr id',
+      ),
+      'total' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Total visits for ode',
+      ),
+    ),
+    'primary key' => array('solrid'),
+    'indexes' => array(
+      'oc_solrid' => array('solrid'),
+    ),
+    'foreign keys' => array(
+      'oc_solrid' => array(
+        'table' => 'field_data_field_solrid',
+        'columns' => array('field_solrid_value' => 'field_solrid_value'),
+      ),
+    ),
+  );
+
+  /*
+  $schema['temp_map_content_gnoss_odes'] = array(
+    'description' => 'Ode Gnoss association with mecIdentifier',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier for table.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'proid' => array(
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Ode Gnoss id',
+      ),
+      'mec' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'mecIdentifier for ode',
+      ),
+    ),
+    'primary key' => array('id'),
+    'unique keys' => array(
+      'tmcgo_proid' => array('proid'),
+    ),
+    'indexes' => array(
+      'tmcgo_id' => array('id'),
+    ),
+  );
+  */
+
+  $schema['temp_odes_save'] = array(
+    'description' => 'temp table for registering processed odes in update 7004',
+    'fields' => array(
+      'nid' => array(
+        'description' => 'Node nid',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'uid for user.',
+      ),
+      'solrid' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Ode Solr id',
+      ),
+    ),
+    'primary key' => array('nid'),
+    'indexes' => array(
+      'tos_solrid' => array('solrid'),
+    ),
+    'foreign keys' => array(
+      'tos_uid' => array(
+        'table' => 'users',
+        'columns' => array('uid' => 'uid'),
+      ),
+    ),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implements hook_update_N().
+ * Create table for registering visits to odes without created nodes
+ */
+function ag_visualization_ode_update_7001() {
+  drupal_install_schema('ag_visualization_ode');
+}
+
+/**
+ * Implements hook_update_N().
+ * Import temp_map_content_gnoss_odes.csv to table for Gnoss old links odes
+ */
+function ag_visualization_ode_update_7002(&$sandbox) {
+  /*
+  //Comment this block for manual table import
+  //Prepare all variables in first iteration
+  if (!isset($sandbox['total'])) {
+    //Prepare array from file.
+    ag_visualization_ode_prepare_batch_operation($sandbox);
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = ag_visualization_ode_get_total_batch_operations($sandbox);
+  }
+
+  //Get batch, or number of entities to process each time.
+  $nodes_per_pass = 10;
+  $end = $sandbox['current'] + $nodes_per_pass;
+
+  //Loop. Use db_query_range if any query needs to be split between batches.
+  while($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    //Heavy operations
+    $element = ag_visualization_ode_get_element($sandbox);
+    ag_visualization_ode_insert_record($sandbox, $element);
+
+    //Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1, meaning we are done.
+  // Also, avoid division by zero
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @records records. Finished.', array('@records' => $sandbox['total'])));
+  }
+  */
+}
+
+/**
+ * Implements hook_update_N().
+ * Share all odes to procomun social network
+ */
+function ag_visualization_ode_update_7003(&$sandbox) {
+  //Prepare all variables in first iteration
+  if (!isset($sandbox['total'])) {
+    //Prepare array from query
+    ag_visualization_ode_prepare_batch_social_network($sandbox);
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = ag_visualization_ode_get_total_batch_operations($sandbox);
+  }
+
+  //Get batch, or number of entities to process each time.
+  $nodes_per_pass = 10;
+  $end = $sandbox['current'] + $nodes_per_pass;
+
+  $preloaded_batch = node_load_multiple(array_slice($sandbox['elements'], $sandbox['current'], $nodes_per_pass));
+
+  //Loop. Use db_query_range if any query needs to be split between batches.
+  while($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    //Heavy operations
+    $element = ag_visualization_ode_get_element($sandbox);
+    $node = $preloaded_batch[$element];
+    ag_visualization_ode_update_social_network_ode($sandbox, $node);
+
+    //Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1, meaning we are done.
+  // Also, avoid division by zero
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @records records. Finished.', array('@records' => $sandbox['total'])));
+  }
+}
+
+/**
+ * Implements hook_update_N().
+ * Create all odes in solr as nodes in drupal. Heavy operation!
+ */
+function ag_visualization_ode_update_7004(&$sandbox) {
+  //Prepare all variables in first iteration
+  if (!isset($sandbox['total'])) {
+    //Prepare array from query
+    ag_visualization_ode_prepare_batch_saves_odes($sandbox);
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = ag_visualization_ode_get_total_batch_operations($sandbox);
+  }
+
+  // Log in as admin for saving odes from drush updb
+  global $user;
+  if ($user->uid != 1) {
+    $user = user_load(1);
+    drupal_session_regenerate();
+  }
+
+  //Get batch, or number of entities to process each time.
+  $odes_per_pass = 5;
+  $end = $sandbox['current'] + $odes_per_pass;
+
+  //Loop
+  while($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    //Heavy operations
+    $element = ag_visualization_ode_get_element($sandbox);
+    ag_visualization_ode_save_ode($element, 'batch');
+
+    //Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1, meaning we are done.
+  // Also, avoid division by zero
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @records records. Finished.', array('@records' => $sandbox['total'])));
+  }
+}
+
+/**
+ * Look in public path for specific file
+ */
+function ag_visualization_ode_prepare_batch_operation(&$sandbox) {
+  $temp_array = array();
+
+  //Get path. File must be in public folder with this name. It will be imported just once.
+  $public_path = variable_get('file_public_path', conf_path() . '/files');
+  $real_path = drupal_realpath($public_path);
+  $csvfile = $real_path . '/temp_map_content_gnoss_odes.csv';
+
+  //Check if path exists, else, notify with an error to stop updating.
+  if(!file_exists($csvfile)) {
+    drupal_set_message(t('Path: @path not found. Finished.', array('@path' => $csvfile)));
+    throw new DrupalUpdateException(t('Path: @path not found. Finished.', array('@path' => $csvfile)));
+  }
+
+  //Open file and get every line of csv file
+  $fh = fopen($csvfile, 'r');
+
+  while ($line = fgetcsv($fh, 0, ',')) {
+    //Store in temporal array
+    $temp_array[] = array('proid' => $line[0], 'mec' => $line[1]);
+  }
+  fclose($fh);
+
+  //Return by storing the array in sandbox variable. It will be static and accessible by all update_7002 batch executions.
+  $sandbox['elements'] = $temp_array;
+}
+
+/**
+ * Function to get odes don't share in procomun social network
+ */
+function ag_visualization_ode_prepare_batch_social_network(&$sandbox) {
+  $temp_array = array();
+
+  //Get all ode nodes
+  $query = db_select('node', 'n');
+  $query->fields('n',array('nid'));
+  $query->condition('n.status', 1, '=');
+  $query->condition('n.type', 'ode', '=');
+
+  $result = $query->execute();
+  $ode_nids = $result->fetchCol();
+
+  //Get odes share in procomun
+  $global_procomun = variable_get('global_community_procomun', 0);
+
+  $query = db_select('node', 'n');
+  $query->fields('n',array('nid'));
+  $query->innerjoin('og_membership', 'om', 'om.etid = n.nid');
+  $query->condition('n.status', 1, '=');
+  $query->condition('n.type', 'ode', '=');
+  $query->condition('om.entity_type', 'node', '=');
+  $query->condition('om.gid', $global_procomun, '=');
+
+  $result = $query->execute();
+  $ode_share_nids = $result->fetchCol();
+
+  //Diff arrays
+  $temp_array = array_values(array_diff($ode_nids, $ode_share_nids));
+
+  //Return by storing the array in sandbox variable. It will be static and accessible by all update_7002 batch executions.
+  $sandbox['elements'] = $temp_array;
+}
+
+/**
+ * Function to get all odes from solr for processing
+ */
+function ag_visualization_ode_prepare_batch_saves_odes(&$sandbox) {
+  $sandbox['elements'] = array();
+
+  //Create temp table in first iteration
+  $table_name = 'temp_odes_save';
+  $table_schema = drupal_get_schema_unprocessed('ag_visualization_ode', $table_name);
+  if (!db_table_exists($table_name)) {
+    db_create_table($table_name, $table_schema);
+  }
+
+  //Get solrid from orquestator
+  $orchestrator = new OS_orchestrator_selection();
+  $params = array(
+    'q' => 'published:1',
+    'rows' => 100000,
+    'fields' => array('id'),
+    'fq' => 'type:ODE',
+  );
+  $response = $orchestrator->multipleSelectionOdeFields($params);
+
+  if (!empty($response[1])) {
+    $sandbox['elements'] = $response[1];
+  }
+}
+
+/**
+ * Return number of operations that will be done.
+ */
+function ag_visualization_ode_get_total_batch_operations($sandbox) {
+  return isset($sandbox['elements']) ? count($sandbox['elements']) : 0;
+}
+
+/**
+ * Gets element with sandbox data.
+ */
+function ag_visualization_ode_get_element($sandbox) {
+  $position = isset($sandbox['current']) ? $sandbox['current'] : 0;
+  return !empty($sandbox['elements']) ? $sandbox['elements'][$position] : array();
+}
+
+/**
+ * For every entry of array that was read from file (node type: posts), load node and assign new license values.
+ */
+function ag_visualization_ode_insert_record(&$sandbox, $element) {
+  if (!empty($element['proid']) && $element['mec']) {
+    db_insert('temp_map_content_gnoss_odes')
+      ->fields(array(
+        'proid' => $element['proid'],
+        'mec' => $element['mec'],
+      ))
+      ->execute();
+  }
+  else {
+    //Error insert record
+    drupal_set_message(t('Error insert record. No complete data'), 'error');
+    throw new DrupalUpdateException(t('Error insert record. No complete data'));
+  }
+}
+
+/**
+ * Function for share ode into procomun social network
+ */
+function ag_visualization_ode_update_social_network_ode(&$sandbox, $node) {
+  if (!empty($node) && is_object($node)) {
+    $global_procomun = variable_get('global_community_procomun', 0);
+
+    if (!empty($global_procomun)) {
+      $wrapper = entity_metadata_wrapper('node', $node);
+      $og_new_group = array($global_procomun);
+      $current_og_refs = $wrapper->og_group_ref->raw();
+
+      if (!empty($current_og_refs)) {
+        $og_groups_def = array_merge($current_og_refs, $og_new_group);
+      }
+      else {
+        $og_groups_def = $og_new_group;
+      }
+      $wrapper->og_group_ref->set($og_groups_def);
+      $wrapper->save();
+    }
+    else {
+      drupal_set_message(t('Error: No procomun gid sent'), 'error');
+      throw new DrupalUpdateException(t('Error: No procomun gid sent'));
+    }
+  }
+  else {
+    drupal_set_message(t('Error: No ode sent'), 'error');
+    throw new DrupalUpdateException(t('Error: No ode sent'));
+  }
+}

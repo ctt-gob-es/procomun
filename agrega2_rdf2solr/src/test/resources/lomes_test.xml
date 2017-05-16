@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lomes:lom xmlns:lomes="http://ltsc.ieee.org/xsd/LOM">
+  <lomes:general uniqueElementName="general">
+    <lomes:identifier>
+      <lomes:catalog uniqueElementName="catalog">Plataforma Agrega</lomes:catalog>
+      <lomes:entry uniqueElementName="entry">ODE-a0a73261-c3e3-34bd-922e-9a242945119e</lomes:entry>
+    </lomes:identifier>
+    <lomes:identifier>
+      <lomes:catalog uniqueElementName="catalog">Plataforma Agrega</lomes:catalog>
+      <lomes:entry uniqueElementName="entry">ODE_25701d9c-b8fc-460d-b782-44fec58bb84b</lomes:entry>
+    </lomes:identifier>
+    <lomes:identifier>
+      <lomes:catalog uniqueElementName="catalog">Catálogo unificado mec-red.es-ccaa de identificación de ODE</lomes:catalog>
+      <lomes:entry uniqueElementName="entry">es_2014051512_9190455</lomes:entry>
+    </lomes:identifier>
+    <lomes:title uniqueElementName="title">
+      <lomes:string language="es">Formulación y nomenclatura de compuestos inorgánicos elementales y binarios (actualizada a 2005)</lomes:string>
+    </lomes:title>
+    <lomes:language>es</lomes:language>
+    <lomes:description>
+      <lomes:string language="es">Paquete SCORM creado con eXeLearning. En él se explica cómo nombrar y formular los compuestos inorgánicos elementales y binarios más habituales de acuerdo con las recomendaciones de la IUPAC de 2005 (LIbro Rojo). A este debe seguir otro REA referente a compuestos ternarios y cuaternarios.</lomes:string>
+    </lomes:description>
+    <lomes:keyword>
+      <lomes:string language="es">compuesto inorgánico</lomes:string>
+    </lomes:keyword>
+    <lomes:keyword>
+      <lomes:string language="es">formulación</lomes:string>
+    </lomes:keyword>
+    <lomes:keyword>
+      <lomes:string language="es">nomenclatura</lomes:string>
+    </lomes:keyword>
+    <lomes:keyword>
+      <lomes:string language="es">iupac</lomes:string>
+    </lomes:keyword>
+    <lomes:aggregationLevel uniqueElementName="aggregationLevel">
+      <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+      <lomes:value uniqueElementName="value">2</lomes:value>
+    </lomes:aggregationLevel>
+  </lomes:general>
+  <lomes:lifeCycle uniqueElementName="lifeCycle">
+    <lomes:contribute>
+      <lomes:role uniqueElementName="role">
+        <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+        <lomes:value uniqueElementName="value">publisher</lomes:value>
+      </lomes:role>
+      <lomes:entity>BEGIN:VCARD VERSION:3.0 FN: meducacion EMAIL;TYPE=INTERNET:  ORG: Plataforma Agrega</lomes:entity>
+      <lomes:date uniqueElementName="date">
+        <lomes:dateTime uniqueElementName="dateTime">2014-06-09T14:03:49.770Z</lomes:dateTime>
+        <lomes:description>
+          <lomes:string>Fecha de publicación en Agrega</lomes:string>
+        </lomes:description>
+      </lomes:date>
+    </lomes:contribute>
+    <lomes:contribute>
+      <lomes:role uniqueElementName="role">
+        <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+        <lomes:value uniqueElementName="value">publisher</lomes:value>
+      </lomes:role>
+      <lomes:entity>*</lomes:entity>
+      <lomes:date uniqueElementName="date">
+        <lomes:dateTime uniqueElementName="dateTime">2014-05-15T19:04:56.13Z</lomes:dateTime>
+        <lomes:description>
+          <lomes:string language="es">Fecha de publicación en Agrega</lomes:string>
+        </lomes:description>
+      </lomes:date>
+    </lomes:contribute>
+    <lomes:contribute>
+      <lomes:role uniqueElementName="role">
+        <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+        <lomes:value uniqueElementName="value">author</lomes:value>
+      </lomes:role>
+      <lomes:entity>*</lomes:entity>
+      <lomes:date uniqueElementName="date">
+        <lomes:dateTime uniqueElementName="dateTime">2014-05-15</lomes:dateTime>
+        <lomes:description>
+          <lomes:string language="es">Fecha de creación del ODE</lomes:string>
+        </lomes:description>
+      </lomes:date>
+    </lomes:contribute>
+  </lomes:lifeCycle>
+  <lomes:metaMetadata uniqueElementName="metaMetadata">
+    <identifier xmlns="http://ltsc.ieee.org/xsd/LOM">
+      <catalog>oai</catalog>
+      <entry>oai:agrega.es:ODE-a0a73261-c3e3-34bd-922e-9a242945119e-meta</entry>
+    </identifier>
+    <lomes:identifier>
+      <lomes:catalog uniqueElementName="catalog">Plataforma Agrega</lomes:catalog>
+      <lomes:entry uniqueElementName="entry">ODE-a0a73261-c3e3-34bd-922e-9a242945119e-meta</lomes:entry>
+    </lomes:identifier>
+    <lomes:metadataSchema>LOM-ESv1.0</lomes:metadataSchema>
+    <lomes:language>es</lomes:language>
+  </lomes:metaMetadata>
+  <lomes:technical uniqueElementName="technical">
+    <lomes:location>http://agrega.educacion.es/ODE/es/es_2014051512_9190455</lomes:location>
+  </lomes:technical>
+  <lomes:educational>
+    <lomes:learningResourceType>
+      <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+      <lomes:value uniqueElementName="value">narrative text</lomes:value>
+    </lomes:learningResourceType>
+    <lomes:learningResourceType>
+      <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+      <lomes:value uniqueElementName="value">hypertext</lomes:value>
+    </lomes:learningResourceType>
+    <lomes:learningResourceType>
+      <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+      <lomes:value uniqueElementName="value">guided reading</lomes:value>
+    </lomes:learningResourceType>
+    <lomes:learningResourceType>
+      <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+      <lomes:value uniqueElementName="value">master class</lomes:value>
+    </lomes:learningResourceType>
+    <lomes:learningResourceType>
+      <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+      <lomes:value uniqueElementName="value">textual-image analysis</lomes:value>
+    </lomes:learningResourceType>
+    <lomes:learningResourceType>
+      <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+      <lomes:value uniqueElementName="value">discussion activity</lomes:value>
+    </lomes:learningResourceType>
+    <lomes:learningResourceType>
+      <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+      <lomes:value uniqueElementName="value">closed exercise or problem</lomes:value>
+    </lomes:learningResourceType>
+    <lomes:intendedEndUserRole>
+      <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+      <lomes:value uniqueElementName="value">individual</lomes:value>
+    </lomes:intendedEndUserRole>
+    <lomes:context>
+      <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+      <lomes:value uniqueElementName="value">real environment</lomes:value>
+    </lomes:context>
+    <lomes:context>
+      <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+      <lomes:value uniqueElementName="value">home</lomes:value>
+    </lomes:context>
+    <lomes:context>
+      <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+      <lomes:value uniqueElementName="value">mixed</lomes:value>
+    </lomes:context>
+    <lomes:context>
+      <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+      <lomes:value uniqueElementName="value">face to face</lomes:value>
+    </lomes:context>
+    <lomes:description>
+      <lomes:string language="es">Conocimiento previo: Estructura de la materia, enlace químico, símbolos de los elementos químicos.</lomes:string>
+    </lomes:description>
+    <lomes:description>
+      <lomes:string language="es">Objetivos didácticos: Conseguir que el alumnado desarrolle habilidades que le permitan identificar fórmulas y nombres de compuestos químicos inorgánicos elementales y binarios según las recomendaciones de la IUPAC de 2005. Ayudar a alumnos de cursos superiores a repasar conceptos básicos.</lomes:string>
+    </lomes:description>
+    <lomes:language>es</lomes:language>
+  </lomes:educational>
+  <lomes:rights uniqueElementName="rights">
+    <lomes:copyrightAndOtherRestrictions uniqueElementName="copyrightAndOtherRestrictions">
+      <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+      <lomes:value uniqueElementName="value">creative commons: attribution - non commercial - share alike</lomes:value>
+    </lomes:copyrightAndOtherRestrictions>
+    <lomes:access uniqueElementName="access">
+      <lomes:accessType uniqueElementName="accessType">
+        <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+        <lomes:value uniqueElementName="value">universal</lomes:value>
+      </lomes:accessType>
+      <lomes:description>
+        <lomes:string>es_cnice_20080623,es_{nodo}_20080923,es_clm_20091103121523455,es_murcia_20080422121523455,es_castillayleon_201002241811,es_baleares_200907131205,es_na_90348943,es_canarias_20090114,es_aragon_20080930,es_larioja_20081107,es_cantabria_20081215,es_valencia_201101241416,galicia20091006,es_euskadi_20100423,es_extremadura_20111222,es_andalucia_20090324</lomes:string>
+      </lomes:description>
+    </lomes:access>
+  </lomes:rights>
+  <lomes:classification>
+    <lomes:purpose uniqueElementName="purpose">
+      <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+      <lomes:value uniqueElementName="value">discipline</lomes:value>
+    </lomes:purpose>
+    <lomes:taxonPath>
+      <lomes:source uniqueElementName="source">
+        <lomes:string>Árbol curricular LOE 2006</lomes:string>
+      </lomes:source>
+      <lomes:taxon>
+        <lomes:id uniqueElementName="id">3</lomes:id>
+        <lomes:entry>
+          <lomes:string>Compulsory Secondary Education (ESO)</lomes:string>
+        </lomes:entry>
+      </lomes:taxon>
+      <lomes:taxon>
+        <lomes:id uniqueElementName="id">3.4</lomes:id>
+        <lomes:entry>
+          <lomes:string>Fourth year</lomes:string>
+        </lomes:entry>
+      </lomes:taxon>
+      <lomes:taxon>
+        <lomes:id uniqueElementName="id">3.4.1</lomes:id>
+        <lomes:entry>
+          <lomes:string>Physics and Chemistry</lomes:string>
+        </lomes:entry>
+      </lomes:taxon>
+    </lomes:taxonPath>
+  </lomes:classification>
+  <lomes:classification>
+    <lomes:purpose uniqueElementName="purpose">
+      <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+      <lomes:value uniqueElementName="value">discipline</lomes:value>
+    </lomes:purpose>
+    <lomes:taxonPath>
+      <lomes:source uniqueElementName="source">
+        <lomes:string>Árbol curricular LOE 2006</lomes:string>
+      </lomes:source>
+      <lomes:taxon>
+        <lomes:id uniqueElementName="id">3</lomes:id>
+        <lomes:entry>
+          <lomes:string>Compulsory Secondary Education (ESO)</lomes:string>
+        </lomes:entry>
+      </lomes:taxon>
+      <lomes:taxon>
+        <lomes:id uniqueElementName="id">3.3</lomes:id>
+        <lomes:entry>
+          <lomes:string>Third year</lomes:string>
+        </lomes:entry>
+      </lomes:taxon>
+      <lomes:taxon>
+        <lomes:id uniqueElementName="id">3.3.1</lomes:id>
+        <lomes:entry>
+          <lomes:string>Natural Science</lomes:string>
+        </lomes:entry>
+      </lomes:taxon>
+    </lomes:taxonPath>
+  </lomes:classification>
+  <lomes:classification>
+    <lomes:purpose uniqueElementName="purpose">
+      <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+      <lomes:value uniqueElementName="value">discipline</lomes:value>
+    </lomes:purpose>
+    <lomes:taxonPath>
+      <lomes:source uniqueElementName="source">
+        <lomes:string>Árbol curricular LOE 2006</lomes:string>
+      </lomes:source>
+      <lomes:taxon>
+        <lomes:id uniqueElementName="id">4</lomes:id>
+        <lomes:entry>
+          <lomes:string>High Secundar Education (Bachillerato)</lomes:string>
+        </lomes:entry>
+      </lomes:taxon>
+      <lomes:taxon>
+        <lomes:id uniqueElementName="id">4.2</lomes:id>
+        <lomes:entry>
+          <lomes:string>Specific subjects</lomes:string>
+        </lomes:entry>
+      </lomes:taxon>
+      <lomes:taxon>
+        <lomes:id uniqueElementName="id">4.2.23</lomes:id>
+        <lomes:entry>
+          <lomes:string>Physics and Chemistry</lomes:string>
+        </lomes:entry>
+      </lomes:taxon>
+    </lomes:taxonPath>
+  </lomes:classification>
+  <lomes:classification>
+    <lomes:purpose uniqueElementName="purpose">
+      <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+      <lomes:value uniqueElementName="value">discipline</lomes:value>
+    </lomes:purpose>
+    <lomes:taxonPath>
+      <lomes:source uniqueElementName="source">
+        <lomes:string>Árbol curricular LOE 2006</lomes:string>
+      </lomes:source>
+      <lomes:taxon>
+        <lomes:id uniqueElementName="id">4</lomes:id>
+        <lomes:entry>
+          <lomes:string>High Secundar Education (Bachillerato)</lomes:string>
+        </lomes:entry>
+      </lomes:taxon>
+      <lomes:taxon>
+        <lomes:id uniqueElementName="id">4.2</lomes:id>
+        <lomes:entry>
+          <lomes:string>Specific subjects</lomes:string>
+        </lomes:entry>
+      </lomes:taxon>
+      <lomes:taxon>
+        <lomes:id uniqueElementName="id">4.2.26</lomes:id>
+        <lomes:entry>
+          <lomes:string>Chemistry</lomes:string>
+        </lomes:entry>
+      </lomes:taxon>
+    </lomes:taxonPath>
+  </lomes:classification>
+  <lomes:classification>
+    <lomes:purpose uniqueElementName="purpose">
+      <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+      <lomes:value uniqueElementName="value">educational level</lomes:value>
+    </lomes:purpose>
+    <lomes:taxonPath>
+      <lomes:source uniqueElementName="source">
+        <lomes:string>Nivel educativo LOM-ESv1.0</lomes:string>
+      </lomes:source>
+      <lomes:taxon>
+        <lomes:id uniqueElementName="id">4</lomes:id>
+        <lomes:entry>
+          <lomes:string>Compulsory Secondary Education (ESO)</lomes:string>
+        </lomes:entry>
+      </lomes:taxon>
+      <lomes:taxon>
+        <lomes:id uniqueElementName="id">4.4</lomes:id>
+        <lomes:entry>
+          <lomes:string>Fourth year</lomes:string>
+        </lomes:entry>
+      </lomes:taxon>
+    </lomes:taxonPath>
+  </lomes:classification>
+  <lomes:classification>
+    <lomes:purpose uniqueElementName="purpose">
+      <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+      <lomes:value uniqueElementName="value">educational level</lomes:value>
+    </lomes:purpose>
+    <lomes:taxonPath>
+      <lomes:source uniqueElementName="source">
+        <lomes:string>Nivel educativo LOM-ESv1.0</lomes:string>
+      </lomes:source>
+      <lomes:taxon>
+        <lomes:id uniqueElementName="id">6</lomes:id>
+        <lomes:entry>
+          <lomes:string>High Secondary Education (Bachillerato)</lomes:string>
+        </lomes:entry>
+      </lomes:taxon>
+    </lomes:taxonPath>
+  </lomes:classification>
+</lomes:lom>
+

@@ -1,0 +1,128 @@
+//Overwrite styles from Drupal, mainly system.theme.css
+table
+  border-collapse: collapse
+  width: 100%
+
+  //Let code wrap in tables to avoid tables above 100% width
+  code
+    white-space: normal
+    background-color: transparent
+th
+  border-bottom: none
+  padding: 0.1em 0.6em
+  text-align: left
+
+td
+  padding: 0.2em 0.6em
+
+tbody
+  border-top: none
+
+tr.even,
+tr.odd
+  background-color: $white
+  border-bottom: none
+  padding: 0
+
+th.active img
+  display: inline
+
+td.active
+  background-color: transparent //$light_gray
+
+table.tabledrag-processed
+  border-collapse: separate
+  border-spacing: 0 1em
+
+tr.draggable td
+  border: 1px solid $light_gray
+  padding: 0.5em
+
+tr.drag
+  background-color: $drag_color
+
+tr.drag-previous
+  background-color: $snow
+
+.tabledrag-toggle-weight
+  font-size: 0.9em
+
+body div.tabledrag-changed-warning
+  margin-bottom: 0.5em
+
+form .field-multiple-table td.field-multiple-drag
+  padding-right: 0
+  width: 50px
+
+tr.selected td
+  background: $trselected_color
+
+td.checkbox,
+th.checkbox
+  text-align: center
+
+.draggable a.tabledrag-handle
+  cursor: move
+  float: left
+  height: 1.7em
+  margin-left: 0
+  overflow: hidden
+  text-decoration: none
+
+a.tabledrag-handle .handle
+  background: url(../images/move.png) no-repeat 0 0
+  height: 15px
+  margin: 0
+  padding: 0
+  width: 15px
+
+a.tabledrag-handle-hover .handle
+  background: url(../images/move.png) no-repeat 0 -20px
+
+.field-type-field-collection .tabledrag-toggle-weight-wrapper, 
+.group-clasificacion .tabledrag-toggle-weight-wrapper, 
+.field-name-og-group-ref .tabledrag-toggle-weight-wrapper, 
+.tabledrag-hide
+  display: none
+
+.views-field.views-field-nothing,
+.views-field.views-field-status,
+.views-field.views-field-type,
+.views-field.views-field-field-certified,
+.views-field.views-field-views-bulk-operations,
+.views-field.views-field-community-type,
+th[class*='views-field-field-solrid'],
+td[class*='views-field-field-solrid']
+  text-align: center
+
+// Extra table
+.extra-table
+  margin-bottom: 1em
+  tr
+    border-bottom: 1px solid $light_gray
+    &:last-child
+      border-width: 0px
+  td.label
+    color: $navy
+    text-transform: uppercase
+    font-size: 12px
+    padding: 8px 0
+    white-space: nowrap
+    font-weight: 700
+    text-align: left
+    border-right: 1px solid $light_gray
+    width: 155px
+  td.content
+    padding: 10px
+    color: $main_blue
+    a
+      color: $main_blue
+      &:hover
+        color: $deep_blue
+
+// Private messages
+.privatemsg-list
+  th.select-all
+    width: 25px
+  td.privatemsg-list-date
+    text-align: left!important

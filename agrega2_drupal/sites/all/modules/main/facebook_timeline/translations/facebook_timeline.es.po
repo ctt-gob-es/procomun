@@ -1,0 +1,49 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  facebook_timeline.module: n/a
+#  facebook_timeline.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2014-06-10 18:33+0200\n"
+"PO-Revision-Date: 2014-06-10 18:33+0200\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: facebook_timeline.module:13
+msgid "Block for rendering the facebook timeline"
+msgstr "Bloque para mostrar el timeline de facebook"
+
+#: facebook_timeline.module:31
+msgid "Facebook timeline"
+msgstr "Timeline de facebook"
+
+#: facebook_timeline.module:53
+msgid "Facebook page"
+msgstr "Página de facebook"
+
+#: facebook_timeline.module:55
+msgid "The name of the facebook fan page"
+msgstr "El nombre de la página de facebook"
+
+#: facebook_timeline.info:0
+msgid "Facebook Timeline"
+msgstr "Timeline de facebook"
+
+#: facebook_timeline.info:0
+msgid "Provides a custom block which renders a timeline from Facebook"
+msgstr "Proporciona un bloque personalizado para mostrar el timeline de facebook"
+
+#: facebook_timeline.info:0
+msgid "Agrega2"
+msgstr "Agrega2"
+

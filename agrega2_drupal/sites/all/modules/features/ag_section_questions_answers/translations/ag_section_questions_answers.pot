@@ -1,0 +1,272 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_section_questions_answers.features.field_instance.inc: n/a
+#  ag_section_questions_answers.features.inc: n/a
+#  ag_section_questions_answers.module: n/a
+#  ag_section_questions_answers.views_default.inc: n/a
+#  ag_section_questions_answers.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2014-09-01 11:59+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: ag_section_questions_answers.features.field_instance.inc:1471
+msgid "Body"
+msgstr ""
+
+#: ag_section_questions_answers.features.field_instance.inc:1472
+msgid "Categoría"
+msgstr ""
+
+#: ag_section_questions_answers.features.field_instance.inc:1473
+msgid "Comment"
+msgstr ""
+
+#: ag_section_questions_answers.features.field_instance.inc:1474
+msgid "Compartir en otras comunidades"
+msgstr ""
+
+#: ag_section_questions_answers.features.field_instance.inc:1475
+msgid "Escriba aquí su pregunta"
+msgstr ""
+
+#: ag_section_questions_answers.features.field_instance.inc:1476
+msgid "Escriba aquí su respuesta"
+msgstr ""
+
+#: ag_section_questions_answers.features.field_instance.inc:1477
+msgid "Estado"
+msgstr ""
+
+#: ag_section_questions_answers.features.field_instance.inc:1478
+msgid "Etiquetas"
+msgstr ""
+
+#: ag_section_questions_answers.features.field_instance.inc:1479
+msgid "Groups audience"
+msgstr ""
+
+#: ag_section_questions_answers.features.field_instance.inc:1480
+msgid "Introduzca las diferentes etiquetas separadas por comas."
+msgstr ""
+
+#: ag_section_questions_answers.features.field_instance.inc:1481 ag_section_questions_answers.features.inc:51
+msgid "Pregunta"
+msgstr ""
+
+#: ag_section_questions_answers.features.field_instance.inc:1482 ag_section_questions_answers.features.inc:35
+msgid "Respuesta"
+msgstr ""
+
+#: ag_section_questions_answers.features.field_instance.inc:1483 ag_section_questions_answers.features.inc:39;47;55
+msgid "Título"
+msgstr ""
+
+#: ag_section_questions_answers.features.field_instance.inc:1484
+msgid "solrID"
+msgstr ""
+
+#: ag_section_questions_answers.features.inc:37
+msgid "Crea la respuesta a una pregunta realizada"
+msgstr ""
+
+#: ag_section_questions_answers.features.inc:43 ag_section_questions_answers.module:136
+msgid "Debate"
+msgstr ""
+
+#: ag_section_questions_answers.features.inc:45
+msgid "Crea un nuevo debate en Agrega2"
+msgstr ""
+
+#: ag_section_questions_answers.features.inc:53
+msgid "Crear una nueva pregunta"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:124;236;351
+msgid "Master"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:125;237;353
+msgid "más"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:126;238;354
+msgid "Aplicar"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:127;239;355
+msgid "Reiniciar"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:128;240;356
+msgid "Ordenar por"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:129;241;357
+msgid "Asc"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:130;242;358
+msgid "Desc"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:131;243;359
+msgid "Elementos por página"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:132;244;360
+msgid "- Todos -"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:133;245;361
+msgid "Desplazamiento"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:134;246;362
+msgid "« primera"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:135;247;363
+msgid "‹ anterior"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:136;248;364
+msgid "siguiente ›"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:137;249;365
+msgid "última »"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:138
+msgid "Contenido entidad referenciada de field_question_ref"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:139;253;366
+msgid "Todo(s)"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:140
+msgid "Answers list"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:141
+msgid "Lista de respuestas de una pregunta"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:142;256;369
+msgid "Vista panel"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:250
+msgid "ID del nodo"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:251
+msgid "."
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:252
+msgid ","
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:254
+msgid "List content pane"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:255
+msgid "Lista de preguntas y debates de un grupo"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:352
+msgid "Latest questions"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:367
+msgid "Last questions"
+msgstr ""
+
+#: ag_section_questions_answers.views_default.inc:368
+msgid "Últimas preguntas panel contendor"
+msgstr ""
+
+#: ag_section_questions_answers.module:14
+msgid "Last items"
+msgstr ""
+
+#: ag_section_questions_answers.module:36;39
+msgid "@total_answers answers"
+msgstr ""
+
+#: ag_section_questions_answers.module:70
+msgid "There is no answers yet"
+msgstr ""
+
+#: ag_section_questions_answers.module:70
+msgid "The number of answers is !total "
+msgstr ""
+
+#: ag_section_questions_answers.module:89;110
+msgid "Selector block to choose between Question or Debate"
+msgstr ""
+
+#: ag_section_questions_answers.module:94
+msgid "New block for add a new answer in the view of a question"
+msgstr ""
+
+#: ag_section_questions_answers.module:118
+msgid "Answer"
+msgstr ""
+
+#: ag_section_questions_answers.module:136
+msgid "Question"
+msgstr ""
+
+#: ag_section_questions_answers.module:145
+msgid "Title"
+msgstr ""
+
+#: ag_section_questions_answers.module:151
+msgid "Continue"
+msgstr ""
+
+#: ag_section_questions_answers.module:165
+msgid "You must select one of the options: 'Question' or 'Debate' "
+msgstr ""
+
+#: ag_section_questions_answers.module:171
+msgid "You must be a register user to ask a question or start a new debate "
+msgstr ""
+
+#: ag_section_questions_answers.module:296
+msgid "Node"
+msgstr ""
+
+#: ag_section_questions_answers.module:297
+msgid "Prepopulate from node that we are viewing"
+msgstr ""
+
+#: ag_section_questions_answers.info:0
+msgid "ag_section_questions_answers"
+msgstr ""
+
+#: ag_section_questions_answers.info:0
+msgid "Feature for section questions and answers"
+msgstr ""
+
+#: ag_section_questions_answers.info:0
+msgid "Agrega2"
+msgstr ""
+

@@ -1,0 +1,43 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the ag mozilla openbadges displayer module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function ag_mozilla_openbadges_displayer_schema() {
+  $schema['mozilla_openbadges_groups'] = array(
+    'description' => 'Mozilla openbagdes groups to show',
+    'fields' => array(
+      'bgid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Badge group id.',
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'uid for user.',
+      ),
+    ),
+    'primary key' => array('bgid', 'uid'),
+    'indexes' => array(
+      'bg_uid' => array('uid'),
+    ),
+    'foreign keys' => array(
+      'bg_user' => array(
+        'table' => 'users',
+        'columns' => array('uid' => 'uid'),
+      ),
+    ),
+  );
+
+  return $schema;
+}

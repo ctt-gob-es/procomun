@@ -1,0 +1,73 @@
+/* HEADER */
+.container-header
+  padding-top: 10px
+.block-views
+  clear: both
+  margin-top: 15px
+#masthead
+  min-height: 120px
+  background: $white
+  position: relative
+  .header-left
+    float: left
+    width: 26%
+    clear: both
+  .header-right
+    float: left
+    width: 74%
+    text-align: right
+  #site-logo
+    text-align: center
+    padding: 8px 0 
+    +breakpoint($tablet-min)
+      text-align: left
+      margin-left: 0%
+      img
+        width: 270px
+  .info-bar
+    padding-top: 0px
+    margin-top: 15px
+    display: inline-block
+    .region
+      display: table
+      .block
+        text-align: left
+        display: table-cell
+        vertical-align: middle
+        padding-left: 20px
+
+h1#site-title
+  text-transform: uppercase
+  font-weight: 800
+  margin-top: 18px
+  clear: none
+  a
+    &:link, &:visited
+      color: $cold_gray
+.header-left
+  +breakpoint($tablet-min)
+    float: left
+    width: 67%
+.header-right
+  +breakpoint($tablet-min)
+    float: left
+    width: 33%
+.info-bar
+  +breakpoint($tablet-min)
+    text-align: right
+    padding-top: 85px
+  position: relative
+.maintenance-page
+  #masthead
+    margin-bottom: 0px
+    .logo
+      width: 33%
+      margin: 0 auto
+      #site-logo
+        margin-left: 0
+        text-align: left
+    .search-zone
+      width: 67%
+      .info-bar
+        padding-top: 20px
+        text-align: left

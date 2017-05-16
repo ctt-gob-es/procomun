@@ -1,0 +1,127 @@
+package com.itelligent.agrega2.test;
+
+import static org.junit.Assert.assertEquals;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Collection;
+
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
+import org.junit.Assert;
+
+import com.itelligent.agrega2.dal.beans.Recomendacion;
+
+public class TestAPIRecomendadorContenido {
+    private static final int TAM = 10;
+
+    static void conexion(String restUrl) {
+        try {
+            URL url = new URL("http://localhost:8080/Recomendador/rest/contenido/" + restUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Accept", "application/json");
+
+            int intStatus = conn.getResponseCode();
+
+            conn.disconnect();
+
+            assertEquals(intStatus, 200);
+
+        } catch (MalformedURLException e) {
+
+            Assert.fail("Error parsear url");
+
+        } catch (IOException e) {
+
+            Assert.fail("Error IO");
+
+        }
+
+    }
+
+    static void test(String restUrl) {
+        String strTodo = new String();
+        try {
+            URL url = new URL("http://localhost:8080/Recomendador/rest/contenido/" + restUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Accept", "application/json");
+            BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+            String strLine;
+
+            while ((strLine = br.readLine()) != null) {
+                strTodo += strLine;
+            }
+            conn.disconnect();
+
+        } catch (MalformedURLException e) {
+
+            Assert.fail("Error parsear url");
+
+        } catch (IOException e) {
+
+            Assert.fail("Error IO" + e.getMessage());
+
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        Collection<Recomendacion> recomendaciones = null;
+        try {
+            recomendaciones = mapper.readValue(strTodo, new TypeReference<Collection<Recomendacion>>() {
+            });
+        } catch (JsonParseException e) {
+            Assert.fail("Error JSON sintaxis");
+        } catch (JsonMappingException e) {
+            Assert.fail("Error mapear JSON");
+        } catch (IOException e) {
+            Assert.fail("Error IO");
+        }
+
+        for (Recomendacion recomendacion : recomendaciones) {
+            if (recomendacion.getId() <= 0 || recomendacion.getScore() <= 0) {
+                Assert.fail("Error contenido List");
+            }
+        }
+        assertEquals(recomendaciones.size(), TAM);
+    }
+
+    // @Test
+    public void testRecomendarContenido() {
+
+        conexion("");
+        test("");
+    }
+
+    // @Test
+    public void testRecomendarContenidoUsuario() {
+        int id_user = 123;
+
+        conexion("user/" + id_user);
+        test("user/" + id_user);
+    }
+
+    // @Test
+    public void testRecomendarContenidoContenido() {
+
+        int id_content = 456;
+
+        conexion("content/" + id_content);
+        test("content/" + id_content);
+    }
+
+    // @Test
+    public void testRecomendarContenidoUsuarioContenido() {
+        int id_user = 123;
+        int id_content = 456;
+
+        conexion("user/" + id_user + "/content/" + id_content);
+        test("user/" + id_user + "/content/" + id_content);
+    }
+
+}

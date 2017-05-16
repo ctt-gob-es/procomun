@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the ag_section_search_filter feature.
+ */
+
+include_once 'ag_section_search_filter.features.inc';

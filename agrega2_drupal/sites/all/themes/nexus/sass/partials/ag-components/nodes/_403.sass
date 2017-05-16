@@ -1,0 +1,30 @@
+.page-403
+  .tabs-wrapper
+    @extend .hide
+  #content
+    background: image-url("error403.png") 80% 88% no-repeat
+    position: initial
+    .messages.warning
+      margin-bottom: 30px
+    #content-wrap
+      padding: 40px 20px
+  .wrap-text
+    width: 500px
+    min-height: 450px
+    padding: 15px
+    text-align: center
+    margin: 0 auto
+    z-index: -1
+    position: relative
+    background: image-url("cajas.png") 0 0 no-repeat
+  
+  .wrap-text-403
+    text-align: center
+    margin: 0 auto
+    h1
+      font-size: 32px
+      color: $cold_gray
+      font-family: $font_militia
+      margin-top: -1.2em
+      +text-shadow(2px 2px 2px $dark_orange)
+    

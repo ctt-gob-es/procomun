@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<schema name="example" version="1.5">
+	<fields>
+		<!-- Unique ID -->
+		<field name="id" type="string" indexed="true" stored="true"/>
+		<field name="lastIndexDate" type="tdate" indexed="true" stored="true" multiValued="false" default="NOW" />
+<!-- 		<field name="lastIndexDateMillis" type="int" indexed="false" stored="true" multiValued="false" default="ms(NOW)" /> -->
+
+		<!-- ID Drupal (not required) -->
+		<field name="idDrupal" type="string" indexed="true" stored="true"/>
+
+		<!-- Document TYPE -->
+		<field name="type" type="string" indexed="true" stored="true"/>
+
+		<!-- Document CATEGORY -->
+		<field name="category" type="text_keyword" indexed="true" stored="false" multiValued="false"/>
+		<field name="categoryStr" type="string" indexed="true" stored="true" multiValued="false"/>
+
+		<!-- Document Status (1: published, 0: not published). Default value: 1 -->
+		<field name="published" type="string" indexed="true" stored="true" default="1"/>
+
+
+		<!-- Document Novelty (1: novelty, 0: not novelty). Default value: 0 -->
+		<field name="novelty" type="string" indexed="true" stored="true" default="0"/>
+
+		<!-- Document Status (1: certified, 0: not certified). Default value: 1 -->
+		<field name="certified" type="string" indexed="true" stored="true" default="0"/>
+
+		<!-- Common fields -->
+		<field name="title" type="text_general" indexed="true" stored="false"/>
+		<field name="titleStr" type="string" indexed="true" stored="true"/>
+		<field name="titleOrder" type="collatedSpanish" indexed="true" stored="false"/>
+		<field name="description" type="text_general" indexed="true" stored="false"/>
+		<field name="descriptionStr" type="string" indexed="true" stored="true"/>
+		<field name="labels" type="text_general" indexed="true" stored="false" multiValued="true"/>
+		<field name="labelsStr" type="string" indexed="true" stored="true" multiValued="true"/>
+
+		<!-- URL -->
+		<field name="url" type="string" indexed="true" stored="true" multiValued="false" />
+
+		<!-- LEARNING PATH -->
+		<field name="itineraryContent" type="string" indexed="true" stored="true" multiValued="true"/>
+		<field name="interestContent" type="string" indexed="true" stored="true" multiValued="true"/>
+		<field name="baseItinerary" type="string" indexed="true" stored="true" multiValued="false"/>
+
+		<!-- ODE -->
+		<field name="generatedId" type="string" indexed="true" stored="true" multiValued="false" />
+
+		<field name="preview" type="string" indexed="true" stored="true" multiValued="false" />
+
+		<!-- ODE and LEARNING_RESOURCE DOCUMENT -->
+		<field name="author" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="authorStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="publicationDate" type="tdate" indexed="true" stored="true" required="false" multiValued="false" />
+		<field name="publicator" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
+		<field name="publicatorStr" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+		<field name="publicatorName" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
+		<field name="publicatorNameStr" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+		<field name="publicatorEmail" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
+		<field name="publicatorEmailStr" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+
+		<field name="generalIdentifier" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="generalIdentifierStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="mecIdentifier" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
+		<field name="mecIdentifierStr" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+		<field name="generalTitle" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
+		<field name="generalTitleStr" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+		<field name="generalTitleAuto" type="text_general_edge_ngram" indexed="true" stored="true" required="false" multiValued="false" />
+		<field name="generalKeyword" type="text_keyword" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="generalKeywordStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="generalKeywordAuto" type="text_general_edge_ngram" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="generalDescription" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="generalDescriptionStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="generalLanguage" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="generalLanguageStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="generalAggregationLevel" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
+		<field name="generalAggregationLevelStr" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+
+		<field name="technicalFormat" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="technicalFormatStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="technicalSize" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
+		<field name="technicalSizeStr" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+		<field name="technicalRequirementTypeName" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="technicalRequirementTypeNameStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="technicalInstallationRemarks" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
+		<field name="technicalInstallationRemarksStr" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+		<field name="technicalOtherPlatformRequirements" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="technicalOtherPlatformRequirementsStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+
+		<field name="lifecycleContribute" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="lifecycleContributeStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+
+		<field name="educationalLearningResourceType" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="educationalLearningResourceTypeStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="educationalIntendedEndUserRole" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="educationalIntendedEndUserRoleStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="educationalContext" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="educationalContextStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="educationalDescription" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="educationalDescriptionStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="educationalLanguage" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="educationalLanguageStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="educationalCognitiveProcess" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="educationalCognitiveProcessStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+
+		<field name="rightsCopyrightAndOtherRestrictions" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
+		<field name="rightsCopyrightAndOtherRestrictionsStr" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+		<field name="rightsAccess" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
+		<field name="rightsAccessStr" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+		<field name="rightsAccessDescription" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
+		<field name="rightsAccessDescriptionStr" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+
+		<field name="classificationEducationalLevel1" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationEducationalLevel2" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationEducationalLevel3" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationEducationalLevel4" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationEducationalLevel5" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationEducationalLevel6" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+
+		<field name="classificationDiscipline1" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationDiscipline2" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationDiscipline3" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationDiscipline4" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationDiscipline5" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationDiscipline6" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+
+		<field name="classificationEducationalLevel1Label" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationEducationalLevel2Label" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationEducationalLevel3Label" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationEducationalLevel4Label" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationEducationalLevel5Label" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationEducationalLevel6Label" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationDiscipline1Label" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationDiscipline2Label" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationDiscipline3Label" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationDiscipline4Label" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationDiscipline5Label" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationDiscipline6Label" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+
+		<!-- New catalog -->
+		<field name="knowledgeArea" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="learningContext" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="resourceType" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+
+		<field name="odeNode" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+		<field name="odeNodeStr" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+
+		<!-- Only ODE -->
+		<field name="classificationCompetency1" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationCompetency2" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+
+		<field name="classificationAccessibility1" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationAccessibility2" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationAccessibility3" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationAccessibility4" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+
+
+		<field name="classificationCompetency1Label" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationCompetency2Label" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationAccessibility1Label" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationAccessibility2Label" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationAccessibility3Label" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationAccessibility4Label" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+
+
+		<!-- ODE DOCUMENT INTERLINKING -->
+		<field name="titleLinks" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="titleLinksStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+
+		<!-- Table of contents (from IMSMANIFEST, not from LOM-ES) -->
+		<field name="contentTable" type="string" indexed="true" stored="false" required="false" multiValued="true" />
+
+		<field name="generalCoverage" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="generalCoverageStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="generalStructure" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
+		<field name="generalStructureStr" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+		<field name="lifeCycleVersion" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="lifeCycleVersionStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="lifeCycleStatus" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
+		<field name="lifeCycleStatusStr" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+
+		<field name="technicalRequirementTypeNameMinMax" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="technicalRequirementTypeNameMinMaxStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="technicalLocation" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="technicalLocationStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="technicalDuration" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="technicalDurationStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="technicalDurationDescription" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="technicalDurationDescriptionStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+
+		<field name="educationalInteractivityLevel" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="educationalInteractivityLevelStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="educationalInteractivityType" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="educationalInteractivityTypeStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="educationalSemanticDensity" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="educationalSemanticDensityStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="educationalTypicalAgeRange" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="educationalTypicalAgeRangeStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="educationalDifficulty" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="educationalDifficultyStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="educationalTypicalLearningTimeDescription" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="educationalTypicalLearningTimeDescriptionStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="educationalTypicalLearningTime" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="educationalTypicalLearningTimeStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+
+		<field name="rightsCost" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
+		<field name="rightsCostStr" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+		<field name="rightsDescription" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="rightsDescriptionStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="relationIdentifierKind" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="relationIdentifierKindStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="annotationEntityDescriptionDate" type="text_general" indexed="true" stored="false" required="false" multiValued="true" />
+		<field name="annotationEntityDescriptionDateStr" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+
+
+		<!-- USER DOCUMENT -->
+		<field name="userName" type="text_general" indexed="true" stored="false" multiValued="false"/>
+		<field name="userNameStr" type="string" indexed="true" stored="true" multiValued="false"/>
+		<field name="userSurName" type="text_general" indexed="true" stored="false" multiValued="false"/>
+		<field name="userSurNameStr" type="string" indexed="true" stored="true" multiValued="false"/>
+		<field name="userLogin" type="text_general" indexed="true" stored="false" multiValued="false"/>
+		<field name="userLoginStr" type="string" indexed="true" stored="true" multiValued="false"/>
+		<field name="userPassword" type="text_general" indexed="true" stored="false" multiValued="false"/>
+		<field name="userPasswordStr" type="string" indexed="true" stored="true" multiValued="false"/>
+		<field name="userMail" type="text_general" indexed="true" stored="false" multiValued="false"/>
+		<field name="userMailStr" type="string" indexed="true" stored="true" multiValued="false"/>
+		<field name="userBirthDate" type="tdate" indexed="true" stored="true" multiValued="false"/>
+		<field name="userCountry" type="text_general" indexed="true" stored="false" multiValued="false"/>
+		<field name="userCountryStr" type="string" indexed="true" stored="true" multiValued="false"/>
+		<field name="userDni" type="text_general" indexed="true" stored="true" multiValued="false"/>
+		<field name="userProvince" type="text_general" indexed="true" stored="false" multiValued="false"/>
+		<field name="userProvinceStr" type="string" indexed="true" stored="true" multiValued="false"/>
+		<field name="userLocality" type="text_general" indexed="true" stored="false" multiValued="false"/>
+		<field name="userLocalityStr" type="string" indexed="true" stored="true" multiValued="false"/>
+		<field name="userEducativeCenter" type="text_general" indexed="true" stored="false" multiValued="false"/>
+		<field name="userEducativeCenterStr" type="string" indexed="true" stored="true" multiValued="false"/>
+		<field name="userEducativeCenterUrl" type="string" indexed="false" stored="true" multiValued="false"/>
+		<field name="userLabels" type="text_general" indexed="true" stored="false" multiValued="true"/>
+		<field name="userLabelsStr" type="string" indexed="true" stored="true" multiValued="true"/>
+		<field name="userLabelsAuto" type="text_general_edge_ngram" indexed="true" stored="false" multiValued="true"/>
+		<field name="userPlace" type="text_general" indexed="true" stored="false" multiValued="false"/>
+		<field name="userPlaceStr" type="string" indexed="true" stored="true" multiValued="false"/>
+		<field name="userNameSurname" type="text_general" indexed="true" stored="false" multiValued="false"/>
+		<field name="userNameSurnameStr" type="string" indexed="true" stored="true" multiValued="false"/>
+		<field name="userNameSurnameAuto" type="text_general_edge_ngram" indexed="true" stored="true" multiValued="false"/>
+
+		<!-- RESPONSE DOCUMENT -->
+		<field name="responseLabels" type="text_keyword" indexed="true" stored="false" multiValued="true"/>
+		<field name="responseLabelsStr" type="string" indexed="true" stored="true" multiValued="true"/>
+		<field name="responseState" type="text_general" indexed="true" stored="false" multiValued="false"/>
+		<field name="responseStateStr" type="string" indexed="true" stored="true" multiValued="false"/>
+
+
+		<!-- QUESTION DOCUMENT -->
+		<field name="questionLabels" type="text_keyword" indexed="true" stored="false" multiValued="true"/>
+		<field name="questionLabelsStr" type="string" indexed="true" stored="true" multiValued="true"/>
+		<field name="questionState" type="text_general" indexed="true" stored="false" multiValued="false"/>
+		<field name="questionStateStr" type="string" indexed="true" stored="true" multiValued="false"/>
+
+		<!-- COMMUNITY -->
+		<field name="communityDate" type="tdate" indexed="true" stored="true" multiValued="false"/>
+		<field name="communityLabels" type="text_keyword" indexed="true" stored="false" multiValued="true"/>
+		<field name="communityLabelsStr" type="string" indexed="true" stored="true" multiValued="true"/>
+		<field name="communityAdminSups" type="text_general" indexed="true" stored="false" multiValued="true"/>
+		<field name="communityAdminSupsStr" type="string" indexed="true" stored="true" multiValued="true"/>
+
+		<!-- EVENT -->
+		<field name="eventLabels" type="text_keyword" indexed="true" stored="false" multiValued="true"/>
+		<field name="eventLabelsStr" type="string" indexed="true" stored="true" multiValued="true"/>
+		<field name="startDate" type="tdate" indexed="true" stored="true" required="false" multiValued="false" />
+		<field name="endDate" type="tdate" indexed="true" stored="true" required="false" multiValued="false" />
+
+		<!-- POLL -->
+
+		<!-- DISCUSSION -->
+		<field name="discussionLabels" type="text_keyword" indexed="true" stored="false" multiValued="true"/>
+		<field name="discussionLabelsStr" type="string" indexed="true" stored="true" multiValued="true"/>
+
+		<!-- COMMNENT -->
+		<field name="commentContentId" type="string" indexed="true" stored="true" multiValued="false"/>
+		<field name="commentUserId" type="string" indexed="true" stored="true" multiValued="false"/>
+		<field name="commentCreationDate" type="tdate" indexed="true" stored="true" multiValued="false"/>
+
+		<!-- POST -->
+		<field name="postLabels" type="text_keyword" indexed="true" stored="false" multiValued="true"/>
+		<field name="postLabelsStr" type="string" indexed="true" stored="true" multiValued="true"/>
+
+		<!-- PODCAST -->
+		<field name="podcastUrl" type="string" indexed="true" stored="true" multiValued="false"/>
+
+		<!-- WEBINAR -->
+		<field name="webinarUrl" type="string" indexed="true" stored="true" multiValued="false"/>
+		<field name="duration" type="string" indexed="true" stored="true" multiValued="false"/>
+
+		<!-- Field to full search -->
+		<field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>
+
+	</fields>
+	<!-- End Agrega2 Fields -->
+
+	<!-- Copy Fields -->
+	<copyField source="*" dest="text"/>
+
+	<!-- common fields -->
+	<copyField source="title" dest="titleStr"/>
+	<copyField source="title" dest="titleOrder"/>"
+	<copyField source="description" dest="descriptionStr"/>
+	<copyField source="labels" dest="labelsStr"/>
+	<copyField source="category" dest="categoryStr"/>
+
+	<!-- ode -->
+	<copyField source="author" dest="authorStr"/>
+	<copyField source="publicator" dest="publicatorStr"/>
+	<copyField source="publicatorName" dest="publicatorNameStr"/>
+	<copyField source="publicatorEmail" dest="publicatorEmailStr"/>
+	<copyField source="generalIdentifier" dest="generalIdentifierStr"/>
+	<copyField source="mecIdentifier" dest="mecIdentifierStr"/>
+	<copyField source="generalTitle" dest="generalTitleStr"/>
+	<copyField source="generalTitle" dest="generalTitleAuto"/>
+	<copyField source="generalKeyword" dest="generalKeywordStr"/>
+	<copyField source="generalKeyword" dest="generalKeywordAuto"/>
+	<copyField source="generalDescription" dest="generalDescriptionStr"/>
+	<copyField source="generalLanguage" dest="generalLanguageStr"/>
+	<copyField source="generalAggregationLevel" dest="generalAggregationLevelStr"/>
+
+	<copyField source="technicalFormat" dest="technicalFormatStr"/>
+	<copyField source="technicalSize" dest="technicalSizeStr"/>
+	<copyField source="technicalRequirementTypeName" dest="technicalRequirementTypeNameStr"/>
+	<copyField source="technicalInstallationRemarks" dest="technicalInstallationRemarksStr"/>
+	<copyField source="technicalOtherPlatformRequirements" dest="technicalOtherPlatformRequirementsStr"/>
+
+	<copyField source="lifecycleContribute" dest="lifecycleContributeStr"/>
+
+	<copyField source="educationalLearningResourceType" dest="educationalLearningResourceTypeStr"/>
+	<copyField source="educationalIntendedEndUserRole" dest="educationalIntendedEndUserRoleStr"/>
+	<copyField source="educationalContext" dest="educationalContextStr"/>
+	<copyField source="educationalDescription" dest="educationalDescriptionStr"/>
+	<copyField source="educationalLanguage" dest="educationalLanguageStr"/>
+	<copyField source="educationalCognitiveProcess" dest="educationalCognitiveProcessStr"/>
+
+	<copyField source="rightsCopyrightAndOtherRestrictions" dest="rightsCopyrightAndOtherRestrictionsStr"/>
+	<copyField source="rightsAccess" dest="rightsAccessStr"/>
+	<copyField source="rightsAccessDescription" dest="rightsAccessDescriptionStr"/>
+
+	<copyField source="odeNode" dest="odeNodeStr"/>
+
+	<copyField source="titleLinks" dest="titleLinksStr"/>
+
+	<copyField source="generalCoverage" dest="generalCoverageStr"/>
+	<copyField source="generalStructure" dest="generalStructureStr"/>
+	<copyField source="lifeCycleVersion" dest="lifeCycleVersionStr"/>
+	<copyField source="lifeCycleStatus" dest="lifeCycleStatusStr"/>
+
+	<copyField source="technicalRequirementTypeNameMinMax" dest="technicalRequirementTypeNameMinMaxStr"/>
+	<copyField source="technicalLocation" dest="technicalLocationStr"/>
+	<copyField source="technicalDurationDescription" dest="technicalDurationDescriptionStr"/>
+
+	<copyField source="educationalInteractivityLevel" dest="educationalInteractivityLevelStr"/>
+	<copyField source="educationalInteractivityType" dest="educationalInteractivityTypeStr"/>
+	<copyField source="educationalSemanticDensity" dest="educationalSemanticDensityStr"/>
+	<copyField source="educationalTypicalAgeRange" dest="educationalTypicalAgeRangeStr"/>
+	<copyField source="educationalDifficulty" dest="educationalDifficultyStr"/>
+	<copyField source="educationalTypicalLearningTimeDescription" dest="educationalTypicalLearningTimeDescriptionStr"/>
+	<copyField source="educationalTypicalLearningTime" dest="educationalTypicalLearningTimeStr"/>
+
+	<copyField source="rightsCost" dest="rightsCostStr"/>
+	<copyField source="rightsDescription" dest="rightsDescriptionStr"/>
+	<copyField source="relationIdentifierKind" dest="relationIdentifierKindStr"/>
+	<copyField source="annotationEntityDescriptionDate" dest="annotationEntityDescriptionDateStr"/>
+
+	<!-- user -->
+	<copyField source="userName" dest="userNameStr"/>
+	<copyField source="userSurName" dest="userSurNameStr"/>
+	<copyField source="userLogin" dest="userLoginStr"/>
+	<copyField source="userPassword" dest="userPasswordStr"/>
+	<copyField source="userMail" dest="userMailStr"/>
+	<copyField source="userCountry" dest="userCountryStr"/>
+	<copyField source="userProvince" dest="userProvinceStr"/>
+	<copyField source="userLocality" dest="userLocalityStr"/>
+	<copyField source="userEducativeCenter" dest="userEducativeCenterStr"/>
+	<copyField source="userLabels" dest="userLabelsStr"/>
+	<copyField source="userLabels" dest="userLabelsAuto"/>
+	<copyField source="userPlace" dest="userPlaceStr"/>
+	<copyField source="userNameSurname" dest="userNameSurnameStr"/>
+	<copyField source="userNameSurname" dest="userNameSurnameAuto"/>
+
+	<!-- response -->
+	<copyField source="responseLabels" dest="responseLabelsStr"/>
+	<copyField source="responseState" dest="responseStateStr"/>
+
+	<!-- question -->
+	<copyField source="questionLabels" dest="questionLabelsStr"/>
+	<copyField source="questionState" dest="questionStateStr"/>
+
+	<!-- community -->
+	<copyField source="communityLabels" dest="communityLabelsStr"/>
+	<copyField source="communityAdminSups" dest="communityAdminSupsStr"/>
+
+	<!-- event -->
+	<copyField source="eventLabels" dest="eventLabelsStr"/>
+
+	<!-- discussion -->
+	<copyField source="discussionLabels" dest="discussionLabelsStr"/>
+
+	<!-- post -->
+	<copyField source="postLabels" dest="postLabelsStr"/>
+
+	<!-- KEY -->
+	<uniqueKey>id</uniqueKey>
+
+	<!-- TYPES -->
+	<types>
+		<fieldType name="string" class="solr.StrField" sortMissingLast="true" />
+		<fieldType name="int" class="solr.TrieIntField" precisionStep="0" positionIncrementGap="0"/>
+		<fieldType name="float" class="solr.TrieFloatField" precisionStep="0" positionIncrementGap="0"/>
+		<fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
+		<fieldType name="double" class="solr.TrieDoubleField" precisionStep="0" positionIncrementGap="0"/>
+		<fieldType name="text_normal" class="solr.TextField" positionIncrementGap="100"/>
+
+		<fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
+			<analyzer type="index">
+				<tokenizer class="solr.StandardTokenizerFactory"/>
+				<filter class="solr.ASCIIFoldingFilterFactory"/>
+				<filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" />
+				<filter class="solr.LowerCaseFilterFactory"/>
+				<filter class="solr.SnowballPorterFilterFactory" language="Spanish"/>
+			</analyzer>
+			<analyzer type="query">
+				<tokenizer class="solr.StandardTokenizerFactory"/>
+				<filter class="solr.ASCIIFoldingFilterFactory"/>
+				<filter class="solr.LowerCaseFilterFactory"/>
+				<filter class="solr.SnowballPorterFilterFactory" language="Spanish"/>
+			</analyzer>
+		</fieldType>
+
+		<fieldType name="text_keyword" class="solr.TextField" positionIncrementGap="100">
+			<analyzer type="index">
+				<tokenizer class="solr.KeywordTokenizerFactory"/>
+				<filter class="solr.LowerCaseFilterFactory"/>
+			</analyzer>
+			<analyzer type="query">
+				<tokenizer class="solr.KeywordTokenizerFactory"/>
+				<filter class="solr.LowerCaseFilterFactory"/>
+			</analyzer>
+		</fieldType>
+
+		<fieldType name="tdate" class="solr.TrieDateField" precisionStep="6" positionIncrementGap="0"/>
+
+		<fieldtype name="ignored" class="solr.StrField" />
+
+		<fieldType name="text_general_edge_ngram" class="solr.TextField" positionIncrementGap="100">
+		   <analyzer type="index">
+		      <tokenizer class="solr.LowerCaseTokenizerFactory"/>
+		      <filter class="solr.EdgeNGramFilterFactory" minGramSize="2" maxGramSize="15" side="front"/>
+		   </analyzer>
+		   <analyzer type="query">
+		      <tokenizer class="solr.LowerCaseTokenizerFactory"/>
+		   </analyzer>
+		</fieldType>
+		<fieldType name="collatedSpanish" class="solr.TextField" sortMissingLast="true" omitNorms="true">
+		  <analyzer>
+		    <!-- KeywordTokenizer does no actual tokenizing, so the entire
+		         input string is preserved as a single token
+		      -->
+		    <tokenizer class="solr.KeywordTokenizerFactory"/>
+
+				<filter class="solr.CollationKeyFilterFactory"
+        	language="es"
+        	strength="primary" />
+		  </analyzer>
+		</fieldType>
+		<fieldType name="alphaOnlySort" class="solr.TextField" sortMissingLast="true" omitNorms="true">
+			<analyzer>
+			  <!-- KeywordTokenizer does no actual tokenizing, so the entire
+			       input string is preserved as a single token
+			    -->
+			  <tokenizer class="solr.KeywordTokenizerFactory"/>
+			  <!-- The LowerCase TokenFilter does what you expect, which can be
+			       when you want your sorting to be case insensitive
+			    -->
+			  <filter class="solr.LowerCaseFilterFactory" />
+			  <!-- The TrimFilter removes any leading or trailing whitespace -->
+			</analyzer>
+		</fieldType>
+	</types>
+</schema>

@@ -1,0 +1,272 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  control_center_certifications.views_default.inc: n/a
+#  plugins/content_types/certification_by_visits.inc: n/a
+#  control_center_certifications.module: n/a
+#  control_center_certifications.info: n/a
+#  includes/control_center_certifications_handler_filter_certification_criterion.inc: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2016-02-24 11:41+0100\n"
+"PO-Revision-Date: 2016-02-24 11:41+0100\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: control_center_certifications.views_default.inc:707
+msgid "Master"
+msgstr "Maestro"
+
+#: control_center_certifications.views_default.inc:708
+msgid "Content list"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:709
+msgid "más"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:710
+msgid "Aplicar"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:711
+msgid "Reiniciar"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:712
+msgid "Order by"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:713
+msgid "Asc"
+msgstr "Asc"
+
+#: control_center_certifications.views_default.inc:714
+msgid "Desc"
+msgstr "Desc"
+
+#: control_center_certifications.views_default.inc:715
+msgid "Elementos por página"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:716
+msgid "- Todos -"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:717
+msgid "Desplazamiento"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:718
+msgid "« primera"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:719
+msgid "‹ anterior"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:720
+msgid "siguiente ›"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:721
+msgid "última »"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:722
+msgid "No se han encontrado resultados."
+msgstr ""
+
+#: control_center_certifications.views_default.inc:723
+msgid "author"
+msgstr "autor"
+
+#: control_center_certifications.views_default.inc:724
+msgid "Autor"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:725
+msgid "- Choose an operation -"
+msgstr "- Elegir una operación -"
+
+#: control_center_certifications.views_default.inc:726 plugins/content_types/certification_by_visits.inc:53;180
+msgid "Title"
+msgstr "Título"
+
+#: control_center_certifications.views_default.inc:727
+msgid "Type"
+msgstr "Tipo"
+
+#: control_center_certifications.views_default.inc:728
+msgid "Published"
+msgstr "Publicado"
+
+#: control_center_certifications.views_default.inc:729
+msgid "Publicado"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:730
+msgid "Tipo"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:731
+msgid "Título"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:732
+msgid "Nombre"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:733
+msgid "Control center certifications pane"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:734
+msgid "more"
+msgstr "más"
+
+#: control_center_certifications.views_default.inc:735 plugins/content_types/certification_by_visits.inc:53;186
+msgid "Certified"
+msgstr "Certificado"
+
+#: control_center_certifications.views_default.inc:736
+msgid "Vista panel"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:737
+msgid "Certification by likes pane"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:738
+msgid "flag"
+msgstr "marca"
+
+#: control_center_certifications.views_default.inc:739
+msgid "Like"
+msgstr "Me gusta"
+
+#: control_center_certifications.views_default.inc:740
+msgid "Marcado"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:741
+msgid "Certification by comments pane"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:742
+msgid "Comments"
+msgstr "Comentarios"
+
+#: control_center_certifications.views_default.inc:743
+msgid "."
+msgstr "."
+
+#: control_center_certifications.views_default.inc:744
+msgid "Certification by votings pane"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:745
+msgid "Resultados de votos"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:746
+msgid "Media de resultados de votos"
+msgstr ""
+
+#: control_center_certifications.views_default.inc:747
+msgid "Votes"
+msgstr "Votos"
+
+#: control_center_certifications.module:45
+msgid "Custom"
+msgstr "Personalizado"
+
+#: control_center_certifications.module:47
+msgid "Certification criterion"
+msgstr "Criterios de certificación"
+
+#: control_center_certifications.module:48
+msgid "Certification criterion by likes, comments, votes and visits."
+msgstr ""
+"Criterios de certificación en función de me gusta, comentarios, "
+"votos y visitas"
+
+#: control_center_certifications.module:69
+msgid "Certify learning resources"
+msgstr "Certificar recursos de aprendizaje"
+
+#: control_center_certifications.module:75
+msgid "Remove certification of learning resources"
+msgstr "Eliminar certificación de recursos de aprendizaje"
+
+#: control_center_certifications.info:0
+msgid "control_center_certifications"
+msgstr ""
+
+#: control_center_certifications.info:0 plugins/content_types/certification_by_visits.inc:14
+msgid "Agrega2"
+msgstr "Agrega2"
+
+#: includes/control_center_certifications_handler_filter_certification_criterion.inc:23
+msgid "All"
+msgstr "Todo(s)"
+
+#: includes/control_center_certifications_handler_filter_certification_criterion.inc:24
+msgid "Exceed likes"
+msgstr "Supera me gusta"
+
+#: includes/control_center_certifications_handler_filter_certification_criterion.inc:25
+msgid "Exceed comments"
+msgstr "Supera comentarios"
+
+#: includes/control_center_certifications_handler_filter_certification_criterion.inc:26
+msgid "Exceed votes/average"
+msgstr "Supera votos/promedio"
+
+#: includes/control_center_certifications_handler_filter_certification_criterion.inc:27
+msgid "Exceed visits"
+msgstr "Supera visitas"
+
+#: plugins/content_types/certification_by_visits.inc:12
+msgid "Certifiable odes by visits list"
+msgstr ""
+
+#: plugins/content_types/certification_by_visits.inc:13
+msgid "Custom ct pane for list certifiable odes by visits."
+msgstr ""
+
+#: plugins/content_types/certification_by_visits.inc:53
+msgid "Visits"
+msgstr "Visitas"
+
+#: plugins/content_types/certification_by_visits.inc:127
+msgid "No results found."
+msgstr "No se han encontrado resultados."
+
+#: plugins/content_types/certification_by_visits.inc:188
+msgid "Any"
+msgstr "Cualquiera"
+
+#: plugins/content_types/certification_by_visits.inc:189
+msgid "Yes"
+msgstr "Sí"
+
+#: plugins/content_types/certification_by_visits.inc:190
+msgid "No"
+msgstr "No"
+
+#: plugins/content_types/certification_by_visits.inc:200
+msgid "Apply"
+msgstr "Aplicar"
+
+msgid "Administer certifications"
+msgstr "Administrar certificaciones"

@@ -1,0 +1,17 @@
+diff --git a/sites/all/modules/contrib/taxonomy_csv/taxonomy_csv.drush.inc b/sites/all/modules/contrib/taxonomy_csv/taxonomy_csv.drush.inc
+index d2cc373..5a858ab 100644
+--- a/sites/all/modules/contrib/taxonomy_csv/taxonomy_csv.drush.inc
++++ b/sites/all/modules/contrib/taxonomy_csv/taxonomy_csv.drush.inc
+@@ -176,6 +176,12 @@ function drush_taxonomy_csv_import($file_path, $import_format = 'alone_terms') {
+   if (($i = array_search('drush-make-update-default-url', $other_options)) !== FALSE) {
+     unset($other_options[$i]);
+   }
++  // Compatibility with drush 6.x. See https://drupal.org/node/2310025
++  foreach ($other_options as $key => $value) {
++    if ($value === 'php' || $value === 'php-options') {
++      unset($other_options[$key]);
++    }
++  }
+   if ($other_options) {
+     $messages[] = 'Unknown options:' . ' ' . implode(', ', $other_options) . '.';
+   }

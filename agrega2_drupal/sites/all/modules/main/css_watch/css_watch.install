@@ -1,0 +1,17 @@
+<?php
+// $Id: css_watch.install,v 1.1 2011/02/15 23:00:06 dustincurrie Exp $
+
+/**
+ * @file
+ *
+ * Contains code related to install, uninstall and updating
+ *
+ * @author Dustin Currie <dustin@onlinedesert.com>
+ */
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function css_watch_uninstall() {
+  variable_del('css_watch_poll_interval');
+}

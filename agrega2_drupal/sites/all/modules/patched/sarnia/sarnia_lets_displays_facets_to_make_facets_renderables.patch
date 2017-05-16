@@ -1,0 +1,22 @@
+diff --git a/sites/all/modules/patched/sarnia/sarnia.module b/sites/all/modules/patched/sarnia/sarnia.module
+index 67254a7..6791a3e 100644
+--- a/sites/all/modules/patched/sarnia/sarnia.module
++++ b/sites/all/modules/patched/sarnia/sarnia.module
+@@ -1080,7 +1080,7 @@ function sarnia_form_search_api_admin_confirm_alter(&$form, &$form_state) {
+  */
+ function sarnia_facetapi_query_types() {
+   return array(
+-    'sarnia_term' => array(
++    'term' => array(
+       'handler' => array(
+         'class' => 'SarniaFacetapiTerm',
+         'adapter' => 'search_api',
+@@ -1109,7 +1109,7 @@ function sarnia_facetapi_facet_info_alter(&$facet_info, $searcher_info) {
+           'field alias' => $facet_name,
+           'field api name' => FALSE,
+           'field api bundles' => array(),
+-          'query types' => array('sarnia_term'),
++          'query types' => array('term'),
+           'alter callbacks' => array(),
+           'dependency plugins' => array(),
+           'default widget' => FALSE,

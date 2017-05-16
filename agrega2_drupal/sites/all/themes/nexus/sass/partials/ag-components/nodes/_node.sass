@@ -1,0 +1,318 @@
+
+//General styles for editing all nodes
+.node-form,
+#user-profile-form,
+#user-login,
+#user-register-form,
+#user-pass,
+.page-messages-new
+  //Styles for textfields
+  .form-item.form-type-textfield
+    +clearfix()
+    > label
+      +special-label
+    > input
+      +special-input
+    > input ~ .description
+      +special-description()
+  //Styles for passwords
+  .form-item.form-type-password,
+  .form-item.form-type-password-confirm
+    +clearfix()
+    padding-bottom: .5em
+    > label
+      +special-label
+    > input
+      +special-input
+    .description,
+    .password-strength
+      +special-description()
+    //Overwrite user.css styles
+    .password-strength
+      +clearfix()
+      margin-bottom: .5em
+      width: auto
+      float: none
+      margin-top: 0
+    div.password-confirm
+      float: none
+      margin-top: 0
+      visibility: hidden
+      width: auto
+    .confirm-parent,
+    .password-parent
+      clear: left
+      margin: 0
+      width: 100%
+    div.password-suggestions
+      padding: 0.2em 0.5em
+      margin: 0
+      margin-bottom: 0.5em
+      width: 100%
+      border: 1px solid $light_gray
+  //Styles for textareas
+  .text-format-wrapper
+    +clearfix()
+    padding-bottom: .5em
+  .form-item.form-type-textarea
+    +clearfix()
+    padding-bottom: .5em
+    > label
+      +special-label
+    > .form-textarea-wrapper
+      +special-input
+    > .form-textarea-wrapper ~ .description
+      +special-description()
+    ~ .ckeditor_links
+      +special-description()
+      display: block
+  //Styles for select fields - will be influenced by chosen.css
+  .form-item.form-type-select
+    +clearfix()
+    padding-bottom: .5em
+    > label
+      +special-label
+    > select
+      +special-input
+      //Overwrite the pixel width from Chosen.js
+      ~ .chosen-container
+        +breakpoint($tablet-min)
+          width: $input-width!important
+          float: left
+    > select ~ .description
+      +special-description()
+  //Styles for upload file fields
+  .form-item
+    &.form-type-managed-file,
+    &.form-type-file
+      +clearfix()
+      padding-bottom: .5em
+      > label
+        +special-label
+      > .form-managed-file
+        +special-input
+        white-space: initial
+      > .description
+        +special-description()
+  //Styles for link fields
+  .form-type-link-field > label
+    +label-header()
+  //Styles for radio options and checkboxes
+  .field-name-field-debate-share,
+  .field-name-field-question-share,
+  .field-name-field-novelty,
+  .field-name-field-record-webinar,
+  .form-type-radios,
+  .form-type-checkboxes
+    +clearfix()
+    padding-bottom: .5em
+    .form-item-field-debate-share-und,
+    .form-item-field-question-share-und
+      float: left
+      margin-top: 5px
+    .visibility-label,
+    > label,
+    .novelty-label,
+    .record-label
+      +special-label
+    > .form-radios,
+    > .form-checkboxes,
+    > .form-type-checkbox
+      +special-input
+      .form-type-radio,
+      .form-type-checkbox
+        margin: 0.5em 1em 0.5em 0
+        display: inline-block
+    > .form-type-checkbox
+      margin-top: 5px
+    > .form-radios ~ .description,
+    > .form-checkboxes ~ .description
+      +special-description()
+  //Styles for the filter option below a textarea field
+  .filter-wrapper.form-wrapper
+    float: left
+    width: $input-width
+    margin-left: $label-width + $label-margin
+    .form-item,
+    .filter-help,
+    .filter-guidelines
+      float: none
+      padding: 0
+    .filter-help a
+      padding-left: 0
+  //Styles for draggable multiple-table fields
+  .field-multiple-table
+    thead label
+      +label-header()
+  //Style corrections for Link fields to overwrite the module css
+  .link-field-column
+    float: none
+    width: auto
+  //Style corrections for date fields
+  .container-inline-date .form-item input.date-clear
+    margin-right: 0
+    clear: right
+  .container-inline-date .date-padding
+    padding: 0
+    float: none
+  .container-inline-date .form-item .form-item
+    float: none
+  .date-no-float
+    clear: both
+    float: none
+    width: 100%
+  .container-inline-date > .form-item
+    margin-right: 0
+    margin-bottom: 0
+    vertical-align: top
+    display: block
+.fieldset-description
+  padding-top: 1em
+
+.view-agrega2-profiles article
+  h2
+    margin-top: 0
+    a:hover
+      text-decoration: none
+  .submitted
+    border: 1px dotted $light_gray
+    border-left: 0
+    border-right: 0
+    padding-top: 8px
+    padding-bottom: 10px
+    margin-bottom: 20px
+    font-size: 13px
+    li
+      &.published
+        width: 75%
+        float: left
+        margin-bottom: 5px
+        span span:nth-child(5)
+          margin-left: 47px
+        .wall-organization
+          a,span
+            font-weight: bold
+            color: $orange
+    .user-picture
+      float: left
+      margin-right: 10px
+      max-width: 52px
+      margin-left: 0
+    .posted
+      line-height: 1.2em
+      margin-left: 48px
+      width: 75%
+      strong
+        float: left
+        margin-right: 2px
+        height: 33px
+  .service-links
+    float: left
+  .content
+    overflow: hidden
+    margin-top: 0
+    .field-type-image
+      float: left
+      margin-right: 15px
+    .share-modal
+      margin-top: 20px
+      float: left
+      width: 62%
+      clear: left
+      a
+        display: block
+        padding-top: 8px
+        padding-bottom: 5px
+  footer
+    +clearfix()
+  #comments
+    h2
+      display: none
+  //ul li
+    margin: 0 0 0.25em 0.5em
+
+.node-post.node-full
+  .content
+    overflow: hidden
+    .field-type-image
+      float: left
+      margin-right: 15px
+    .service-links
+      float: right
+      margin-top: 23px
+    .share-modal
+      margin-top: 20px
+      float: left
+      a
+        display: block
+        padding-top: 8px
+        padding-bottom: 5px
+
+
+.page-node-1
+  h2
+    a
+      text-decoration: none
+      color: $navy
+
+.page-node-add
+  fieldset.group-authors
+    .tabledrag-toggle-weight
+      display: none
+
+.page-ode-add
+  #main-content
+    .chosen-container
+      width: 21em!important
+      display: block
+    .search-field
+      input
+        width: 128px!important
+
+// Style for area of Knowledge and educational context
+.page-node:not(.page-node-add):not(.page-node-edit),
+.page-comment-reply
+  .content
+    .field-name-field-knowledge-area,
+    .field-name-field-learning-context,
+    .field-name-field-webinar-date,
+    .field-name-field-class-date,
+    .field-name-field-duracion
+      clear: both
+      +clearfix
+      margin: 0
+      border-bottom: 1px solid $light_gray
+      .field-label
+        +make-sm-column(3)
+        +label-grey()
+        border-right: 0
+        &+div
+          +make-sm-column(9)
+          +div-nextto-label-grey()
+          border-left: 1px solid $light_gray
+          .field-item
+            border-right: 1px solid $gray
+            padding-right: 5px
+            margin-right: 5px
+            display: inline-block
+            &:last-child
+              border: 0
+          a
+            background: transparent
+            padding: 0
+            margin: 0
+            border: 0
+            +border-radius(0)
+    .field-name-field-learning-context,
+    .field-name-field-duracion
+      border-bottom: 0
+    .field-name-field-knowledge-area,
+    .field-name-field-general-language
+      margin-top: 2em
+  .field-name-field-novelty
+    position: absolute
+    top: 13px
+    right: 13%
+    color: $main_blue
+    font-weight: 700
+    font-size: 1.1em

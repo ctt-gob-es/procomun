@@ -1,0 +1,48 @@
+.user-bar #block-ag-section-notifications-ag-notifications-block
+  float: right
+  top: 8px
+  margin-left: 15px
+  position: relative
+  .content
+    > span
+      a
+        text-indent: -9999px
+        width: 32px
+        height: 32px
+        display: block
+        float: left
+        margin-right: 1em
+      &:last-child
+        a
+          margin-right: 0
+        span
+          right: 0
+  .user-notifications-link,
+  .user-messages-link
+    +clearfix()
+    display: inline-block
+    position: relative
+    span
+      position: absolute
+      bottom: 0
+      right: 13px
+      display: inline-block
+      min-width: 10px
+      background-color: $main_blue
+      color: white
+      font-size: 10px
+      font-weight: 700
+      padding: 3px 6px
+      line-height: 1
+      text-align: center
+      white-space: nowrap
+      vertical-align: middle
+      +border-radius(10px)
+  .user-notifications-link
+    a
+      background: image-url("notificacion-off.png") no-repeat 0 0
+  .user-messages-link
+    a
+      background: image-url("ico-mail-gray.png") no-repeat 0 0
+    span
+      right: 15px

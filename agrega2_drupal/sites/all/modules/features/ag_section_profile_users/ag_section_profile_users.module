@@ -1,0 +1,1997 @@
+<?php
+/**
+ * @file
+ * Code for the ag_section_profile_users feature.
+ */
+
+include_once 'ag_section_profile_users.features.inc';
+include_once 'ag_section_profile_users.widget.inc';
+
+// Define the Organization ROLE
+define('ORGANIZATION_ROLE', 4);
+
+/**
+ * Implements hook_menu().
+ */
+function ag_section_profile_users_menu() {
+  $items = array(
+    'ag_register/autocomplete' => array(
+      'title' => 'register Autocomplete',
+      'page callback' => 'ag_province_locality_ecenter_autocomplete',
+      'access arguments' => array('educative center autocomplete'),
+      'type' => MENU_CALLBACK,
+    ),
+  );
+
+  // Uses same arguments as user creation and a different path for organization creation.
+  $items['admin/people/add-organization'] = array(
+    'title' => 'Add Organization',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('user_register_form', 'organization'),
+    'access arguments' => array('create organization'),
+    'type' => MENU_LOCAL_ACTION,
+  );
+
+  $items['admin/people/organization'] = array(
+    'title' => 'Manage organization configuration',
+    'description' => 'General organization configuration.',
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('access administration pages'),
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system'),
+  );
+
+  //Organizations allowed to certificate ode
+  $items['admin/people/organization/cert-organization'] = array(
+    'title' => 'Certifying organizations',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('cert_organization_form'),
+    'access arguments' => array('ode certification'),
+    'file' => 'ag_section_profile_users.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  $items['profile/%/public/widget'] = array(
+    'page callback' => 'ag_section_profile_users_widget_callback',
+    'page arguments' => array(1),
+    'access callback' => TRUE,
+    'delivery callback' => 'ag_section_profile_users_widget_delivery_callback',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+function ag_section_profile_users_menu_alter(&$items) {
+  // Override title callback and arguments to translate profile edit tabs properly
+  $items['user/%user_category/edit/datos_personales']['title callback'] = '_ag_section_profile_translate_profile_edit_tab';
+  $items['user/%user_category/edit/cv']['title callback'] = '_ag_section_profile_translate_profile_edit_tab';
+  $items['user/%user_category/edit/simplenews']['title callback'] = '_ag_section_profile_translate_profile_edit_tab';
+  $items['user/%user_category/edit/datos_organizacion']['title callback'] = '_ag_section_profile_translate_profile_edit_tab';
+  $items['user/%user_category/edit/datos_personales']['title arguments'] = ['datos_personales'];
+  $items['user/%user_category/edit/cv']['title arguments'] = ['cv'];
+  $items['user/%user_category/edit/simplenews']['title arguments'] = ['simplenews'];
+  $items['user/%user_category/edit/datos_organizacion']['title arguments'] = ['datos_organizacion'];
+
+  // Remove default Twitter account tab from user profile
+  unset($items['user/%user/edit/twitter']);
+}
+
+/**
+ * Helper function for translate profile tab titles.
+ */
+function _ag_section_profile_translate_profile_edit_tab($profile_tab) {
+  switch ($profile_tab) {
+    case 'datos_personales':
+      $title = 'My personal data';
+      break;
+    case 'cv':
+      $title = 'My CV';
+      break;
+    case 'simplenews':
+      $title = 'Newsletter';
+      break;
+    case 'datos_organizacion':
+      $title = 'Organization data';
+      break;
+    default:
+      $title = $profile_tab;
+      break;
+  }
+  return t($title);
+}
+
+/**
+ * Implements hook_permission().ce
+ */
+function ag_section_profile_users_permission() {
+  return array(
+      'educative center autocomplete' => array(
+        'title' => t('Educative center autocomplete'),
+        'description' => t('Allow access to autocomplete of Educative Centers'),
+      ),
+      'create organization' => array(
+        'title' => t('Create organizations.'),
+        'description' => t('Allow access to create organizations.'),
+      ),
+      'create content as organization' => array(
+        'title' => t('Create content as organization'),
+        'description' => t('Allow access to create content as a organization.'),
+      ),
+    );
+}
+
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function ag_section_profile_users_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'ctools' && ($plugin == 'content_types' || $plugin == 'access')) {
+    return 'plugins/' . $plugin;
+  }
+}
+
+/**
+ * Autocomplete Callback for ag_register/autocomplete menu callback
+ */
+function ag_province_locality_ecenter_autocomplete($string, $country, $province, $locality, $parent_field){
+  // Sanitize the values from autocomplete.
+  $string = check_plain($string);
+  $country = check_plain($country);
+  $province = check_plain($province);
+  $locality = check_plain($locality);
+
+  //It could be possible that the passed country appears several times in taxonomy
+  //Find the correct taxonomy term
+  $countries =taxonomy_get_term_by_name(t($country), 'centros_educativos');
+  foreach($countries as $item => $term) {
+    $parents = taxonomy_get_parents($item);
+    if (empty($parents)) {
+      //The search should be initialized by the tid of the country
+      $parent_tid = $item;
+      break;
+    }
+  }
+
+  //If we have a province, we should establish the tid of the province as the parent tid of the search
+  if ($province != 'none') {
+    $provinces = taxonomy_get_term_by_name(t($province), 'centros_educativos');
+    $province = NULL;
+    if (count($province) == 1) {
+      //We have only one province, so the parent tid is the tid of this province
+      $province = array_pop($provinces);
+      $parent_tid = $province->tid;
+    }
+    else {
+      //If we have several provinces with the same name, we need to compare the parent id with
+      //the country tid. If its the same, is the term we are looking for
+      foreach($provinces as $item => $term) {
+        $parents = taxonomy_get_parents($item);
+        $parent=array_pop($parents);
+        if ($parent_tid == $parent->tid){
+          $parent_tid = $item;
+          break;
+        }
+      }
+    }
+  }
+
+  //If we have a locality, we should establish the tid of the locality as the parent id of the search
+  if ($locality != 'none') {
+    $localities = taxonomy_get_term_by_name(t($locality), 'centros_educativos');
+    $locality = NULL;
+    if (count($localities) == 1) {
+      //We have only one locality, so the parent tid is the tid of this locality
+      $locality = array_pop($localities);
+      $parent_tid = $locality->tid;
+    }
+    else {
+      //If we have several localities with the same name, we need to compare the parent id with
+      //the province tid. If its the same, is the term we are looking for
+      foreach($localities as $item => $term) {
+        $parents = taxonomy_get_parents($item);
+        $parent=array_pop($parents);
+        if ($parent_tid == $parent->tid){
+          $parent_tid = $item;
+          break;
+        }
+      }
+    }
+  }
+
+  $terms = array();
+  if ($province == 'none' && $locality == 'none' && $parent_field == 'field_locality') {
+    //In this cases, the parent_tid is the id of the coountry, so get all the children
+    // Call to get the results:
+    $terms = DrupalToolKit::taxonomyGetTermsNamesFilteredThreeLevels('centros_educativos', $string, $parent_tid, TRUE);
+  }
+  else {
+    // Call to get the results:
+    $terms = DrupalToolKit::taxonomyGetTermsNamesFiltered('centros_educativos', $string, $parent_tid, TRUE);
+  }
+  drupal_json_output($terms);
+
+}
+
+/**
+ * Implements hook_dropdown_menu_user_menu_items().
+ */
+function ag_section_profile_users_dropdown_menu_user_menu_items_alter(&$items) {
+  global $user;
+
+  // Add link - My communities.
+  $items += array(
+    'my-communities' => l(t('My communities'), "user/$user->uid/my-communities"),
+  );
+
+  // Add link - My interests (User timeline).
+  $items += array(
+    'my-timeline' => l(t('My interests'), "user/$user->uid/timeline"),
+  );
+
+  // Add link - My contributions
+  $items += array(
+    'my-contributions' => l(t('My contributions'),"user/$user->uid/timeline", array('query' => array('f' => array('author:' .$user->uid)))),
+  );
+
+  // Add link - My favourites.
+  $items += array(
+    'my-favourites' => l(t('My favourites'),"user/$user->uid/favourites"),
+  );
+
+  // Add link - My learning paths.
+  $items += array(
+    'my-learning-paths' => l(t('My learning paths'),"user/$user->uid/learning-paths"),
+  );
+
+  // Add link - My drafts.
+  $items += array(
+    'my-drafts' => l(t('My drafts'),"user/draft"),
+  );
+
+  // Add link - Cancel account.
+  $items += array(
+    'cancel-account' => l(t('Cancel account'),"user/$user->uid/cancel"),
+  );
+
+  // Add link - Add an ODE.
+  /*
+  $items += array(
+    'add-ode' => l(t('Add a learning resource'), "ode/add"),
+  );
+   */
+
+  // Add link - Add a learning resource.
+  // TODO: Temporally disabled.
+  /*
+  $global_procomun = variable_get('global_community_procomun', 0);
+  $options = array(
+    'query' => array(
+      'og_group_ref' => $global_procomun,
+      'destination' => "node/$global_procomun",
+    ),
+  );
+  $items = array(
+    'add-learning-resource' => l(t('Add a learning resource'),
+      'node/add/recurso-de-aprendizaje',
+      $options),
+  );
+   */
+
+  // Add link - Request a new community.
+  /*
+  $items += array(
+    'add-new-community' => l(t('Request a new community'),'node/add/social-network'),
+  );
+   */
+
+  //Add an item with a link to the control center if the user has permissions
+  if (_check_acces_to_control_center()) {
+    $items += array(
+      'control-center' => l(t('Control center'), 'admin/control-center/'),
+    );
+  }
+
+  // Add link - Logout.
+  $items += array(
+    'logout' => l(t('Logout'),'user/logout'),
+  );
+
+
+
+
+
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function ag_section_profile_users_field_widget_form_alter(&$element, &$form_state, $context) {
+  if (isset($element['#entity_type']) && $element['#entity_type'] == 'field_collection_item') {
+    $field = $context['field'];
+    $instance = $context['instance'];
+    $fields_dependency = array(
+      'field_province' => 'field_countries',
+      'field_locality' => 'field_province',
+      'field_educative_center' => 'field_locality',
+    );
+    if (in_array($field['field_name'], array('field_educative_center', 'field_locality', 'field_province'))) {
+      // Add autocomplete property:
+      $element['value']['#autocomplete_path'] = 'ag_register/autocomplete';
+      $element['value']['#attributes'] = array('custom-autocomplete' => $fields_dependency[$field['field_name']]);
+      // Add our customs JS for override the autocomplete methods.
+      $element['value']['#attached']['js'][] = drupal_get_path('module', 'ag_section_profile_users') . '/js/ag_section_profile_users.autocomplete.js';
+    }
+  }
+}
+
+/**
+ * Implements hook_form_preprocess_HOOK().
+ */
+function ag_section_profile_users_preprocess_field(&$vars) {
+  global $user;
+
+  // We want to hide fields from field collection if the checkbox is unchecked.
+  if (isset($vars['items'][0]['entity']['field_collection_item'])) {
+    $fcs = array();
+    foreach (element_children($vars['element']) as $key) {
+      $fcs[] = array_pop($vars['element'][$key]['entity']['field_collection_item']);
+    }
+    if (isset($vars['element']['#object']->uid)) {
+      // Hide only for non profile owner (Show for superadmin).
+      if (isset($fcs[0]['field_visibility']) && ($fcs[0]['field_visibility']['#items'][0]['value'] == 0) && ($vars['element']['#object']->uid != $user->uid && $user->uid != 1)) {
+        unset($vars['items'][0]['entity']['field_collection_item']);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_token_info().
+ */
+function ag_section_profile_users_token_info() {
+
+  $types = array(
+    'name' => t('procomun'),
+    'description' => t('Tokens related to procomun'),
+  );
+
+  $custom['conditions-link'] = array(
+    'name' => t('conditions'),
+    'description' => t('terms of service'),
+  );
+  $custom['privacy-link'] = array(
+    'name' => t('privacy'),
+    'description' => t('privacy policy'),
+  );
+
+  return array(
+    'types' => array(
+      'procomun' => $types,
+    ),
+    'tokens' => array(
+      'procomun' => $custom,
+    ),
+  );
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function ag_section_profile_users_tokens($type, $tokens, array $data = array(), array $options = array()) {
+  $replacements = array();
+
+  if ($type === 'procomun') {
+    //Retrieve the language
+    global $language;
+    $options = array(
+      'language' => $language->name,
+      'attributes' => array(
+        'target' => '_blank',
+      ),
+    );
+
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'conditions-link':
+          $replacements[$original] = l(t('legal conditions'), 'node/1', $options);
+          break;
+        case 'privacy-link':
+          $replacements[$original] = l(t('terms of privacy'), 'node/2', $options);
+          break;
+      }
+    }
+  }
+
+  return $replacements;
+}
+
+/**
+ * Implements hook_form_profile2_edit_datos_personales_form_alter().
+ */
+function ag_section_profile_users_form_profile2_edit_datos_personales_form_alter(&$form, &$form_state) {
+  global $user;
+  // Remove checkboxes visibility (field collection fields to show or hide a required field) for anonymous user.
+  $lang = $form['profile_datos_personales']['field_country_personal_fc']['#language'];
+  $fhsname = 'profile_datos_personales[field_country_personal_fc][' . $lang . '][0][field_countries][' . $lang . ']';
+
+  // Hide DNI when the country is not Spain.
+  $form['profile_datos_personales']['field_dni']['#states'] = array(
+    'visible' => array(
+      ':input[name="' . $fhsname . '"]' => array('value' => (String) 'Spain'),
+    ),
+    'required' => array(
+      ':input[name="' . $fhsname . '"]' => array('value' => (String) 'Spain'),
+    ),
+  );
+
+  // Hide Foreign DNI.
+  hide($form['profile_datos_personales']['field_foreign_dni']);
+
+  // Hide Province when the country is not Spain.
+  $form['profile_datos_personales']['field_province_personal_fc']['#states'] = array(
+    'visible' => array(
+      ':input[name="' . $fhsname . '"]' => array('value' => (String) 'Spain'),
+    ),
+  );
+
+  // Hide original province field
+  hide($form['profile_datos_personales']['field_province_personal_fc']['und'][0]['field_province']);
+
+  // Mark Province as required when the country is Spain.
+  $form['profile_datos_personales']['field_province_personal_fc']['und'][0]['field_province_dir3']['#states'] = array(
+    'required' => array(
+      ':input[name="' . $fhsname . '"]' => array('value' => (String) 'Spain'),
+    ),
+  );
+
+  // Hide Locality when the country is not Spain.
+  $form['profile_datos_personales']['field_locality_personal_fc']['#states'] = array(
+    'visible' => array(
+      ':input[name="' . $fhsname . '"]' => array('value' => (String) 'Spain'),
+    ),
+  );
+
+  // Hide original locality field
+  hide($form['profile_datos_personales']['field_locality_personal_fc']['und'][0]['field_locality']);
+
+  // Mark Locality as required when the country is Spain.
+  $form['profile_datos_personales']['field_locality_personal_fc']['und'][0]['field_locality_dir3']['#states'] = array(
+    'required' => array(
+      ':input[name="' . $fhsname . '"]' => array('value' => (String) 'Spain'),
+    ),
+  );
+
+  // Mark as required when the country is not Spain.
+  $form['profile_datos_personales']['field_place_fc']['und'][0]['field_place']['#states'] = array(
+    'required' => array(
+      ':input[name="' . $fhsname . '"]' => array('!value' => (String) 'Spain'),
+    ),
+  );
+
+  // Invisible Place FC when Spain is selected.
+  $form['profile_datos_personales']['field_place_fc']['#states'] = array(
+    'invisible' => array(
+      ':input[name="' . $fhsname . '"]' => array('value' => 'Spain'),
+    ),
+  );
+
+  // Hide no mandatory fields in the user_register_form. Check if it this case
+  if ($form['form_id']['#value'] === 'user_register_form') {
+    $form['profile_datos_personales']['field_about_me']['#type'] = 'hidden';
+    $form['profile_datos_personales']['field_social_network_personal_fc']['#type'] = 'hidden';
+    $form['profile_datos_personales']['field_sex']['#type'] = 'hidden';
+    $form['profile_datos_personales']['field_photo']['#type'] = 'hidden';
+  }
+
+  // ANONYMOUS REGISTRATION.
+  if ($user->uid == 0) {
+    foreach ($form['profile_datos_personales'] as $key => $value) {
+      if (is_array($value) && isset($value['und'][0]['field_visibility'])) {
+        $form['profile_datos_personales'][$key]['und'][0]['field_visibility']['#access'] = FALSE;
+        // Remove duplicate label from field_colletion. We have the same label in other fields added to that field.
+        unset($form['profile_datos_personales'][$key]['und'][0]['#title']);
+      }
+    }
+  }
+  else {
+    foreach ($form['profile_datos_personales'] as $key => $value) {
+      if (is_array($value) && isset($value['und'][0]['field_visibility'])) {
+        // Remove duplicate label from field_colletion. We have the same label in other fields added to that field.
+        unset($form['profile_datos_personales'][$key]['und'][0]['#title']);
+      }
+    }
+  }
+
+  // Add this validation only for profile_datos_personales when editing.
+  if (isset($form['profile_datos_personales']) && ($form['#id'] == 'user-profile-form' || $form['#id'] == 'user-register-form') &&
+      $form['form_id']['#id'] != 'edit-user-register-form') {
+    $form['#validate'][] = 'personal_data_required';
+    $form['#validate'][] = 'check_unique_dni';
+    $form['#validate'][] = 'check_birth';
+  }
+
+  // Call to force the replacements of tokens
+  $form['profile_datos_personales']['field_tos'][$lang]['#title'] = token_replace($form['profile_datos_personales']['field_tos'][$lang]['#title']);
+
+  // Add custom validation function
+  if (isset($form['profile_datos_personales']) && ($form['#id'] == 'user-profile-form' || $form['#id'] == 'user-register-form')) {
+    $form['#validate'][] = 'update_regional_data_validate';
+  }
+}
+
+/**
+ * Profile datos personales validation function for parse field_province field with field_province_dir3 field
+ * and field_locality field with field_locality_dir3 field
+ */
+function update_regional_data_validate($form, &$form_state) {
+  // Update field_province with field_province_dir3
+  if (!empty($form_state['values']['profile_datos_personales']['field_province_personal_fc'][LANGUAGE_NONE][0]['field_province_dir3'][LANGUAGE_NONE][0]['value'])) {
+    $field = field_info_field('field_province_dir3');
+    $allowed_values = list_allowed_values($field);
+    $field_value = $allowed_values[$form_state['values']['profile_datos_personales']['field_province_personal_fc'][LANGUAGE_NONE][0]['field_province_dir3'][LANGUAGE_NONE][0]['value']];
+    $form_state['values']['profile_datos_personales']['field_province_personal_fc'][LANGUAGE_NONE][0]['field_province'][LANGUAGE_NONE][0]['value'] = $field_value;
+  }
+
+  // Update field_locality with field_locality_dir3
+  if (!empty($form_state['values']['profile_datos_personales']['field_locality_personal_fc'][LANGUAGE_NONE][0]['field_locality_dir3'][LANGUAGE_NONE][0]['value'])) {
+    $field = field_info_field('field_locality_dir3');
+    $allowed_values = list_allowed_values($field);
+    $field_value = $allowed_values[$form_state['values']['profile_datos_personales']['field_locality_personal_fc'][LANGUAGE_NONE][0]['field_locality_dir3'][LANGUAGE_NONE][0]['value']];
+    $form_state['values']['profile_datos_personales']['field_locality_personal_fc'][LANGUAGE_NONE][0]['field_locality'][LANGUAGE_NONE][0]['value'] = $field_value;
+  }
+}
+
+/**
+ * Implements hook_facet_items_alter().
+ */
+function ag_section_profile_users_facet_items_alter(&$build, &$settings) {
+  //Force admin name to INTEF in author facet
+  if ($settings->facet == "author") {
+    if (array_key_exists(1, $build)) {
+      $build[1]['#markup'] = 'INTEF';
+    }
+  }
+}
+
+/**
+ * Implements hook_form_profile2_edit_datos_organizacion_form_alter().
+ */
+function ag_section_profile_users_form_profile2_edit_datos_organizacion_form_alter(&$form, &$form_state) {
+  // Add a new field into the org fieldset and then we need to populate the mail field with the value.
+  $form['profile_datos_organizacion']['org_mail'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Email',
+    '#required' => TRUE,
+    '#default_value' => db_query('SELECT mail FROM {users} WHERE uid = :uid limit 1', array(':uid' => $form_state['profiles']['datos_organizacion']->uid))->fetchField(),
+    '#weight' => 2,
+  );
+  // Add this validation only for profile_datos_organizacion when editing.
+  if (isset($form['profile_datos_organizacion']) && $form['#id'] == 'user-profile-form') {
+    $form['#validate'][] = 'edit_organization_validate';
+    $form['#submit'][] = 'edit_organization_submit';
+  }
+}
+
+/**
+ * Validate datos_organizacion when editing.
+ */
+function edit_organization_validate($form, &$form_state) {
+  // Set username with the value of field_organization_name.
+  $form_state['values']['name'] = $form_state['values']['profile_datos_organizacion']['field_organization_name']['und'][0]['value'];
+
+  if (!valid_email_address($form_state['values']['profile_datos_organizacion']['org_mail'])) {
+    form_set_error('profile_datos_organizacion][org_mail', t('The email address appears to be invalid.'));
+  }
+}
+
+/**
+ * Submit datos_organizacion when editing.
+ */
+function edit_organization_submit($form, &$form_state) {
+  //db_query('UPDATE {users} SET mail = :mail WHERE uid = :uid', array(':mail' => $form_state['values']['profile_datos_organizacion']['org_mail'], ':uid' => $form['#user']->uid));
+  db_update('users')
+    ->fields(array(
+      'mail' => $form_state['values']['profile_datos_organizacion']['org_mail'],
+    ))
+    ->condition('uid', $form['#user']->uid)
+    ->execute();
+}
+
+/**
+ * Validate required fields added within "#states".
+ */
+function personal_data_required($element, &$form_state) {
+    // Validate Place as required when country != Spain.
+    if ($form_state['values']['profile_datos_personales']['field_country_personal_fc']['und'][0]['field_countries']['und'][0]['value'] != 'Spain' && empty($form_state['values']['profile_datos_personales']['field_place_fc']['und'][0]['field_place']['und'][0]['value'])) {
+      form_set_error('profile_datos_personales][field_place_fc][und][0][field_place', t('Place field is required.'));
+    }
+
+    // Validate DNI as required when country == Spain.
+    if ($form_state['values']['profile_datos_personales']['field_country_personal_fc']['und'][0]['field_countries']['und'][0]['value'] == 'Spain' && empty($form_state['values']['profile_datos_personales']['field_dni']['und'][0]['nif'])) {
+      form_set_error('profile_datos_personales][field_dni', t('DNI field is required.'));
+    }
+
+    // Validate Province as required when country == Spain.
+    if ($form_state['values']['profile_datos_personales']['field_country_personal_fc']['und'][0]['field_countries']['und'][0]['value'] == 'Spain' && empty($form_state['values']['profile_datos_personales']['field_province_personal_fc']['und'][0]['field_province_dir3']['und'][0]['value'])) {
+      form_set_error('profile_datos_personales][field_province_personal_fc][und][0][field_province_dir3', t('Province field is required.'));
+    }
+
+    // Validate Locality as required when country == Spain.
+    if ($form_state['values']['profile_datos_personales']['field_country_personal_fc']['und'][0]['field_countries']['und'][0]['value'] == 'Spain' && empty($form_state['values']['profile_datos_personales']['field_locality_personal_fc']['und'][0]['field_locality_dir3']['und'][0]['value'])) {
+      form_set_error('profile_datos_personales][field_locality_personal_fc][und][0][field_locality_dir3', t('Locality field is required.'));
+    }
+}
+
+/**
+ * Check if the DNI introduced is unique in the system
+ */
+function check_unique_dni($form, &$form_state) {
+  if ($form_state['values']['profile_datos_personales']['field_country_personal_fc']['und'][0]['field_countries']['und'][0]['value'] == 'Spain') {
+    //Get from the actual form all the values for the field_dni
+    $number = $form_state['values']['profile_datos_personales']['field_dni']['und'][0]['number'];
+    $first_letter = $form_state['values']['profile_datos_personales']['field_dni']['und'][0]['first_letter'];
+    $last_letter = $form_state['values']['profile_datos_personales']['field_dni']['und'][0]['last_letter'];
+    $dni_type = $form_state['values']['profile_datos_personales']['field_dni']['und'][0]['type'];
+
+    //Execute the query
+    $query = db_select('field_data_field_dni', 'd');
+    $query->fields('d', array('entity_id', 'field_dni_number', 'field_dni_first_letter', 'field_dni_last_letter', 'field_dni_type'));
+    $query->condition('d.field_dni_number', $number);
+    if (isset($first_letter) && $first_letter != '') {
+      $query->condition('d.field_dni_first_letter', $first_letter);
+    }
+    if (isset($last_letter) && $last_letter != '') {
+      $query->condition('d.field_dni_last_letter', $last_letter);
+    }
+    $query->condition('d.field_dni_type', $dni_type);
+    $result = $query->execute()->fetchAssoc();
+
+    if (!empty($result)) {
+      $pid = $form_state['profiles']['datos_personales']->pid;
+
+      $entity_id = $result['entity_id'];
+      $number = $result['field_dni_number'];
+      $first_letter = $result['field_dni_first_letter'];
+      $last_letter = $result['field_dni_last_letter'];
+      $dni_type = $result['field_dni_type'];
+      //If exists on the DB. set an error
+      if ($pid != $entity_id && $number === $number && $first_letter === $first_letter
+        && $last_letter === $last_letter && $dni_type === $dni_type) {
+        form_set_error('profile_datos_personales][field_dni', t('The DNI introduced has been registered before'));
+      }
+    }
+  }
+  else {
+    //If the country is not Spain, clear this field in the form.
+    $form_state['values']['profile_datos_personales']['field_dni']['und'][0]['nif'] = '';
+    $form_state['values']['profile_datos_personales']['field_dni']['und'][0]['number'] = '';
+    $form_state['values']['profile_datos_personales']['field_dni']['und'][0]['first_letter'] = '';
+    $form_state['values']['profile_datos_personales']['field_dni']['und'][0]['last_letter'] = '';
+    $form_state['values']['profile_datos_personales']['field_dni']['und'][0]['type'] = '';
+  }
+}
+
+/**
+ * Validate that the birthday is before today
+ */
+function check_birth($form, &$form_state) {
+  $date_value = strtotime($form_state['values']['profile_datos_personales']['field_date_birth_personal_fc']['und'][0]['field_date_birth']['und'][0]['value']);
+  $date_now = time();
+  if ($date_value > $date_now) {
+    form_set_error('profile_datos_personales][field_date_birth_personal_fc][und][0][field_date_birth', t('Date birth must be before today'));
+  }
+}
+/**
+ * Implements hook_entity_presave().
+ */
+function ag_section_profile_users_entity_presave($entity, $type) {
+  if (isset($entity->profile_datos_personales) && $entity->profile_datos_personales['field_country_personal_fc']['und'][0]['field_countries']['und'][0]['value'] == 'Spain') {
+    //Check if we have profile_datos_personales and if the country is Spain.
+    //In this case, set blank value for field_place
+    $entity->profile_datos_personales['field_place_fc']['und'][0]['entity']->field_place['und'][0]['value'] = '';
+  }
+  else if (isset($entity->profile_datos_personales)){
+    //Check if we have profile_datos_personales. This is the case for other countries other than Spain.
+    //In this case, set the blank value for province and locality
+    $entity->profile_datos_personales['field_province_personal_fc']['und'][0]['entity']->field_province['und'][0]['value'] = '';
+    $entity->profile_datos_personales['field_locality_personal_fc']['und'][0]['entity']->field_locality['und'][0]['value'] = '';
+  }
+}
+
+
+/**
+ * Implements hook_date_format_types().
+ */
+function ag_section_profile_users_date_format_types() {
+  return array(
+    'short_d_m_Y' => t('Short: d/m/Y'),
+  );
+}
+
+/**
+ * Implements hook_date_formats().
+ */
+function ag_section_profile_users_date_formats() {
+  return array(
+    array(
+      'type' => 'short_d_m_Y',
+      'format' => 'd/m/Y',
+      'locales' => array(),
+    )
+  );
+}
+
+/**
+ * Implements hook_user_view().
+ */
+function ag_section_profile_users_user_view($account, $view_mode, $langcode) {
+  global $user;
+  global $language;
+  //Flag for the first element in the tabs
+  if ($user->uid) {
+    $first = TRUE;
+    $types = profile2_get_types();
+    arsort($types);
+    foreach ($types as $type => $profile_type) {
+      if ($profile_type->userView && $profile = profile2_load_by_user($account, $type)) {
+        if (profile2_access('view', $profile)) {
+          $account->content['profile_' . $type] = array(
+            '#type' => 'user_profile_category',
+            '#title' => ($view_mode == 'public' ? strstr($profile->label, " "): $profile->label),
+            '#prefix' => '<div class=" ' . (($first && $view_mode == 'public') || $type == 'datos_organizacion' ? 'active ': '') . ' tab-pane" id="profile-' . str_replace("_", "-", $profile->type) . '">',
+            '#suffix' => '</div>'
+          );
+
+          if ($view_mode == 'public') {
+            $account->content['profile_' . $type]['view'] = $profile->view('public');
+            $account->content['profile_' . $type]['#title'] = ag_section_profile_users_get_name_surname_cached($account->uid);
+            //Calculate most used tags of the user
+            $most_used_tags = getMostUsedTags($account->uid);
+
+            //Array with the links
+            $most_used_tags_links = array();
+            foreach($most_used_tags as $tag) {
+              $query['f[0]'] = 'labelsStr:"' . $tag . '"';
+              $most_used_tags_links[] = l($tag, 'ode-search', array('query' => $query));
+            }
+            //Pass the link to theme them
+            if (!empty($most_used_tags_links)) {
+              $account->content['most_used_tags'] = array(
+                '#markup' => theme('item_list', array('items' => $most_used_tags_links)),
+              );
+            }
+          }
+          else {
+            $account->content['profile_' . $type]['view'] = $profile->view('account');
+          }
+          $first = FALSE;
+        }
+      }
+    }
+    // MY ORGANIZATION TAB. Check if this user is an organization.
+    //  Search for organization role
+    $org_role = array_search('organization', $account->roles);
+    if ($org_role == FALSE) {
+      if (isset($account->field_organization_reference['und'][0]['target_id'])) {
+        if ($organization = profile2_load_by_user($account->field_organization_reference['und'][0]['target_id'], 'datos_organizacion')) {
+          // Number of users per org.
+          $count_users = db_query('SELECT COUNT(entity_id) FROM {field_data_field_organization_reference} WHERE field_organization_reference_target_id = :oid', array(':oid' => $organization->uid))->fetchField();
+          // Number of communities where the current org can post.
+          $org_community_post = db_query('SELECT COUNT(DISTINCT og_membership.gid) from {og_membership} LEFT JOIN {field_data_field_organization_reference} ON field_data_field_organization_reference.entity_id = og_membership.etid WHERE field_data_field_organization_reference.field_organization_reference_target_id = :oid', array(':oid' => $organization->uid))->fetchField();
+          // Header & Rows for the table.
+          $account->content['profile_my_organization'] = array(
+            '#type' => 'user_profile_item',
+            '#title' => 'ORGANIZATION INFO',
+            '#prefix' => '<div class=" ' . ($first && $view_mode == 'public' ? 'active ': '') . 'tab-pane" id="profile-my-organization">',
+            '#suffix' => '</div>',
+            '#markup' => theme('organization_communities_numbers', array('name' => $organization->field_organization_name['und'][0]['value'], 'description' =>  $organization->field_descripci_n[$language->language][0]['value'], 'count_users' => $count_users, 'org_community_post' => $org_community_post)),
+          );
+        }
+        //Set the profile2's public view for the user's public profile view
+        if ($view_mode == 'public' && $organization) {
+          $account->content['profile_my_organization']['view'] = $organization->view('public');
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_field_attach_validate().
+ */
+function ag_section_profile_users_field_attach_validate($entity_type, $entity, &$errors) {
+  if ($entity_type == 'field_collection_item') {
+    if (isset($entity->field_name) && $entity->field_name == 'field_social_network_personal_fc') {
+      // We are saving a field_social_network_personal_fc entity: Check field_twitter.
+      if (isset($entity->field_twitter) && !empty($entity->field_twitter)) {
+        // Check :
+        $wp_entity = entity_metadata_wrapper('field_collection_item', $entity);
+        if ($twitter_errors = _check_field_twitter($wp_entity->field_twitter->value())) {
+          $errors['field_twitter'][LANGUAGE_NONE][0][] = $twitter_errors;
+        }
+      }
+    }
+  }
+}
+
+# # # # # # # # #
+# # FORMATTERS #
+# # # # # # # # #
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function ag_section_profile_users_field_formatter_info() {
+  $formatters = array();
+
+  $formatters['twitter_link'] = array(
+    'label' => t('Twitter Link'),
+    'field types' => array('link_field'),
+  );
+
+  return $formatters;
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function ag_section_profile_users_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $elements = array();
+
+  switch ($display['type']) {
+    case 'twitter_link':
+      foreach ($items as $delta => $item) {
+        // Try to get the Twitter username form url:
+        $twitter_username = _extract_twitter_username_from_url($item['url']);
+        if (!empty($twitter_username)) {
+          $twitter_title_link = "@$twitter_username";
+        }
+        else {
+          // If no Twitter username checked, show the twitter url:
+          $twitter_title_link = $item['url_display'];
+        }
+        $elements[$delta] = array(
+          '#markup' => l($twitter_title_link, $item['url'], array('attributes' => array('target' => '_blank'))),
+        );
+      }
+      break;
+  }
+
+  return $elements;
+}
+
+
+# # # # # # # # #
+# # THEMING # # #
+# # # # # # # # #
+
+/**
+ * Returns HTML for "My ORGANIZATION" profile tab.
+ */
+function theme_organization_communities_numbers($variables) {
+
+  $output = '<div class="wrapper-organization">';
+
+  $output .= '<div class="field-label">' . t('Name') . '</div>';
+  $output .= '<div class="field-item">' . $variables['name'] . '</div>';
+
+  $output .= '<div class="field-label">' . t('Description') . '</div>';
+  $output .= '<div class="field-item">' . $variables['description'] . '</div>';
+
+  $output .= '<div class="field-label">' . t('Number of  users subscribed to this Organization') . '</div>';
+  $output .= '<div class="field-item">' . $variables['count_users'] . '</div>';
+
+  $output .= '<div class="field-label">' . t('Number of Communities where this Organization can create posts') . '</div>';
+  $output .= '<div class="field-item">' . $variables['org_community_post'] . '</div>';
+
+  $output .= '</div>';
+
+  return $output;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function ag_section_profile_users_theme($existing, $type, $theme, $path) {
+  $nexus_path = drupal_get_path('theme', 'nexus');
+
+  $themes['ag_section_profile_users_mi_cuenta'] = array(
+    'template' => $nexus_path . '/templates/ag-section-profile-users-mi-cuenta',
+    'variables' => array(
+      'profile' => array(),
+    ),
+  );
+  // Theme user sumary activity block.
+  // this block is used at user/%user/timeline.
+   $themes['user_activity_summary'] = array(
+    'variables' => array(
+      'vars' => array(),
+    ),
+    'template' => '/templates/user-activity-summary',
+  );
+
+  $themes['organization_communities_numbers'] = array(
+    'variables' => array('name' => NULL, 'description' =>  NULL, 'count_users' => NULL, 'org_community_post' => NULL),
+  );
+
+  $themes['profile_users_widget'] = array(
+    'template' => 'profile-users-widget',
+    'path' => $path . '/templates/',
+    'type' => 'theme',
+    'variables' => array(
+      'profile_url' => '',
+    ),
+  );
+
+  $themes['profile_users_viewer_iframe'] = array(
+    'template' => 'profile-users-viewer-iframe',
+    'path' => $path . '/templates/',
+    'type' => 'theme',
+    'variables' => array(
+      'public_profile' => array(),
+    ),
+  );
+
+  $themes['profile_users_widget_iframe'] = array(
+    'template' => 'profile-users-widget-iframe',
+    'path' => $path . '/templates/',
+    'render element' => 'page',
+  );
+
+  return $themes;
+}
+
+/**
+ * Implements hook_date_popup_process_alter().
+ */
+function ag_section_profile_users_date_popup_process_alter(&$element, &$form_state, $context) {
+  if ($element['#field']['field_name'] == 'field_date_birth') {
+    $element['date']['#title'] = t('Date of birth');
+  }
+}
+
+/**
+ * Implements hook_entity_info_alter().
+ */
+function ag_section_profile_users_entity_info_alter(&$entity_info){
+  //Declare the new view mode
+  $entity_info['user']['view modes']['public'] = array(
+    'label' => t('Public profile'),
+    'custom settings' => TRUE,
+  );
+
+  $entity_info['profile2']['view modes']['public'] = array(
+    'label' => t('Public profile2 view'),
+    'custom settings' => TRUE,
+  );
+
+  $entity_info['node']['view modes']['activities'] = array(
+    'label' => t('Recent activities'),
+    'custom settings' => TRUE,
+  );
+}
+
+/**
+ * Implements hook_block_info()
+ */
+function ag_section_profile_users_block_info() {
+  $blocks['follow_user_block'] = array(
+    'info' => t('Block for following the user'),
+    'cache' => DRUPAL_CACHE_PER_USER,
+  );
+
+  $blocks['send_private_message'] = array(
+    'info' => t('Block for sending a private message to the user'),
+    'cache' => DRUPAL_CACHE_PER_PAGE,
+  );
+
+  $blocks['user_activity_summary'] = array(
+    'info' => t('Block for show the user activity summary'),
+    'cache' => DRUPAL_CACHE_PER_PAGE,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view()
+ */
+function ag_section_profile_users_block_view($delta = '') {
+  global $user;
+  //The argument 1 is the user id
+  $arg = arg(1);
+  $block = array();
+
+  if ($user->uid && $user->uid != $arg) {
+    $user_name = ag_section_profile_users_get_name_surname_cached($arg);
+
+    switch ($delta) {
+      case 'follow_user_block':
+        $block['content'] = flag_create_link('follow_user', $arg);
+        break;
+      case 'send_private_message':
+        $destination = drupal_get_destination();
+        $options = array('query' => $destination);
+        $block['content'] = l(t('Send a private message to @user_name', array('@user_name' => $user_name)),'messages/new/' . $arg, $options);
+        break;
+    }
+  }
+  else {
+    switch($delta){
+      case 'user_activity_summary':
+        $vars = _generate_user_summary_block($user);
+        // Set block content.
+        $block['content'] = array(
+          '#theme' => 'user_activity_summary',
+          '#vars' => $vars,
+        );
+
+        break;
+    }
+  }
+
+  if ((arg(0) == 'node' && is_numeric(arg(1))) && $delta == 'user_activity_summary') {
+    $nid = arg(1);
+    $user_uid = DrupalToolKit::getNodeAuthor($nid);
+    $user_summary = user_load($user_uid);
+
+    if ($user_summary->uid > 0) {
+      $vars = _generate_user_summary_block($user_summary);
+
+      // Set block content.
+      $block['content'] = array(
+        '#theme' => 'user_activity_summary',
+        '#vars' => $vars,
+      );
+    }
+  }
+
+  return $block;
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function ag_section_profile_users_form_alter(&$form, &$form_state, $form_id) {
+  global $user;
+
+  // Modify message to show information when user cancel own account.
+  if ($form_id == 'user_cancel_confirm_form') {
+    $form['description']['#markup'] = t('Your account, as well as information of their personal data , will be removed. This action cannot be undone.');
+  }
+
+  if ($form_id == 'user_register_form') {
+    if ($user->uid == 0) {
+      // Deny access to organization profile for anonymous.
+      $form['profile_datos_organizacion']['#access'] = FALSE;
+      // Validations.
+      $form['#validate'][] = 'personal_data_required';
+      $form['#validate'][] = 'check_unique_dni';
+      $form['#validate'][] = 'personal_data_validate';
+    }
+    else {
+      if (isset($form_state['build_info']['args'][0])) {
+        if (($form_state['build_info']['args'][0] == 'organization')) {
+          // ADD ORGANIZATION (ADMIN user).
+          $form['profile_datos_personales']['#access'] = FALSE;
+
+          // Fields that are not accessible from organization registration.
+          // USERNAME.
+          $form['account']['name']['#access'] = FALSE;
+          $form['account']['name']['#required'] = FALSE;
+
+          // MAIL.
+          // Add a new field into the org fieldset and then we need to populate the mail field with the value.
+          $form['account']['mail']['#access'] = FALSE;
+          $form['account']['mail']['#required'] = FALSE;
+
+          // PASS
+          $form['account']['pass']['#access'] = FALSE;
+          $form['account']['pass']['#required'] = FALSE;
+
+          // Hide status, roles and notify.
+          $form['account']['status']['#access'] = FALSE;
+          $form['account']['roles']['#access'] = FALSE;
+          $form['account']['notify']['#access'] = FALSE;
+
+          // We have access to organization reference field only when adding a non org user.
+          $form['field_organization_reference']['#access'] = FALSE;
+
+          // Avoid user_account_form_validate validation because we don't need username, mail, pass... validations.
+          $user_account_form_validate = array_search('user_account_form_validate', $form['#validate']);
+          if (isset($user_account_form_validate)) {
+            unset($form['#validate'][$user_account_form_validate]);
+          }
+
+          // @TODO tos field is validate and when we add an org org data appears empty on the view of the user profile.
+          unset($form['profile_datos_personales']['field_tos']);
+          // search for organization role
+          $org_role = array_search('organization', $form['account']['roles']['#options']);
+          if ($org_role != FALSE) {
+            $form['account']['roles'][$org_role]['#default_value'] = TRUE;
+            $form['account']['roles'][$org_role]['#disabled'] = TRUE;
+          }
+
+          // Add validation org.
+          array_unshift($form['#validate'], 'organization_validate');
+        }
+      }
+      // ADD USER (ADMIN user).
+      else {
+        $form['profile_datos_organizacion']['#access'] = FALSE;
+        $form['#validate'][] = 'personal_data_required';
+        $form['#validate'][] = 'check_unique_dni';
+        $form['#validate'][] = 'personal_data_validate';
+        // Search for organization role and then unset this role for user creation..
+        $org_role = array_search('organization', $form['account']['roles']['#options']);
+        if ($org_role != FALSE) {
+          unset($form['account']['roles']['#options'][$org_role]);
+        }
+      }
+    }
+  }
+
+  // User edit form.
+  if ($form_id == 'user_profile_form') {
+    $user_data = DrupalToolkit::getUserData($user->uid, array('pass'));
+
+    // Check if user exist in database.
+    if (empty($user_data->pass)) {
+      $form['profile_datos_personales']['field_tos']['#weight'] = -1;
+      $form['#submit'][] = 'user_migrate_submit';
+    }
+
+    // Redirect to the edit organization profile form always when editing an org.
+    $org_role = array_search('organization', $form['#user']->roles);
+    $org_profile = array_search('datos_organizacion', $form_state['build_info']['args']);
+    if ($org_role != FALSE && $org_profile == FALSE) {
+      $options = array();
+      if (isset($_GET['destination'])) {
+        $destination = $_GET['destination'];
+        $options =  array('query' => array('destination' => $destination));
+      }
+      unset($_GET['destination']);
+      drupal_static_reset('drupal_get_destination');
+      drupal_goto('user/' . $form_state['build_info']['args'][0]->uid . '/edit/datos_organizacion', $options);
+    }
+    // Search for organization role.
+    $org_role = array_search('organization', $form['#user']->roles);
+    if ($org_role != FALSE) {
+      // We have access to organization reference field only when editing a non org user.
+      $form['field_organization_reference']['#access'] = FALSE;
+      // Avoid access to the account, picture and others for an org.
+      $form['account']['#access'] = FALSE;
+      $form['picture']['#access'] = FALSE;
+      $form['og_user_node']['#access'] = FALSE;
+    }
+    else {
+      // Search for organization role.Avoid to add the organization role to the user.
+      if (isset($form['account']['roles']['#options'])) {
+        $org_role = array_search('organization', $form['account']['roles']['#options']);
+        if ($org_role != FALSE) {
+          $form['account']['roles'][$org_role]['#access'] = FALSE;
+        }
+      }
+    }
+
+    // Create custom alias for user.
+    if (module_exists('pathauto') && module_enable(array('pathauto'))) {
+      module_load_include('inc', 'pathauto');
+      pathauto_create_alias('user', 'update', "profile/{$user->uid}/public", array('user' => $user), NULL, 'und');
+    }
+  }
+
+  // User register form.
+  if ($form_id == 'user_register_form') {
+    $form['#submit'][] = '_user_insert_alias';
+  }
+}
+
+/**
+ * Insert new user alias when an user is created.
+ *
+ * Callback for ag_section_profile_users_form_alter().
+ *
+ * @param array $form
+ *   Form information.
+ */
+function _user_insert_alias($form) {
+  $user = $form['#user'];
+
+  // Create custom alias for user.
+  if (isset($user) && !empty($user) && module_exists('pathauto') && module_enable(array('pathauto'))) {
+    module_load_include('inc', 'pathauto');
+    pathauto_create_alias('user', 'update', "profile/{$user->uid}/public", array('user' => $user), NULL, 'und');
+  }
+}
+
+/**
+ * Implements hook_submit().
+ */
+function user_migrate_submit($form, &$form_state) {
+  global $user;
+
+  drupal_get_messages('warning', TRUE);
+  if (current_path() == 'user/'. $user->uid . '/edit/datos_personales') {
+    drupal_set_message(t('ATTENTION! You need to reenter your password or changed.'), 'warning');
+    $_GET['destination'] = 'user/' . $user->uid . '/edit';
+  } else {
+    $_GET['destination'] = 'user/' . $user->uid . '/timeline';
+  }
+}
+
+/**
+ * VALIDATE ORGANIZATION.
+ */
+function organization_validate($form, &$form_state) {
+  require_once 'includes/password.inc';
+  // Set username with the value of field_organization_name.
+  $form_state['values']['name'] = $form_state['values']['profile_datos_organizacion']['field_organization_name']['und'][0]['value'];
+  // Set the pass for organization users.
+  $form_state['values']['pass'] = user_hash_password(user_password(12));
+  // Check if the mail is correct before populate default mail field for account.
+  if (!valid_email_address($form_state['values']['profile_datos_organizacion']['org_mail'])) {
+    form_set_error('profile_datos_organizacion][org_mail', t('The email address appears to be invalid.'));
+  }
+  else {
+    $form_state['values']['mail'] =  $form_state['values']['profile_datos_organizacion']['org_mail'];
+  }
+  // Remove datos_personales to avoid this tab for the user profile.
+  unset($form_state['values']['profile_datos_personales']);
+  unset($form_state['profiles']['datos_personales']);
+}
+
+
+/**
+ * VALIDATE PERSONAL DATA.
+ */
+function personal_data_validate($form, &$form_state) {
+  // Remove datos_organizacion to avoid this tab for the user profile.
+  unset($form_state['values']['profile_datos_organizacion']);
+  unset($form_state['profiles']['datos_organizacion']);
+}
+
+/**
+ * Implements hook_profile2_access().
+ *
+ * @param $op
+ * @param null $profile
+ * @param null $account
+ * @return bool
+ */
+function ag_section_profile_users_profile2_access($op, $profile = NULL, $account = NULL) {
+  $user = user_load($profile->uid);
+  // Never edit personal data for an organization.
+  if (in_array('organization', $user->roles) && ($profile->type == 'datos_personales' || $profile->type == 'cv')) {
+    return FALSE;
+  }
+  // Never edit organization data for a user without this role..
+  elseif (!in_array('organization', $user->roles) && $profile->type == 'datos_organizacion') {
+    return FALSE;
+  }
+
+  if ($profile->type == 'cv') {
+    return check_profile_privcacy($profile);
+  }
+}
+
+/**
+ * Implements hook_entity_view().
+ */
+function ag_section_profile_users_entity_view($entity, $type, $view_mode, $langcode) {
+  if ($type == 'field_collection_item') {
+    $user_logged_in = user_is_logged_in();
+    if (empty($user_logged_in)) {
+      $entity->content = array();
+    }
+    else {
+      $wrapper = entity_metadata_wrapper('field_collection_item', $entity);
+      if (isset($wrapper->field_visibility) && !$wrapper->field_visibility->value()) {
+        $entity->content = array();
+      }
+    }
+  }
+
+  // When a user views its own profile, show "recent activity" view
+  if ($type === 'user' && ($view_mode === 'full' || $view_mode === 'public')) {
+    global $user;
+    $arg1 = arg(1);
+    if (is_numeric($arg1)) {
+      // Get embed view
+      $view = views_embed_view('agrega2_profiles', 'panel_pane_1');
+      if (!empty($view)) {
+        // And embed it into user info.
+        // '#title' field wasn't show, so I used '#prefix' instead
+        $entity->content['user_contents'] = [
+          '#prefix' => '<h3>' . t('Recent Activity') . '</h3>',
+          '#markup' => $view,
+          '#weight' => 40,
+        ];
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_views_pre_view().
+ */
+function ag_section_profile_users_views_pre_view(&$view, &$display_id, &$args) {
+  //Change the title for followings panel pane
+  if ($view->name == 'agrega2_follows' && $view->current_display != 'panel_pane_3') {
+    $user_id = $view->args[0];
+    $followings = FlagDrupalToolKit::getFollowingCount($user_id);
+    $followers = FlagDrupalToolKit::getFollowersCount($user_id);
+    $user_name = ag_section_profile_users_get_name_surname_cached($user_id);
+
+    if ($display_id == 'panel_pane_2') {
+      $view->display[$view->current_display]->display_options["title"] =
+      $view->display[$view->current_display]->handler->options["title"] = t('@user_name is following (@followings)',
+        array(
+          '@user_name' => $user_name,
+          '@followings' => $followings
+        ));
+    }
+    //Change the title for followers panel pane
+    if ($display_id == 'panel_pane_1') {
+      $view->display[$view->current_display]->display_options["title"] =
+      $view->display[$view->current_display]->handler->options["title"] = t('Following @user_name (@followers)',
+        array(
+          '@user_name' => $user_name,
+          '@followers' => $followers
+        ));
+    }
+    //Change the title for followings page
+    if ($display_id == 'followings') {
+      $view->display[$view->current_display]->display_options["title"] =
+      $view->display[$view->current_display]->handler->options["title"] = t('@user_name is following:',
+        array(
+          '@user_name' => $user_name,
+        ));
+    }
+    //Change the title for followers page
+    if ($display_id == 'followers') {
+      $view->display[$view->current_display]->display_options["title"] =
+      $view->display[$view->current_display]->handler->options["title"] = t('Following @user_name:',
+        array(
+          '@user_name' => $user_name,
+        ));
+    }
+  }
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function ag_section_profile_users_views_pre_render(&$view) {
+  if ($view->name == 'agrega2_profiles' && $view->current_display == 'panel_pane_recent_activity_profile_widget') {
+    foreach ($view->result as $result) {
+      if (!empty($result->field_field_question_ref)) {
+        if (isset($result->node_title)) {
+          unset($result->node_title);
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_link().
+ */
+function ag_section_profile_users_preprocess_link(&$variables) {
+  //if path is like user/%uid
+  if (preg_match('/^user\/[0-9]*$/',$variables['path'])) {
+    $exploded_path = explode('/', $variables['path']);
+    $path_uid = $exploded_path[1];//The uid
+    global $user;
+    //Compare if the uid of logged user is the same of the user of the link
+    //If it's not the same, set the path to the public profile.
+    //Also exclude admin pages
+    if (arg(0) != 'admin' && $user->uid != $path_uid ) {
+      $user_status = ag_section_profile_users_get_status_cached($path_uid);
+
+      if ($user_status != '0') {
+        $variables['path'] = 'profile/' . $path_uid . '/public';
+      }
+      else {
+        unset($variables['path']);
+      }
+      //Change user name in cases it is not accesible. TODO: There should be a better way to do this.
+      if (isset($variables['options']['absolute'])) {
+        $name = ag_section_profile_users_get_name_surname_cached($path_uid);
+        if (!empty($name)) {
+          $variables['text'] = $name;
+        }
+      }
+    }
+  }
+}
+
+/**
+ *  Implements hook_preprocess_HOOK().
+ */
+function ag_section_profile_users_preprocess_username(&$vars) {
+  // Override the user link path for set the destination to user's posts page.
+  if ($vars['account']->uid != 0) {
+    //Get cached user status. Don't loaded in $vars['account'] variable
+    $user_status = ag_section_profile_users_get_status_cached($vars['account']->uid);
+
+    if ($user_status != '0') {
+      $vars['link_path'] = 'profile/' . $vars['account']->uid . '/public';
+      $vars['link_options'] = ['absolute' => TRUE];
+    }
+
+    //template_preprocess_username does cut username below 16 characters, adding "..." at the end.
+    //We do not want this, full name will be shown
+    $vars['name'] = $vars['name_raw'];
+  }
+}
+
+/**
+ * This function returns the most used tags of a given user.
+ * @param $uid The user id
+ * @return array The array with the most used tags
+ */
+function getMostUsedTags($uid) {
+  $most_used_tags = array();
+
+  //The query
+  $query = db_select('field_data_field_labels', 'fdfl');
+  $query->join('node', 'n', 'n.nid = fdfl.entity_id');
+  $query->join('taxonomy_term_data', 'ttd', 'ttd.tid = fdfl.field_labels_tid');
+  $query->fields('fdfl', array('field_labels_tid'));
+  $query->fields('ttd', array('name'));
+  $query->condition('fdfl.entity_type', 'node');
+  $query->condition('n.uid', $uid);
+  $query->groupBy('field_labels_tid');
+  $query->having('labels_count > 0');
+  $query->orderBy('labels_count', 'DESC');
+  $query->addExpression('COUNT(field_labels_tid)', 'labels_count');
+  $query->range(0,3);
+
+  $results = $query->execute()->fetchAll();
+
+  //Build an array for the template
+  foreach($results as $tag) {
+    $most_used_tags[] = $tag->name;
+  }
+  //Return the tags
+  return $most_used_tags;
+}
+
+/**
+ * Implements hook_node_view()
+ */
+function ag_section_profile_users_node_view($node, $view_mode, $langcode) {
+  //Embed the view with the user's comments on a specific node
+  if ($view_mode == 'activities') {
+    //Get the nid and the uid to pass to the view
+    $nid = $node->nid;
+    $uid = arg(1);
+    $node->content['user_comments'] = array(
+      '#markup' => views_embed_view('agrega2_comments', 'block_1', $nid, $uid),
+    );
+  }
+}
+
+/**
+ * Implements hook_views_query_alter()
+ */
+function ag_section_profile_users_views_query_alter(&$view, &$query) {
+  if ($view->name == 'agrega2_profiles' && ($view->current_display == 'panel_pane_1' || $view->current_display == 'panel_pane_recent_activity_profile_widget')) {
+    //Get the uid by the url and set in the query for comment uid and recomendation uid
+    $uid = arg(1);
+
+    //Check if it is numeric before applying these changes. Else, editing the view produces errors.
+    if (is_numeric($uid)) {
+      //filter recommendations_shared_content.uid
+      $query->where[1]['conditions'][2]['value'] = $uid;
+    }
+  }
+  elseif ($view->name == 'agrega2_follows' && $view->current_display == 'panel_pane_3') {
+    global $user;
+
+    //Change fixed value for all user groups
+    $all_groups = og_get_groups_by_user($user, 'node');
+    if (!empty($all_groups)) {
+      $query->where[1]['conditions'][2]['value'] = array_keys($all_groups);
+      $query->where[1]['conditions'][2]['operator'] = 'IN';
+    }
+  }
+}
+
+/**
+ *  Implements hook_node_grants().
+ */
+function ag_section_profile_users_node_grants($account, $op) {
+  $grants = array();
+  $grants['organization_content'][] = $account->uid;
+
+  //Get cached organization uid. Many calls per node page. Direct query to avoid user load.
+  $organization_uids = ag_section_profile_users_get_logged_user_organization_cached($account->uid);
+
+  if (!empty($organization_uids) && is_array($organization_uids)) {
+    foreach ($organization_uids as $organization_uid) {
+      $grants['organization_content_all'][] = $organization_uid;
+    }
+  }
+
+  return $grants;
+}
+
+/**
+ *  Implements hook_node_access_records().
+ */
+function ag_section_profile_users_node_access_records($node) {
+
+  $wp_node = entity_metadata_wrapper('node', $node);
+  if (isset($wp_node->field_original_user)) {
+    $original_user = $wp_node->field_original_user->raw();
+  }
+  $grants = array();
+  if (!empty($original_user)) {
+
+    $grants[] = array(
+      'realm' => 'organization_content',
+      'gid' => $original_user,
+      'grant_view' => 1,
+      'grant_update' => 1,
+      'grant_delete' => 0,
+      'priority' => 0,
+    );
+    $grants[] = array(
+      'realm' => 'organization_content_all',
+      'gid' => $node->uid,
+      'grant_view' => 1,
+      'grant_update' => 1,
+      'grant_delete' => 0,
+      'priority' => 0,
+    );
+  }
+
+  return $grants;
+}
+
+/**
+ *  Implements hook_og_node_access_strict_alter().
+ */
+function ag_section_profile_users_og_node_access_strict_alter(&$access, &$node) {
+  $wp_node = entity_metadata_wrapper('node', $node);
+  //Grants access to user if it is the original creator of the node, but published it as an organization.
+  if (isset($wp_node->field_original_user)) {
+    $original_user = $wp_node->field_original_user->raw();
+    global $user;
+
+    //Check organization of logged user. Need to load user, as $user/$account is not enough: we need organizacion reference field.
+    $organization_uids = ag_section_profile_users_get_logged_user_organization_cached($user->uid);
+
+    //Logged user must (still) belong to the organization to edit, even if it was the creator.
+    if (($original_user == $user->uid)
+        || (isset($node->uid) && !empty($organization_uids) && is_array($organization_uids) && in_array($node->uid, $organization_uids))) {
+      $access = NODE_ACCESS_IGNORE;
+    }
+  }
+
+  //Grant access to user if user is one author ref in node
+  if (isset($wp_node->field_author_ref)) {
+    global $user;
+
+    $refs_authors = $wp_node->field_author_ref->raw();
+    if (!empty($refs_authors) && in_array($user->uid, $refs_authors)) {
+      $access = NODE_ACCESS_IGNORE;
+    }
+  }
+}
+/**
+ * This function check if a given profile is a cv and in this case, check the
+ * privacy for remove the CV tab
+ * @param $profile The profile to check
+ */
+function check_profile_privcacy($profile) {
+  $access = TRUE;
+  if (isset($profile->type) && $profile->type == 'cv') {
+    $profile_wrapper = entity_metadata_wrapper('profile2', $profile);
+    $privacy = $profile_wrapper->field_level_privacy->value();
+    if ($privacy == 1) {
+      $access = FALSE;
+    }
+  }
+  return $access;
+}
+
+/**
+ * This function checks if the logged user has permission to access to the control center
+ */
+function _check_acces_to_control_center() {
+  // The user needs to have one of the following permissions:
+  // administer communities
+  // access control center contents
+  // access control center procomun reports
+  // access control center communities reports
+  // access control center users
+  // access control center organizations
+
+  $permission_communities = user_access('administer communities');
+  $permission_contents = user_access('access control center contents');
+  $permission_procomun_reports = user_access('access control center procomun reports');
+  $permission_communities_reports = user_access('access control center communities reports');
+  $permission_users = user_access('access control center users');
+  $permission_organizations = user_access('access control center organizations');
+
+  if ($permission_communities || $permission_contents || $permission_procomun_reports ||
+    $permission_communities_reports || $permission_users || $permission_organizations) {
+    return TRUE;
+  }
+  else {
+    return FALSE;
+  }
+
+}
+
+
+/**
+* Implementation of hook_username_alter().
+*/
+function ag_section_profile_users_username_alter(&$name, $account) {
+  // Get the user profile, avoid changes to admin.
+  if (isset($account->uid) && $account->uid > 1) {
+    //Call function to get name and surname. TODO: CACHE THIS FUNCTION
+    $temporary_name = ag_section_profile_users_get_name_surname_cached($account->uid);
+    if (!empty($temporary_name)) {
+      $name = $temporary_name;
+    }
+  }
+}
+
+/*
+* Changes output of username to show Name and Surname if any.
+* See ag_section_profile_users_preprocess_username for full name instead of truncated one.
+*/
+function ag_section_profile_users_get_name_surname($uid) {
+  //Load profile and check if exists.
+  $profile = profile2_load_by_user($uid, 'datos_personales');
+  if (!empty($profile)) {
+    //See if field_collection has value.
+    if (isset($profile->field_name_surname[LANGUAGE_NONE][0]['value'])) {
+      //Load field collection
+      $field_collection_id = $profile->field_name_surname[LANGUAGE_NONE][0]['value'];
+      $field_collection = entity_load('field_collection_item', array($field_collection_id));
+
+      //Entity loads requires an array, and returns an array. We only need first value.
+      $field_collection = array_values($field_collection);
+      if (!empty($field_collection) && isset($field_collection[0])) {
+        $field_collection = $field_collection[0];
+
+        //Finally, get name and surname.
+        $profile_name = isset($field_collection->field_profile_name[LANGUAGE_NONE][0]['value']) ? $field_collection->field_profile_name[LANGUAGE_NONE][0]['value'] : '';
+        $profile_surname = isset($field_collection->field_profile_surname[LANGUAGE_NONE][0]['value']) ? $field_collection->field_profile_surname[LANGUAGE_NONE][0]['value'] : '';
+
+        if (!empty($profile_name) && !empty($profile_surname)) {
+          $name = $profile_name . ' ' . $profile_surname;
+          return $name;
+        }
+      }
+    }
+  }
+  return NULL;
+}
+
+/*
+* Same as ag_section_profile_users_get_name_surname with cache system.
+* See ag_section_profile_users_preprocess_username for full name instead of truncated one.
+*/
+function ag_section_profile_users_get_name_surname_cached($uid) {
+  $name = &drupal_static(__FUNCTION__);
+
+  if (!isset($name[$uid])) {
+    $name[$uid] = ag_section_profile_users_get_name_surname($uid);
+    return $name[$uid];
+  }
+
+  return $name[$uid];
+}
+
+/*
+* Same as ag_section_profile_users_get_logged_user_organization with cache system.
+* Get user organization. Cached in this page.
+*/
+function ag_section_profile_users_get_logged_user_organization_cached($uid) {
+  $name = &drupal_static(__FUNCTION__);
+
+  if (!isset($name[$uid])) {
+    $name[$uid] = ag_section_profile_users_get_logged_user_organization($uid);
+    return $name[$uid];
+  }
+
+  return $name[$uid];
+}
+
+/**
+ * Get user field_organization_reference with single query to field table.
+ */
+function ag_section_profile_users_get_logged_user_organization($uid) {
+  //First check parameters
+  if (empty($uid) || !is_numeric($uid)) {
+    return '';
+  }
+
+  return ag_section_profile_users_get_organization($uid);
+}
+
+/**
+* Implements hook_preprocess_HOOK().
+*/
+function ag_section_profile_users_preprocess_ag_section_profile_users_mi_cuenta(&$variables) {
+  //Seccion "Mi perfil"
+  $profile = $variables['profile'];
+  //New variable for username. If it exists, it will be printed.
+  $variables['username'] = ag_section_profile_users_get_name_surname_cached($profile->uid);
+}
+
+# # # # # # # # # # # # # # #
+# # AUXILIARY FUNCTIONS # # #
+# # # # # # # # # # # # # # #
+
+/**
+ * Check a valid Twitter url,
+ * @param $value
+ * @return array
+ */
+function _check_field_twitter($value) {
+  //No errors if nothing to check.
+  if (empty($value['url'])) {
+    return FALSE;
+  }
+  //Check the twitter URL: http://twitter.com/USER
+  if (!preg_match('/^(http|https)\:\/\/twitter.com\/[A-Za-z0-9_]+$/', $value['url'])) {
+    return array(
+      'error' => 'link_required',
+      'message' => t('Invalid twitter username: It must begin by http://twitter.com. For example  http://twitter.com/user'),
+      'error_element' => array('url' => TRUE, 'title' => FALSE),
+    );
+  }
+}
+
+/**
+ * Extract the Twitter username form a Twitter url:
+ * @param $url
+ * @return mixed
+ */
+function _extract_twitter_username_from_url($url) {
+  preg_match('/[A-Za-z0-9_]+$/', $url,$twitter_username);
+  return array_pop($twitter_username);
+}
+
+/**
+ * Implements hook_query_privatemsg_autocomplete_alter().
+ */
+function ag_section_profile_users_query_privatemsg_autocomplete_alter($query) {
+  //Get user input from placeholder arguments
+  $full_name = $query->getMetaData('arg_1');
+
+  //Query alter
+  $query->join('profile', 'p', 'u.uid = p.uid');
+  $query->join('field_data_field_name_surname', 'fdfnm', 'p.pid = fdfnm.entity_id');
+  $query->join('field_data_field_profile_name', 'fdfpn', 'fdfnm.field_name_surname_value = fdfpn.entity_id');
+  $query->join('field_data_field_profile_surname', 'fdfps', 'fdfnm.field_name_surname_value = fdfps.entity_id');
+  $query->where("CONCAT(fdfpn.field_profile_name_value, ' ', fdfps.field_profile_surname_value) LIKE :pattern", array(':pattern' => '%' . $full_name . '%'));
+
+  //Remove default filter condition
+  unset($query->conditions()[0]);
+}
+
+/**
+* Detect if user somehow modified its username, and update every community in Solr
+* if it is admin on any of them.
+*/
+function ag_section_profile_users_user_update(&$edit, $account, $category) {
+  if (isset($edit['original']->name) && isset($edit['name']) && $edit['original']->name != $edit['name']) {
+    $all_groups = og_get_groups_by_user($account);
+    $groups = $all_groups['node'];
+
+    //Update only those where user is administrator.
+    foreach ($groups as $group) {
+      $user_roles = og_get_user_roles('node', $group);
+
+      foreach ($user_roles as $rid => $role) {
+        if ($role === 'administrator member') {
+          //Update by orchestrator services.
+          ag_section_social_netwok_update_community_administrators($group);
+        }
+      }
+    }
+  }
+}
+
+/*
+* Same as ag_section_profile_users_get_status with cache system.
+* See ag_section_profile_users_preprocess_username
+*/
+function ag_section_profile_users_get_status_cached($uid) {
+  $status = &drupal_static(__FUNCTION__);
+
+  if (!isset($status[$uid])) {
+    $status[$uid] = ag_section_profile_users_get_status($uid);
+    return $status[$uid];
+  }
+
+  return $status[$uid];
+}
+
+/*
+* Get status from user uid
+* See ag_section_profile_users_preprocess_username
+*/
+function ag_section_profile_users_get_status($uid) {
+  $status = 0;
+
+  if (!empty($uid)) {
+    $user_data = DrupalToolkit::getUserData($uid, array('status'));
+
+    $status = $user_data->status;
+  }
+  return $status;
+}
+
+/**
+ * Retrieve an array of organizations user belongs to
+ *
+ * @param $uid
+ *   User uid
+ * @return
+ *   An array with the organizations values.
+ */
+function ag_section_profile_users_get_organization($uid) {
+
+  $org_ids = array();
+
+  if (!empty($uid) && is_numeric($uid)) {
+    $query = db_select('field_data_field_organization_reference', 'fdfor');
+    $query->fields('fdfor', array('field_organization_reference_target_id'));
+    $query->condition('fdfor.entity_id', $uid);
+
+    $result = $query->execute();
+
+    foreach ($result as $target_id) {
+      $org_ids[] = $target_id->field_organization_reference_target_id;
+    }
+  }
+
+  return $org_ids;
+}
+
+/**
+ * Retrieve an array of organizations uid and name
+ *
+ * @param $org_ids
+ *   Organizations uid
+ * @return
+ *   An array with the organizations data.
+ */
+function ag_section_profile_users_get_organization_data($org_ids) {
+
+  $org_data = array();
+
+  if (!empty($org_ids)) {
+    $query = db_select('users', 'u');
+    $query->fields('u', array('uid', 'name', 'mail'));
+    $query->condition('u.uid', $org_ids, 'IN');
+
+    $result = $query->execute();
+
+    foreach ($result as $org) {
+      $org_data[$org->uid] = array('name' => $org->name, 'mail' => $org->mail);
+    }
+  }
+
+  return $org_data;
+}
+
+/**
+ * Retrieve an array of users belongs to an organization
+ *
+ * @param $orgs
+ *   Organizations uids
+ * @return
+ *   An array with the users values.
+ */
+function ag_section_profile_users_get_users_organization($orgs) {
+
+  $users = array();
+
+  if (!empty($orgs) && is_array($orgs)) {
+    $query = db_select('field_data_field_organization_reference', 'fdfor');
+    $query->fields('fdfor', array('entity_id', 'field_organization_reference_target_id'));
+    $query->condition('fdfor.field_organization_reference_target_id', $orgs, 'IN');
+
+    $result = $query->execute();
+
+    foreach ($result as $user_org) {
+      $users[$user_org->field_organization_reference_target_id][] = $user_org->entity_id;
+    }
+  }
+
+  return $users;
+}
+
+/**
+ * Generates user summary block based on any user.
+ *
+ * @param object $user
+ *   User to generate block content.
+ *
+ * @return array
+ */
+function _generate_user_summary_block($user) {
+  if (isset($user->picture->fid) && is_numeric($user->picture->fid)) {
+    $file = file_load($user->picture->fid);
+  }
+  else if (is_numeric($user->picture)) {
+    $file = file_load($user->picture);
+  }
+
+  $picture_path = isset($file->uri) ? $file->uri : variable_get('user_picture_default', '');
+
+  if (isset($user->uid)) {
+    $user->name = ag_section_profile_users_get_name_surname_cached($user->uid);
+  }
+
+  $vars = array(
+    'user_data' => array(
+      'uid' => $user->uid,
+      'name' => $user->name,
+      'picture' => array(
+        '#theme' => 'image_style',
+        '#style_name' => 'ag_scalecrop_150x150',
+        '#path' => $picture_path,
+      ),
+    ),
+  );
+
+  // Add user mail.
+  $vars['user_mail'] = $user->mail;
+
+  // Add total following users.
+  $users_following = flag_get_user_flags('user', NULL, $user->uid);
+  $follow_user_count = 0;
+  if (isset($users_following['follow_user'])) {
+    $follow_user_count = count($users_following['follow_user']);
+  }
+
+  $vars['boxes'][] = array(
+    'count' => l($follow_user_count, 'user/' . $user->uid . '/followings'),
+    'label' => l(t('Following'), 'user/' . $user->uid . '/followings'),
+  );
+
+  // Add total followers.
+  $followers = flag_get_counts('user', $user->uid);
+  $follow_user = isset($followers['follow_user']) ? $followers['follow_user'] : 0;
+  $vars['boxes'][] = array(
+    'count' => l($follow_user, 'user/' . $user->uid . '/followers'),
+    'label' => l(t('Followers'), 'user/' . $user->uid . '/followers'),
+  );
+
+  // Add total highlighted content.
+  $content_highlighted = flag_get_user_flags('node', NULL, $user->uid);
+  $content_highlighted_count = 0;
+  if (isset($content_highlighted['favorite'])) {
+    $content_highlighted_count = count($content_highlighted['favorite']);
+  }
+  $vars['boxes'][] = array(
+    'count' => l($content_highlighted_count, 'user/' . $user->uid . '/favourites'),
+    'label' => l(t('Favorited resources'), 'user/' . $user->uid . '/favourites'),
+  );
+
+  // Add total resources published.
+  $bundles = array('recurso_de_aprendizaje', 'ode', 'post');
+  $query = ['query' => ['f[0]' => 'author:' . $user->uid]];
+  $published_content_count = DrupalToolKit::getPublishedContent($user->uid, $bundles, 'node')->count()->execute();
+  $vars['boxes'][] = array(
+    'count' => l($published_content_count, 'user/' . $user->uid . '/timeline', $query),
+    'label' => l(t('Published content'), 'user/' . $user->uid . '/timeline', $query),
+  );
+
+  return $vars;
+}

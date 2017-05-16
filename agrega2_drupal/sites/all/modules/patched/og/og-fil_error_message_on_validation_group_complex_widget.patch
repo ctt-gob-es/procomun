@@ -1,0 +1,18 @@
+diff --git a/sites/all/modules/patched/og/includes/og.field.inc b/sites/all/modules/patched/og/includes/og.field.inc
+index ebe93ff..58477e4 100644
+--- a/sites/all/modules/patched/og/includes/og.field.inc
++++ b/sites/all/modules/patched/og/includes/og.field.inc
+@@ -305,7 +305,12 @@ function og_complex_widget_element_validate($element, &$form_state, $form) {
+   if ($element['#required']) {
+     $subform = drupal_array_get_nested_value($form_state['values'], $element['#array_parents']);
+     if (empty($subform)) {
+-      form_error($element, t('!name field is required.', array('!name' => $element['#title'])));
++      if (!empty($element['#title'])) {
++        form_error($element, t('!name field is required.', array('!name' => $element['#title'])));
++      }
++      elseif (!empty($element['default']['#title']) && !empty($element['admin']['#title'])) {
++        form_error($element, t('Either "!name1" or "!name2" fields are required.', array('!name1' => $element['default']['#title'], '!name2' => $element['admin']['#title'])));
++      }
+     }
+   }
+ }

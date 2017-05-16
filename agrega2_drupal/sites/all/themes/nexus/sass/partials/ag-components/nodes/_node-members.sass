@@ -1,0 +1,77 @@
+// node/7/members
+#community-members
+  .view-ag2-og-members-list
+    .views-field-name
+      margin-bottom: 1em
+      margin-top: 4px
+      span.views-label-name
+        display: none
+        &+.field-content
+          a
+            color: $navy
+            text-decoration: none
+            font-size: 21px
+            font-weight: 700
+            font-family: $font_narrow
+    .views-field-nothing
+      width: 75px
+      padding-right: 15px
+      img
+        width: 60px
+        height: 60px
+        +border-radius(60px)
+  .profile-name-image
+    display: table
+    width: 100%
+    > *
+      display: table-cell
+      vertical-align: middle
+  .views-field
+    .field-label
+      +make-sm-column(4)
+      +label-grey()
+      border: 0
+      &+.field-items
+        +make-sm-column(8)
+        +div-nextto-label-grey()
+    .field-collection-item-field-name-surname
+      .field
+        +clearfix()
+        &:last-child
+          margin-bottom: 0
+  .views-field-profile-datos-personales-field-name-surname
+    margin-bottom: 0
+    margin-top: 1em
+  .comunity-subscribe
+    .link-unsubscribe
+      margin-top: 1em
+      display: block
+
+#profile-my-organization
+  .wrapper-organization
+    float: left
+    clear: both
+    width: 100%
+    .field-label
+      float: left
+      min-width: 120px
+      background: $lightest_gray
+      font-size: 12px
+      color: $navy
+      border-bottom: 1px dotted $white
+      text-transform: uppercase
+      padding: 11px 8px 9px 8px
+      white-space: nowrap
+      padding-left: 16px
+      padding-right: 16px
+      font-weight: normal
+      text-align: left
+    .field-item
+      clear: right
+      margin-bottom: 20px
+      padding: 14px 8px 12px 8px
+      overflow: hidden
+      border-bottom: 1px dotted $gray
+      color: $navy
+      font-size: 14px
+      line-height: 1.2em

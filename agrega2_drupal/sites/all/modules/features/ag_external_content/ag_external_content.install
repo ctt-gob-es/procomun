@@ -1,0 +1,271 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the ag external content module.
+ */
+
+
+/**
+ * Implements hook_update_N().
+ * Update community permissions
+ */
+function ag_external_content_update_7000(&$sandbox) {
+  //Prepare all variables in first iteration
+
+  if (!isset($sandbox['total'])) {
+    //Prepare array from query
+    ag_external_content_prepare_batch_communities($sandbox, array(
+      'create external_content content',
+      'update own external_content content'
+    ));
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = ag_external_content_get_total($sandbox);
+  }
+
+  //Get batch, or number of entities to process each time.
+  $nodes_per_pass = 10;
+  $end = $sandbox['current'] + $nodes_per_pass;
+
+  //Loop. Use db_query_range if any query needs to be split between batches.
+  while($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    //Heavy operations
+    $element = ag_external_content_get_element($sandbox);
+    $community = ag_external_content_get_community_role_permissions($element);
+    ag_external_content_update_community_permissions($sandbox, $community);
+
+    //Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1, meaning we are done.
+  // Also, avoid division by zero
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @records records. Finished.', array('@records' => $sandbox['total'])));
+  }
+}
+
+/**
+ * Function to get published events
+ */
+function ag_external_content_prepare_batch_communities(&$sandbox, $permissions) {
+  $temp_array = array();
+
+  //Get all communities identifiers
+  $query = db_select('node', 'n');
+  $query->fields('n',array('nid'));
+  $query->condition('n.type', 'social_network', '=');
+
+  $result = $query->execute();
+  $communities_nids = $result->fetchCol();
+
+  //Array values
+  $temp_array = $communities_nids;
+
+  //Return by storing the array in sandbox variable. It will be static and accessible by all update_7000 batch executions.
+  $sandbox['elements'] = $temp_array;
+
+  $global_role_permissions = ag_external_content_get_global_role_permissions($permissions);
+
+  $sandbox['global_role_permissions'] = $global_role_permissions;
+}
+
+/**
+ * Return number of operations that will be done.
+ */
+function ag_external_content_get_total($sandbox) {
+  return isset($sandbox['elements']) ? count($sandbox['elements']) : 0;
+}
+
+/**
+ * Gets element with sandbox data.
+ */
+function ag_external_content_get_element($sandbox) {
+  $position = isset($sandbox['current']) ? $sandbox['current'] : 0;
+  return !empty($sandbox['elements']) ? $sandbox['elements'][$position] : array();
+}
+
+/**
+ * Function to get global role permission for an array of permissions
+ * @param array $permissions
+ *  An array of OG permissions
+ */
+function ag_external_content_get_global_role_permissions($permissions) {
+  $role_permissions = array();
+
+  //Get global role permissions
+  foreach ($permissions as $permission) {
+    $query = db_select('og_role_permission', 'p');
+    $query->fields('p',array('rid'));
+    $query->condition('p.permission', $permission, '=');
+    $query->condition('p.rid', array('1', '2', '3'), 'IN');
+
+    $result = $query->execute();
+    foreach ($result->fetchAll() as $result) {
+      switch ($result->rid) {
+        case '1':
+          $rol = 'non-member';
+          break;
+        case '2':
+          $rol = 'member';
+          break;
+        case '3':
+          $rol = 'administrator member';
+          break;
+      }
+      $role_permissions[$permission][$result->rid] = $rol;
+    }
+  }
+
+  return $role_permissions;
+}
+
+/**
+ * Function to get community role permission
+ * @param integer $element
+ *  The community identifier
+ */
+function ag_external_content_get_community_role_permissions($element) {
+  $role_permissions = array();
+
+  //Get role identifiers
+  $query = db_select('og_role', 'r');
+  $query->fields('r',array('name', 'rid'));
+  $query->condition('r.gid', $element, '=');
+
+  $result = $query->execute();
+  foreach ($result->fetchAll() as $result) {
+    $role_permissions[$result->name] = $result->rid;
+  }
+
+  return $role_permissions;
+}
+
+/**
+ * Function to check if community have a specific permission.
+ * @param $community
+ *  The community identifier.
+ * @param $permission
+ *  Permisssion to check.
+ */
+function ag_external_content_check_community_permission($community, $permission) {
+  $query = db_select('og_role_permission', 'ogrp');
+  $query->fields('ogrp',array('rid'));
+  $query->condition('ogrp.rid', $community, '=');
+  $query->condition('ogrp.permission', $permission, '=');
+  $result = $query->execute();
+
+  return $result->fetchField();
+}
+
+/**
+ * Function for update community permissions
+ */
+function ag_external_content_update_community_permissions(&$sandbox, $community) {
+  $global_role_permissions = !empty($sandbox['global_role_permissions']) ? $sandbox['global_role_permissions'] : array();
+
+  if (!empty($community)) {
+    $status = 0;
+    foreach ($global_role_permissions as $key => $value) {
+      foreach ($value as $rol) {
+        if (!empty($community[$rol]) && !empty($key)){
+          try {
+            // Check if this permission is already settled on this community.
+            $check_rid = ag_external_content_check_community_permission($community[$rol], $key);
+
+            if (empty($check_rid)) {
+              $status = db_insert('og_role_permission')
+                ->fields(array(
+                  'rid' => $community[$rol],
+                  'permission' => $key,
+                  'module' => 'og',
+                ))
+                ->execute();
+            }
+            else {
+              // Just set status 0 because this community already have this permission, so there is nothing to do.
+              $status = 0;
+            }
+          }
+          catch (PDOException $e) {
+            $status = 1;
+          }
+        }
+        else {
+          $status = 1;
+        }
+
+        if ($status != 0) {
+          drupal_set_message(t('Error: No community permissions updated'), 'error');
+          throw new DrupalUpdateException(t('Error: Community permissions update failed'));
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_update_N().
+ * Update community permissions for draft content.
+ */
+function ag_external_content_update_7001(&$sandbox) {
+  //Prepare all variables in first iteration
+
+  if (!isset($sandbox['total'])) {
+    //Prepare array from query
+    ag_external_content_prepare_batch_communities($sandbox, array(
+      'create event content',
+      'update own event content',
+      'delete own event content',
+      'create external_content content',
+      'update own external_content content',
+      'delete own external_content content',
+      'create post content',
+      'update own post content',
+      'delete own post content',
+      'create ode content',
+      'update own ode content',
+      'delete own ode content',
+    ));
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = ag_external_content_get_total($sandbox);
+  }
+
+  //Get batch, or number of entities to process each time.
+  $nodes_per_pass = 10;
+  $end = $sandbox['current'] + $nodes_per_pass;
+
+  //Loop. Use db_query_range if any query needs to be split between batches.
+  while($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    //Heavy operations
+    $element = ag_external_content_get_element($sandbox);
+    $community = ag_external_content_get_community_role_permissions($element);
+
+    ag_external_content_update_community_permissions($sandbox, $community);
+
+    //Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1, meaning we are done.
+  // Also, avoid division by zero
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @records records. Finished.', array('@records' => $sandbox['total'])));
+  }
+}

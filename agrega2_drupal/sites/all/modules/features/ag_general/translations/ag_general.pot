@@ -1,0 +1,88 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_general.context.inc: n/a
+#  ag_general.features.menu_custom.inc: n/a
+#  ag_general.module: n/a
+#  templates/ag_current_search.tpl.php: n/a
+#  ag_general.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2014-09-01 10:42+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: ag_general.context.inc:65;126
+msgid "Ag general"
+msgstr ""
+
+#: ag_general.features.menu_custom.inc:23
+msgid "El menú <em>Principal</em> se usa en muchos sitios web para mostrar las secciones principales del sitio, generalmente en una barra de navegación superior."
+msgstr ""
+
+#: ag_general.features.menu_custom.inc:24
+msgid "Menú principal"
+msgstr ""
+
+#: ag_general.module:15
+msgid "Administer CKeditor in content types"
+msgstr ""
+
+#: ag_general.module:16
+msgid "Allows use CKEditor in some content types."
+msgstr ""
+
+#: ag_general.module:20
+msgid "Administer CKeditor in comments"
+msgstr ""
+
+#: ag_general.module:21
+msgid "Allows use CKEditor in comments."
+msgstr ""
+
+#: ag_general.module:62;66
+msgid "Privacity"
+msgstr ""
+
+#: ag_general.module:74;78
+msgid "Terms of use"
+msgstr ""
+
+#: ag_general.module:112
+msgid "AG Current Search"
+msgstr ""
+
+#: ag_general.module:128 templates/ag_current_search.tpl.php:2
+msgid "Filters applied"
+msgstr ""
+
+#: ag_general.module:189
+msgid "Link the term to the finder"
+msgstr ""
+
+#: ag_general.module:191
+msgid "Link the term to the finder."
+msgstr ""
+
+#: ag_general.info:0
+msgid "ag_general"
+msgstr ""
+
+#: ag_general.info:0
+msgid "General feature with some resources which are used in several sections"
+msgstr ""
+
+#: ag_general.info:0
+msgid "Agrega2"
+msgstr ""
+

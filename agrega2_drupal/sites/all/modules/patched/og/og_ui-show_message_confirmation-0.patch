@@ -1,0 +1,15 @@
+diff --git a/sites/all/modules/contrib/og/og_ui/og_ui.pages.inc b/sites/all/modules/contrib/og/og_ui/og_ui.pages.inc
+index 36d0f34..51a05a9 100644
+--- a/sites/all/modules/contrib/og/og_ui/og_ui.pages.inc
++++ b/sites/all/modules/contrib/og/og_ui/og_ui.pages.inc
+@@ -186,9 +186,8 @@ function og_ui_confirm_subscribe_submit($form, &$form_state) {
+     // User doesn't have access to the group entity, so redirect to front page,
+     // with a message.
+     $redirect = '';
+-    drupal_set_message(t('Your subscription request was sent.'));
+   }
+-
++  drupal_set_message(t('Your subscription request was sent.'));
+   $form_state['redirect'] = $redirect;
+ }
+ 

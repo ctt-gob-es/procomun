@@ -1,0 +1,132 @@
+@import compass
+@import ode-dependencies
+@import ode-icons
+*
+  @include box-sizing(border-box)
+
+body
+  margin: 0
+  padding-bottom: 5px
+  padding-right: 5px
+  background: $snow
+  color: $main_blue
+  font-family: "PT Sans", sans-serif
+  font-size: 14px
+
+  &.fullscreen
+    width: 90%
+    height: 90%
+
+textarea
+  font-family: "PT Sans", sans-serif
+
+// Helpers, mixins and implementations
+$margin-inner-sections: 20px
+$margin-sections: 25px
+
+=margin-section
+  margin-bottom: $margin-sections
+
+=margin-inner-section
+  margin-bottom: $margin-inner-sections
+
+.inline-elements > *
+  display: inline-block
+
+.valign-middle > *
+  vertical-align: middle
+
+.do-inline
+  +clearfix
+  margin: 0
+  padding: 0
+  > *
+    // for using precedence don't make it specific
+    vertical-align: middle
+    margin: 0 5px 0 0
+    padding: 0
+    display: inline-block
+    &:last-child
+      margin-right: 0
+
+#ag-visualization-ode-get-ode-formats
+  .form-item-format-ode-download
+    @extend .do-inline
+  .form-submit
+    display: none
+
+.space-inline-elements
+  > *
+    margin-right: 10px
+    &:last-child
+      margin-right: 0
+
+.space-m-inline-elements
+  @extend .space-inline-elements
+  > *
+    margin-right: 15px
+
+.space-l-inline-elements
+  @extend .space-inline-elements
+  > *
+    margin-right: 20px
+
+.pull-left
+  float: left
+
+.pull-right
+  float: right
+// End of helpers
+
+.screenViewer
+  background: $snow
+  color: $main_blue
+  div.value,
+  a
+    color: $main_blue
+    text-decoration: none
+    &:hover
+      color: $deep_blue
+      text-decoration: underline
+
+  iframe
+    border: 0
+    border-top: 1px solid $light_gray
+    width: 100%
+
+  .header
+    padding: 10px
+
+    .iframe-actions
+      > *
+        cursor: pointer
+
+      .navigate
+        &.open .open-menu,
+        &.closed .close-menu
+          display: none
+
+      .state
+        &.minimized .minimize,
+        &.maximized .maximize
+          display: none
+
+    .normal-actions
+      > *
+        cursor: pointer
+      a
+        text-decoration: none
+
+  .content
+    .normal-actions-holder
+      display: none
+      padding: 5px
+      textarea
+        white-space: nowrap
+        resize: none
+        overflow: hidden
+        cursor: pointer
+        font-size: 12px
+        width: 100%
+        padding: 0.5%
+        border: 1px solid $light_gray

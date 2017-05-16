@@ -1,0 +1,16 @@
+diff --git a/views_content/plugins/views/views_content_plugin_display_panel_pane.inc b/views_content/plugins/views/views_content_plugin_display_panel_pane.inc
+index e02f896..628a84d 100644
+--- a/views_content/plugins/views/views_content_plugin_display_panel_pane.inc
++++ b/views_content/plugins/views/views_content_plugin_display_panel_pane.inc
+@@ -378,7 +378,10 @@ class views_content_plugin_display_panel_pane extends views_plugin_display {
+   }
+ 
+   function get_path() {
+-    if (empty($this->view->override_path)) {
++    if ($this->get_option('link_display') == 'custom_url') {
++      return $this->get_option('link_url');
++    }
++    elseif (empty($this->view->override_path)) {
+       return parent::get_path();
+     }
+     return $this->view->override_path;

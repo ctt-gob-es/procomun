@@ -1,0 +1,351 @@
+/*------------------
+  Mixins
+  @todo doc all mixins please.
+  ------------------*/
+
+=clearfix()
+  &:after
+    content: "."
+    display: block
+    visibility: hidden
+    height: 0
+    clear: both
+
+.clearfix
+  +clearfix()
+
+=pane-grey-bg($bg: $snow)
+  position: relative
+  background-color: $bg
+  +box-shadow(0px 2px 4px 1px lighten($cold_gray, 15%))
+  .pane-content
+    padding: 0
+
+=title-bg()
+  font-size: 18px
+  color: $navy
+  font-weight: 700
+  font-family: $font_narrow
+  text-transform: uppercase
+  padding: 15px 15px 0px
+  margin-bottom: 0
+
+=hide_bullets()
+  margin: 0
+  padding: 0
+  li
+    list-style-image: none
+    list-style-type: none
+    list-style: none
+    padding: 0
+
+=show_bullets()
+  list-style-position: outside
+  list-style-image: none
+  padding-left: 1.5em
+  margin-bottom: 1.3em
+  li
+    margin-bottom: .5em
+    list-style-type: disc
+
+=inline()
+  li
+    display: inline-block
+
+=title-grey()
+  color: $navy
+  font-size: 18px
+  font-family: $font_narrow
+  font-weight: 700
+
+=title-underline()
+  border-bottom: 1px solid $gray
+
+=tag()
+  background-color: $white
+  border: 1px solid $main_blue
+  +border-radius(60px)
+  color: $main_blue
+  padding: 6px 10px
+  position: relative
+  float: left
+  display: block
+  margin: 0 5px 5px 0
+  overflow-wrap: break-word
+  word-wrap: break-word
+  max-width: 100%
+  //&:last-child
+    margin-right: 0
+  &:hover
+    border-color: $deep_blue
+    color: $deep_blue
+    text-decoration: none
+
+=button($bgcolor)
+  border: 0
+  +border-radius(4px)
+  background-color: $bgcolor
+  font-size: 16px
+  padding: 12px 15px
+  min-height: 34px
+  cursor: pointer
+  color: $white
+  font-family: $font_narrow
+  font-weight: 700
+  width: auto
+  display: inline-block
+  &:hover
+    text-decoration: none
+    color: $white
+    background-color: darken($bgcolor, 10%)
+
+=button-white
+  text-align: center
+  display: block
+  color: $main_blue
+  border: 1px solid $main_blue
+  background: transparent
+  font-size: 18px
+  font-family: $font_narrow
+  font-weight: 700
+  line-height: 17px
+  +border-radius(4px)
+  padding: 12px 15px
+  min-height: 34px
+  text-transform: none
+  &:hover
+    text-decoration: none
+    color: $deep_blue
+    border-color: $deep_blue
+
+=button-border($bgcolor)
+  text-align: center
+  color: $bgcolor
+  border: 1px solid $bgcolor
+  background: transparent
+  font-size: 18px
+  font-family: $font_narrow
+  font-weight: 700
+  line-height: 17px
+  +border-radius(4px)
+  padding: 12px 15px
+  min-height: 34px
+  text-transform: none
+  &:hover
+    text-decoration: none
+    color: darken($bgcolor, 10%)
+    border-color: darken($bgcolor, 10%)
+    background-color: transparent
+
+=no-icon($padding)
+  padding: $padding
+  background-image: none
+
+=button-icon($bgcolor, $icon)
+  +button($bgcolor)
+  padding-left: 38px
+  background-image: url($icon)
+  background-repeat: no-repeat
+  background-position: 10px center
+
+=label-grey()
+  color: $navy
+  text-transform: uppercase
+  font-size: 12px
+  padding: 8px 0
+  white-space: normal
+  font-weight: 700
+  text-align: left
+  border-right: 1px solid $light_gray
+  margin: 0
+
+=div-nextto-label-grey()
+  padding: 10px
+  a
+    color: $main_blue
+    &:hover
+      color: $deep_blue
+
+=label()
+  color: $navy
+  font-size: 12px
+  line-height: 13px
+  font-weight: 700
+  text-transform: uppercase
+
+=label-header()
+  display: block
+  margin: 0
+  padding: 1em 0 0.3em 0
+  font-size: 18px
+  color: $navy
+  border-bottom: 1px dotted $light_gray
+  text-transform: uppercase
+
+/* It prepares an element to display an image based on its attributes */
+=bg-build($img, $repeat: no-repeat, $scroll: scroll, $x: 0, $y: 0, $color: transparent)
+  background: image-url($img) $repeat $scroll $x $y $color
+  width: image-width($img)
+  height: image-height($img)
+
+//Form Label and Input styles
+=special-label()
+  +label-grey()
+  display: block
+  margin-bottom: 0.5em
+  +breakpoint($tablet-min)
+    width: $label-width
+    margin-right: $label-margin
+    margin-bottom: 0
+    float: left
+    vertical-align: top
+
+=special-input()
+  display: block
+  +breakpoint($tablet-min)
+    width: $input-width
+    float: left
+
+=special-description()
+  +breakpoint($tablet-min)
+    float: left
+    width: $input-width
+    margin-left: $label-width + $label-margin
+
+// Adds an icon in front of an element
+=icon-aware($icon, $margin: 5px)
+  display: inline-block
+  &:before
+    content: ''
+    @include bg-build($icon)
+    display: inline-block
+    vertical-align: middle
+    margin-right: $margin
+
+=menu-icons($arrayIcon)
+  @each $icon in $arrayIcon
+    &.#{$icon} a
+      &:before
+        content: ""
+        background: image-url("#{$icon}.png") no-repeat 50% 0%
+        width: 25px
+        height: 25px
+        position: relative
+        margin-top: -30px
+        margin-left: calc( 50% - 13px )
+        display: block
+      &.active,
+      &:hover
+        &:before
+          content: ""
+          background-position: 100% 100%
+
+=tabs($menu-icon, $items:4)
+  margin-top: 1px
+  border: none
+  margin-left: -27px
+  margin-right: -27px
+  background-color: rgba($main_blue, .26)
+  display: table
+  width: calc( 100% + 54px )
+  li
+    padding: 0
+    +calc( 'width', "100% / #{$items}" )
+    display: table-cell
+    float: none
+    +menu-icons($menu-icon)
+    &:hover
+      background-position: 100% 100%
+    &.active a
+      background-color: $main_blue
+      color: $white
+      border: none
+      &:before
+        background-position: 100% 100%
+      &:after
+        content: ""
+        width: 0
+        height: 0
+        border-left: 7px solid transparent
+        border-right: 7px solid transparent
+        border-bottom: 9px solid $white
+        margin-left: calc( 50% - 1.5em )
+        bottom: 0px
+        display: block
+        position: absolute
+    a
+      color: $main_blue
+      background-color: transparent
+      margin-right: 0
+      +border-radius(0px)
+      border: none
+      width: 100%
+      text-align: center
+      padding-top: 45px
+      text-transform: uppercase
+      font-size: 1em
+      margin-bottom: 0
+      white-space: normal
+      word-wrap: break-word
+      padding-bottom: 9px
+      position: relative
+      +transition(background-color 1s ease-out)
+      &.active,
+      &:hover
+        background-color: $main_blue
+        color: $white
+
+=calc($property, $expression)
+  #{$property}: -moz-calc(#{$expression})
+  #{$property}: -webkit-calc(#{$expression})
+  #{$property}: calc(#{$expression})
+
+=rotate($rotation)
+  -webkit-transform: rotate($rotation)
+  -moz-transform: rotate($rotation)
+  -ms-transform: rotate($rotation)
+  -o-transform: rotate($rotation)
+  transform: rotate($rotation)
+
+=box-sizing($box-sizing)
+  -webkit-box-sizing: $box-sizing
+  -moz-box-sizing: $box-sizing
+  box-sizing: $box-sizing
+
+=transition-property($transition)
+  -webkit-transition-property: $transition
+  -moz-transition-property: $transition
+  -o-transition-property: $transition
+  transition-property: $transition
+
+=transition-duration($duration)
+  -webkit-transition-duration: $duration
+  -moz-transition-duration: $duration
+  -o-transition-duration: $duration
+  transition-duration: $duration
+
+=transition-timing-function($timing)
+  -webkit-transition-timing-function: $timing
+  -moz-transition-timing-function: $timing
+  -o-transition-timing-function: $timing
+  transition-timing-function: $timing
+
+  // loop to create all needed elements automatically
+=generate-elements($end, $start: 1)
+  @for $i from $start through $end
+    &.p#{$i}
+      & .slice
+        @extend .rect-auto
+        & .bar:after
+          @extend .pie-fill
+        & .fill
+          @extend .pie-fill
+          @extend .pie
+
+// loop to rotate all 100 circles
+=generate-rotation($end, $start: 1)
+  @for $i from $start through $end
+    &.p#{$i}
+      .bar
+        $degs: (360/100*$i)
+        +rotate(#{$degs}deg)

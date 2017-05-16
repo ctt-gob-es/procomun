@@ -1,0 +1,199 @@
+.preface-block
+  max-width: 100%
+  margin: 0 auto
+  padding: 1px
+  +breakpoint($tablet-min)
+    max-width: $screen-sm
+  +breakpoint($desktop-only)
+    max-width: 912px
+
+.logged-in
+  #views-exposed-form-ode-search-page
+    margin: 0
+    & > div
+      position: relative
+      width: 100%
+#views-exposed-form-ode-search-page
+  margin: 0
+  & > div
+    position: relative
+    margin: 5px auto
+    border-bottom: 1px solid $charcoal
+    background: $white
+    padding: 0
+    .form-item
+      margin: 0
+    .form-type-textfield
+      input
+        width: 100%
+        height: 37px
+        border: 0
+        padding-top: 0
+        padding-left: 125px!important
+        color: $cold_gray
+        outline: none
+        .firefox &
+          padding-top: 4px
+        &::-webkit-input-placeholder
+          color: $gray
+          font-size: 16px
+          font-style: italic
+          line-height: 1.2em
+        &::-moz-placeholder
+          color: $gray
+          font-size: 16px
+          font-style: italic
+          line-height: 1.2em
+        &:-ms-input-placeholder
+          color: $gray
+          font-size: 16px
+          font-style: italic
+          line-height: 1.2em
+    .views-submit-button
+      position: absolute
+      top: 0
+      width: 100%
+      left: 0
+      .form-type-select
+        position: absolute
+        left: 0
+        & > label
+          display: none
+      input#edit-submit-ode-search
+        width: 20px
+        height: 20px
+        background: image-url('ico_lupa.png') 0 no-repeat
+        border: none
+        text-indent: -9999px
+        position: absolute
+        left: 0
+        top: 0px
+        margin-top: 0
+        padding: 0
+        outline: none
+  input.form-autocomplete
+    background: none
+  .views-exposed-widgets
+    margin-bottom: 0
+    #edit-query-wrapper
+      label
+        @extend .hide
+  .views-exposed-form
+    .views-exposed-widget
+      float: none
+      padding: 0
+  .chosen-container
+    width: 120px!important
+    margin: 0
+    .chosen-drop
+      background: $white
+      border: none
+      padding-top: 5px
+      ul
+        padding: 0
+        margin: 0
+        overflow: visible
+      li
+        color: $charcoal
+        width: 100%
+        font-size: 14px
+        text-align: left
+        &:hover, &.highlighted
+          background-color: $snow
+          a
+            font-weight: normal
+        &.result-selected
+          border-right: 4px solid $green
+          background-color: $white
+          a
+            font-weight: bold
+            cursor: default
+      input
+        @extend .hide
+        background: none
+
+    .chosen-results
+      max-height: none
+      li
+        padding: 5px 15px
+      a
+        color: $charcoal
+        text-decoration: none
+
+    a.chosen-single
+      background: $white
+      margin-top: 3px
+      height: 30px
+      +border-radius(0)
+      border-width: 0
+      border-right: 1px solid $charcoal
+      box-shadow: none
+      font-family: $font_pt_sans
+      text-transform: uppercase
+      font-size: 12px
+      color: $charcoal
+      padding: 3px 0 5px 20px
+      appearance: none
+      -moz-appearance: none
+      -webkit-appearance: none
+      span
+        padding-right: 15px
+        margin-right: 0
+        position: relative
+        &:after
+          background: image-url('flecha_oscura.png') 90% 50% no-repeat
+          width: 10px
+          height: 10px
+          content: ''
+          position: absolute
+          right: 5px
+          top: 3px
+      b
+        @extend .hide
+    &.chosen-with-drop
+      span
+        &:after
+          +rotate(180deg)
+          
+#autocomplete
+  margin-top: 0
+  border: 0
+  +box-shadow(0px 5px 8px $gray)
+  ul
+    border-left: 1px solid $light_gray
+    border-right: 1px solid $light_gray
+  li
+    border: 1px dotted $white
+    &:first-child
+      border-top: 1px solid $light_gray
+    &:last-child
+      border-bottom: 1px solid $light_gray
+    &.selected
+      color: $orange
+      background: $white
+      cursor: pointer
+  .search-api-autocomplete-suggestion
+    text-align: left
+    .autocomplete-suggestion-results
+      position: relative
+      right: auto
+  .autocomplete-suggestion-parent
+    font-weight: 700
+    font-size: 12px
+    color: $charcoal
+    text-transform: uppercase
+    border-bottom: 1px solid $light_gray
+    width: calc(100% - 20px)
+    display: block
+    padding-bottom: 5px
+    cursor: default
+    padding: 10px 0 5px
+    margin: 0 10px
+  .autocomplete-suggestion-suffix
+    display: block
+    padding: 10px
+
+.node-form #autocomplete
+  margin-top: 5px
+
+

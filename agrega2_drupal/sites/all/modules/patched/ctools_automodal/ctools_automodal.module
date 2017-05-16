@@ -1,0 +1,547 @@
+<?php
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function ctools_automodal_module_implements_alter(&$implementations, $hook) {
+  if ($hook == 'menu_alter') {
+    // Try to ensure that ctools_automodal_menu_alter() gets invoked last.
+    $group = $implementations['ctools_automodal'];
+    unset($implementations['ctools_automodal']);
+    $implementations['ctools_automodal'] = $group;
+  }
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+function ctools_automodal_menu_alter(&$items) {
+  $modal_paths = ctools_automodal_get_modal_paths();
+  $modal_regexp_pieces = array();
+
+  $convert_to_regexp = function ($value) { return preg_replace('/%[^\/]*/', '[^/]+', $value); };
+  foreach ($modal_paths as $path) {
+    if (empty($items[$path])) {
+      continue;
+    }
+    $item = $items[$path];
+    if ($item['page callback'] == 'drupal_get_form') {
+      $items["$path/%ctools_js"] = $item;
+      $items["$path/%ctools_js"]['page callback'] = 'ctools_automodal_get_form';
+      $items["$path/%ctools_js"]['page arguments'][] = substr_count($path, '/') + 1;
+      $items["$path/%ctools_js"]['type'] = MENU_CALLBACK;
+    }
+    else {
+      $items["$path/%ctools_js"] = $item + array('page arguments' => array());
+      $items["$path/%ctools_js"]['page callback'] = 'ctools_automodal_get_page';
+      array_unshift($items["$path/%ctools_js"]['page arguments'], $item['page callback']);
+      $items["$path/%ctools_js"]['page arguments'][] = substr_count($path, '/') + 1;
+      $items["$path/%ctools_js"]['type'] = MENU_CALLBACK;
+    }
+
+    $modal_regexp_pieces[] = $convert_to_regexp($path);
+    $modal_paths[] = $path;
+  }
+
+  if (!empty($modal_paths)) {
+    $all_paths = array_keys($items);
+    $modal_regexp = '@^' . implode('|^', $modal_regexp_pieces) . '@';
+    $not_modal_regexp = '@^' . implode('|^', array_map($convert_to_regexp, array_diff(preg_grep($modal_regexp, $all_paths), $modal_paths))) . '@';
+  }
+  else {
+    $modal_regexp = $not_modal_regexp = '';
+  }
+
+  variable_set('ctools_automodal_regexp', $modal_regexp);
+  variable_set('ctools_automodal_not_regexp', $not_modal_regexp);
+}
+
+/**
+ * Implements hook_page_delivery_callback_alter()
+ */
+function ctools_automodal_page_delivery_callback_alter(&$callback) {
+  // jQuery sets a HTTP_X_REQUESTED_WITH header of 'XMLHttpRequest'.
+  // If a page would normally be delivered as an html page, and it is called
+  // from jQuery, deliver it instead as an Ajax response.
+  if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest' && $callback == 'drupal_deliver_html_page') {
+    $path = ctools_automodal_get_system_uri();
+    if (ctools_automodal_is_path_modal($path)) {
+      $page_callback_result = ctools_automodal_get_page_callback_error($path);
+      if (is_int($page_callback_result)) {
+        ctools_automodal_deliver_error($path, $page_callback_result);
+      }
+    }
+  }
+}
+
+/**
+ * Returns URI of the request with stripped "nojs" or "ajax".
+ *
+ * @return string
+ */
+function ctools_automodal_get_system_uri() {
+  $path = drupal_parse_url(trim(request_uri(), '/'));
+  $path_parts = explode('/', $path['path']);
+  if (in_array(end($path_parts), array('nojs', 'ajax'))) {
+    array_pop($path_parts);
+    $path = implode('/', $path_parts);
+  }
+  return $path;
+}
+
+/**
+ * Check the menu path for access denied and not found errors.
+ *
+ * Returns MENU_NOT_FOUND, MENU_ACCESS_DENIED or NULL if no error was found.
+ *
+ * @param $path
+ * @return int|null
+ */
+function ctools_automodal_get_page_callback_error($path) {
+  $page_callback_result = NULL;
+  if ($router_item = menu_get_item($path)) {
+    if ($router_item['access'] == FALSE) {
+      $page_callback_result = MENU_ACCESS_DENIED;
+    }
+  }
+  else {
+    $page_callback_result = MENU_NOT_FOUND;
+  }
+  return $page_callback_result;
+}
+
+/**
+ * Package and send the result of a page callback to the browser as HTML.
+ *
+ * @param $page_callback_result
+ *   The result of a page callback. Can be one of:
+ *   - NULL: to indicate no content.
+ *   - An integer menu status constant: to indicate an error condition.
+ *   - A string of HTML content.
+ *   - A renderable array of content.
+ *
+ * @see drupal_deliver_page()
+ * @see drupal_deliver_html_page()
+ * @see ajax_prepare_response()
+ */
+function ctools_automodal_deliver_error($path, $page_callback_result) {
+  // Menu status constants are integers; page content is a string or array.
+  if (is_int($page_callback_result)) {
+    $output = '';
+    switch ($page_callback_result) {
+      case MENU_NOT_FOUND:
+        drupal_set_title(t('Page not found'));
+        $output = t('The requested page "@path" could not be found.', array('@path' => request_uri()));
+        break;
+
+      case MENU_ACCESS_DENIED:
+        drupal_set_title(t('Access denied'));
+        $output = t('You are not authorized to access this page.');
+        break;
+
+      case MENU_SITE_OFFLINE:
+        drupal_set_title(t('Site maintenance'));
+        $output = theme('maintenance_page', array('content' => filter_xss_admin(variable_get('maintenance_mode_message',
+          t('@site is currently under maintenance. We should be back shortly. Thank you for your patience.', array('@site' => variable_get('site_name', 'Drupal')))))));
+        break;
+    }
+
+    // If there is any error output render it and exit.
+    if ($output) {
+      ctools_include('modal');
+      ctools_include('ajax');
+      ctools_add_js('ajax-responder');
+
+      $commands = ctools_automodal_page_render($output);
+      drupal_alter('modal_error', $commands, $path, $page_callback_result);
+
+      print ajax_render($commands);
+      exit();
+    }
+  }
+}
+
+/**
+ * Check if an internal Drupal path should be converted to a modal link.
+ */
+function ctools_automodal_is_path_modal($path) {
+  $modal_regexp = variable_get('ctools_automodal_regexp');
+  $not_modal_regexp = variable_get('ctools_automodal_not_regexp');
+  if (!$modal_regexp || !$not_modal_regexp) {
+    return FALSE;
+  }
+  return preg_match($modal_regexp, $path) && !preg_match($not_modal_regexp, $path);
+}
+
+/**
+ * Implements hook_preprocess_link().
+ */
+function ctools_automodal_preprocess_link(&$variables) {
+  static $ctools_modal_included = FALSE;
+
+  if (ctools_automodal_is_path_modal($variables['path'])) {
+
+    // Only process the modal includes once per request.
+    if (!$ctools_modal_included) {
+      ctools_include('modal');
+      ctools_modal_add_js();
+      $ctools_modal_included = TRUE;
+    }
+
+    $options = ctools_automodal_get_modal_options($variables['path']);
+
+    if (!empty($options['style'])) {
+      ctools_automodal_include_style($options['style']);
+      $variables['options']['attributes']['class'][] = 'ctools-modal-' . $options['style'];
+    }
+
+    $variables['options']['attributes']['class'][] = 'ctools-use-modal';
+
+    if (strpos($variables['path'], 'nojs') === FALSE) {
+      $variables['path'] .= '/nojs';
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_menu_local_action().
+ */
+function ctools_automodal_preprocess_menu_local_action(&$variables) {
+  // Prepare the link array in the way that the hook_preprocess_link() expects.
+  $link = array(
+    'path' => &$variables['element']['#link']['href'],
+    'options' => &$variables['element']['#link']['localized_options'],
+    'text' => &$variables['element']['#link']['title'],
+  );
+  ctools_automodal_preprocess_link($link);
+}
+
+/**
+ * Implemenation of hook_theme().
+ */
+function ctools_automodal_theme($existing, $type, $theme, $path) {
+  return array(
+    'ctools_automodal_confirmation' => array(
+      'variables' => array(
+        'messages' => NULL,
+        'confirmation' => NULL,
+        'actions' => NULL,
+      ),
+    ),
+  );
+}
+
+/**
+ * Return modal configuration for given path.
+ *
+ * @param string $path
+ * @return array|NULL
+ */
+function ctools_automodal_get_modal_options($path) {
+  $modal_options = NULL;
+  $ctools_modal_paths = ctools_automodal_get_all_modal_options();
+
+  $convert_to_regexp = function ($value) { return preg_replace('/%[^\/]*/', '[^/]+', $value); };
+  foreach ($ctools_modal_paths as $ctools_modal_path => $options) {
+    $modal_regexp = '@^' . $convert_to_regexp($ctools_modal_path) . '@';
+    if (preg_match($modal_regexp, $path)) {
+      $modal_options = $options;
+      break;
+    }
+  }
+
+  if (isset($modal_options)) {
+    $modal_options += array(
+      'style' => '',
+      'confirm' => FALSE,
+      'close' => FALSE,
+      'confirm' => FALSE,
+      'reload' => FALSE,
+      'redirect' => '',
+    );
+    if ($modal_options['confirm']) {
+      $modal_options['confirm'] += array(
+        'title' => t('Confirmation'),
+        'text' => t('The form was submitted.'),
+        'callback' => 'ctools_automodal_confirmation_callback',
+      );
+    }
+  };
+
+  return $modal_options;
+}
+
+/**
+ * Return keyed array of modal paths and options returned by hook_modal_paths() implementations.
+ *
+ * @return array
+ */
+function ctools_automodal_get_all_modal_options() {
+  static $ctools_modal_paths = NULL;
+
+  if (is_null($ctools_modal_paths)) {
+    $ctools_modal_paths = module_invoke_all('modal_paths');
+    drupal_alter('modal_paths', $ctools_modal_paths);
+  }
+
+  return $ctools_modal_paths;
+}
+
+/**
+ * Return array of modal paths returned by hook_modal_paths() implementations.
+ *
+ * @return array
+ */
+function ctools_automodal_get_modal_paths() {
+  return array_keys(ctools_automodal_get_all_modal_options());
+}
+
+/**
+ * Returns CTools modal style definition.
+ *
+ * http://drupal.org/node/872072#comment-3391816
+ *
+ * @param string $style_id
+ * @return array|NULL
+ */
+function ctools_automodal_get_style($style_id) {
+  static $ctools_modal_styles = NULL;
+
+  if (is_null($ctools_modal_styles)) {
+    $ctools_modal_styles = module_invoke_all('modal_styles');
+    drupal_alter('modal_styles', $ctools_modal_styles);
+  }
+
+  return isset($ctools_modal_styles[$style_id]) ? $ctools_modal_styles[$style_id] : NULL;
+}
+
+/**
+ * Includes CTools modal style in the page.
+ *
+ * @param string $style_id
+ * @return boolean
+ */
+function ctools_automodal_include_style($style_id) {
+  static $ctools_modal_styles = array();
+
+  if (!isset($ctools_modal_styles[$style_id])) {
+    $style = ctools_automodal_get_style($style_id);
+    if ($style) {
+      drupal_add_js(array($style_id => $style), 'setting');
+      $ctools_modal_styles[$style_id] = TRUE;
+    }
+    else {
+      $ctools_modal_styles[$style_id] = FALSE;
+    }
+  }
+
+  return $ctools_modal_styles[$style_id];
+}
+
+/**
+ * Dirty, dirty function to fix the 'current path' global on modal pages.
+ */
+function _ctools_automodal_fix_get_q() {
+  $path = current_path();
+  // Pop off the /js or /nojs suffix to the path.
+  $path = substr($path, 0, strrpos($path, '/'));
+  // @todo Shower multiple times after modifing global variables.
+  $_GET['q'] = $path;
+}
+
+
+/**
+ * Returns redirect path if found.
+ *
+ * Search for the redirect path in the following order:
+ *  1. destination query string,
+ *  2. modal redirect option
+ *  3. form state redirect property
+ *
+ * @param $modal_options
+ * @param $form_state
+ *
+ * @return array
+ *
+ * @see ctools_automodal_get_form()
+ */
+function _ctools_automodal_get_form_redirect_path($modal_options, $form_state) {
+  $path = NULL;
+  $options = array();
+  if ($modal_options['redirect'] !== FALSE && ($modal_options['redirect'] || $form_state['redirect'] || !empty($_GET['destination']))) {
+    if (isset($_GET['destination']) && !url_is_external($_GET['destination'])) {
+      $options = drupal_parse_url($_GET['destination']);
+      $path = $options['path'];
+    }
+    elseif (is_array($modal_options['redirect'])) {
+      list($path, $options) = $modal_options['redirect'] + array(NULL, array());
+    }
+    elseif (is_string($modal_options['redirect'])) {
+      $path = $modal_options['redirect'];
+    }
+    elseif (is_array($form_state['redirect'])) {
+      list($path, $options) = $form_state['redirect'] + array(NULL, array());
+    }
+    elseif (is_string($form_state['redirect'])) {
+      $path = $form_state['redirect'];
+    }
+  }
+  return array($path, $options);
+}
+
+/**
+ * Renders form confirm page.
+ *
+ * @param $modal_options
+ * @return array
+ *
+ * @see ctools_automodal_get_form()
+ */
+function _ctools_automodal_get_form_confirm_page($modal_options, $form_state) {
+  $confirmation = call_user_func($modal_options['confirm']['callback'], array($modal_options['confirm'], $form_state));
+  $rendered_confirmation = theme('ctools_automodal_confirmation', $confirmation);
+  return array($modal_options['confirm']['title'], $rendered_confirmation);
+}
+
+/**
+ * Display a Drupal form using CTools modal or normal page display.
+ */
+function ctools_automodal_get_form() {
+
+  $args = func_get_args();
+  $form_id = array_shift($args);
+  $ajax = array_pop($args);
+
+  _ctools_automodal_fix_get_q();
+
+  // Load modal options.
+  $modal_options = ctools_automodal_get_modal_options(current_path());
+  if ($ajax) {
+    ctools_include('modal');
+    ctools_include('ajax');
+    ctools_add_js('ajax-responder');
+
+    $form_state = array(
+      'ajax' => $ajax,
+      'build_info' => array('args' => $args),
+    );
+    $commands = ctools_modal_form_wrapper($form_id, $form_state);
+
+    // Handle submitted form.
+    if (!empty($form_state['executed']) && empty($form_state['rebuild'])) {
+      // Overwrite the form wrapper output.
+      $commands = array();
+      $commands[] = ctools_modal_command_loading();
+
+      // Close the form or display the confirmation page.
+      if ($modal_options['close']) {
+        $commands[] = ctools_modal_command_dismiss();
+      }
+      elseif ($modal_options['confirm']) {
+        list($title, $confirm_page) = _ctools_automodal_get_form_confirm_page($modal_options, $form_state);
+        $commands[] = ctools_modal_command_display($title, $confirm_page);
+      }
+
+      // Redirect or reload current page.
+      list($path, $options) = _ctools_automodal_get_form_redirect_path($modal_options, $form_state);
+      if (!empty($path)) {
+        $commands[] = ctools_ajax_command_redirect($path, 0, $options);
+      }
+      elseif ($modal_options['reload']) {
+        $commands[] = ctools_ajax_command_reload();
+      }
+    }
+
+    print ajax_render($commands);
+    exit();
+  }
+  else {
+    array_unshift($args, $form_id);
+    return call_user_func_array('drupal_get_form', $args);
+  }
+}
+
+/**
+ * Display a normal Drupal page using CTools modal.
+ */
+function ctools_automodal_get_page() {
+  $args = func_get_args();
+  $callback = array_shift($args);
+  $ajax = array_pop($args);
+
+  _ctools_automodal_fix_get_q();
+
+  if (function_exists($callback)) {
+    $output = call_user_func_array($callback, $args);
+
+    if ($ajax) {
+      ctools_include('modal');
+      ctools_include('ajax');
+      $commands = ctools_automodal_page_render($output);
+
+      if (empty($commands)) {
+        $commands[] = ctools_modal_command_loading();
+        if (!empty($_GET['destination'])) {
+          $commands[] = ctools_ajax_command_redirect($_GET['destination']);
+        }
+      }
+
+      print ajax_render($commands);
+      exit();
+    }
+    else {
+      return $output;
+    }
+  }
+  else {
+    return MENU_NOT_FOUND;
+  }
+}
+
+/**
+ * Render a page into an AJAX display.
+ */
+function ctools_automodal_page_render($output) {
+  if (is_array($output)) {
+    $output = drupal_render($output);
+  }
+
+  // If there are messages for the form, render them.
+  if ($messages = theme('status_messages')) {
+    $output = '<div class="messages">' . $messages . '</div>' . $output;
+  }
+
+  $commands = array();
+  $title = drupal_get_title();
+  $commands[] = ctools_modal_command_display($title, $output);
+  return $commands;
+}
+
+/**
+ * Default confirmation callback.
+ *
+ * @param array $options
+ */
+function ctools_automodal_confirmation_callback($vars) {
+  $options = array_shift($vars);
+  $confirmation = array();
+  $confirmation['messages']['#markup'] = theme('status_messages');
+  $confirmation['confirmation']['#markup'] = $options['text'];
+  $confirmation['actions']['#markup'] = '<a class="button dismiss" onclick="Drupal.CTools.Modal.modal_dismiss();" href="#">' . t('Dismiss') . '</a>';
+  return $confirmation;
+}
+
+/**
+ * Theme modal confirmation page.
+ */
+function theme_ctools_automodal_confirmation($variables) {
+  $output = '';
+  $output .= '<div class="ctools-automodal-confirmation-wrapper">';
+  $output .= render($variables['messages']);
+  $output .= '<div class="confirmation">';
+  $output .= render($variables['confirmation']);
+  $output .= '</div>';
+  $output .= render($variables['actions']);
+  $output .= '</div>';
+  return $output;
+}

@@ -1,0 +1,78 @@
+/* FOOTER */
+.site-footer
+  bottom: 0
+  width: 100%
+footer#colophon
+  .container
+    padding-bottom: 20px  
+  // Botton
+  .footer-wrapper
+    padding: 1.5em 0 0 0
+    border-top: 1px dashed $cold_gray
+    .row
+      display: table
+      > .logo-footer
+        display: table-cell
+        vertical-align: middle
+        float: none
+        a
+          display: block
+          text-align: center
+        &.first
+          padding-left: 16px
+          a
+            text-align: left
+        &.last
+          padding-right: 16px
+          a
+            text-align: right
+        &.logo-ministerio
+          width: 290px
+        &.logo-educalab
+          width: 155px
+        &.logo-intef
+          width: 275px
+        &.logo-red
+          width: 164px
+        &.logo-feder
+          width: 284px
+    .version
+      color: $light_gray
+      display: block
+      padding-top: 30px
+    .container
+      padding-bottom: 0
+// Pre-Footer
+.footer-content
+  padding-top: 2em
+  .lists
+    padding-left: 0
+    > div:first-child
+      padding-left: 0
+    h2
+      text-transform: uppercase
+      font-size: 18px
+      color: lighten($gray, 5%)
+      margin-top: 0
+      margin-bottom: .75em
+    a
+      display: block
+      margin: 1em 0
+  .social
+    a
+      display: inline-block
+      margin: 0 .5em
+      width: 35px
+      height: 35px
+      text-indent: -99999px
+      margin-top: -25px
+      color: transparent
+      @each $rrss in twitter, facebook, youtube, pinterest, procomun-rss
+        &.#{$rrss}
+          background: image-url('#{$rrss}.png') center no-repeat
+      &:hover
+        opacity: 0.8
+// Maintenance
+.maintenance 
+  .site-footer
+    padding: 20px

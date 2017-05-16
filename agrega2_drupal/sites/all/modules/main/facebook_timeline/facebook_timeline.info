@@ -1,0 +1,6 @@
+name = Facebook Timeline
+core = 7.x
+version = "7.x-1.0"
+description = Provides a custom block which renders a timeline from Facebook
+project = "Agrega2"
+package = Agrega2

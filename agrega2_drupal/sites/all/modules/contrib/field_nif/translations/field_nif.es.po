@@ -1,0 +1,69 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  field_nif.module: n/a
+#  field_nif.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2014-07-23 14:51+0200\n"
+"PO-Revision-Date: 2014-07-23 14:51+0200\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: field_nif.module:14;29
+msgid "NIF/CIF/NIE"
+msgstr "NIF/CIF/NIE"
+
+#: field_nif.module:15
+msgid "Stores and validates an NIF/CIF/NIE field."
+msgstr "Guarda y valida un campo NIF/CIF/NIE"
+
+#: field_nif.module:84
+msgid "NIF/CIF/NIE number needs to be 9 characters long"
+msgstr "Un número de NIF/CIF/NIE tiene que tener 9 carácteres"
+
+#: field_nif.module:98
+msgid "NIF/CIF/NIE number is not correct"
+msgstr "El número de NIF/CIF/NIE no es correcto"
+
+#: field_nif.module:110
+msgid "NIF Field formatter"
+msgstr "Formato del campo NIF"
+
+#: field_nif.module:159
+msgid "Supported id number types"
+msgstr "Tipos de id soportados"
+
+#: field_nif.module:162
+msgid "NIF"
+msgstr "NIF"
+
+#: field_nif.module:163
+msgid "CIF"
+msgstr "CIF"
+
+#: field_nif.module:164
+msgid "NIE"
+msgstr "NIE"
+
+#: field_nif.info:0
+msgid "NIF Field"
+msgstr "Campo NIF"
+
+#: field_nif.info:0
+msgid "Defines a NIF/CIF/NIE field"
+msgstr "Define un campo NIF/CIF/NIE"
+
+#: field_nif.info:0
+msgid "Fields"
+msgstr "Campos"
+

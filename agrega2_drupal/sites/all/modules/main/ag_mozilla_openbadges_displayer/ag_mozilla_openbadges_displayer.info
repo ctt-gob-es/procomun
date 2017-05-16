@@ -1,0 +1,5 @@
+name = Agrega Mozilla Openbadges Displayer
+description = Display mozilla openbadges with public badges.
+core = 7.x
+package = Agrega2
+

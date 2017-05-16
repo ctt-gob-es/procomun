@@ -1,0 +1,159 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  control_center_communities.views_default.inc: n/a
+#  control_center_communities.module: n/a
+#  control_center_communities.info: n/a
+#  plugins/content_types/community_adduser.inc: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2015-06-29 12:16+0200\n"
+"PO-Revision-Date: 2015-06-29 12:16+0200\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: control_center_communities.views_default.inc:311
+msgid "Master"
+msgstr "Maestro"
+
+#: control_center_communities.views_default.inc:312
+msgid "más"
+msgstr ""
+
+#: control_center_communities.views_default.inc:313
+msgid "Aplicar"
+msgstr ""
+
+#: control_center_communities.views_default.inc:314
+msgid "Reiniciar"
+msgstr ""
+
+#: control_center_communities.views_default.inc:315
+msgid "Ordenar por"
+msgstr ""
+
+#: control_center_communities.views_default.inc:316
+msgid "Asc"
+msgstr "Asc"
+
+#: control_center_communities.views_default.inc:317
+msgid "Desc"
+msgstr "Desc"
+
+#: control_center_communities.views_default.inc:318
+msgid "Elementos por página"
+msgstr ""
+
+#: control_center_communities.views_default.inc:319
+msgid "- Todos -"
+msgstr ""
+
+#: control_center_communities.views_default.inc:320
+msgid "Desplazamiento"
+msgstr ""
+
+#: control_center_communities.views_default.inc:321
+msgid "« primera"
+msgstr ""
+
+#: control_center_communities.views_default.inc:322
+msgid "‹ anterior"
+msgstr ""
+
+#: control_center_communities.views_default.inc:323
+msgid "siguiente ›"
+msgstr ""
+
+#: control_center_communities.views_default.inc:324
+msgid "última »"
+msgstr ""
+
+#: control_center_communities.views_default.inc:325
+msgid "Esta comunidad actualmente no tiene ningún usuario suscrito."
+msgstr ""
+
+#: control_center_communities.views_default.inc:326
+msgid "Profile"
+msgstr "Perfil"
+
+#: control_center_communities.views_default.inc:327
+msgid "field collection item from field_name_surname"
+msgstr ""
+
+#: control_center_communities.views_default.inc:328
+msgid "- Choose an operation -"
+msgstr "- Elegir una operación -"
+
+#: control_center_communities.views_default.inc:329
+msgid "Nombre"
+msgstr ""
+
+#: control_center_communities.views_default.inc:330
+msgid "Correo electrónico"
+msgstr ""
+
+#: control_center_communities.views_default.inc:331
+msgid "Todo(s)"
+msgstr ""
+
+#: control_center_communities.views_default.inc:332
+msgid "Apellidos"
+msgstr ""
+
+#: control_center_communities.views_default.inc:333
+msgid "Agrega2 communities user administration"
+msgstr ""
+
+#: control_center_communities.views_default.inc:334
+msgid "more"
+msgstr "más"
+
+#: control_center_communities.views_default.inc:335
+msgid "View panes"
+msgstr "Vista panel"
+
+#: control_center_communities.module:14
+msgid "Control Center - Administer community users"
+msgstr "Centro de Control - Administrar los usuarios de la comunidad"
+
+#: control_center_communities.module:35;35
+msgid "Users list"
+msgstr "Listado de usuarios"
+
+#: control_center_communities.module:36;36
+msgid "Add user to community"
+msgstr "Añadir usuario a la comunidad"
+
+#: control_center_communities.module:74
+msgid "Remove user from community"
+msgstr "Eliminar usuario de la comunidad"
+
+#: control_center_communities.info:0
+msgid "Control center communities"
+msgstr "Centro de Control - Comunidades"
+
+#: control_center_communities.info:0
+msgid "Agrega2"
+msgstr "Agrega2"
+
+#: plugins/content_types/community_adduser.inc:12
+msgid "Community manage people form"
+msgstr ""
+
+#: plugins/content_types/community_adduser.inc:13
+msgid "Custom ct pane form add community's users."
+msgstr ""
+
+#: plugins/content_types/community_adduser.inc:14
+msgid "Form"
+msgstr "Formulario"
+

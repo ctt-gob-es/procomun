@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest xmlns:lomes="http://ltsc.ieee.org/xsd/LOM"
+    xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_v1p3"
+    xmlns:imsss="http://www.imsglobal.org/xsd/imsss"
+    xmlns:adlseq="http://www.adlnet.org/xsd/adlseq_v1p3"
+    xmlns:adlnav="http://www.adlnet.org/xsd/adlnav_v1p3"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.imsglobal.org/xsd/imscp_v1p1"
+    xsi:schemaLocation="http://www.imsglobal.org/xsd/imscp_v1p1 imscp_v1p1.xsd http://ltsc.ieee.org/xsd/LOM lomCustom.xsd http://www.adlnet.org/xsd/adlcp_v1p3 adlcp_v1p3.xsd http://www.imsglobal.org/xsd/imsss imsss_v1p0.xsd http://www.adlnet.org/xsd/adlseq_v1p3 adlseq_v1p3.xsd http://www.adlnet.org/xsd/adlnav_v1p3 adlnav_v1p3.xsd" identifier="ODE-7abcd892-7f78-383d-9566-71cd25357bfe">
+    <metadata>
+        <schema>ADL SCORM</schema>
+        <schemaversion>2004 3rd Edition</schemaversion>
+        <lomes:lom>
+            <lomes:general uniqueElementName="general">
+                <lomes:identifier>
+                    <lomes:catalog uniqueElementName="catalog">Plataforma Agrega</lomes:catalog>
+                    <lomes:entry uniqueElementName="entry">ODE-7abcd892-7f78-383d-9566-71cd25357bfe</lomes:entry>
+                </lomes:identifier>
+                <lomes:identifier>
+                    <lomes:catalog uniqueElementName="catalog">Catálogo unificado mec-red.es-ccaa de identificación de ODE</lomes:catalog>
+                    <lomes:entry uniqueElementName="entry">es_2014062012_9090433</lomes:entry>
+                </lomes:identifier>
+                <lomes:title uniqueElementName="title">
+                    <lomes:string language="es">Test Emergya</lomes:string>
+                </lomes:title>
+                <lomes:language>es</lomes:language>
+                <lomes:description>
+                    <lomes:string language="es">Descripción del ejemplo Emergya</lomes:string>
+                </lomes:description>
+                <lomes:aggregationLevel uniqueElementName="aggregationLevel">
+                    <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+                    <lomes:value uniqueElementName="value">2</lomes:value>
+                </lomes:aggregationLevel>
+            </lomes:general>
+            <lomes:lifeCycle uniqueElementName="lifeCycle">
+                <lomes:contribute>
+                    <lomes:role uniqueElementName="role">
+                        <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+                        <lomes:value uniqueElementName="value">publisher</lomes:value>
+                    </lomes:role>
+                    <lomes:entity>BEGIN:VCARD VERSION:3.0 FN: jgar@intef.educacion.es EMAIL;TYPE=INTERNET:  ORG: Plataforma Agrega</lomes:entity>
+                    <lomes:date uniqueElementName="date">
+                        <lomes:dateTime uniqueElementName="dateTime">2014-06-20T09:04:33.682Z</lomes:dateTime>
+                        <lomes:description>
+                            <lomes:string>Fecha de publicación en Agrega</lomes:string>
+                        </lomes:description>
+                    </lomes:date>
+                </lomes:contribute>
+                <lomes:contribute>
+                    <lomes:role uniqueElementName="role">
+                        <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+                        <lomes:value uniqueElementName="value">author</lomes:value>
+                    </lomes:role>
+                    <lomes:entity>BEGIN:VCARD VERSION:3.0 FN:Juan Garrido EMAIL;TYPE=INTERNET:jgar@intef.educacion.es ORG: END:VCARD​</lomes:entity>
+                    <lomes:date uniqueElementName="date">
+                        <lomes:dateTime uniqueElementName="dateTime">2014-06-20</lomes:dateTime>
+                        <lomes:description>
+                            <lomes:string>Fecha de creación del ODE</lomes:string>
+                        </lomes:description>
+                    </lomes:date>
+                </lomes:contribute>
+                <lomes:contribute>
+                    <lomes:role uniqueElementName="role">
+                        <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+                        <lomes:value uniqueElementName="value">author</lomes:value>
+                    </lomes:role>
+                    <lomes:entity>BEGIN:VCARD VERSION:3.0 FN:Octavio González EMAIL;TYPE=INTERNET:ogonzalez@emergya.com ORG:Emergya END:VCARD​</lomes:entity>
+                    <lomes:date uniqueElementName="date">
+                        <lomes:dateTime uniqueElementName="dateTime">2014-06-20</lomes:dateTime>
+                        <lomes:description>
+                            <lomes:string>Fecha de creación del ODE</lomes:string>
+                        </lomes:description>
+                    </lomes:date>
+                </lomes:contribute>
+            </lomes:lifeCycle>
+            <lomes:metaMetadata uniqueElementName="metaMetadata">
+                <lomes:metadataSchema>LOM-ESv1.0</lomes:metadataSchema>
+                <lomes:language>es</lomes:language>
+            </lomes:metaMetadata>
+            <lomes:technical uniqueElementName="technical">
+                <lomes:location>http://agrega-2hapre.pntic.mec.es/ODE/es/es_2014062012_9090433</lomes:location>
+            </lomes:technical>
+            <lomes:educational>
+                <lomes:learningResourceType>
+                    <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+                    <lomes:value uniqueElementName="value">integrated media</lomes:value>
+                </lomes:learningResourceType>
+                <lomes:learningResourceType>
+                    <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+                    <lomes:value uniqueElementName="value">digital dictionary</lomes:value>
+                </lomes:learningResourceType>
+                <lomes:learningResourceType>
+                    <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+                    <lomes:value uniqueElementName="value">digital encyclopaedia</lomes:value>
+                </lomes:learningResourceType>
+                <lomes:learningResourceType>
+                    <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+                    <lomes:value uniqueElementName="value">real project</lomes:value>
+                </lomes:learningResourceType>
+                <lomes:intendedEndUserRole>
+                    <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+                    <lomes:value uniqueElementName="value">gifted learner</lomes:value>
+                </lomes:intendedEndUserRole>
+                <lomes:intendedEndUserRole>
+                    <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+                    <lomes:value uniqueElementName="value">group</lomes:value>
+                </lomes:intendedEndUserRole>
+                <lomes:context>
+                    <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+                    <lomes:value uniqueElementName="value">real environment</lomes:value>
+                </lomes:context>
+                <lomes:context>
+                    <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+                    <lomes:value uniqueElementName="value">home</lomes:value>
+                </lomes:context>
+                <lomes:context>
+                    <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+                    <lomes:value uniqueElementName="value">mixed</lomes:value>
+                </lomes:context>
+                <lomes:context>
+                    <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+                    <lomes:value uniqueElementName="value">face to face</lomes:value>
+                </lomes:context>
+                <lomes:description>
+                    <lomes:string language="es">Conocimiento previo: Conocimiento previo del ejemplo Emergya</lomes:string>
+                </lomes:description>
+                <lomes:description>
+                    <lomes:string language="es">Objetivos didácticos: Objetivos didácticos del ejemplo Emergya</lomes:string>
+                </lomes:description>
+                <lomes:language>es</lomes:language>
+            </lomes:educational>
+            <lomes:rights uniqueElementName="rights">
+                <lomes:copyrightAndOtherRestrictions uniqueElementName="copyrightAndOtherRestrictions">
+                    <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+                    <lomes:value uniqueElementName="value">creative commons: attribution - non derived work</lomes:value>
+                </lomes:copyrightAndOtherRestrictions>
+                <lomes:access uniqueElementName="access">
+                    <lomes:accessType uniqueElementName="accessType">
+                        <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+                        <lomes:value uniqueElementName="value">universal</lomes:value>
+                    </lomes:accessType>
+                    <lomes:description>
+                        <lomes:string>es_andalucia_20090324,es_aragon_20080930,es_baleares_200907131205,es_canarias_20090114,es_cantabria_20081215,es_clm_20091103121523455,es_euskadi_20100423,es_extremadura_20111222,galicia20091006,es_larioja_20081107,es_{nodo}_20080923,es_murcia_20080422121523455,es_na_90348943,es_valencia_201101241416,es_cnice_20080623</lomes:string>
+                    </lomes:description>
+                </lomes:access>
+            </lomes:rights>
+            <lomes:classification>
+                <lomes:purpose uniqueElementName="purpose">
+                    <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+                    <lomes:value uniqueElementName="value">discipline</lomes:value>
+                </lomes:purpose>
+                <lomes:taxonPath>
+                    <lomes:source uniqueElementName="source">
+                        <lomes:string>Árbol curricular LOE 2006</lomes:string>
+                    </lomes:source>
+                    <lomes:taxon>
+                        <lomes:id uniqueElementName="id">2</lomes:id>
+                        <lomes:entry>
+                            <lomes:string>Primary Education</lomes:string>
+                        </lomes:entry>
+                    </lomes:taxon>
+                    <lomes:taxon>
+                        <lomes:id uniqueElementName="id">2.2</lomes:id>
+                        <lomes:entry>
+                            <lomes:string>Second stage</lomes:string>
+                        </lomes:entry>
+                    </lomes:taxon>
+                    <lomes:taxon>
+                        <lomes:id uniqueElementName="id">2.2.2</lomes:id>
+                        <lomes:entry>
+                            <lomes:string>Artistic Education</lomes:string>
+                        </lomes:entry>
+                    </lomes:taxon>
+                    <lomes:taxon>
+                        <lomes:id uniqueElementName="id">2.2.2.10</lomes:id>
+                        <lomes:entry>
+                            <lomes:string>Music and dance</lomes:string>
+                        </lomes:entry>
+                    </lomes:taxon>
+                </lomes:taxonPath>
+            </lomes:classification>
+            <lomes:classification>
+                <lomes:purpose uniqueElementName="purpose">
+                    <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+                    <lomes:value uniqueElementName="value">discipline</lomes:value>
+                </lomes:purpose>
+                <lomes:taxonPath>
+                    <lomes:source uniqueElementName="source">
+                        <lomes:string>Árbol curricular LOE 2006</lomes:string>
+                    </lomes:source>
+                    <lomes:taxon>
+                        <lomes:id uniqueElementName="id">4</lomes:id>
+                        <lomes:entry>
+                            <lomes:string>High Secundar Education (Bachillerato)</lomes:string>
+                        </lomes:entry>
+                    </lomes:taxon>
+                    <lomes:taxon>
+                        <lomes:id uniqueElementName="id">4.2</lomes:id>
+                        <lomes:entry>
+                            <lomes:string>Specific subjects</lomes:string>
+                        </lomes:entry>
+                    </lomes:taxon>
+                    <lomes:taxon>
+                        <lomes:id uniqueElementName="id">4.2.10</lomes:id>
+                        <lomes:entry>
+                            <lomes:string>Musical Analysis I</lomes:string>
+                        </lomes:entry>
+                    </lomes:taxon>
+                    <lomes:taxon>
+                        <lomes:id uniqueElementName="id">4.2.10.2</lomes:id>
+                        <lomes:entry>
+                            <lomes:string>Musical form</lomes:string>
+                        </lomes:entry>
+                    </lomes:taxon>
+                </lomes:taxonPath>
+            </lomes:classification>
+            <lomes:classification>
+                <lomes:purpose uniqueElementName="purpose">
+                    <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+                    <lomes:value uniqueElementName="value">educational level</lomes:value>
+                </lomes:purpose>
+                <lomes:taxonPath>
+                    <lomes:source uniqueElementName="source">
+                        <lomes:string>Nivel educativo LOM-ESv1.0</lomes:string>
+                    </lomes:source>
+                    <lomes:taxon>
+                        <lomes:id uniqueElementName="id">3</lomes:id>
+                        <lomes:entry>
+                            <lomes:string>Primary Education</lomes:string>
+                        </lomes:entry>
+                    </lomes:taxon>
+                    <lomes:taxon>
+                        <lomes:id uniqueElementName="id">3.3</lomes:id>
+                        <lomes:entry>
+                            <lomes:string>Third stage</lomes:string>
+                        </lomes:entry>
+                    </lomes:taxon>
+                    <lomes:taxon>
+                        <lomes:id uniqueElementName="id">3.3.2</lomes:id>
+                        <lomes:entry>
+                            <lomes:string>Sixth year</lomes:string>
+                        </lomes:entry>
+                    </lomes:taxon>
+                </lomes:taxonPath>
+            </lomes:classification>
+            <lomes:classification>
+                <lomes:purpose uniqueElementName="purpose">
+                    <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+                    <lomes:value uniqueElementName="value">educational level</lomes:value>
+                </lomes:purpose>
+                <lomes:taxonPath>
+                    <lomes:source uniqueElementName="source">
+                        <lomes:string>Nivel educativo LOM-ESv1.0</lomes:string>
+                    </lomes:source>
+                    <lomes:taxon>
+                        <lomes:id uniqueElementName="id">3</lomes:id>
+                        <lomes:entry>
+                            <lomes:string>Primary Education</lomes:string>
+                        </lomes:entry>
+                    </lomes:taxon>
+                    <lomes:taxon>
+                        <lomes:id uniqueElementName="id">3.3</lomes:id>
+                        <lomes:entry>
+                            <lomes:string>Third stage</lomes:string>
+                        </lomes:entry>
+                    </lomes:taxon>
+                    <lomes:taxon>
+                        <lomes:id uniqueElementName="id">3.3.1</lomes:id>
+                        <lomes:entry>
+                            <lomes:string>Fifth year</lomes:string>
+                        </lomes:entry>
+                    </lomes:taxon>
+                </lomes:taxonPath>
+            </lomes:classification>
+            <lomes:classification>
+                <lomes:purpose uniqueElementName="purpose">
+                    <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+                    <lomes:value uniqueElementName="value">educational level</lomes:value>
+                </lomes:purpose>
+                <lomes:taxonPath>
+                    <lomes:source uniqueElementName="source">
+                        <lomes:string>Nivel educativo LOM-ESv1.0</lomes:string>
+                    </lomes:source>
+                    <lomes:taxon>
+                        <lomes:id uniqueElementName="id">8</lomes:id>
+                        <lomes:entry>
+                            <lomes:string>Vocational Training</lomes:string>
+                        </lomes:entry>
+                    </lomes:taxon>
+                    <lomes:taxon>
+                        <lomes:id uniqueElementName="id">8.1</lomes:id>
+                        <lomes:entry>
+                            <lomes:string>Training course intermediate level</lomes:string>
+                        </lomes:entry>
+                    </lomes:taxon>
+                </lomes:taxonPath>
+            </lomes:classification>
+        </lomes:lom>
+    </metadata>
+    <organizations default="ORG-08180448-bf1c-48c6-9b01-b004419672b1">
+        <organization
+            identifier="ORG-08180448-bf1c-48c6-9b01-b004419672b1" structure="hierarchical">
+            <title>Tabla de contenido</title>
+            <item identifier="ITEM-1ded57d5-ce48-40f0-a6d9-7fe9d099c2f8" identifierref="RES-2ea74a96-46bc-4723-9edf-b326d20e5c72">
+                <title>Ejemplo Emergya</title>
+            </item>
+        </organization>
+    </organizations>
+    <resources>
+        <resource identifier="RES-2ea74a96-46bc-4723-9edf-b326d20e5c72"
+            type="webcontent" adlcp:scormType="asset" href="xsdvi_bd0ac84f-73ee-1c1c-922a-abe0c01d60f1.log">
+            <file href="xsdvi_bd0ac84f-73ee-1c1c-922a-abe0c01d60f1.log"/>
+        </resource>
+    </resources>
+</manifest>

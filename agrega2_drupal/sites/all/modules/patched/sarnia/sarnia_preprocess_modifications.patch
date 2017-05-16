@@ -1,0 +1,39 @@
+diff --git a/sites/all/modules/patched/sarnia/sarnia.module b/sites/all/modules/patched/sarnia/sarnia.module
+index 6791a3e..f2946b7 100644
+--- a/sites/all/modules/patched/sarnia/sarnia.module
++++ b/sites/all/modules/patched/sarnia/sarnia.module
+@@ -370,6 +370,19 @@ function sarnia_theme($existing, $type, $theme, $path) {
+       'render element' => 'form',
+     ),
+   );
++  $types = array('user', 'ode');
++  // Create a theme for each type
++  $nexus_path = drupal_get_path('theme', 'nexus');
++  foreach ($types as $type) {
++    $themes['sarnia_view_' . $type] = array(
++      'template' => $nexus_path . '/templates/sarnia-view-' . $type,
++      'variables' => array(
++        'properties' => array(),
++      ),
++    );
++  }
++
++  return $themes;
+ }
+ 
+ /**
+@@ -875,6 +888,14 @@ function sarnia_element_add_combobox(&$element) {
+  */
+ function sarnia_preprocess_views_view(&$vars) {
+   $view = $vars['view'];
++  if (isset($vars['view']->result)) {
++    foreach ($vars['view']->result as $result) {
++      $properties = $result->_entity_properties;
++
++      $vars['output'] .= theme('sarnia_view_' . strtolower($properties['type']),
++        array('properties' => $properties));
++    }
++  }
+   if (!empty($view->views_ui_context)) {
+     drupal_add_css(drupal_get_path('module', 'sarnia') . '/css/combobox.css', array('preprocess' => FALSE));
+   }

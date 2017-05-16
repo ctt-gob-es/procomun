@@ -1,0 +1,457 @@
+<?php
+
+/**
+ * Implements hook_feeds_processor_targets_alter() from Feeds.
+ */
+function feeds_profile2_feeds_processor_targets_alter(&$targets, $entity_type, $bundle_name) {
+  // For user imports, add a target field for every field in each Profile2
+  // bundle.
+  if ($entity_type == 'user') {
+    foreach (profile2_get_types() as $profile_type) {
+      $fields = field_info_instances('profile2', $profile_type->type);
+      foreach ($fields as $field) {
+        $targets["profile2:{$field['bundle']}:{$field['field_name']}"] = array(
+          'name' => t($field['label']),
+          'description' => t($field['description']),
+        );
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_feeds_after_save() from Feeds.
+ */
+function feeds_profile2_feeds_after_save(FeedsSource $source, $entity, $item, $entity_id) {
+
+  if ($entity->feeds_item->entity_type == 'user' && $entity->feeds_item->id == 'agrega2_organizations') {
+    // Loop through mappings to compile values for each Profile2 bundle & field.
+    $config = $source->importer->getConfig();
+    foreach ($config['processor']['config']['mappings'] as $mapping) {
+      if (strpos($mapping['target'], 'profile2:') === 0) {
+        list($entity_type, $bundle, $field_name) = explode(':', $mapping['target']);
+        $profiles[$bundle][$field_name] = $item[strtolower($mapping['source'])];
+      }
+    }
+    // Save or update each profile.
+    foreach ($profiles as $bundle => $values) {
+      $profile = NULL;
+
+      // If editing user, load Profile2 entity.
+      if (!empty($entity_id)) {
+        $profile = profile2_load_by_user($entity->uid, $bundle);
+      }
+
+      // If profile is still not available, create a new one.
+      if (empty($profile)) {
+        $profile = profile2_create(array(
+          'type' => $bundle,
+          'uid' => $entity->uid,
+        ));
+
+      }
+      foreach ($values as $field_name => $value) {
+        switch ($field_name) {
+          case 'field_descripci_n':
+            $profile->field_descripci_n['es'][0]['value'] = $entity->{'profile2:datos_organizacion:field_descripci_n'};
+            break;
+          case 'field_website':
+            $profile->field_website['und'][0]['value'] = $entity->{'profile2:datos_organizacion:field_website'};
+            break;
+          case 'field_organization_name':
+            $profile->field_organization_name['und'][0]['value'] = $entity->{'profile2:datos_organizacion:field_organization_name'};
+        }
+      }
+
+      $profile->save();
+    }
+
+
+    // Once injected into SOLR we need to add the Drupal uid to the doc.
+    /*if (module_exists('orchestrator_services')) {
+      $OS_orchestrator_useradmin = new OS_orchestrator_useradmin();
+      list($status, $result) = $OS_orchestrator_useradmin->updateSolr($entity->uid, $entity->{'profile2:datos_personales:field_solrid'});
+
+      if ($status != 1) {
+        // No SOLR ID.
+        watchdog("ERROR WHEN UPDATING ORGANIZATION ID", '<pre>' . print_r( $result, true) . '</pre>');
+        drupal_goto('admin/reports/dblog');
+      }
+    }*/
+
+    // Assign user picture
+    if ($item['xpathparser:4']) {
+      // Path where user image must be.
+      $filepath = 'public://migration_organizations/' . $item['xpathparser:4'] . '.png';
+
+      //Get default image if none selected.
+      if (!file_exists($filepath)) {
+        $filepath = variable_get('user_picture_default');
+      }
+
+      // Check if it exists already on the database, caused by multiple imports.
+      $files = file_load_multiple(array(), array('uri' => $filepath));
+      if ($files) {
+        $file = array_pop($files);
+      }
+
+      //If file is not found on database, create a new entry.
+      if (empty($file)) {
+        $file = (object) array(
+          'uid' => 1,
+          'uri' => $filepath,
+          'filemime' => file_get_mimetype($filepath),
+          'status' => 1,
+        );
+        file_save($file);
+      }
+
+      //Save to user data if picture was correctly saved.
+      if (isset($file->fid) && !empty($file->fid)) {
+        db_update('users')
+          ->fields(array('picture' => $file->fid,))
+          ->condition('uid', $entity->uid)
+          ->execute();
+      }
+    }
+
+    // When adding new users we need the organization to relate them to.
+    db_insert('temp_map_organization_id') // Table name no longer needs {}
+      ->fields(array(
+        'prouid' => $entity->uid,
+        'proid' => $item['xpathparser:4'],
+      ))
+      ->execute();
+
+    // When adding new users we need the community id to understand who is the administrator of a community.
+    db_insert('temp_map_user_id') // Table name no longer needs {}
+      ->fields(array(
+        'prouid' => $entity->uid,
+        'proid' => $item['xpathparser:4'],
+        'name_surname' => $entity->name,
+      ))
+      ->execute();
+
+
+  }
+  elseif ($entity->feeds_item->entity_type == 'user' && $entity->feeds_item->id == 'agrega2_users') {
+  $profiles = array();
+  // DETECT OPTION
+  //Countries
+  $countries_field = field_info_field('field_countries');
+  $countries = list_allowed_values($countries_field);
+
+  // Loop through mappings to compile values for each Profile2 bundle & field.
+  $config = $source->importer->getConfig();
+  foreach ($config['processor']['config']['mappings'] as $mapping) {
+    if (strpos($mapping['target'], 'profile2:') === 0) {
+      list($entity_type, $bundle, $field_name) = explode(':', $mapping['target']);
+      $profiles[$bundle][$field_name] = $item[strtolower($mapping['source'])];
+    }
+  }
+
+  // Save or update each profile.
+  foreach ($profiles as $bundle => $values) {
+    $profile = NULL;
+
+    // If editing user, load Profile2 entity.
+    if (!empty($entity_id)) {
+      $profile = profile2_load_by_user($entity->uid, $bundle);
+    }
+
+    // If profile is still not available, create a new one.
+    if (empty($profile)) {
+      $profile = profile2_create(array(
+        'type' => $bundle,
+        'uid' => $entity->uid,
+      ));
+    }
+    foreach ($values as $field_name => $value) {
+
+      switch ($field_name) {
+
+        case 'field_dni':
+          // Add DNI only for Spanish people.
+          if (array_search($entity->{'profile2:datos_personales:field_country_personal_fc'}, $countries) == 'Spain') {
+            for ($i = 0; $i < 9; $i++) {
+              $num[$i] = substr(strtoupper($value), $i, 1);
+            }
+            if ($num[8] == substr('TRWAGMYFPDXBNJZSQVHLCKE', substr($value, 0, 8) % 23, 1)) {
+              $last_letter = $num[8];
+              array_pop($num);
+              $profile->field_dni['und'][0] = array(
+                'last_letter' => $last_letter,
+                'number' => implode('', $num),
+                'type' => 'NIF',
+              );
+            }
+          }
+          elseif (!empty($value)) {
+            $profile->field_foreign_dni['und'][0]['value'] = strtoupper($value);
+          }
+          break;
+
+        case 'field_locality_personal_fc':
+          if ($country = array_search($value[0], $countries)) {
+            if ($country == 'Spain') {
+              $values = array();
+              $values['field_name'] = 'field_locality_personal_fc'; // field collection name
+              $values['field_locality']['und'][0]['value'] = $value[1];
+              $values['field_visibility']['und'][0]['value'] = 0;
+              // Create the field collection entry and associate it with the profile
+              $field_entity = entity_create('field_collection_item', $values);
+              $field_entity->setHostEntity('profile2', $profile);
+              $field_entity->save();
+            }
+            // PLACE
+            else {
+              // For locality we are parsing the country and the Province too. So $value = array(Country, Locality, Province')
+              $values = array();
+              $values['field_name'] = 'field_place_fc'; // field collection name
+              $locality = isset($item['xpathparser:5'][1]) ? $item['xpathparser:5'][1] : '';
+              $province = isset($item['xpathparser:6'][1]) ? (' (' . $item['xpathparser:6'][1] . ')') : '';
+              $values['field_place']['und'][0]['value'] = $locality . $province;
+              $values['field_visibility']['und'][0]['value'] = 0;
+              // Create the field collection entry and associate it with the profile
+              $field_entity = entity_create('field_collection_item', $values);
+              $field_entity->setHostEntity('profile2', $profile);
+              $field_entity->save();
+            }
+          }
+          break;
+
+        case 'field_province_personal_fc':
+          if ($country = array_search($value[0], $countries)) {
+            if ($country == 'Spain') {
+              $values = array();
+              $values['field_name'] = 'field_province_personal_fc'; // field collection name
+              $values['field_province']['und'][0]['value'] = $value[1];
+              $values['field_visibility']['und'][0]['value'] = 0;
+              // Create the field collection entry and associate it with the profile
+              $field_entity = entity_create('field_collection_item', $values);
+              $field_entity->setHostEntity('profile2', $profile);
+             $field_entity->save();
+            }
+          }
+          break;
+
+        case 'field_country_personal_fc':
+          if ($country = array_search($value, $countries)) {
+            $values = array();
+            $values['field_name'] = 'field_country_personal_fc'; // field collection name
+            $values['field_countries']['und'][0]['value'] = $country;
+            $values['field_visibility']['und'][0]['value'] = 0;
+            // Create the field collection entry and associate it with the profile
+            $field_entity = entity_create('field_collection_item', $values);
+            $field_entity->setHostEntity('profile2', $profile);
+            $field_entity->save();
+          }
+          break;
+
+        /*case 'field_place_fc':
+          if ($country = array_search($value[0], $countries)) {
+            if ($country != 'Spain') {
+              $values = array();
+              $values['field_name'] = 'field_place_fc'; // field collection name
+              $values['field_place']['und'][0]['value'] = $value[1] . ',' . $value[2];
+              $values['field_visibility']['und'][0]['value'] = 0;
+              // Create the field collection entry and associate it with the profile
+              $field_entity = entity_create('field_collection_item', $values);
+              $field_entity->setHostEntity('profile2', $profile);
+              $field_entity->save();
+            }
+          }
+          break;*/
+
+        case 'field_date_birth_personal_fc':
+          $value = str_replace('/', '-', $value);
+          $value = date("Y/m/d H:i:s", strtotime($value));
+          $values = array();
+          $values['field_name'] = 'field_date_birth_personal_fc'; // field collection name
+          $values['field_date_birth']['und'][0]['value'] = $value;
+          $values['field_visibility']['und'][0]['value'] = 0;
+          // Create the field collection entry and associate it with the profile
+          $field_entity = entity_create('field_collection_item', $values);
+          $field_entity->setHostEntity('profile2', $profile);
+          $field_entity->save();
+          break;
+
+        case 'field_name_surname':
+          $values = array();
+          $values['field_name'] = 'field_name_surname';
+          // NAME
+          $userName = $values['field_profile_name']['und'][0]['value'] = $value[0];
+          // SURNAME
+          $userSurname = $values['field_profile_surname']['und'][0]['value'] = $value[1];
+          $values['field_visibility']['und'][0]['value'] = 0;
+          // Create the field collection entry and associate it with the profile
+          $field_entity = entity_create('field_collection_item', $values);
+          $field_entity->setHostEntity('profile2', $profile);
+          $field_entity->save();
+          break;
+
+        // field_edu_center_personal_fc
+        case 'field_edu_center_personal_fc':
+          if ($value) {
+            $values = array();
+            $values['field_name'] = 'field_edu_center_personal_fc';
+            $values['field_educative_center']['und'][0]['value'] = $value;
+            $values['field_visibility']['und'][0]['value'] = 0;
+            // Create the field collection entry and associate it with the profile
+            $field_entity = entity_create('field_collection_item', $values);
+            $field_entity->setHostEntity('profile2', $profile);
+            $field_entity->save();
+          }
+          break;
+
+        default:
+          if ($value) {
+            $profile->{$field_name}['und'][0]['value'] = $value;
+          }
+      }
+    }
+    // Add solr_id
+    $profile->field_solrid['und'][0]['value'] = $entity->{'profile2:datos_personales:field_solrid'};
+
+    //Educational center
+    $profile->field_url_educative_center['und'][0]['url'] = $entity->{'profile2:datos_personales:field_url_educative_center'};
+    $profile->field_url_educative_center['und'][0]['title'] = '';
+    $profile->field_url_educative_center['und'][0]['attributes'] = array();
+
+    //Ensure privacy policy is not accepted within migrated profiles. Field default value doesnt matter.
+    $profile->field_tos['und'][0]['value'] = 0;
+
+    $profile->save();
+  }
+  // Once injected into SOLR we need to add the Drupal uid to the doc.
+  if (module_exists('orchestrator_services')) {
+    $OS_orchestrator_useradmin = new OS_orchestrator_useradmin();
+    list($status, $result) = $OS_orchestrator_useradmin->updateSolr($entity->uid, $entity->{'profile2:datos_personales:field_solrid'});
+
+    if ($status != 1) {
+      // No SOLR ID.
+      watchdog("ERROR WHEN UPDATING USER ID", '<pre>' . print_r( $result, true) . '</pre>');
+      drupal_goto('admin/reports/dblog');
+    }
+  }
+  // When adding new users we need the community id to understand who is the administrator of a community.
+  // Insert all roles from an user in a community.
+  if (isset($item['xpathparser:11']) && !empty($item['xpathparser:11'])) {
+    if (is_array($item['xpathparser:11'])) {
+      for($i = 0; $i < count($item['xpathparser:11']); $i += 2) {
+        db_insert('temp_map_user_community') // Table name no longer needs {}
+          ->fields(array(
+            'uid' => $entity->uid,
+            'cid' => $item['xpathparser:11'][$i],
+            'urole' => $item['xpathparser:11'][$i+1]
+          ))
+          ->execute();
+      }
+    }
+  }
+
+  // Assign user picture
+  if (isset($item['xpathparser:13']) && !empty($item['xpathparser:13'])) {
+    // Path where user image must be.
+    $filepath = 'public://migration_pictures/' . $item['xpathparser:13'] . '.png';
+
+    //Get default image if none selected.
+    if (!file_exists($filepath)) {
+      $filepath = variable_get('user_picture_default');
+    }
+
+    // Check if it exists already on the database, caused by multiple imports.
+    $files = file_load_multiple(array(), array('uri' => $filepath));
+    if ($files) {
+      $file = array_pop($files);
+    }
+
+    //If file is not found on database, create a new entry.
+    if (empty($file)) {
+      $file = (object) array(
+        'uid' => 1,
+        'uri' => $filepath,
+        'filemime' => file_get_mimetype($filepath),
+        'status' => 1,
+      );
+      file_save($file);
+    }
+
+    //Save to user data if picture was correctly saved.
+    if (isset($file->fid) && !empty($file->fid)) {
+      db_update('users')
+        ->fields(array('picture' => $file->fid,))
+        ->condition('uid', $entity->uid)
+        ->execute();
+    }
+  }
+
+  // Add followers to a custom temp table.
+  /*foreach ($item['xpathparser:12'] as $key => $uid_following) {
+    db_insert('temp_map_user_followers') // Table name no longer needs {}
+      ->fields(array(
+        'uid' => $entity->uid,
+        'following' => $uid_following
+      ))
+      ->execute();
+  }*/
+
+  // FOLLOWERS.
+  // Add favorites to a custom temp table.
+  if (isset($item['xpathparser:12']) && !empty($item['xpathparser:12'])) {
+    if (is_array($item['xpathparser:12'])) {
+      foreach ($item['xpathparser:12'] as $key => $following) {
+        db_insert('temp_map_user_followers') // Table name no longer needs {}
+          ->fields(array(
+            'uid' => $entity->uid,
+            'following' => $following
+          ))
+          ->execute();
+      }
+    }
+    else {
+      db_insert('temp_map_user_followers') // Table name no longer needs {}
+        ->fields(array(
+          'uid' => $entity->uid,
+          'following' => $item['xpathparser:12']
+        ))
+        ->execute();
+    }
+  }
+
+  // FAVORITES
+  // Add favorites to a custom temp table.
+  if (isset($item['xpathparser:14']) && !empty($item['xpathparser:14'])) {
+    if (is_array($item['xpathparser:14'])) {
+      foreach ($item['xpathparser:14'] as $key => $favorite) {
+        db_insert('temp_map_user_favorites') // Table name no longer needs {}
+          ->fields(array(
+            'uid' => $entity->uid,
+            'favorites' => $favorite
+          ))
+          ->execute();
+      }
+    }
+    else {
+      db_insert('temp_map_user_favorites') // Table name no longer needs {}
+        ->fields(array(
+          'uid' => $entity->uid,
+          'favorites' => $item['xpathparser:14']
+        ))
+        ->execute();
+    }
+  }
+
+  $uid_already_exists = db_query('SELECT prouid FROM {temp_map_user_id} WHERE proid = :proid', array(':proid' => $item['xpathparser:13']))->fetchField();
+  if(empty($uid_already_exists)) {
+    // When adding new users we need the community id to understand who is the administrator of a community.
+    db_insert('temp_map_user_id') // Table name no longer needs {}
+      ->fields(array(
+        'prouid' => $entity->uid,
+        'proid' => $item['xpathparser:13'],
+        'name_surname' => $userName . ' ' . $userSurname,
+      ))
+      ->execute();
+    }
+  }
+}

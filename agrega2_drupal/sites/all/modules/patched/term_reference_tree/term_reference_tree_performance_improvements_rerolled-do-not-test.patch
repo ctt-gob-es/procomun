@@ -1,0 +1,110 @@
+diff --git a/docroot/sites/all/modules/patched/term_reference_tree/term_reference_tree.module b/docroot/sites/all/modules/patched/term_reference_tree/term_reference_tree.module
+index 7dbcf84..376714e 100644
+--- a/docroot/sites/all/modules/patched/term_reference_tree/term_reference_tree.module
++++ b/docroot/sites/all/modules/patched/term_reference_tree/term_reference_tree.module
+@@ -136,25 +136,34 @@ function _term_reference_tree_get_children($tid, $vid) {
+   // very bad on large vocabularies.  Instead, we load the term as necessary
+   // in cases where it's needed (such as using tokens or when the locale
+   // module is enabled).
+-  $query = db_select('taxonomy_term_data', 't');
+-  $query->join('taxonomy_term_hierarchy', 'h', 't.tid = h.tid');
+-  $query->join('taxonomy_vocabulary', 'v', 'v.vid = t.vid');
+-  $query->fields('t', array('tid', 'name'));
+-  $query->addField('v', 'machine_name', 'vocabulary_machine_name');
+-  $query->condition('t.vid', $vid);
+-  $query->condition('h.parent', $tid);
+-  $query->addTag('term_access');
+-  $query->addTag('translatable');
+-  $query->orderBy('t.weight');
+-  $query->orderBy('t.name');
+-  $results = $query->execute();
+-
+-  $terms = array();
+-  while ($term = $results->fetchObject()) {
+-    $terms[$term->tid] = $term;
++  static $hierarchy = array(); $terms = array();
++
++  if (!isset($hierarchy[$vid])) {
++    $query = db_select('taxonomy_term_data', 't');
++    $query->join('taxonomy_term_hierarchy', 'h', 't.tid = h.tid');
++    $query->join('taxonomy_vocabulary', 'v', 'v.vid = t.vid');
++    $query->fields('t', array('tid', 'name'))->fields('h', array('parent'));
++    $query->addField('v', 'machine_name', 'vocabulary_machine_name');
++    $query->condition('t.vid', $vid);
++    $query->addTag('term_access');
++    $query->addTag('translatable');
++    $query->orderBy('t.weight');
++    $query->orderBy('t.name');
++    $results = $query->execute();
++
++    $hiearchy[$vid] = $terms[$vid] = array();
++    foreach ($results as $record) {
++      $hiearchy[$vid][$record->tid] = $record->parent;
++      $terms[$vid][$record->tid] = $record;
++    }
+   }
+
+-  return $terms;
++  $children = array();
++  $tids = array_keys($hiearchy[$vid], $tid);
++  foreach ($tids as $child_tid) {
++    $children[$child_tid] = $terms[$vid][$child_tid];
++  }
++  return $children;
+ }
+
+ function _term_reference_tree_children_selected($terms, $default) {
+diff --git a/docroot/sites/all/modules/patched/term_reference_tree/term_reference_tree.widget.inc b/docroot/sites/all/modules/patched/term_reference_tree/term_reference_tree.widget.inc
+index 1685a43..ed49608 100644
+--- a/docroot/sites/all/modules/patched/term_reference_tree/term_reference_tree.widget.inc
++++ b/docroot/sites/all/modules/patched/term_reference_tree/term_reference_tree.widget.inc
+@@ -665,7 +665,8 @@ function _term_reference_tree_build_item($element, $term, $form_state, $value, $
+   $t = NULL;
+   if (module_exists('locale') && !empty($term->tid)) {
+     $t = taxonomy_term_load($term->tid);
+-    $term_name = entity_label('taxonomy_term', $t);
++    //$term_name = entity_label('taxonomy_term', $t);
++    $term_name = _term_reference_tree_label($term);
+   }
+   else {
+     $term_name = $term->name;
+@@ -773,3 +774,39 @@ function _term_reference_tree_build_level($element, $term, $form_state, $value,
+
+   return $container;
+ }
++
++/**
++ * Based on entity label, but loads the term only if needed.
++ */
++function _term_reference_tree_label($term) {
++  static $info, $label_mode, $key;
++  if (!isset($label_mode)) {
++    $info = entity_get_info('taxonomy_term');
++    if (isset($info['label callback']) && function_exists($info['label callback'])) {
++      $label_mode = 'callback';
++    }
++    elseif (!empty($info['entity keys']['label'])) {
++      $key = $info['entity keys']['label'];
++      $label_mode = 'key';
++    }
++    else {
++      $label_mode = 'none';
++    }
++  }
++  $label = FALSE;
++
++  if ($label_mode == 'callback') {
++    $t = taxonomy_term_load($term->tid);
++    $label = $info['label callback']($t, 'taxonomy_term');
++  }
++  elseif ($label_mode == 'key') {
++    if (!isset($term->{$key})) {
++      $term = taxonomy_term_load($term->tid);
++    }
++    if (isset($term->{$key})) {
++      $label = $term->{$key};
++    }
++  }
++
++  return $label;
++}

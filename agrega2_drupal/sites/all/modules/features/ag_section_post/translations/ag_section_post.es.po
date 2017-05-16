@@ -1,0 +1,280 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_section_post.features.field_instance.inc: n/a
+#  ag_section_post.features.inc: n/a
+#  ag_section_post.forms.inc: n/a
+#  ag_section_post.module: n/a
+#  ag_section_post.install: n/a
+#  ag_section_post.info: n/a
+#  js/post_gamification.js: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2016-12-12 13:49+0100\n"
+"PO-Revision-Date: 2016-12-12 13:49+0100\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: ag_section_post.features.field_instance.inc:2089
+msgid "Archivo"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:2090
+msgid "Autores de Procomún"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:2091
+msgid "Autores externos"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:2092
+msgid "Categoría"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:2093
+msgid "Comunidades en que se publicará"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:2094
+msgid "Contexto educativo"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:2095
+msgid "Cuerpo del artículo"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:2096
+msgid "Descripción"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:2097
+msgid "Etiquetas"
+msgstr "Filtra per etiquetes"
+
+#: ag_section_post.features.field_instance.inc:2098
+msgid "Idioma"
+msgstr "Filtra per idioma"
+
+#: ag_section_post.features.field_instance.inc:2099
+msgid "Imagen miniatura"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:2100
+msgid "Marcar contenido como novedad"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:2101
+msgid "Nombre"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:2102
+msgid "Otros autores"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:2103
+msgid "Permitir que otros lo compartan"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:2104 ag_section_post.features.inc:29
+msgid "Título"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:2105
+msgid "Usuario original"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:2106
+msgid "Valorar"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:2107
+msgid "solrID"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:2108
+msgid "¿Eres el autor original del recurso?"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:2109
+msgid "¿Permites modificaciones en tu obra?"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:2110
+msgid "¿Permites usos comerciales de tu obra?"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:2111
+msgid "Área de conocimiento"
+msgstr ""
+
+#: ag_section_post.features.inc:25
+msgid "Artículo"
+msgstr ""
+
+#: ag_section_post.features.inc:27
+msgid "Use Post to share in communities new messages."
+msgstr "Use Post para compartir nuevos mensajes en comunidades"
+
+#: ag_section_post.forms.inc:16
+msgid "You are about to change the status of this content. Are you sure?"
+msgstr "Vas a publicar este contenido. ¿Estás seguro?"
+
+#: ag_section_post.forms.inc:20
+msgid "Are you sure you want to pusblish this content?"
+msgstr "¿Estás seguro que quieres publicar este contenido?"
+
+#: ag_section_post.forms.inc:23
+msgid "Are you sure you want to unpublish this content?"
+msgstr "¿Estás seguro que quieres despublicar este contenido?"
+
+#: ag_section_post.forms.inc:41
+msgid "published"
+msgstr "publicado"
+
+#: ag_section_post.forms.inc:41
+msgid "unpublished"
+msgstr "despublicado"
+
+#: ag_section_post.forms.inc:125
+msgid "Content could not be updated"
+msgstr "El contenido no ha podido ser actualizado"
+
+#: ag_section_post.forms.inc:177
+msgid "Send"
+msgstr "Enviar"
+
+#: ag_section_post.forms.inc:202
+msgid "At least one of the fields (\"Your groups\" or \"Other groups\") is required."
+msgstr "Al menos uno de los campos (\"Sus grupos\" u \"Otros grupos\") es obligatorio."
+
+#: ag_section_post.module:71
+msgid "Impossible to find resource: @resource_id, because of database wrong structure."
+msgstr ""
+
+#: ag_section_post.module:149
+msgid "No publish as organization"
+msgstr "No publicar como una organización"
+
+#: ag_section_post.module:152;156
+msgid "Publish as @org_name"
+msgstr "Publicar como @org_name"
+
+#: ag_section_post.module:161
+msgid "Publish this content as a organization"
+msgstr "Publicar este contenido como una organización"
+
+#: ag_section_post.module:170
+msgid "My organizations"
+msgstr "Mis organizaciones"
+
+#: ag_section_post.module:260
+msgid "User"
+msgstr "Usuario"
+
+#: ag_section_post.module:261
+msgid "Prepopulate from user that is logged in"
+msgstr ""
+
+#: ag_section_post.module:392
+msgid "Make a comment"
+msgstr "Comentar"
+
+#: ag_section_post.module:556
+msgid "Unpublish or publish nodes"
+msgstr ""
+
+#: ag_section_post.module:557
+msgid "Edit node publication. Set it published or unpublished."
+msgstr ""
+
+#: ag_section_post.module:14
+msgid "register Autocomplete"
+msgstr "Autocompletado de registro"
+
+#: ag_section_post.module:29;30
+msgid "Change node status confirmation"
+msgstr ""
+
+#: ag_section_post.install:56
+msgid "Processed @nodes nodes for original author. Finished."
+msgstr ""
+
+#: ag_section_post.install:103;154
+msgid "Processed @nodes nodes. Finished."
+msgstr ""
+
+#: ag_section_post.install:104
+msgid "Not found @licences licences."
+msgstr ""
+
+#: ag_section_post.install:187;188
+msgid "Path: @path not found. Finished."
+msgstr ""
+
+#: ag_section_post.install:195;196
+msgid "Log Path: @path not writing. Finished."
+msgstr ""
+
+#: ag_section_post.install:270
+msgid "Processed @records records. Finished."
+msgstr "Se han procesado @records registros. Finalizado"
+
+#: ag_section_post.install:432;433
+msgid "Error getting vid vocabulary. Finished."
+msgstr ""
+
+#: ag_section_post.install:509;510
+msgid "@field: @name not existing in post with nid @nid and solrid @solrid. Finished."
+msgstr ""
+
+#: ag_section_post.install:549;550
+msgid "Error updating post with nid @nid and solrid @solrid in SOLR. Finished."
+msgstr ""
+
+#: ag_section_post.install:555
+msgid "Missing data in post with nid @nid. Finished"
+msgstr ""
+
+#: ag_section_post.install:556
+msgid "Missing data in post with nid @nid. Finished."
+msgstr ""
+
+#: ag_section_post.install:565;566
+msgid "Post node missing. Finished."
+msgstr ""
+
+#: ag_section_post.info:0
+msgid "ag_section_post"
+msgstr ""
+
+#: ag_section_post.info:0
+msgid "Feature with all config about post"
+msgstr "Característica con toda la configuración sobre post"
+
+#: ag_section_post.info:0
+msgid "Agrega2"
+msgstr "Agrega2"
+
+#: js/post_gamification.js:0
+msgid "%"
+msgstr "%"
+
+#: js/post_gamification.js:0
+msgid "Easy to find this resource"
+msgstr "Facilidad para encontrar este recurso"
+
+#: js/post_gamification.js:0
+msgid "The progress bar completes as the fields are populated, thus increasing the chances of this resource appear in the search results"
+msgstr ""
+"La barra de progreso se completa a medida que los campos se van "
+"rellenando, aumentando así las posibilidades de que este recurso "
+"aparezca en los resultados de búsqueda"

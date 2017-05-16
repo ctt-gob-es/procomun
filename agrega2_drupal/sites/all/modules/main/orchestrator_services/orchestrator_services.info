@@ -1,0 +1,14 @@
+name = Orchestrator Services
+description = Module injection managed information in the orchestrator services defined by the module WSClient
+core = 7.x
+package = Agrega2
+files[] = orchestrator_inyection.inc
+files[] = orchestrator_selection.inc
+files[] = orchestrator_services.inc
+files[] = orchestrator_recommender.inc
+files[] = orchestrator_useradmin.inc
+files[] = orchestrator_publisher.inc
+files[] = orchestrator_services.processing.inc
+files[] = orchestrator_authoring.inc
+files[] = orchestrator_transform.inc
+dependencies[] = wsclient

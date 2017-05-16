@@ -1,0 +1,8 @@
+.classpath
+.project
+.settings/
+target/classes
+target/generated-sources
+target/surefire
+target/
+log/

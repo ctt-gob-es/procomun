@@ -1,0 +1,489 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall functions for the ag_section_webinar module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function ag_section_webinar_schema() {
+  $schema['webinar_attendees'] = array(
+    'description' => 'Storage webinar attendeed list urls',
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Row id',
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'User id',
+      ),
+      'classid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Class id',
+      ),
+      'webinar_url' => array(
+        'type' => 'varchar',
+        'length' => 1024,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Webinar access url',
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implements hook_update_N().
+ */
+function ag_section_webinar_update_7001() {
+  $schema = ag_section_webinar_schema();
+  if(!db_table_exists('webinar_attendees'))
+    db_create_table('webinar_attendees', $schema['webinar_attendees']);
+}
+
+/**
+ * Implements hook_update_N().
+ *
+ * @param array $sandbox
+ *   Contains the state of the batch iteration.
+ */
+function ag_section_webinar_update_7000(&$sandbox) {
+  // Prepare all variables in first iteration.
+
+  if (!isset($sandbox['total'])) {
+    // Prepare array from query.
+    ag_section_webinar_prepare_batch_communities($sandbox, array(
+      'create webinar content',
+      'update own webinar content',
+      'delete own webinar content'
+    ));
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = ag_section_webinar_get_total($sandbox);
+  }
+
+  // Get batch, or number of entities to process each time.
+  $nodes_per_pass = 10;
+  $end = $sandbox['current'] + $nodes_per_pass;
+
+  // Loop. Use db_query_range if any query needs to be split between batches.
+  while($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    // Heavy operations.
+    $element = ag_section_webinar_get_element($sandbox);
+    $community = ag_section_webinar_get_community_role_permissions($element);
+    ag_section_webinar_update_community_permissions($sandbox, $community);
+
+    // Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1,
+  // meaning we are done.
+  // Also, avoid division by zero.
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @records records. Finished.', array('@records' => $sandbox['total'])));
+  }
+}
+
+/**
+ * Gets the global role permissions of a community.
+ *
+ * @param array $sandbox
+ *   Contains the state of the batch iteration.
+ * @param array $permissions
+ *   List of permissions to be assigned.
+ */
+function ag_section_webinar_prepare_batch_communities(&$sandbox, $permissions) {
+  // Get all communities identifiers.
+  $query = db_select('node', 'n');
+  $query->fields('n',array('nid'));
+  $query->condition('n.type', 'social_network', '=');
+
+  $result = $query->execute();
+  $communities_nids = $result->fetchCol();
+
+  // Array values.
+  $temp_array = $communities_nids;
+
+  // Return by storing the array in sandbox variable. It will be static and
+  // accessible by all update_7000 batch executions.
+  $sandbox['elements'] = $temp_array;
+
+  $global_role_permissions = ag_section_webinar_get_global_role_permissions($permissions);
+
+  $sandbox['global_role_permissions'] = $global_role_permissions;
+}
+
+/**
+ * Return number of operations that will be done.
+ *
+ * @param array $sandbox
+ *   Contains the state of the batch iteration.
+ */
+function ag_section_webinar_get_total($sandbox) {
+  return isset($sandbox['elements']) ? count($sandbox['elements']) : 0;
+}
+
+/**
+ * Gets element with sandbox data.
+ *
+ * @param array $sandbox
+ *   Contains the state of the batch iteration.
+ */
+function ag_section_webinar_get_element($sandbox) {
+  $position = isset($sandbox['current']) ? $sandbox['current'] : 0;
+  return !empty($sandbox['elements']) ? $sandbox['elements'][$position] : array();
+}
+
+/**
+ * Function to get global role permission for an array of permissions.
+ *
+ * @param array $permissions
+ *   An array of OG permissions.
+ */
+function ag_section_webinar_get_global_role_permissions($permissions) {
+  $role_permissions = array();
+
+  // Get global role permissions.
+  foreach ($permissions as $permission) {
+    $query = db_select('og_role_permission', 'p');
+    $query->fields('p',array('rid'));
+    $query->condition('p.permission', $permission, '=');
+    $query->condition('p.rid', array('1', '2', '3'), 'IN');
+
+    $result = $query->execute();
+    foreach ($result->fetchAll() as $result) {
+      switch ($result->rid) {
+        case '1':
+          $rol = 'non-member';
+          break;
+        case '2':
+          $rol = 'member';
+          break;
+        case '3':
+          $rol = 'administrator member';
+          break;
+      }
+      $role_permissions[$permission][$result->rid] = $rol;
+    }
+  }
+
+  return $role_permissions;
+}
+
+/**
+ * Function to get community role permission.
+ *
+ * @param integer $element
+ *   The community identifier.
+ */
+function ag_section_webinar_get_community_role_permissions($element) {
+  $role_permissions = array();
+
+  // Get role identifiers.
+  $query = db_select('og_role', 'r');
+  $query->fields('r',array('name', 'rid'));
+  $query->condition('r.gid', $element, '=');
+
+  $result = $query->execute();
+  foreach ($result->fetchAll() as $result) {
+    $role_permissions[$result->name] = $result->rid;
+  }
+
+  return $role_permissions;
+}
+
+/**
+ * Function to check if community have a specific permission.
+ *
+ * @param integer $community
+ *   The community identifier.
+ * @param array $permission
+ *   Permisssion to check.
+ */
+function ag_section_webinar_check_community_permission($community, $permission) {
+  $query = db_select('og_role_permission', 'ogrp');
+  $query->fields('ogrp',array('rid'));
+  $query->condition('ogrp.rid', $community, '=');
+  $query->condition('ogrp.permission', $permission, '=');
+  $result = $query->execute();
+
+  return $result->fetchField();
+}
+
+/**
+ * Function for update community permissions.
+ *
+ * @param array $sandbox
+ *   Contains the state of the batch iteration.
+ * @param array $community
+ *   Current community premissions info.
+ */
+function ag_section_webinar_update_community_permissions(&$sandbox, $community) {
+  $global_role_permissions = !empty($sandbox['global_role_permissions']) ? $sandbox['global_role_permissions'] : array();
+
+  if (!empty($community)) {
+    $status = 0;
+    foreach ($global_role_permissions as $key => $value) {
+      foreach ($value as $rol) {
+        if (!empty($community[$rol]) && !empty($key)){
+          try {
+            // Check if this permission is already settled on this community.
+            $check_rid = ag_section_webinar_check_community_permission($community[$rol], $key);
+
+            if (empty($check_rid)) {
+              $status = db_insert('og_role_permission')
+                ->fields(array(
+                  'rid' => $community[$rol],
+                  'permission' => $key,
+                  'module' => 'og',
+                ))
+                ->execute();
+            }
+            else {
+              // Just set status 0 because this community already have this
+              // permission, so there is nothing to do.
+              $status = 0;
+            }
+          }
+          catch (PDOException $e) {
+            $status = 1;
+          }
+        }
+        else {
+          $status = 1;
+        }
+
+        if ($status != 0) {
+          drupal_set_message(t('Error: No community permissions updated'), 'error');
+          throw new DrupalUpdateException(t('Error: Community permissions update failed'));
+        }
+      }
+    }
+  }
+}
+
+// TODO: Comment temporary so that it does not run.
+// TODO: Change the logic for migrate only streaming type event.
+/**
+ * Implements hook_update_N().
+ *
+ * Migrate streaming type event content to webinar content and unpublish
+ * streaming type event content in Drupal and Solr.
+ *
+ * @param array $sandbox
+ *   Contains the state of the batch iteration.
+ */
+/*function ag_section_webinar_update_7002(&$sandbox) {
+  // Prepare all variables in first iteration.
+  if (!isset($sandbox['total'])) {
+    // Prepare array from query.
+    ag_section_webinar_prepare_event_nodes($sandbox);
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = ag_section_webinar_get_total($sandbox);
+  }
+
+  // Get batch, or number of entities to process each time.
+  $nodes_per_pass = 10;
+  $end = $sandbox['current'] + $nodes_per_pass;
+
+  $preloaded_batch = node_load_multiple(array_slice($sandbox['elements'], $sandbox['current'], $nodes_per_pass));
+
+  // Loop.
+  while ($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    // Heavy operations.
+    $element = ag_section_webinar_get_element($sandbox);
+    $node = $preloaded_batch[$element];
+    ag_section_webinar_migrate_events_to_webinars($node);
+
+    // Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1,
+  // meaning we are done. Also, avoid division by zero.
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @records records. Finished.', array('@records' => $sandbox['total'])));
+  }
+}*/
+
+/**
+ * Load all published event nodes.
+ *
+ * Callback for ag_section_webinar_update_7002().
+ *
+ * @param array $sandbox
+ *   Contains the state of the batch iteration.
+ */
+function ag_section_webinar_prepare_event_nodes(&$sandbox) {
+  $query = db_select('node', 'n')
+    ->fields('n', array('nid'))
+    ->condition('n.status', 1, '=')
+    ->condition('n.type', 'event', '=');
+  $result = $query->execute()->fetchCol();
+
+  // Return by storing the array in sandbox variable. It will be static and
+  // accessible by all update batch executions.
+  $sandbox['elements'] = $result;
+}
+
+/**
+ * Migrate current event node to webinar node and unpublish event node in Drupal
+ * and Solr.
+ *
+ * Callback for ag_section_webinar_update_7002().
+ *
+ * @param object $event_node
+ *   Contains the current event node.
+ */
+function ag_section_webinar_migrate_events_to_webinars($event_node) {
+  // Fill basic node fields.
+  $node = new stdClass();
+  $node->title = $event_node->title;
+  $node->type = 'webinar';
+  // Sets some defaults. Invokes hook_prepare() and hook_node_prepare().
+  node_object_prepare($node);
+  $node->language = $event_node->language;
+  $node->uid = $event_node->uid;
+  $node->status = $event_node->status;
+  $node->promote = 0;
+  // 0 = comments disabled, 1 = read only, 2 = read/write.
+  $node->comment = 2;
+  $node->sticky = 0;
+
+  // Parse common fields (event <--> webinar).
+  if (isset($event_node->title_field) && !empty($event_node->title_field)) {
+    $node->title_field[LANGUAGE_NONE] = $event_node->title_field['es'];
+  }
+
+  if (isset($event_node->field_event_date) && !empty($event_node->field_event_date)) {
+    $node->field_class_date = $event_node->field_event_date;
+    if (isset($node->field_event_date[LANGUAGE_NONE][0]['value2'])) {
+      unset($node->field_event_date[LANGUAGE_NONE][0]['value2']);
+    }
+  }
+
+  if (isset($event_node->body) && !empty($event_node->body)) {
+    $node->body[LANGUAGE_NONE] = $event_node->body['es'];
+  }
+
+  if (isset($event_node->field_video_iframe) && !empty($event_node->field_video_iframe)) {
+    $node->field_recording_url[LANGUAGE_NONE][0]['url'] = $event_node->field_video_iframe[LANGUAGE_NONE][0]['url'];
+    $node->field_recording_url[LANGUAGE_NONE][0]['title'] = t('View the webinar');
+    $node->field_recording_url[LANGUAGE_NONE][0]['attributes']['target'] = '_blank';
+    $node->field_recording_url[LANGUAGE_NONE][0]['display_url'] = $event_node->field_video_iframe[LANGUAGE_NONE][0]['url'];
+    $node->field_recording_url[LANGUAGE_NONE][0]['html'] = TRUE;
+  }
+
+  if (isset($event_node->field_labels) && !empty($event_node->field_labels)) {
+    $node->field_labels = $event_node->field_labels;
+  }
+
+  if (isset($event_node->field_novelty) && !empty($event_node->field_novelty)) {
+    $node->field_novelty = $event_node->field_novelty;
+  }
+
+  if (isset($event_node->og_group_ref) && !empty($event_node->og_group_ref)) {
+    $node->og_group_ref = $event_node->og_group_ref;
+  }
+
+  // Fill specific webinar fields.
+  $node->field_general_language[LANGUAGE_NONE][0]['value'] = $event_node->language;
+
+  $node->field_classid[LANGUAGE_NONE][0]['value'] = 0;
+
+  $node->field_duracion[LANGUAGE_NONE][0]['value'] = 0;
+
+  $node->field_record_webinar[LANGUAGE_NONE][0]['value'] = 1;
+
+  $node->field_original_author[LANGUAGE_NONE][0]['value'] = 1;
+
+  $node->field_comercial_use[LANGUAGE_NONE][0]['value'] = 1;
+
+  $node->field_allow_modifications[LANGUAGE_NONE][0]['value'] = 2;
+
+  $node->field_question_share[LANGUAGE_NONE][0]['value'] = 0;
+
+  $node->field_valora_el_recurso[LANGUAGE_NONE][0]['user'] = 0;
+  $node->field_valora_el_recurso[LANGUAGE_NONE][0]['average'] = 0;
+  $node->field_valora_el_recurso[LANGUAGE_NONE][0]['count'] = 0;
+
+  // Create node in Drupal and Solr.
+  $node_format_solr = (Array)$node;
+  $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+  list($status, $result) = $OS_orchestrator_inyection->AddWebinar($node_format_solr);
+
+  if ($status != 1) {
+    drupal_set_message(t($result), 'error');
+  }
+  else {
+    // Prepare node for saving.
+    $node = node_submit($node);
+    // Update webinar created date with event created date.
+    $node->created = $event_node->created;
+    // Save node.
+    node_save($node);
+
+    $publicationDate = '';
+    if (!empty($node->created)) {
+      $date = date("Y-m-d", $node->created);
+      $time = date("H:i:s", $node->created);
+      $publicationDate = $date."T".$time."Z";
+    }
+
+    list($status, $result) = $OS_orchestrator_inyection->UpdateSolr($node->nid, $result->documentId, $publicationDate);
+
+    if ($status != 1) {
+      drupal_set_message(t($result), 'error');
+    }
+    else {
+      // Update field_solrid in Drupal.
+      $node->field_solrid[LANGUAGE_NONE][0]['value'] = $result->documentId;
+      node_save($node);
+
+      // Unpublish event content in Drupal and Solr.
+      list($status, $result) = $OS_orchestrator_inyection->UnpublishDocument($event_node->field_solrid[LANGUAGE_NONE][0]['value']);
+
+      if ($status != 1) {
+        drupal_set_message(t($result), 'error');
+      }
+      else {
+        $event_node->status = 0;
+        node_save($event_node);
+      }
+
+      drupal_set_message("Create webinar with NID: " .
+        $node->nid . " and SOLRID: " .
+        $node->field_solrid[LANGUAGE_NONE][0]['value'] .
+        "\n");
+    }
+  }
+}

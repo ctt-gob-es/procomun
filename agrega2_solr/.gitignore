@@ -1,0 +1,7 @@
+logs/
+solr/empleo/
+solr/a2_lomes/data/
+solr/a2_lomes_tests/data/
+run/jetty.pid
+.project
+solr/a2_lomes_load/

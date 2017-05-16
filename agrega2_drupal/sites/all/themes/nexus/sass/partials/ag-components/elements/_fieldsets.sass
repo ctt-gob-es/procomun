@@ -1,0 +1,50 @@
+legend
+  //Overwrite Bootstrap styles
+  +label-header()
+
+html.js
+  fieldset.collapsible
+    margin-bottom: 0em
+    legend
+      margin-bottom: 0
+      border-bottom: 0
+      padding-bottom: 0
+      .fieldset-legend
+        //adjust side padding for the icon to be on the right
+        padding-left: 0
+        position: relative
+        min-height: 36px
+        //Overwrite the system.css
+        background: transparent
+        a.fieldset-title
+          display: block
+          width: 100%
+          background-image: image-url('triangulo.png')
+          background-position: 99% -27px
+          background-repeat: no-repeat
+          border-top: 1px dashed $gray
+          padding: 10px 0
+          padding-right: 15px
+          text-decoration: none
+          line-height: 27px
+          font-size: 21px
+          color: $navy
+          font-family: $font_narrow
+          font-weight: 700
+          &:hover
+            text-decoration: none
+        .summary
+          display: none
+    .fieldset-wrapper
+      padding: 1em 0
+
+  fieldset.collapsed.collapsible
+    border-bottom-width: 0
+    border-left-width: 0
+    border-right-width: 0
+    height: auto
+    min-height: 36px
+    legend
+      .fieldset-legend
+        a.fieldset-title
+          background-position: 99% 13px

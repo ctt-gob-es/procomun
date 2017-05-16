@@ -1,0 +1,813 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_section_profile_users.admin.inc: n/a
+#  ag_section_profile_users.context.inc: n/a
+#  ag_section_profile_users.features.field_instance.inc: n/a
+#  ag_section_profile_users.views_default.inc: n/a
+#  ag_section_profile_users.module: n/a
+#  plugins/content_types/user_activity_summary/user_activity_summary.inc: n/a
+#  ag_section_profile_users.widget.inc: n/a
+#  ag_section_profile_users.install: n/a
+#  ag_section_profile_users.info: n/a
+#  plugins/content_types/communities_per_organization/communities_per_organization.inc: n/a
+#  plugins/access/active_user/active_user.inc: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2016-11-28 12:39+0100\n"
+"PO-Revision-Date: 2016-11-28 12:39+0100\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: ag_section_profile_users.admin.inc:21
+msgid "Select organizations to certificate ode"
+msgstr "Selecciona las organizaciones que pueden certificar odes"
+
+#: ag_section_profile_users.context.inc:50
+msgid "Ag section profile users"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2666
+msgid "Apellidos"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2667
+msgid "Asociar a Organización"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2668
+msgid "Año"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2669
+msgid "Campo Visible"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2670
+msgid "Cargo"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2671
+msgid "Centro educativo"
+msgstr "Educative center"
+
+#: ag_section_profile_users.features.field_instance.inc:2672
+msgid "Condiciones del sitio"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2673
+msgid "DNI"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2674
+msgid "DNI extranjero"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2675
+msgid "Descripción"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2676
+msgid "Descripción del cargo"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2677
+msgid "Descripción formación"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2678
+msgid "Diplomaturas/Licenciaturas"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2679
+msgid "Entidad"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2680
+msgid "Etiquetas"
+msgstr "Filtra per etiquetes"
+
+#: ag_section_profile_users.features.field_instance.inc:2681
+msgid "Experiencia laboral"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2682
+msgid "Facebook"
+msgstr "Facebook"
+
+#: ag_section_profile_users.features.field_instance.inc:2683
+msgid "Fecha de nacimiento"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2684
+msgid "Fechas"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2685
+msgid "Formación adicional"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2686
+msgid "Idioma"
+msgstr "Filtra per idioma"
+
+#: ag_section_profile_users.features.field_instance.inc:2687
+msgid "Image"
+msgstr "Imagen"
+
+#: ag_section_profile_users.features.field_instance.inc:2688
+msgid "Introduzca las diferentes etiquetas separadas por comas."
+msgstr "Enter the different tags separated by commas."
+
+#: ag_section_profile_users.features.field_instance.inc:2689
+msgid "Linkedin"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2690
+msgid "Localidad"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2691
+msgid "Lugar"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2692
+msgid "Nivel"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2693
+msgid "Nivel de estudios"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2694
+msgid "Nivel de privacidad"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2695
+msgid "Nivel idioma"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2696 ag_section_profile_users.views_default.inc:1441
+msgid "Nombre"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2697
+msgid "Nombre y Apellidos"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2698
+msgid "Ocupación actual"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2699
+msgid "Otras anotaciones"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2700
+msgid "País"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2701
+msgid "Perfil público en toda la red"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2702
+msgid "Provincia"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2703
+msgid "Sexo"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2704
+msgid "Sobre mi"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2705
+msgid "Titulación"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2706
+msgid "Twitter"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2707
+msgid "Título"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2708
+msgid "Url Centro educativo"
+msgstr ""
+
+#: ag_section_profile_users.features.field_instance.inc:2709
+msgid "Website"
+msgstr "Sitio web"
+
+#: ag_section_profile_users.features.field_instance.inc:2710
+msgid "solrID"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:121;536;848;948;1156;1419
+msgid "Master"
+msgstr "Maestro"
+
+#: ag_section_profile_users.views_default.inc:122;538;850;949;1158;1420
+msgid "más"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:123;539;851;950;1159;1421
+msgid "Aplicar"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:124;540;852;951;1160;1422
+msgid "Reiniciar"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:125;541;853;952;1161
+msgid "Ordenar por"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:126;542;854;953;1162;1424
+msgid "Asc"
+msgstr "Asc"
+
+#: ag_section_profile_users.views_default.inc:127;543;855;954;1163;1425
+msgid "Desc"
+msgstr "Desc"
+
+#: ag_section_profile_users.views_default.inc:128;544;856;955;1164;1426
+msgid "Elementos por página"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:129;545;857;956;1165;1427
+msgid "- Todos -"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:130;546;858;957;1166;1428
+msgid "Desplazamiento"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:131;547;859;958
+msgid "« primera"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:132;548;860;959
+msgid "‹ anterior"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:133;549;861;960
+msgid "siguiente ›"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:134;550;862;961
+msgid "última »"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:135
+msgid "Content"
+msgstr "Contenido"
+
+#: ag_section_profile_users.views_default.inc:136;551;1181;1436
+msgid "Todo(s)"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:137
+msgid "User's comments on a node"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:138
+msgid "The user's comments view of a specific node"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:139;554;866;963;1183;1435
+msgid "more"
+msgstr "más"
+
+#: ag_section_profile_users.views_default.inc:537
+msgid "Seguidos"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:552 ag_section_profile_users.module:1944 plugins/content_types/user_activity_summary/user_activity_summary.inc:61
+msgid "Followers"
+msgstr "Seguidores"
+
+#: ag_section_profile_users.views_default.inc:553
+msgid "Vista de los seguidores de un usuario"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:555
+msgid "flag"
+msgstr "marca"
+
+#: ag_section_profile_users.views_default.inc:556
+msgid "Flag user"
+msgstr "Marca usuario"
+
+#: ag_section_profile_users.views_default.inc:557;868;1184;1437
+msgid "Vista panel"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:558
+msgid "Followings"
+msgstr "Seguidos"
+
+#: ag_section_profile_users.views_default.inc:559
+msgid "Muestra los seguidos de un usuario"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:560
+msgid "Mensaje sin resultados"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:561
+msgid "This user is not following any other user."
+msgstr "Este usuario no está siguiendo a ningún otro usuario."
+
+#: ag_section_profile_users.views_default.inc:562
+msgid "Seguidores"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:563
+msgid "This user is not followed by any other user."
+msgstr "Este usuario no es seguido por ningún otro usuario."
+
+#: ag_section_profile_users.views_default.inc:564
+msgid "Suggestions (override)"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:565
+msgid "Tal vez quieras seguir a"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:566
+msgid "Vista de las sugerencias de usuarios a seguir"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:567
+msgid "Group node from OG membership"
+msgstr "Grupo de nodos desde la membrebesía de OG"
+
+#: ag_section_profile_users.views_default.inc:849
+msgid "Actividad reciente"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:863
+msgid "Comments"
+msgstr "Comentarios"
+
+#: ag_section_profile_users.views_default.inc:864 ag_section_profile_users.module:1280
+msgid "Recent Activity"
+msgstr "Actividad reciente"
+
+#: ag_section_profile_users.views_default.inc:865
+msgid "Actividad pública reciente de un usuario"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:867
+msgid "The user id who has shared the content"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:869
+msgid "Recent Activity Profile Widget"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:870
+msgid "Actividad recente de un usuario para el widget del perfil público"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:871
+msgid "No hay actividad reciente para este usuario."
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:962
+msgid "Entity Reference"
+msgstr "Referencia a entidades"
+
+#: ag_section_profile_users.views_default.inc:1157 ag_section_profile_users.module:251
+msgid "My drafts"
+msgstr "Mis borradores"
+
+#: ag_section_profile_users.views_default.inc:1167;1429
+msgid "«"
+msgstr "«"
+
+#: ag_section_profile_users.views_default.inc:1168;1430
+msgid "‹"
+msgstr "‹"
+
+#: ag_section_profile_users.views_default.inc:1169;1431
+msgid "›"
+msgstr "›"
+
+#: ag_section_profile_users.views_default.inc:1170;1432
+msgid "»"
+msgstr "»"
+
+#: ag_section_profile_users.views_default.inc:1171
+msgid "Currently you have no draft"
+msgstr "No tienes ningún borrador actualmente"
+
+#: ag_section_profile_users.views_default.inc:1172
+msgid "Title"
+msgstr "Título"
+
+#: ag_section_profile_users.views_default.inc:1173
+msgid "Type"
+msgstr "Tipo"
+
+#: ag_section_profile_users.views_default.inc:1174
+msgid "publish"
+msgstr "publicar"
+
+#: ag_section_profile_users.views_default.inc:1175
+msgid "Publish"
+msgstr "Publicar"
+
+#: ag_section_profile_users.views_default.inc:1176
+msgid "Edit"
+msgstr "Editar"
+
+#: ag_section_profile_users.views_default.inc:1177
+msgid "Discard"
+msgstr "Descartar"
+
+#: ag_section_profile_users.views_default.inc:1178
+msgid "discard"
+msgstr "descartar"
+
+#: ag_section_profile_users.views_default.inc:1179
+msgid "Operations"
+msgstr "Operaciones"
+
+#: ag_section_profile_users.views_default.inc:1180
+msgid "[nothing_2] [edit_node] [delete_node]"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:1182
+msgid "User drafts list"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:1423
+msgid "Order by"
+msgstr "Ordenar por"
+
+#: ag_section_profile_users.views_default.inc:1433
+msgid "Content pane"
+msgstr "Panel de contenido"
+
+#: ag_section_profile_users.views_default.inc:1434
+msgid "Miembros de la organización"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:1438
+msgid "User entity referenced from field_organization_reference"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:1439
+msgid "Profile"
+msgstr "Perfil"
+
+#: ag_section_profile_users.views_default.inc:1440
+msgid "field collection item from field_name_surname"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:1442
+msgid "Surnames"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:1443
+msgid "Usuario"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:1444
+msgid "Organización"
+msgstr ""
+
+#: ag_section_profile_users.views_default.inc:1445
+msgid "Operación"
+msgstr ""
+
+#: ag_section_profile_users.widget.inc:45
+msgid "View public profile on Procomun"
+msgstr "Ver perfil público en Procomún"
+
+#: ag_section_profile_users.widget.inc:53
+msgid "Recent activity"
+msgstr "Actividad reciente"
+
+#: ag_section_profile_users.widget.inc:58
+msgid "Internal error"
+msgstr "Error interno"
+
+#: ag_section_profile_users.module:112
+msgid "Educative center autocomplete"
+msgstr "Autocompletado del centro educativo"
+
+#: ag_section_profile_users.module:113
+msgid "Allow access to autocomplete of Educative Centers"
+msgstr "Permitir acceso al autocompletado de los centros educativos"
+
+#: ag_section_profile_users.module:116
+msgid "Create organizations."
+msgstr "Crear organizaciones"
+
+#: ag_section_profile_users.module:117
+msgid "Allow access to create organizations."
+msgstr "Permitir el acceso para crear organizaciones"
+
+#: ag_section_profile_users.module:120
+msgid "Create content as organization"
+msgstr "Crear contenido como organización"
+
+#: ag_section_profile_users.module:121
+msgid "Allow access to create content as a organization."
+msgstr "Permitir el acceso a crear contenido como una organización"
+
+#: ag_section_profile_users.module:226
+msgid "My communities"
+msgstr "Mis comunidades"
+
+#: ag_section_profile_users.module:231
+msgid "My interests"
+msgstr "Mis intereses"
+
+#: ag_section_profile_users.module:236
+msgid "My contributions"
+msgstr "Mis contribuciones"
+
+#: ag_section_profile_users.module:241
+msgid "My favourites"
+msgstr "Mis favoritos"
+
+#: ag_section_profile_users.module:246
+msgid "My learning paths"
+msgstr "Mis itinerarios de aprendizaje"
+
+#: ag_section_profile_users.module:256
+msgid "Cancel account"
+msgstr "Cancelar cuenta"
+
+#: ag_section_profile_users.module:293
+msgid "Control center"
+msgstr "Centro de control"
+
+#: ag_section_profile_users.module:299
+msgid "Logout"
+msgstr "Cerrar sesión"
+
+#: ag_section_profile_users.module:357
+msgid "procomun"
+msgstr "procomun"
+
+#: ag_section_profile_users.module:358
+msgid "Tokens related to procomun"
+msgstr "Tokens relacionados con procomún"
+
+#: ag_section_profile_users.module:362
+msgid "conditions"
+msgstr "Condiciones"
+
+#: ag_section_profile_users.module:363
+msgid "terms of service"
+msgstr "términos de servicios"
+
+#: ag_section_profile_users.module:366
+msgid "privacy"
+msgstr "privacidad"
+
+#: ag_section_profile_users.module:367
+msgid "privacy policy"
+msgstr "política de privacidad"
+
+#: ag_section_profile_users.module:399
+msgid "legal conditions"
+msgstr "condiciones legales"
+
+#: ag_section_profile_users.module:402
+msgid "terms of privacy"
+msgstr "política de privacidad"
+
+#: ag_section_profile_users.module:586;1208
+msgid "The email address appears to be invalid."
+msgstr "La dirección de email parece ser inválida"
+
+#: ag_section_profile_users.module:609
+msgid "Place field is required."
+msgstr "El campo Lugar es obligatorio."
+
+#: ag_section_profile_users.module:614
+msgid "DNI field is required."
+msgstr "El campo DNI es obligatorio."
+
+#: ag_section_profile_users.module:619
+msgid "Province field is required."
+msgstr "El campo Provincia es obligatorio."
+
+#: ag_section_profile_users.module:624
+msgid "Locality field is required."
+msgstr "El campo Localidad es obligatorio."
+
+#: ag_section_profile_users.module:663
+msgid "The DNI introduced has been registered before"
+msgstr "El DNI introducido ya ha sido registrado con anterioridad."
+
+#: ag_section_profile_users.module:684
+msgid "Date birth must be before today"
+msgstr "La fecha de nacimiento debe ser inferior al día de hoy"
+
+#: ag_section_profile_users.module:710
+msgid "Short: d/m/Y"
+msgstr "Corto: d/m/Y"
+
+#: ag_section_profile_users.module:831
+msgid "Twitter Link"
+msgstr ""
+
+#: ag_section_profile_users.module:878
+msgid "Name"
+msgstr "Nombre"
+
+#: ag_section_profile_users.module:881
+msgid "Description"
+msgstr "Descripción"
+
+#: ag_section_profile_users.module:884
+msgid "Number of  users subscribed to this Organization"
+msgstr "Número de usuarios suscritos a esta Organización"
+
+#: ag_section_profile_users.module:887
+msgid "Number of Communities where this Organization can create posts"
+msgstr "Número de Comunidades donde esta Organización puede crear posts"
+
+#: ag_section_profile_users.module:952
+msgid "Date of birth"
+msgstr "Fecha de nacimiento"
+
+#: ag_section_profile_users.module:962
+msgid "Public profile"
+msgstr "Perfil público"
+
+#: ag_section_profile_users.module:967
+msgid "Public profile2 view"
+msgstr "Vista de profile2"
+
+#: ag_section_profile_users.module:972
+msgid "Recent activities"
+msgstr ""
+
+#: ag_section_profile_users.module:982
+msgid "Block for following the user"
+msgstr "Bloque para seguir al usuario"
+
+#: ag_section_profile_users.module:987
+msgid "Block for sending a private message to the user"
+msgstr "Bloque para enviar un mensaje privado al usuario"
+
+#: ag_section_profile_users.module:992
+msgid "Block for show the user activity summary"
+msgstr ""
+
+#: ag_section_profile_users.module:1018
+msgid "Send a private message to @user_name"
+msgstr "Enviar un mensaje a @user_name"
+
+#: ag_section_profile_users.module:1063
+msgid "Your account, as well as information of their personal data , will be removed. This action cannot be undone."
+msgstr ""
+"Su cuenta, así como la información de sus datos personales, será "
+"eliminada. Esta acción no se puede deshacer."
+
+#: ag_section_profile_users.module:1190
+msgid "ATTENTION! You need to reenter your password or changed."
+msgstr "ATENCIÓN! Necesitas volver a introducir tu contraseña o cambiarla."
+
+#: ag_section_profile_users.module:1302
+msgid "@user_name is following (@followings)"
+msgstr "@user_name sigue a (@followings)"
+
+#: ag_section_profile_users.module:1311
+msgid "Following @user_name (@followers)"
+msgstr "Siguiendo a @user_name (@followers)"
+
+#: ag_section_profile_users.module:1320
+msgid "@user_name is following:"
+msgstr "@user_name sigue a:"
+
+#: ag_section_profile_users.module:1328
+msgid "Following @user_name:"
+msgstr "Siguiendo a @user_name:"
+
+#: ag_section_profile_users.module:1722
+msgid "Invalid twitter username: It must begin by http://twitter.com. For example  http://twitter.com/user"
+msgstr ""
+"El usuario de twitter no es correcto. Debe utilizar el formato "
+"http://twitter.com/nombre_de_usuario."
+
+#: ag_section_profile_users.module:1936 plugins/content_types/user_activity_summary/user_activity_summary.inc:54
+msgid "Following"
+msgstr "Siguiendo"
+
+#: ag_section_profile_users.module:1955 plugins/content_types/user_activity_summary/user_activity_summary.inc:72
+msgid "Favorited resources"
+msgstr "Recursos favoritos"
+
+#: ag_section_profile_users.module:1964 plugins/content_types/user_activity_summary/user_activity_summary.inc:80
+msgid "Published content"
+msgstr "Contenido publicado"
+
+#: ag_section_profile_users.module:19
+msgid "register Autocomplete"
+msgstr "Autocompletado de registro"
+
+#: ag_section_profile_users.module:28
+msgid "Add Organization"
+msgstr "Añadir Organización"
+
+#: ag_section_profile_users.module:36
+msgid "Manage organization configuration"
+msgstr "Gestión de configuración de organizaciones"
+
+#: ag_section_profile_users.module:37
+msgid "General organization configuration."
+msgstr ""
+
+#: ag_section_profile_users.module:46
+msgid "Certifying organizations"
+msgstr "Organizaciones certificadoras"
+
+#: ag_section_profile_users.install:40
+msgid "AG Section Profile Users - Update 7002 was applied"
+msgstr ""
+
+#: ag_section_profile_users.install:82
+msgid "Processed @records records. Finished."
+msgstr "Se han procesado @records registros. Finalizado"
+
+#: ag_section_profile_users.install:457
+msgid "Error: failed to update user (id: @id | idDrupal: @idDrupal) in SOLR"
+msgstr ""
+"Error: se ha producido un fallo al actualizar el usuario (id: @id | "
+"idDrupal: @idDrupal) en SOLR"
+
+#: ag_section_profile_users.install:26
+msgid "agrega2_update"
+msgstr ""
+
+#: ag_section_profile_users.install:26
+msgid "Updated field_twitter form %tw_old to %tw_new"
+msgstr ""
+
+#: ag_section_profile_users.info:0
+msgid "ag_section_profile_users"
+msgstr ""
+
+#: ag_section_profile_users.info:0
+msgid "Profile Usuarios."
+msgstr "Perfil de usuarios"
+
+#: ag_section_profile_users.info:0 plugins/content_types/communities_per_organization/communities_per_organization.inc:10 plugins/content_types/user_activity_summary/user_activity_summary.inc:10
+msgid "Agrega2"
+msgstr "Agrega2"
+
+#: plugins/access/active_user/active_user.inc:6;47
+msgid "Active user"
+msgstr ""
+
+#: plugins/access/active_user/active_user.inc:7
+msgid "Is user active or blocked"
+msgstr ""
+
+#: plugins/content_types/communities_per_organization/communities_per_organization.inc:7
+msgid "Communities per organization."
+msgstr "Comunidades por organización"
+
+#: plugins/content_types/communities_per_organization/communities_per_organization.inc:8
+msgid "Render the communities per organization."
+msgstr "Renderizar las comunidades por organización"
+
+#: plugins/content_types/communities_per_organization/communities_per_organization.inc:9 plugins/content_types/user_activity_summary/user_activity_summary.inc:9
+msgid "User"
+msgstr "Usuario"
+
+#: plugins/content_types/communities_per_organization/communities_per_organization.inc:29
+msgid "Communities to which it belongs."
+msgstr "Comunidades a las que pertenece"
+
+#: plugins/content_types/user_activity_summary/user_activity_summary.inc:7
+msgid "User activity summary"
+msgstr "Resumen de actividad del usuario"
+
+#: plugins/content_types/user_activity_summary/user_activity_summary.inc:8
+msgid "Render the user summary activity with numbre of publish content, flags, etc.."
+msgstr ""
+"Renderizar el resumen de la actividad del usuario con el número de "
+"contenido publicados, marcas, etc..."

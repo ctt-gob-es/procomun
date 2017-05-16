@@ -1,0 +1,58 @@
+// Styles for event nodes, for all view modes
+.node.node-event
+  $inner_margin: 10px
+  header .title
+    margin-top: 0
+    margin-bottom: $inner_margin
+
+  .field-name-field-event-type.field-type-list-text
+    .value-1
+      +icon-aware("ico-info.png")
+    .value-2
+      +icon-aware("ico-antena.png")
+
+  ul.links
+    display: block
+    margin-top: 1em
+
+  .content
+    .field-name-field-video-iframe
+      text-align: center
+      margin-top: 1em
+      margin-bottom: 2em
+
+      .field-items
+        float: none !important
+
+      iframe
+        width: 90%
+        height: 500px
+
+    .field
+      +clearfix
+
+      &:not(.field-name-title-field)
+        .field-label,
+        .field-items
+          //float: left;
+
+  &.node-teaser
+    footer
+      padding: 3px
+      margin-top: $inner_margin
+
+      ul.links.inline
+        margin: 0
+        display: block
+
+        li
+          margin-left: 0
+
+    .node-readmore a
+      +button($main_blue)
+
+      padding: 3px 5px
+
+      +border-radius(0)
+
+      display: inline-block

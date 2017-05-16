@@ -1,0 +1,82 @@
+#user-activity-summary-block
+  @extend .box-shadow
+  background-color: lighten($main_blue, 25%)
+  padding: 5px
+  #user-activity-summary-header
+    margin-bottom: 15px
+    text-align: center
+    > *
+      display: block
+      padding: 0 10px
+
+    .user-picture
+      margin: 10px 0
+      img
+        width: 130px
+        height: 130px
+        +border-radius(100px)
+        border: 4px solid $white
+        +box-shadow(0px 1px 2px 0px $charcoal)
+    .name
+      font-size: 18px
+      font-family: $font_narrow
+      font-weight: 700
+      color: $white
+      line-height: 1.2em
+      a
+        color: inherit
+        text-decoration: none
+      &:after
+        content: '× × ×'
+        font-size: 20px
+        display: block
+        margin: 8px 0
+    .user-mail
+      font-family: $font_narrow
+      font-size: 18px
+
+  #user-activity-summary-body
+    .summary-body-box
+      width: 50%
+      float: left
+      box-sizing: border-box
+      border-top: 1px solid $snow
+      text-align: center
+      padding: 10px
+      font-family: $font_narrow
+
+      .box-number
+        font-size: 18px
+        font-weight: 700
+        display: block
+        margin-bottom: 2px
+        color: $main_blue
+        a
+          text-decoration: none
+          &.active
+            color: inherit
+          &:hover
+            color: $deep_blue
+
+      .box-label
+        display: block
+        color: $white
+        text-transform: uppercase
+        line-height: 1.2em
+        font-weight: 700
+        margin-bottom: 5px
+        a
+          color: inherit
+          text-decoration: none
+
+  #user-activity-my-contributions
+    text-align: center
+
+    a
+      margin-top: 10px
+      display: inline-block
+
+      +button($main_blue)
+
+      &:hover
+        background-color: $deep_blue

@@ -1,0 +1,340 @@
+<?php
+/**
+ * @file
+ * Code for the Agrega2 calendar events feature.
+ */
+
+include_once 'ag_section_calendar_events.features.inc';
+
+/**
+ * Implements hook_preprocess_calendar_item().
+ */
+function ag_section_calendar_events_preprocess_calendar_item(&$vars) {
+  if ($vars['view']->name == 'events_calendar'){
+    $vars['rendered_fields'] = array();
+  }
+}
+
+/**
+ * Implements hook_entity_info_alter().
+ * The first attribute in the array defines an arbitrary label for the view mode machine name.
+ * 'custom settings' => TRUE displays the view mode as a default at the top of the display modes
+ */
+function ag_section_calendar_events_entity_info_alter(&$entity_info) {
+  $entity_info['node']['view modes']['upcoming_events'] = array(
+    'label' => t('Upcoming events'),
+    'custom settings' => TRUE,
+  );
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function ag_section_calendar_events_field_formatter_info() {
+  return array(
+    'ag_separated_dates' => array(
+      'label' => t('Separated date for agrega2'),
+      'description' => t('The field data will be separated when a date has a begin and end date'),
+      'field types' => array('date', 'datestamp', 'datetime'),
+    ),
+    'ag_select_value_with_class' => array(
+      'label' => t('Translated selected value with class'),
+      'description' => t('Show the translated value with a specific class'),
+      'field types' => array('list_text'),
+    ),
+    'ag_custom_date_format' => array(
+      'label' => t('Custom date format for Agrega2'),
+      'field types' => array('date', 'datestamp', 'datetime'),
+      'multiple values' => FIELD_BEHAVIOR_DEFAULT,
+    ),
+    'ag_custom_date_table' => array(
+      'label' => t('Custom date format to display as table'),
+      'field types' => array('date', 'datestamp', 'datetime'),
+      'multiple values' => FIELD_BEHAVIOR_DEFAULT,
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function ag_section_calendar_events_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $elements = array();
+
+  switch ($display['type']) {
+    case 'ag_select_value_with_class':
+      // this formatter wraps the content of a selected element, with a class indicating the selected value
+      foreach ($items as $delta => $item) {
+
+        // extracted and adapted from i18n_field_field_formatter_view
+        if (function_exists('i18n_field_type_info') &&
+          ($translate = i18n_field_type_info($field['type'], 'translate_options'))) {
+          $allowed_values = $translate($field);
+        }
+        else {
+          // Defaults to list_default behavior
+          $allowed_values = list_allowed_values($field);
+        }
+        foreach ($items as $delta => $item) {
+          if (isset($allowed_values[$item['value']])) {
+            $output = field_filter_xss($allowed_values[$item['value']]);
+          }
+          else {
+            // If no match was found in allowed values, fall back to the key.
+            $output = field_filter_xss($item['value']);
+          }
+
+          $class_name = 'value-' . str_replace(' ', '-', trim(strtolower($item['value'])));
+          $elements[$delta] = array('#markup' => '<div class="' . $class_name . '">' . $output . '</div>');
+        }
+
+      }
+      break;
+
+    case 'ag_separated_dates':
+      foreach ($items as $delta => $item) {
+        $element = array(
+          'element' => $item,
+          'field' => $instance,
+          'display' => $display
+        );
+        $elements[$delta] = array(
+          '#markup' => theme($display['type'] . '_formatter', array('element' => $element, 'field' => $field)),
+        );
+      }
+      break;
+
+    case 'ag_custom_date_format':
+      foreach ($items as $delta => $item) {
+        $element = array(
+          'element' => $item,
+          'field' => $instance,
+          'display' => $display
+        );
+        $elements[$delta] = array(
+          '#theme' => 'ag_section_calendar_events_formatter_' . $display['type'],
+          '#element' => $element,
+          '#field' => $field,
+        );
+      }
+      break;
+
+    case 'ag_custom_date_table':
+      foreach ($items as $delta => $item) {
+        $element = array(
+          'element' => $item,
+          'field' => $instance,
+          'display' => $display
+        );
+        $elements[$delta] = array(
+          '#theme' => 'ag_section_calendar_events_formatter_table',
+          '#element' => $element,
+          '#field' => $field,
+        );
+      }
+      break;
+  }
+
+  return $elements;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function ag_section_calendar_events_theme() {
+  $themes = array(
+    'ag_separated_dates_formatter' => array(
+      'arguments' => array(
+        'element' => NULL,
+        'field' => NULL,
+      ),
+    ),
+    'ag_section_calendar_events_formatter_ag_custom_date_format' => array(
+      'variables' => array(
+        'element' => NULL,
+        'field' => NULL,
+      ),
+    ),
+    'ag_section_calendar_events_formatter_table' => array(
+      'variables' => array(
+        'element' => NULL,
+        'field' => NULL,
+      ),
+    )
+  );
+
+  return $themes;
+}
+
+/**
+ * Function theme for ag_separated_dates formatter
+ */
+function theme_ag_separated_dates_formatter($vars) {
+  $element = $vars['element'];
+  $field = $vars['field'];
+
+  $format_date = 'd \d\e F \d\e Y - H:i';
+  $timezone_bd = date_get_timezone_db($field['settings']['tz_handling']);
+  $start_date = DateTime::createFromFormat('Y-m-d H:i:s', $element['element']['value'], new DateTimeZone($timezone_bd));
+  $end_date = DateTime::createFromFormat('Y-m-d H:i:s', $element['element']['value2'], new DateTimeZone($timezone_bd));
+
+  $start_time = format_date($start_date->getTimestamp(), 'custom', $format_date);
+  $end_time = format_date($end_date->getTimestamp(), 'custom', $format_date);
+  if ($start_time === $end_time) {
+    $output = '<div class="date"><strong>' . t('Start date:') . '</strong>' .
+                ' ' . $start_time . '</div>';
+  }
+  else {
+    $output = '<div class="date"><strong>' .
+                  t('Start date:') . '</strong>' . ' ' . $start_time .
+              '</div><div class="date"><strong>' . t('End date:') . '</strong>'.
+              ' ' . $end_time . '</div>';
+  }
+
+  return $output;
+}
+
+/**
+ * Function theme for ag_custom_date_format
+ */
+function theme_ag_section_calendar_events_formatter_ag_custom_date_format($vars) {
+  $element = $vars['element'];
+  $field = $vars['field'];
+
+  $format_date = 'd M';
+  $timezone_bd = date_get_timezone_db($field['settings']['tz_handling']);
+  $publish_date = DateTime::createFromFormat('Y-m-d H:i:s', $element['element']['value'], new DateTimeZone($timezone_bd));
+  $date = format_date($publish_date->getTimestamp(), 'custom', $format_date);
+  $date = explode(' ', $date);
+
+  $render_array = array(
+    'date' => array(
+      'date-month' => array(
+        '#prefix' =>'<span class="date-month">',
+        '#markup' => $date[1],
+        '#suffix' => '</span>'
+      ),
+      'date-day' => array(
+        '#prefix' =>'<span class="date-day">',
+        '#markup' => $date[0],
+        '#suffix' => '</span>'
+      ),
+    ),
+    '#theme_wrapper' => array('container'),
+  );
+
+  return render($render_array['date']);
+}
+
+/**
+ * Function theme for ag_section_calendar_events_formatter_table.
+ */
+function theme_ag_section_calendar_events_formatter_table($vars) {
+  $element = $vars['element'];
+  $field = $vars['field'];
+
+  // Configure custom date
+  $format_date = 'd/m/Y';
+  $timezone_bd = date_get_timezone_db($field['settings']['tz_handling']);
+
+  $start_date = DateTime::createFromFormat('Y-m-d H:i:s', $element['element']['value'], new DateTimeZone($timezone_bd));
+  $end_date = DateTime::createFromFormat('Y-m-d H:i:s', $element['element']['value2'], new DateTimeZone($timezone_bd));
+
+  $date = format_date($start_date->getTimestamp(), 'custom', $format_date);
+  $date2 = format_date($end_date->getTimestamp(), 'custom', $format_date);
+
+  // Build rows array to render each row.
+  $rows = array();
+  $rows[] = array(
+    array('data' => t('Start date'), 'class' => 'label'),
+    array('data' => $date, 'class' => 'content')
+  );
+
+  $rows[] = array(
+    array('data' => t('End date'), 'class' => 'label'),
+    array('data' => $date2, 'class' => 'content')
+  );
+  $table_attributes = array('class' => 'extra-table');
+
+  $render_array['maintable'] = array(
+    '#theme' => 'table',
+    '#header' => NULL,
+    '#rows' => $rows,
+    '#attributes' => $table_attributes,
+  );
+
+  return render($render_array['maintable']);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter()
+ */
+function ag_section_calendar_events_form_event_node_form_alter(&$form, &$form_state, $form_id) {
+  // Hide field_event_type field. It's "Informativo" type by default.
+  $form['field_event_type']['#access'] = FALSE;
+
+  // Hide field_video_iframe field because functionality below is deprecated.
+  $form['field_video_iframe']['#access'] = FALSE;
+
+  // Deprecated.
+  // The field for streaming URL is only visible when the event is a Streaming
+  // type.
+  // The Streaming type is the option '2' in the field_event_type select.
+  /*$form['field_video_iframe']['#states'] = array(
+    'visible' => array(
+      ':input[name="field_event_type[und]"]' => array('value' => '2'),
+    ),
+  );*/
+}
+
+/**
+ * Implements hook_field_widget_form_alter()
+ * We use this hook to override element validation in iframe_field_widget_form
+ */
+function ag_section_calendar_events_field_widget_form_alter(&$element, &$form_state, $context) {
+  if ($context['instance']['widget']['type'] === 'iframe_widget_url') {
+    $element['url']['#element_validate'] = array('allow_iframe_tag_validate');
+    //Force description into field
+    $element['url']['#description'] = t($context['instance']['description']);
+  }
+}
+
+/**
+ * Validation function for iframe fields
+ */
+function allow_iframe_tag_validate($element, &$form_state) {
+  // Obtaining the value from form_state
+  $iframe_tag = $form_state['values']['field_video_iframe'][LANGUAGE_NONE][0]['url'];
+
+  // Checking if it's an iframe tag
+  if(strpos(ltrim($iframe_tag), '<iframe ') === 0) {
+    // If it's, we get the 'src' attribute and override $element and $form_state values
+    preg_match('/src="([^"]+)"/', $iframe_tag, $match);
+    $youtube_embed_url = (!empty($match[1])) ? $match[1] : $iframe_tag;
+    $form_state['values']['field_video_iframe'][LANGUAGE_NONE][0]['url'] = $youtube_embed_url;
+    $element['#value'] = $youtube_embed_url;
+  }
+  // Checking if it's a valid URL
+  if (!empty($element['#value']) && !valid_url($element['#value'], TRUE)) {
+    form_error($element, t('Invalid iframe URL.'));
+  }
+}
+
+/**
+ * Implements hook_entity_view($entity, $type, $view_mode, $langcode).
+ */
+function ag_section_calendar_events_entity_view($entity, $type, $view_mode, $langcode) {
+    // Go only through events.
+    if ((isset($entity->type) && isset($entity->content['service_links']) && ($entity->type == 'event' && $type == 'node'))) {
+      // Get rendered rsrs.
+      $rrss = ag_general_get_rrss();
+
+      if (!empty($rrss)) {
+        $entity->service_links_rendered = $rrss;
+      }
+      
+      if ($entity->comment == COMMENT_NODE_OPEN && user_access('post comments') && $view_mode == 'full') {
+        $entity->content['links']['comment']['#links']['comment-add']['title'] = t('Make a comment');
+      }
+    }
+}

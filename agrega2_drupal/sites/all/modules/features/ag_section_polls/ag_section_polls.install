@@ -1,0 +1,48 @@
+<?php
+
+/**
+ * Implements hook_update_N().
+ * Update community permissions for create poll content.
+ */
+function ag_section_polls_update_7100(&$sandbox) {
+  //Prepare all variables in first iteration
+
+  if (!isset($sandbox['total'])) {
+    //Prepare array from query
+    ag_external_content_prepare_batch_communities($sandbox, array(
+      'create poll content',
+    ));
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = ag_external_content_get_total($sandbox);
+  }
+
+  //Get batch, or number of entities to process each time.
+  $nodes_per_pass = 10;
+  $end = $sandbox['current'] + $nodes_per_pass;
+
+  //Loop. Use db_query_range if any query needs to be split between batches.
+  while($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    //Heavy operations
+    $element = ag_external_content_get_element($sandbox);
+    $community = ag_external_content_get_community_role_permissions($element);
+
+    ag_external_content_update_community_permissions($sandbox, $community);
+
+    //Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1, meaning we are done.
+  // Also, avoid division by zero
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @records records. Finished.', array('@records' => $sandbox['total'])));
+  }
+}

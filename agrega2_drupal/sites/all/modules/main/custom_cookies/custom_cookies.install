@@ -1,0 +1,45 @@
+<?php
+
+/**
+ * @file
+ * Installation file.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function custom_cookies_install() {
+  /*
+  *This is not a general approach but rather specialized code for my websites, so we are interested in Spanish, English and German, no checking done on actual languages activated
+  */
+  $popup_settings_en = array(
+    'popup_info' => 'This website uses cookies to enhance your user experience. By clicking any link on this page you are agreeing with our cookie policy.',
+    'popup_link' => 'legal-advice',
+    'popup_buttonyes' => 'Yes, I agree',
+    'popup_buttonno' => 'No, I want to know more',
+  );
+  $popup_settings_es = array(
+    'popup_info' => 'Esta página web usa "cookies" para mejorar la experiencia. Si usted sigue navegando, acepta nuestra política de cookies.',
+    'popup_link' => 'aviso-legal',
+    'popup_buttonyes' => 'Si, de acuerdo',
+    'popup_buttonno' => 'No, quiero saber más',
+  );
+  $popup_settings_de = array(
+    'popup_info' => 'Diese Webseite benutzt Cookies zur Verbesserung der Benutzerfreundlichkeit. Wenn Sie weiter navigieren, akzeptieren Sie dieses.',
+    'popup_link' => 'impressum',
+    'popup_buttonyes' => 'Ja, in Ordnung',
+    'popup_buttonno' => 'Nein, bitte weitere Info',
+  );
+  variable_set('custom_cookies_en', $popup_settings_en);
+  variable_set('custom_cookies_es', $popup_settings_es);
+  variable_set('custom_cookies_de', $popup_settings_de);
+  
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function custom_cookies_uninstall() {
+  db_query("DELETE FROM {variable} WHERE name LIKE '%custom_cookies_%'");
+  cache_clear_all('variables', 'cache');
+}

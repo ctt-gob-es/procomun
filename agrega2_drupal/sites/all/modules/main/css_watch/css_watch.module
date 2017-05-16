@@ -1,0 +1,72 @@
+<?php
+// $Id: css_watch.module,v 1.8 2011/02/17 03:42:43 dustincurrie Exp $
+
+define('CSS_WATCH_MIN_INTERVAL', 500);
+define('CSS_WATCH_MAX_INTERVAL', 30000);
+define('CSS_WATCH_DEFAULT_INTERVAL', 3000);
+
+/**
+ * Implementation of hook_menu().
+ */
+function css_watch_menu() {
+    $items['admin/config/development/css-watch'] = array(
+    'title' => 'CSS Watch',
+    'description' => 'Administer CSS Watch Settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('css_watch_settings'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'css_watch.admin.inc',
+  );
+  return $items;
+}
+
+/**
+ * Implementation of hook_help().
+ */
+function css_watch_help($section) {
+  switch ($section) {
+    case 'admin/settings#css-watch':
+      return t('<p>Administer CSS Watch settings.</p>');
+      break;
+  }
+}
+
+
+/**
+ * Implementaion of hook_css_alter.
+ */
+function css_watch_css_alter(&$css) {
+  global $theme_path, $theme, $base_url;
+  //support for sites using admin_theme module
+  if (variable_get('admin_theme', FALSE) == $theme) {
+    //drupal_set_message(t('CSS watching is disabled for admin theme'));
+  }
+  else {
+    $sheets = array();
+    foreach ($css as $path => $info) {
+      if (file_exists($path) && strncmp($path, $theme_path, strlen($theme_path)) == 0) {
+        $sheets[] =  base_path() . $path;
+        $css[$path]['preprocess'] = FALSE;
+      }
+    };
+    
+    //we know the css files that need to be pulled out of aggregation, so deal with them now
+    $jquery_settings = array(
+      'cssWatch' => array(
+        'paths' => $sheets,
+        'pollInterval' => variable_get('css_watch_poll_interval', CSS_WATCH_DEFAULT_INTERVAL),
+        'domain' => $base_url
+      )
+    );
+    drupal_add_js($jquery_settings, 'setting');
+    drupal_add_js(drupal_get_path('module', 'css_watch') . '/js/css_watch.js');
+    //drupal_set_message(t('CSS watching is enabled; polling at %interval ms' , array('%interval' => variable_get('css_watch_poll_interval', CSS_WATCH_DEFAULT_INTERVAL))));
+  }
+}
+
+/**
+ * Implementation of hook_enable().
+ */
+function css_watch_enable() {
+  //drupal_rebuild_theme_registry();
+}

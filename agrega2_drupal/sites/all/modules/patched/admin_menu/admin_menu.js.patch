@@ -1,0 +1,15 @@
+diff --git a/sites/all/modules/contrib/admin_menu/admin_menu.js b/sites/all/modules/contrib/admin_menu/admin_menu.js
+index de0bb90..fd08fa4 100644
+--- a/sites/all/modules/contrib/admin_menu/admin_menu.js
++++ b/sites/all/modules/contrib/admin_menu/admin_menu.js
+@@ -220,8 +220,8 @@ Drupal.admin.behaviors.destination = function (context, settings, $adminMenu) {
+  */
+ Drupal.admin.behaviors.hover = function (context, settings, $adminMenu) {
+   // Hover emulation for IE 6.
+-  if ($.browser.msie && parseInt(jQuery.browser.version) == 6) {
+-    $('li', $adminMenu).hover(
++  if (navigator.appName == 'Microsoft Internet Explorer' && navigator.userAgent.match(/msie 6/i)) {
++      $('li', $adminMenu).hover(
+       function () {
+         $(this).addClass('iehover');
+       },

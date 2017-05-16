@@ -1,0 +1,82 @@
+// Estilos "comunes" para usar siempre que se quiera aplicar un styling concreto a un bloque por medio de un class.
+// Su uso es simple. Añade el class "style-common" al bloque que quieras estilar o al pane y "yasta".
+.block.style-common,
+.panel-pane.style-common {
+  position: relative;
+  @include pane-grey-bg;
+
+  > .block__title,
+  > .pane-title {
+    @include title-bg;
+  }
+
+  > .content,
+  > .pane-content {
+    box-sizing: border-box;
+  }
+  .view-users-organization {
+    .views-row {
+      overflow: hidden;
+      margin: 10px;
+      margin: 0 10px;
+      padding: 10px 0;
+      .user-picture {
+        max-width: 52px;
+        float: left;
+        margin-right: 10px;
+      }
+      .views-field-name {
+        float: left;
+        padding-top: 11px;
+      }
+    }
+  }
+
+  article {
+    padding: 0 15px 10px;
+    header {
+      color: $cold_gray;
+    }
+    .content {
+      .field:not(.field-name-field-poll-status) {
+        .field-label {
+          @extend .hide-accessible;
+        }
+        .field-items {
+          border: 0;
+          padding: 0;
+          text-transform: uppercase;
+          font-size: 12px;
+          width: 100%;
+          margin-top: 10px;
+          color: $gray;
+        }
+      }
+      .form-submit {
+        width: 100%;
+        margin-top: 15px;
+      }
+    }
+  }
+  .views-row article {
+    padding: 0
+  }
+}
+span.codedirection{
+  display:none;
+}
+.style-common table{
+  > tbody td {
+    box-sizing: border-box;
+  }
+  tbody {
+    position: relative;
+    td {
+      overflow: hidden;
+      background-color: $lightest_gray;
+      margin: 10px;
+      margin: 0 10px;
+      padding: 10px;
+    }
+  }
+}

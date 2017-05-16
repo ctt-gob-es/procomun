@@ -1,0 +1,320 @@
+<?php
+/**
+ * @file
+ * Code for the ag_section_user_timeline feature.
+ */
+
+include_once 'ag_section_user_timeline.features.inc';
+define("FOLLOW_USER_FLAG_ID", 9);
+
+/**
+ * Implements hook_menu()
+ */
+function ag_section_user_timeline_menu() {
+  $items = array();
+
+  // Adding a config form to make timeline header block title and text configurable
+  $items['admin/config/system/ag-section-user-timeline'] = array(
+    'title' => 'Procomun User Timeline welcome block config',
+    'description' => 'Configure the welcome block text of user timeline section',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('administer_procomun_interests_welcome_block'),
+    'access arguments' => array('bypass node access'),
+    'file' => 'ag_section_user_timeline.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+/**
+ *  Implements hook_block_info().
+ */
+function ag_section_user_timeline_block_info() {
+  $blocks['create_new_content_block'] = array(
+    'info' => t('This block allows the user to create new content selecting the community to publish'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+
+  $blocks['wellcome_new_procomun'] = array(
+    'info' => t('Wellcome new procomun block'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+
+  return $blocks;
+}
+
+/**
+ *  Implements hook_block_view().
+ */
+function ag_section_user_timeline_block_view($delta = '') {
+  $block = array();
+
+  switch($delta) {
+    case 'create_new_content_block':
+      $block['content'] = drupal_get_form('new_content_block_form');
+      break;
+    case 'wellcome_new_procomun':
+      $block['content'] = array(
+        '#theme' => 'ag_section_user_timeline_wellcome_timeline',
+        '#attached' => array(
+          'css' => array(drupal_get_path('module', 'ag_section_user_timeline') . '/css/ag_section_user_timeline.css'),
+        ),
+      );
+      break;
+  }
+
+  return $block;
+}
+
+/**
+ * This functions implements the form to include all the links in the user's
+ * timeline
+ */
+function new_content_block_form() {
+  global $user;
+  $form = array();
+
+  $form['buttons'] = array(
+    '#prefix' => '<div class="timeline-node-create-links">',
+    '#suffix' => '</div>',
+  );
+
+  $form['buttons']['post'] = array(
+    '#type' => 'submit',
+    '#value' => t('Post'),
+    '#weight' => 1,
+    '#submit' => array('create_new_content'),
+  );
+
+  $form['buttons']['question'] = array(
+    '#type' => 'submit',
+    '#value' => t('Question'),
+    '#weight' => 2,
+    '#submit' => array('create_new_content'),
+  );
+
+  $form['buttons']['ode'] = array(
+    '#type' => 'submit',
+    '#value' => t('Learning resource'),
+    '#weight' => 3,
+    '#submit' => array('create_ode'),
+  );
+
+  $form['buttons']['itinerary'] = array(
+    '#type' => 'submit',
+    '#value' => t('Learning path'),
+    '#weight' => 4,
+    '#submit' => array('create_new_content'),
+  );
+
+  $form['buttons']['podcast'] = array(
+    '#type' => 'submit',
+    '#value' => t('Podcast'),
+    '#weight' => 5,
+    '#submit' => array('create_new_content'),
+  );
+
+  // Create webinar button only appear if the user is community
+  // administrator member.
+  $is_administrator = OgDrupalToolKit::userHasRole($user->uid, 'administrator member');
+  if ($is_administrator) {
+    $form['buttons']['webinar'] = array(
+      '#type' => 'submit',
+      '#value' => t('Webinar'),
+      '#weight' => 6,
+      '#submit' => array('create_new_content'),
+    );
+  }
+
+  return $form;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function ag_section_user_timeline_theme($existing, $type, $theme, $path) {
+  $themes = array();
+  // Wellcome new procomun block:
+  $themes['ag_section_user_timeline_wellcome_timeline'] = array(
+    'variables' => array(),
+    'template' => 'ag-section-user-timeline-wellcome-timeline',
+    'path' => drupal_get_path('module', 'ag_section_user_timeline') . '/templates',
+  );
+
+  return $themes;
+}
+
+
+/**
+ * Submit function for create a new post
+ */
+function create_new_content(&$form, &$form_state) {
+  $all_groups = _getGroups($form_state);
+  $group = $all_groups['group_ref'];
+  $groups_share = $all_groups['groups_share'];
+  $form_state['redirect'] = array('node/add/' . $form_state['clicked_button']['#parents'][0], array('query' => array(
+    'destination' => current_path(),
+    'og_group_ref' => $group,
+    'og_groups_share' => urlencode($groups_share),
+  )));
+}
+/**
+ * Submit function for create a new post
+ */
+function create_ode(&$form, &$form_state) {
+  $form_state['redirect'] = array('ode/add');
+}
+
+/**
+ *  Implements hook_form_alter().
+ */
+function ag_section_user_timeline_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'post_node_form' || $form_id == 'question_node_form') {
+    $parameters = drupal_get_query_parameters();
+    if (isset($parameters['og_groups_share'])) {
+      $form_state['og_groups_share'] = urldecode($parameters['og_groups_share']);
+    }
+  }
+}
+
+/**
+ *  Implements hook_node_submit().
+ */
+function ag_section_user_timeline_node_submit($node, $form, &$form_state) {
+  if ($node->type == 'post' || $node->type == 'question' || $node->type == 'debate') {
+    if (isset($form_state['og_groups_share'])) {
+      $groups_share = $form_state['og_groups_share'];
+      $groups = explode('+', $groups_share);
+      if (!empty($groups)) {
+        $w_node = entity_metadata_wrapper('node', $node);
+        if (isset($w_node->field_question_share)) {
+          $w_node->field_question_share->set(1);
+        }
+        else {
+          $w_node->field_debate_share->set(1);
+        }
+        $current_og_refs = $w_node->og_group_ref->raw();
+        if (!empty($current_og_refs)) {
+          $current_og_refs = array_filter(array_merge($current_og_refs, $groups));
+        }
+        else {
+          $current_og_refs = $groups;
+        }
+        $w_node->og_group_ref->set($current_og_refs);
+        $w_node->save();
+
+        #Invoke hook with shared networks and node
+        module_invoke_all('og_shared_content', $groups, $node);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_search_api_views_query_alter().
+ */
+function ag_section_user_timeline_search_api_views_query_alter(view &$view, SearchApiViewsQuery &$query) {
+  // Alter the query for the user's timeline
+  if ($view->name == 'user_timeline') {
+    global $user;
+    $changed = FALSE;
+
+    foreach ($query->where[1]['conditions'] as $key => $value) {
+      if ($value[0] == 'author:flag_follow_user_user') {
+        $query->where[1]['conditions'][$key][1] = $user->uid;
+      }
+      elseif ($value[0] == 'author' && !$changed) {
+        $query->where[1]['conditions'][$key][1] = $user->uid;
+        $changed = TRUE;
+      }
+      elseif ($value[0] == 'author' && $changed) {
+        // Filter 'node author' is added twice in the view because we need to alter one of them
+        // This alteration is related to task #117278, where clients ask us for users to see in
+        // their timelines nodes flagged as "published as organizations" by other users they follow
+
+        // Firstly, we get the organizations through a query
+        $external_query = db_select('field_data_field_organization_reference', 'fdfor');
+        $external_query->join('flagging', 'f', 'f.entity_id = fdfor.entity_id');
+        $external_query->fields('fdfor', array('field_organization_reference_target_id'));
+        $external_query->condition('f.uid', $user->uid);
+        $external_query->condition('f.fid', FOLLOW_USER_FLAG_ID);
+        $results = $external_query->execute()->fetchAllKeyed(0, 0);
+
+        // And then, if we've results, we alter the view query to alter its rows
+        if (!empty($results)) {
+          $query->where[1]['conditions'][$key][1] = $results;
+          $query->where[1]['conditions'][$key][2] = 'IN';
+        }
+        // If not, we don't need this clause
+        else {
+          unset($query->where[1]['conditions'][$key]);
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_views_pre_view().
+ */
+function ag_section_user_timeline_views_pre_view(&$view, &$display_id, &$args) {
+  global $user;
+
+  //Change the title for my interests/my contributions panel pane
+  if ($view->name == 'user_timeline' && $display_id == 'panel_pane_1') {
+    // Check if is showing results by current user facet filter.
+    $uid_facet = ag_section_user_timeline_get_facet_author();
+
+    if ($uid_facet == $user->uid) {
+      $view->display[$view->current_display]->display_options["title"] =
+      $view->display['default']->handler->options["title"] = t('My contributions');
+    }
+  }
+}
+
+# # # # # # # # # # # # # #
+# # AUXILIARY FUNCTIONS # #
+# # # # # # # # # # # # # #
+
+/**
+ * This function returns the group to create a node and the groups to share
+ */
+function _getGroups($form_state) {
+  if (isset($form_state['input']['communities'])) {
+    $groups = $form_state['input']['communities'];
+    $group_ref = $groups[0];
+    array_shift($groups);
+    $groups_share = '';
+    foreach ($groups as $group) {
+      $groups_share .= $group . '+';
+    }
+    $groups_share = rtrim($groups_share, '+');
+
+    return array(
+      'group_ref' => $group_ref,
+      'groups_share' => $groups_share,
+    );
+  }
+}
+
+/**
+ * Function to get uid from author facet.
+ */
+function ag_section_user_timeline_get_facet_author() {
+  $uid_facet = '';
+
+  // Get params from url.
+  $query_params = drupal_get_query_parameters();
+
+  if (!empty($query_params['f'][0])) {
+    $author_params = explode(':', $query_params['f'][0]);
+
+    // Only check author facet in first position for my contribution section.
+    if ($author_params[0] == 'author') {
+      $uid_facet = !empty($author_params[1]) && is_numeric($author_params[1]) ? $author_params[1] : '';
+    }
+  }
+
+  return $uid_facet;
+}

@@ -1,0 +1,154 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_section_content_type_learning_resource.features.field_instance.inc: n/a
+#  ag_section_content_type_learning_resource.features.inc: n/a
+#  ag_section_content_type_learning_resource.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2014-09-01 11:33+0200\n"
+"PO-Revision-Date: 2014-09-01 11:33+0200\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1431
+msgid "Agrupacion de alumnos"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1432
+msgid "Arbol Curricular"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1433
+msgid "Archivo"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1434
+msgid "Archivos a adjuntar"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1435
+msgid "Certificado"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1436
+msgid "Compartir en otras comunidades"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1437
+msgid "Conocimiento previo"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1438
+msgid "Contribuciones"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1439
+msgid "Correo Electrónico"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1440
+msgid "Descripción"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1441
+msgid "Etiquetas"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1442
+msgid "Groups audience"
+msgstr "Grupos de audiencia"
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1443
+msgid "Imagen miniatura"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1444
+msgid "Licencia"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1445
+msgid "Lugar de utilización"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1446
+msgid "Modalidad de uso"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1447
+msgid "Nivel Educativo"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1448
+msgid "Nombre Archivo"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1449
+msgid "Nombre y Apellidos"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1450
+msgid "Objetivos didácticos"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1451
+msgid "Organización"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1452
+msgid "Palabras clave (separadas por comas): Términos que describan de manera específica el contenido del recurso, evitando ambigüedades, palabras que no aporten significado alguno y los plurales. Debe ponerse al menos una. Pueden ser alguno de los términos sugeridos u otros que se considere adecuados."
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1453
+msgid "Para utilizar por"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1454
+msgid "Recurso Educativo"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1455
+msgid "Recurso de Aprendizaje"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1456 ag_section_content_type_learning_resource.features.inc:32
+msgid "Título"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1457
+msgid "Valora"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.field_instance.inc:1458
+msgid "solrID"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.inc:28
+msgid "Recurso de aprendizaje"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.features.inc:30
+msgid "Añadir Recurso de aprendizaje"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.info:0
+msgid "ag_section_content_type_learning_resource"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.info:0
+msgid "feature que contempla todo el tipo de contenido recurso de aprendizaje"
+msgstr ""
+
+#: ag_section_content_type_learning_resource.info:0
+msgid "Agrega2"
+msgstr "Agrega2"
+

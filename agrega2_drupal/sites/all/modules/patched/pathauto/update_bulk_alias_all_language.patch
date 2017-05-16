@@ -1,0 +1,20 @@
+diff --git a/sites/all/modules/patched/pathauto/pathauto.module b/sites/all/modules/patched/pathauto/pathauto.module
+index dffc292..9ac411a 100644
+--- a/sites/all/modules/patched/pathauto/pathauto.module
++++ b/sites/all/modules/patched/pathauto/pathauto.module
+@@ -520,8 +520,13 @@ function pathauto_node_update_alias(stdClass $node, $op, array $options = array(
+   if (isset($node->path['pathauto']) && empty($node->path['pathauto'])) {
+     return;
+   }
+-
+-  $options += array('language' => pathauto_entity_language('node', $node));
++  // Include the language if the content is translated.
++  if ($node->translate) {
++    $options += array('language' => pathauto_entity_language('node', $node));
++  }
++  else {
++    $options += array('language' => LANGUAGE_NONE);
++  }
+ 
+   // Skip processing if the node has no pattern.
+   if (!pathauto_pattern_load_by_entity('node', $node->type, $options['language'])) {

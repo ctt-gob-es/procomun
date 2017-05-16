@@ -1,0 +1,81 @@
+diff --git a/og_ui/og_ui.module b/og_ui/og_ui.module
+index b265137..194a569 100644
+--- a/og_ui/og_ui.module
++++ b/og_ui/og_ui.module
+@@ -48,7 +48,7 @@ function og_ui_menu() {
+   // User listing pages.
+   $items['group/%/%/admin/people'] = array(
+     'title callback' => 'og_ui_menu_title_callback',
+-    'title arguments' => array('People in group @group', 1, 2),
++    'title arguments' => array('og_ui_admin_account', 1, 2),
+     'description' => 'Find and manage group members.',
+     'page callback' => 'og_ui_admin_account',
+     'page arguments' => array(1, 2),
+@@ -61,7 +61,7 @@ function og_ui_menu() {
+   // User listing pages.
+   $items['group/%/%/admin/people/edit-membership/%og_membership'] = array(
+     'title callback' => 'og_ui_menu_title_callback',
+-    'title arguments' => array('Edit membership in group @group', 1, 2),
++    'title arguments' => array('og_ui_edit_membership', 1, 2),
+     'type' => MENU_CALLBACK,
+     'page callback' => 'drupal_get_form',
+     'page arguments' => array('og_ui_edit_membership', 1, 2, 6),
+@@ -84,7 +84,7 @@ function og_ui_menu() {
+   // Permission administration pages.
+   $items['group/%/%/admin/roles'] = array(
+     'title callback' => 'og_ui_menu_title_callback',
+-    'title arguments' => array('Roles for group @group', 1, 2),
++    'title arguments' => array('og_ui_admin_new_role', 1, 2),
+     'description' => 'List, edit, or add user roles.',
+     'page callback' => 'drupal_get_form',
+     'page arguments' => array('og_ui_admin_new_role', 1, 2),
+@@ -112,7 +112,7 @@ function og_ui_menu() {
+ 
+   $items['group/%/%/admin/permissions'] = array(
+     'title callback' => 'og_ui_menu_title_callback',
+-    'title arguments' => array('Permissions for group @group', 1, 2),
++    'title arguments' => array('og_ui_admin_permissions', 1, 2),
+     'description' => 'Determine access to features by selecting permissions for roles.',
+     'page callback' => 'drupal_get_form',
+     'page arguments' => array('og_ui_admin_permissions', 1, 2),
+@@ -480,10 +480,38 @@ function og_ui_admin_paths() {
+ 
+ /**
+  * Menu callback; Return the title of a menu item based on the group title.
++ *
++ * @param string $key
++ *   Identifier for title type.
++ * @param string $entity_type
++ *   Group entity type.
++ * @param int $etid
++ *   Group entity id.
++ *
++ * @return string
++ *   Formatted title.
+  */
+-function og_ui_menu_title_callback($title, $entity_type, $etid) {
++function og_ui_menu_title_callback($key, $entity_type, $etid) {
+   $wrapper = entity_metadata_wrapper($entity_type, $etid);
+-  return str_replace('@group', $wrapper->label(), $title);
++  $group = $wrapper->label();
++
++  // Return title for $key.
++  switch ($key) {
++    case 'og_ui_admin_account':
++      return t('People in group @group', array('@group' => $group));
++
++    case 'og_ui_edit_membership':
++      return t('Edit membership in group @group', array('@group' => $group));
++
++    case 'og_ui_admin_new_role':
++      return t('Roles for group @group', array('@group' => $group));
++
++    case 'og_ui_admin_permissions':
++      return t('Permissions for group @group', array('@group' => $group));
++
++    default:
++      return $group;
++  }
+ }
+ 
+ /**

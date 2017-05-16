@@ -1,0 +1,56 @@
+<?php
+
+/**
+ * @file
+ * Integration of Cache Expiration module version 7.x-2.x and Authcache Builtin.
+ */
+
+/**
+ * Implements hook_expire_cache().
+ *
+ * Expire cache support for the builtin cache handler.
+ */
+function authcache_builtin_expire_v2_expire_cache($urls, $wildcards, $object_type, $object) {
+  $cids = array();
+  $wildcard_cids = array();
+
+  // Obtain the enabled languages.
+  $langs = language_list('enabled');
+  $langs_availables = count($langs[1]);
+
+  foreach (authcache_enum_keys() as $key) {
+    foreach (array_keys($urls) as $path) {
+      // If more tha one languages available, clear all urls with prefix.
+      if ($langs_availables > 1) {
+        foreach ($langs[1] as $lang) {
+          $cid = $key . url($path, array('absolute' => FALSE, 'alias' => TRUE, 'language' => $lang));
+
+          if (empty($wildcards[$path])) {
+            $cids[] = $cid;
+          }
+          else {
+            $wildcard_cids[] = $cid;
+          }
+        }
+      }
+      else {
+        $cid = $key . url($path, array('absolute' => FALSE, 'alias' => TRUE));
+
+        if (empty($wildcards[$path])) {
+          $cids[] = $cid;
+        }
+        else {
+          $wildcard_cids[] = $cid;
+        }
+      }
+    }
+  }
+
+  if (!empty($cids)) {
+    cache_clear_all($cids, 'cache_page');
+  }
+
+  foreach ($wildcard_cids as $cid) {
+    cache_clear_all($cid, 'cache_page', TRUE);
+  }
+}

@@ -1,0 +1,22 @@
+.fivestar-widget 
+  .star, .cancel
+    a
+      margin-left: 0
+  .message,
+  .description
+    @extend .hide-accessible
+.field-type-fivestar
+  .field-label
+    font-weight: 700
+    font-size: 13px
+    text-transform: uppercase
+    color: $navy
+    margin-right: 5px
+    line-height: 17px
+.fivestar-static-item .form-type-item
+  margin: 0
+div.fivestar-widget .cancel, 
+div.fivestar-widget .cancel a
+  background-image: url(/sites/all/modules/contrib/fivestar/widgets/basic/cancel.png)
+  &:hover
+    background-position: 0 -16px

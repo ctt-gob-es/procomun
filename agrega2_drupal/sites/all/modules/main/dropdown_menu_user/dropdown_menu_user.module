@@ -1,0 +1,280 @@
+<?php
+
+/**
+ * @file
+ * Dropdown menu user is a module written by:
+ *  - Fork 6.x.1.x: Nesta.
+ *  - Fork 7.x.1.x: Diego Marrufo.
+ *
+ * This module creates a button access user login block.
+ *
+ */
+
+/**
+ * Implementation of hook_menu().
+ */
+function dropdown_menu_user_menu() {
+  $items = array();
+
+  $items['admin/config/people/dropdown_menu_user'] = array(
+    'title' => 'Dropdown menu user settings',
+    'description' => 'Administer dropdown menu user settings.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('dropdown_menu_user_admin'),
+    'access arguments' => array('Administer dropdown menu user'),
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function dropdown_menu_user_permission() {
+  return array(
+    'Administer dropdown menu user' => array(
+      'title' => t('Administer dropdown menu user'),
+      'description' => t('Administer dropdown menu user settings.'),
+    ),
+  );
+}
+
+/**
+ * Displays the form available in the administration interface of module.
+ */
+function dropdown_menu_user_admin() {
+  $form['settings'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Settings User Profile'),
+  );
+
+  $form['settings']['dropdown_menu_user_image_style'] = array(
+    '#type' => 'select',
+    '#title' => t('Image style'),
+    '#options' => dropdown_menu_user_get_image_style(),
+    '#default_value' => variable_get('dropdown_menu_user_image_style', ''),
+    '#description' => t('Select the image style for the user avatar.'),
+  );
+
+  $form['settings']['dropdown_menu_user_disable_user_menu'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Check this box if you want to disable the dropdown menu when the user logs'),
+    '#default_value' => variable_get('dropdown_menu_user_disable_user_menu', ''),
+    '#prefix' => '<div><label>' . t('Disable dropdown menu user') . '</label>',
+    '#suffix' => '</div>',
+  );
+
+  return system_settings_form($form);
+}
+
+/**
+ * Callback to get all the image styles available.
+ */
+function dropdown_menu_user_get_image_style() {
+  $styles = array();
+
+  foreach (image_styles() as $style) {
+    $styles[$style['name']] = $style['label'];
+  }
+
+  return $styles;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function dropdown_menu_user_block_info() {
+  $block = array();
+
+  $block['dropdown_menu_user_login_block'] = array(
+    'info' => t('Dropdown menu user'),
+    'visibility' => 'BLOCK_VISIBILITY_NOTLISTED',
+    'pages' => 'user',
+  );
+
+  return $block;
+}
+
+/**
+ * Implements of hook_theme().
+ */
+function dropdown_menu_user_theme() {
+  return array(
+    'dropdown_menu_user_logged_user' => array(
+      'variables' => array(
+        'user' => array('name', 'image', 'notifications'),
+      ),
+      'template' => 'dropdown_menu_user_logged_user',
+    ),
+    'dropdown_menu_user_login_block' => array(
+      'variables' => array(
+        'block_header' => '',
+        'block_body' => '',
+      ),
+      'template' => 'dropdown_menu_user',
+    ),
+  );
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function dropdown_menu_user_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'dropdown_menu_user_login_block':
+      dropdown_menu_user_login_block_view($block);
+      break;
+  }
+
+  return $block;
+}
+
+/**
+ * Callback to build different forms depending on whether the user is online or not.
+ */
+function dropdown_menu_user_login_block_view(&$block) {
+  global $user;
+  if (!empty($user->uid)) {
+    $account = user_load($user->uid);
+    
+    #Name and Surname
+    $user_profile = profile2_load_by_user($account, 'datos_personales');
+    $field_name_surname = field_collection_item_load($user_profile->field_name_surname['und'][0]['value']);
+    
+    $image_style = variable_get('dropdown_menu_user_image_style', 'avatar');
+    $image_path = variable_get('user_picture_default', '');
+    $image_render = '';
+    if ((isset($account->picture->uri)) || !empty($image_path)) {
+      $image_render = theme('image_style', array(
+          'style_name' => $image_style,
+          'path' => isset($account->picture->uri) ? $account->picture->uri : $image_path,
+        )
+      );
+    }
+
+    //Get notifications number
+    $notifications_number = ag_section_notifications_get_number_unread();
+    //Get messages number. Privatemsg already has a method to get unread messages number.
+    $messages_number = module_exists('privatemsg') ? privatemsg_unread_count($user) : 0;
+    $total_notifications = $notifications_number + $messages_number;
+
+    $block_header_render = array(
+      '#theme' => 'dropdown_menu_user_logged_user',
+      '#user' => array(
+        'name' => $field_name_surname->field_profile_name['und'][0]['value'].' '.$field_name_surname->field_profile_surname['und'][0]['value'],
+        'image' => $image_render,
+        'notifications' => '<span class="notifications">' . l($total_notifications, 'messages/notifications', array(
+          'attributes' => array(
+            'title' => t('View user notifications and messages'),
+          )
+        )) . '</span>',
+      ),
+    );
+
+    $block_header = render($block_header_render);
+    // Get the rendered array:
+    $block_body_render = dropdown_menu_user_render_menu_items();
+    $block_body = render($block_body_render);
+  }
+  else {
+    // If the user isn't logged: Show user login block.
+    $block_header = '<span class="user-login">' . t('Login') . '</span>';
+    $block_title = '<span class="user-login-title">' . t('Access your account') . '</span>';
+    $form = drupal_get_form('user_login_block');
+    $block_body = $block_title . drupal_render($form);
+
+    // Add login with cl@ve
+    if (variable_get('clave_start_stop', 0)) {
+      $block_body .= l(t('Login with Cl@ve'), 'login/clave', array(
+        'attributes' => array(
+          'title' => t('Login with Cl@ve'),
+          'class' => array('login-clave')
+        )
+      ));
+
+      $block_body .= l(t('What is Cl@ve?'), 'http://clave.gob.es', array(
+        'absolute' => TRUE,
+        'external' => TRUE,
+        'attributes' => array(
+          'title' => t('What is Cl@ve?'),
+          'class' => array('info-clave'),
+          'target' => '_blank',
+        )
+      ));
+    }else{
+      //Otherwise disable login and show the message
+      $block_body .= l(t('Login with Cl@ve disabled temporally'),'http://clave.gob.es', array(
+        'attributes' => array('title' => t('Login with Cl@ve disabled temporally'),
+        )
+      ));
+    }
+
+
+    // Add social links login
+    $block_body .= ag_general_social_links_login();
+
+    // Add register button
+    $block_body .= '<span class="register-login">' . t('Even if you are not registered') . '<span>' .
+                   l(t('Create your account'), 'user/register') . '</span></span>';
+  }
+
+  $content = array(
+    '#theme' => 'dropdown_menu_user_login_block',
+    '#block_header' => $block_header,
+    '#block_body' => $block_body,
+    '#attached' => array(
+      'js' => array(drupal_get_path('module', 'dropdown_menu_user') . '/js/dropdown_menu_user.js'),
+      'css' => array(drupal_get_path('module', 'dropdown_menu_user') . '/css/dropdown_menu_user.css'),
+    ),
+  );
+
+  if (!variable_get('dropdown_menu_user_disable_user_menu', '')) {
+    $block['content'] = render($content);
+  }
+}
+
+/**
+ * Callback to build menu items for current user.
+ */
+function dropdown_menu_user_render_menu_items() {
+  $items = array();
+
+  $items['profile'] = array(
+    'data' => l(t('My profile'), 'user'),
+  );
+
+  // Let other modules to declare their menu links:
+  drupal_alter('dropdown_menu_user_menu_items', $items);
+
+  return array(
+    '#theme' => 'item_list',
+    '#items' => $items,
+  );
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function dropdown_menu_user_form_alter(&$form, &$form_state, $form_id) {
+  switch ($form_id) {
+    case 'user_login_block':
+      global $language;
+      $form['#action'] = base_path() . $language->language . "/" . 'user';
+      $form['#method'] = 'post';
+      $form['form_id'] = array(
+        '#type' => 'hidden',
+        '#default_value' => 'user_login',
+      );
+
+      $items[] = l(t('I forgot my password'), 'user/password', array(
+        'attributes' => array(
+          'title' => t('Request new password via e-mail.')
+        )
+      ));
+      $form['links'] = array('#markup' => theme('item_list', array('items' => $items)));
+      break;
+  }
+}
+

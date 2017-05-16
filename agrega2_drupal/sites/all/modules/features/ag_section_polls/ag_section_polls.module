@@ -1,0 +1,51 @@
+<?php
+/**
+ * @file
+ * Code for the Agrega2 polls feature.
+ */
+
+include_once 'ag_section_polls.features.inc';
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function ag_section_polls_form_poll_node_form_alter(&$form, &$form_state) {
+  $form['field_poll_status']['#access'] = FALSE;
+}
+
+/**
+ * Implements hook_entity_presave().
+ */
+function ag_section_polls_entity_presave($entity, $type) {
+  if ($type == 'node' && $entity->type == 'poll') {
+    $wrapper = entity_metadata_wrapper('node', $entity);
+    $wrapper->field_poll_status->set(0);
+    if (isset($wrapper->field_poll_status) && $entity->active) {
+      $wrapper->field_poll_status->set(1);
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_view().
+ */
+function ag_section_polls_entity_view($entity, $type, $view_mode, $langcode)
+{
+  if ($type == 'node' && $entity->type == 'poll' && user_is_logged_in()) {
+    // Remove comment link.
+    unset($entity->content['links']['comment']);
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function ag_section_polls_preprocess_poll_bar(&$variables) {
+  // Handle format_plural using singular on Spanish language when votes = 0.
+  if ($variables['votes'] == 0) {
+    $variables['votes_translation'] = t('0 votes');
+  }
+  else {
+    $variables['votes_translation'] = format_plural($variables['votes'], '@count vote', '@count votes');
+  }
+}

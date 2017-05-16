@@ -1,0 +1,250 @@
+<?php
+
+/**
+ * Implements hook_services_resources().
+ */
+function orchestrator_services_services_resources() {
+  return array(
+    'interactions' => array(
+      'retrieve' => array(
+        'help' => 'Retrieve users interactions',
+        'callback' => '_recommendations_users_interactions_retrieve',
+        'access callback' => '_recommendations_interactions_access',
+        'access callback file' => array(
+          'type' => 'inc',
+          'module' => 'recommendations',
+          'name' => 'recommendations',
+        ),
+        'access arguments append' => TRUE,
+        'args' => array(
+          array(
+            'name' => 'timestamp',
+            'type' => 'int',
+            'description' => 'Starting date of the interactions',
+            'source' => array(
+              'path' => '0'
+            ),
+            'optional' => FALSE,
+          ),
+          array(
+            'name' => 'result_limit',
+            'type' => 'int',
+            'description' => 'Number of results to return',
+            'source' => array(
+              'path' => '1'
+            ),
+            'optional' => TRUE,
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_og_shared_content().
+ */
+function recommendations_og_shared_content($args, $node) {
+  global $user;
+
+  foreach($args as $value) {
+    $transition = array(
+      'uid' => $user->uid,
+      'nid' => $node->nid,
+      'timestamp' => time(),
+      'gid' => $value,
+    );
+
+    drupal_write_record('recommendations_shared_content', $transition);
+  }
+}
+
+/**
+ * Access callback
+ */
+function _recommendations_interactions_access() {
+  return TRUE;
+}
+
+function recommendations_block_info() {
+  $block = array();
+
+  $block['recommend_content'] = array(
+    'info' => t('Ag Recomended content'),
+    'cache' => DRUPAL_CACHE_PER_USER,
+  );
+
+  return $block;
+}
+
+/**
+ * Implements hook_blovk_configure().
+ */
+function recommendations_block_configure($delta = '') {
+  $form = array();
+
+  switch ($delta) {
+    case 'recommend_content':
+      module_load_include('inc', 'recommendations', 'recommendations.forms');
+      recommend_content_block_configure_form($form);
+      break;
+
+    default:
+      break;
+  }
+
+  return $form;
+}
+
+/**
+ * Implements hook_block_save().
+ */
+function recommendations_block_save($delta = '', $edit = array()) {
+  switch ($delta) {
+    case 'recommend_content':
+      variable_set('recommendations_number_recommendations', $edit['number_recommendations']);
+      break;
+
+    default:
+      break;
+  }
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function recommendations_block_view($delta = '') {
+  global $user;
+  $block = array();
+
+  switch ($delta) {
+    case 'recommend_content':
+      // @TODO: Hay que recoger el argumento donde haga falta.
+      // Por defecto para el detalle de un ODE (ode/view/odeId).
+      $entity_id = arg(2);
+
+      if (!empty($entity_id) && is_numeric($entity_id)) {
+        $block['subject'] = t('Related resources');
+        $block['content'] = recommendations_render_related_content('ODE', $user->uid, $entity_id, 3);
+      }
+      break;
+
+    default:
+      break;
+  }
+
+  return $block;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function recommendations_theme() {
+  $themes = array();
+
+  $themes['ag_recomended_item'] = array(
+    'variables' => array(
+      'data' => array(),
+    ),
+    'template' => '/templates/recomended-item',
+  );
+
+  return $themes;
+}
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function recommendations_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'ctools' && $plugin == 'content_types') {
+    return 'plugins/' . $plugin;
+  }
+}
+
+
+/**
+ * Render the content body for the recomended content:
+ *
+ * @uid : User's uid
+ * @eid : Entity Id
+ * @count : Number of results to get form service.
+ */
+function recommendations_render_related_content($type, $uid, $eid, $count) {
+  
+  // If uid isn't set : We use the user default.
+  if (!$uid) {
+    global $user;
+    $uid = $user->uid;
+  }
+  
+  $user_profile = profile2_load_by_user($uid, 'datos_personales');
+  
+  if (is_object($user_profile)) 
+    $user_solr_id = ($user_profile->field_solrid['und'][0]['value']) ? $user_profile->field_solrid['und'][0]['value'] : '0';
+  else 
+    $user_solr_id = '0';
+
+  // Load the service recomendador:
+  $OS_orchestrator_recommender = new OS_orchestrator_recommender();
+  
+  // Recommendations for resources and ODEs are equal
+  if ($type == 'LEARNING_RESOURCE') {
+    $type = 'ODE';
+  }
+  
+  list($total, $result) = $OS_orchestrator_recommender->recommender($type, $user_solr_id, $eid, $count);
+  $content = array();
+
+  if ($total !== FALSE) {
+    if (!empty($result)) {
+      $items = array();
+
+      foreach ($result as $item) {
+        if ($item['type'] != 'ODE') {
+          #This query is here because 5 hits maximum expected
+          $solrId = db_query('SELECT entity_id, field_solrid_value FROM {field_data_field_solrid} WHERE field_solrid_value = :solrid', array(':solrid' => $item['id']))->fetch();
+          if (is_object($solrId)) {
+            $item['node_id'] = $solrId->entity_id;
+          }
+        }
+        
+        $item_rendered = array(
+          '#theme' => 'ag_recomended_item',
+          '#data' => $item,
+        );
+
+        $items[] = render($item_rendered);
+      }
+      
+      $content = array(
+        '#theme' => 'item_list',
+        '#items' => $items,
+        '#attributes' => array(
+          'class' => array('recomended_contents_list'),
+        ),
+      );
+    }
+    else {
+      // If not results remove block.
+      $content = NULL;
+    }
+  }
+  else {
+    $content = array(
+      '#type' => 'markup',
+      '#markup' => '<span>' . t('Sorry, the service isn\'t available in this moment') . '</span>',
+    );
+  }
+
+  return $content;
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function recommendations_views_api() {
+  return array(
+    'api' => 3.0,
+    'path' => drupal_get_path('module', 'recommendations') . '/includes',
+  );
+}

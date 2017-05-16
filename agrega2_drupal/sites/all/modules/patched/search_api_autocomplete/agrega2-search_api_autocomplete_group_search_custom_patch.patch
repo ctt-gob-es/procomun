@@ -1,0 +1,351 @@
+diff --git a/sites/all/modules/patched/search_api_autocomplete/search_api_autocomplete.js b/sites/all/modules/patched/search_api_autocomplete/search_api_autocomplete.js
+index bbd26d6..8e50453 100644
+--- a/sites/all/modules/patched/search_api_autocomplete/search_api_autocomplete.js
++++ b/sites/all/modules/patched/search_api_autocomplete/search_api_autocomplete.js
+@@ -80,6 +80,26 @@ if (typeof Drupal.jsAC != 'undefined') {
+     }
+   };
+ 
++
++  Drupal.jsAC.prototype.hidePopup = function (keycode) {
++    // Select item if the right key or mousebutton was pressed.
++    if (this.selected && ((keycode && keycode != 46 && keycode != 8 && keycode != 27) || !keycode)) {
++      this.select(this.selected);
++    }
++
++    // Hide popup only for child suggestions.
++    if ($(this.selected).find(".autocomplete-suggestion-parent").length != 1) {
++      // Hide popup.
++      var popup = this.popup;
++      if (popup) {
++        this.popup = null;
++        $(popup).fadeOut('fast', function () { $(popup).remove(); });
++      }
++      this.selected = false;
++      $(this.ariaLive).empty();
++    }
++  };
++
+   Drupal.jsAC.prototype.select = function(node) {
+     var autocompleteValue = $(node).data('autocompleteValue');
+     // Check whether this is not a suggestion but a "link".
+@@ -87,8 +107,10 @@ if (typeof Drupal.jsAC != 'undefined') {
+       window.location.href = autocompleteValue.substr(1);
+       return false;
+     }
+-    this.input.value = autocompleteValue;
+-    $(this.input).trigger('autocompleteSelect', [node]);
++    if ($(node).find(".autocomplete-suggestion-parent").length != 1) {
++      this.input.value = autocompleteValue;
++      $(this.input).trigger('autocompleteSelect', [node]);
++    }
+     if ($(this.input).hasClass('auto_submit')) {
+       if (typeof Drupal.search_api_ajax != 'undefined') {
+         // Use Search API Ajax to submit
+@@ -97,15 +119,18 @@ if (typeof Drupal.jsAC != 'undefined') {
+       else {
+         // Obtain the facet field from the span.
+         // We need to use the facet field name to alter the query on form submit.
+-        $('.search-api-autocomplete-suggestion').click(function() {
+-          var facetfield = $('.facet-field', this).text();
+-          // Add the clicked value to the main query searchbox field.
+-          var selection = $('.autocomplete-suggestion-suffix', this).text();
+-          $('input[name="query"]').val(selection);
+-          // Add the value of the facet fjieldd to the hidden field "auto".
+-          $('input[name="auto"]').val(facetfield);
+-          // Submit the form right away!
+-          $("#views-exposed-form-ode-search-page").submit();
++        $('.search-api-autocomplete-suggestion').click(function(event) {
++          // Avoid submit form for parent "suggestions".
++          if ($('.autocomplete-suggestion-parent', this).length == 0) {
++            var facetfield = $('.facet-field', this).text();
++            // Add the clicked value to the main query searchbox field.
++            var selection = $('.autocomplete-suggestion-suffix', this).text();
++            $('input[name="query"]').val(selection);
++            // Add the value of the facet fjieldd to the hidden field "auto".
++            $('input[name="auto"]').val(facetfield);
++            // Submit the form right away!
++            $("#views-exposed-form-ode-search-page").submit();
++          }
+         });
+       }
+       return true;
+diff --git a/sites/all/modules/patched/search_api_autocomplete/search_api_autocomplete.pages.inc b/sites/all/modules/patched/search_api_autocomplete/search_api_autocomplete.pages.inc
+index 454e534..b3fd3a7 100644
+--- a/sites/all/modules/patched/search_api_autocomplete/search_api_autocomplete.pages.inc
++++ b/sites/all/modules/patched/search_api_autocomplete/search_api_autocomplete.pages.inc
+@@ -35,59 +35,77 @@ function search_api_autocomplete_autocomplete(SearchApiAutocompleteSearch $searc
+           $query->fields($fields);
+         }
+         $query->preExecute();
+-        $suggestions = $search->getSuggester()->getAutocompleteSuggestions($query, $incomplete, $keys);
+-        if ($suggestions) {
+-          //dfb($suggestions);
+-          foreach ($suggestions as $suggestion) {
+-            // Convert suggestion strings into an array.
+-            if (is_string($suggestion)) {
+-              $pos = strpos($suggestion, $keys);
+-              if ($pos === FALSE) {
+-                $suggestion = array(
+-                  'user_input' => '',
+-                  'suggestion_suffix' => $suggestion,
+-                );
++        $group_suggestions = array();
++        if (empty($type)) {
++          $autocomplete_types_search = variable_get('solr_autocomplete_types', array());
++          $autocomplete_types = array_keys(array_filter($autocomplete_types_search));
++        }
++        else {
++          $autocomplete_types = array($type);
++        }
++        foreach ($autocomplete_types as $autocomplete_type) {
++          // Add autocomplete type to search objet to pass as parameter to getAutocompleteSuggestions function.
++          $autocomplete_type = ($autocomplete_type == 'LEARNING_RESOURCE') ? 'ODE' : $autocomplete_type;
++          $search->autocomplete_type = $autocomplete_type;
++          $suggestions_by_type = $search->getSuggester()->getAutocompleteSuggestions($query, $incomplete, $keys);
++          if (!empty($suggestions_by_type)) {
++            $group_suggestions[$autocomplete_type] = $suggestions_by_type;
++          }
++        }
++
++        if (!empty($group_suggestions)) {
++          foreach ($group_suggestions as $autocomplete_type => $suggestions) {
++            foreach ($suggestions as $suggestion) {
++              // Convert suggestion strings into an array.
++              if (is_string($suggestion)) {
++                $pos = strpos($suggestion, $keys);
++                if ($pos === FALSE) {
++                  $suggestion = array(
++                    'user_input' => '',
++                    'suggestion_suffix' => $suggestion,
++                  );
++                }
++                else {
++                  $suggestion = array(
++                    'suggestion_prefix' => substr($suggestion, 0, $pos),
++                    'user_input' => $keys,
++                    'suggestion_suffix' => substr($suggestion, $pos + strlen($keys)),
++                  );
++                }
+               }
+-              else {
+-                $suggestion = array(
+-                  'suggestion_prefix' => substr($suggestion, 0, $pos),
+-                  'user_input' => $keys,
+-                  'suggestion_suffix' => substr($suggestion, $pos + strlen($keys)),
+-                );
++              // Add defaults.
++              $suggestion += array(
++                'url' => NULL,
++                'keys' => NULL,
++                'prefix' => NULL,
++                'suggestion_prefix' => '',
++                'user_input' => $keys,
++                'suggestion_suffix' => '',
++                'results' => NULL,
++              );
++              if (empty($search->options['results'])) {
++                unset($suggestion['results']);
+               }
+-            }
+-            // Add defaults.
+-            $suggestion += array(
+-              'url' => NULL,
+-              'keys' => NULL,
+-              'prefix' => NULL,
+-              'suggestion_prefix' => '',
+-              'user_input' => $keys,
+-              'suggestion_suffix' => '',
+-              'results' => NULL,
+-            );
+-            if (empty($search->options['results'])) {
+-              unset($suggestion['results']);
+-            }
+ 
+-            // Decide what the action of the suggestion is – entering specific
+-            // search terms or redirecting to a URL.
+-            if (isset($suggestion['url'])) {
+-              $key = ' ' . $suggestion['url'];
+-            }
+-            else {
+-              // Also set the "keys" key so it will always be available in alter
+-              // hooks and the theme function.
+-              if (!isset($suggestion['keys'])) {
+-                // We should use just the term. IE if "sofia" and "Sofia" are two suggestions then we can't exclude one.
+-                // Before if the user input is "sof" we were excluding the second one.
+-                $suggestion['keys'] = $suggestion['term'];
++              // Decide what the action of the suggestion is – entering specific
++              // search terms or redirecting to a URL.
++              if (isset($suggestion['url'])) {
++                $key = ' ' . $suggestion['url'];
++              }
++              else {
++                // Also set the "keys" key so it will always be available in alter
++                // hooks and the theme function.
++                if (!isset($suggestion['keys'])) {
++                  // We should use just the term. IE if "sofia" and "Sofia" are two suggestions then we can't exclude one.
++                  // Before if the user input is "sof" we were excluding the second one.
++                  $suggestion['keys'] = $suggestion['term'];
++                }
++                $key = trim($suggestion['keys']);
++              }
++  
++              if (!isset($ret[$autocomplete_type][$key])) {
++                $ret[$autocomplete_type][$key] = $suggestion;
+               }
+-              $key = trim($suggestion['keys']);
+-            }
+-
+-            if (!isset($ret[$key])) {
+-              $ret[$key] = $suggestion;
+             }
+           }
+ 
+@@ -96,6 +114,7 @@ function search_api_autocomplete_autocomplete(SearchApiAutocompleteSearch $searc
+             'search' => $search,
+             'incomplete_key' => $incomplete,
+             'user_input' => $keys,
++            'type' => $type,
+           );
+           drupal_alter('search_api_autocomplete_suggestions', $ret, $alter_params);
+ 
+@@ -138,6 +157,7 @@ function search_api_autocomplete_autocomplete(SearchApiAutocompleteSearch $searc
+  *   - results: If available, the estimated number of results for these keys.
+  */
+ function theme_search_api_autocomplete_suggestion(array $variables) {
++  $parent = !empty($variables['parent']) ? TRUE : FALSE;
+   $prefix = $variables['prefix'];
+   $suggestion_prefix = $variables['suggestion_prefix'];
+   $user_input = $variables['user_input'];
+@@ -147,28 +167,15 @@ function theme_search_api_autocomplete_suggestion(array $variables) {
+   $facet_field = $variables['facet_field'];
+ 
+   $output = '';
+-  /*if ($prefix) {
+-    $output .= "<span class=\"autocomplete-suggestion-note\">$prefix</span> ";
+-  }
+-  if ($suggestion_prefix) {
+-    $output .= "<span class=\"autocomplete-suggestion-prefix\">$suggestion_prefix</span>";
+-  }
+-  if ($user_input) {
+-    $output .= "<span class=\"autocomplete-user-input\">$user_input</span>";
++
++  // Check for general search to put group type suggestions
++  if ($parent) {
++    $output .= "<span class=\"autocomplete-suggestion-parent\">$term</span>";
+   }
+-  if ($suggestion_suffix) {
+-    $output .= "<span class=\"autocomplete-suggestion-suffix\">$suggestion_suffix</span>";
+-  }*/
+-  // For the moment whe only need the term and the number of results.
+-  if ($term) {
++  if ($term && !$parent) {
+     $output .= "<span class=\"autocomplete-suggestion-suffix\">$term</span>";
+   }
+ 
+-  // By customer request the number of results deactivates Search
+-  /*if ($results) {
+-    $output .= " <span class=\"autocomplete-suggestion-results\">$results</span>";
+-  }*/
+-
+   // Adding the facet field to detect which filter may be executed on autocomplete selection.
+   if ($facet_field) {
+     $output .= ' <span class="facet-field" style="visibility:hidden">' . $facet_field . '</span>';
+diff --git a/sites/all/modules/patched/search_api_solr/includes/service.inc b/sites/all/modules/patched/search_api_solr/includes/service.inc
+index 8ca0c2d..7fd22b3 100644
+--- a/sites/all/modules/patched/search_api_solr/includes/service.inc
++++ b/sites/all/modules/patched/search_api_solr/includes/service.inc
+@@ -1668,6 +1668,9 @@ class SearchApiSolrService extends SearchApiAbstractService {
+     $fq = $this->createFilterQueries($query->getFilter(), $fields, $index->options['fields']);
+     $fq[] = 'index_id:' . $this->getIndexId($index->machine_name);
+ 
++    // Add type for autocomplete search.
++    $fq[] = 'type:' . $search->autocomplete_type;
++
+     // Autocomplete magic
+     $facet_fields = array();
+     foreach ($search_fields as $f) {
+@@ -1699,6 +1702,7 @@ class SearchApiSolrService extends SearchApiAbstractService {
+     if ($this->request_handler) {
+       $this->setRequestHandler($this->request_handler, $call_args);
+     }
++
+     $second_pass = !isset($this->options['autocorrect_suggest_words']) || $this->options['autocorrect_suggest_words'];
+     for ($i = 0; $i < ($second_pass ? 2 : 1); ++$i) {
+       try {
+@@ -1723,27 +1727,15 @@ class SearchApiSolrService extends SearchApiAbstractService {
+         }
+ 
+         $matches = array();
+-        $facet_name_fields = array();
+-        if (isset($response->facet_counts->facet_fields)) {
+-          foreach ($response->facet_counts->facet_fields as $facet_field => $terms) {
+-            foreach ($terms as $term => $count) {
+-              // Ideally, Solr should return us only the facet results that contain the user input.
+-              // At this moment, using an OR looks not possible so, this is a TODO.
+-              // We are excluding strings not containing the string inserted by the user.
+-              if (strpos(strtolower($term), strtolower($user_input)) !== false) {
+-                if (isset($matches[$term])) {
+-                  // If we just add the result counts, we can easily get over the
+-                  // total number of results if terms appear in multiple fields.
+-                  // Therefore, we just take the highest value from any field.
+-                  $matches[$term] = max($matches[$term], $count);
+-                }
+-                else {
+-                  $matches[$term] = $count;
+-                }
+-              }
++        //$facet_name_fields = array();
++        if (isset($response->response->docs)) {
++          // Get allowed autocomplete types fields.
++          $autocomplete_types_field = variable_get('solr_autocomplete_types_' . drupal_strtolower($search->autocomplete_type) . '_field', '');
++
++          foreach ($response->response->docs as $term) {
++            if (!isset($matches[$term->$autocomplete_types_field])) {
++              $matches[$term->$autocomplete_types_field] = $response->numFound;
+             }
+-            // Add Matches to an array with facet names.
+-            $facet_name_fields[$facet_field] = $matches;
+           }
+ 
+           if ($matches) {
+@@ -1776,25 +1768,20 @@ class SearchApiSolrService extends SearchApiAbstractService {
+ 
+             // Build suggestions using returned facets
+             $incomp_length = strlen($incomp);
+-            foreach ($facet_name_fields as $facet_field => $matches_fields) {
+-              // We need $facet_field to determine which facet field affects per option.
+-              foreach ($matches_fields as $term => $count) {
+-                if (drupal_strtolower(substr($term, 0, $incomp_length)) == $incomp) {
+-                  $suggestions[] = array(
+-                    'suggestion_suffix' => substr($term, $incomp_length),
+-                    'term' => $term,
+-                    'results' => $count,
+-                    'facet_field' => $facet_field,
+-                  );
+-                }
+-                else {
+-                  $suggestions[] = array(
+-                    'suggestion_suffix' => ' ' . $term,
+-                    'term' => $term,
+-                    'results' => $count,
+-                    'facet_field' => $facet_field,
+-                  );
+-                }
++            foreach ($matches as $term => $count) {
++               if (drupal_strtolower(substr($term, 0, $incomp_length)) == $incomp) {
++                 $suggestions[] = array(
++                   'suggestion_suffix' => substr($term, $incomp_length),
++                   'term' => $term,
++                   'results' => $count,
++                 );
++               }
++               else {
++                 $suggestions[] = array(
++                   'suggestion_suffix' => ' ' . $term,
++                   'term' => $term,
++                   'results' => $count,
++                 );
+               }
+             }
+           }

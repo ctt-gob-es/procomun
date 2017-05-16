@@ -1,0 +1,105 @@
+//We need to overwrite some style from _profile_view.sass, therefore 3 classes combined
+.page-user.logged-in.page-user-my-communities
+  h3.pane-title
+    font-size: 28px
+  .messages.error
+    display: none
+  .content
+    display: block
+    .community-members-count
+      padding: .5em
+      +border-radius(50%)
+      cursor: help
+      overflow: hidden
+      white-space: nowrap
+      padding-left: 30px
+      background: image-url('ico_usuario_verde.png') 0 4px no-repeat
+      color: $dark_green
+      padding-left: 25px
+      margin-left: 10px
+    .unsubscribe-link a
+      display: block
+      overflow: hidden
+      white-space: nowrap
+      //width: 0
+      padding-left: 30px
+      background: image-url('ico_baja.png') 0 0 no-repeat
+    .field-type-taxonomy-term-reference
+      float: left
+      clear: both
+      width: 100%
+      margin-top: 1em
+      .field-label
+        +make-sm-column(4)
+        +label-grey()
+      .field-items
+        +make-sm-column(8)
+        +div-nextto-label-grey()
+        padding-left: 0
+        .field-item
+          line-height: 1.5em
+          float: left
+          display: inline-block
+          a
+            +tag()
+            margin-right: 8px
+            &:last-child
+              margin-right: 8px
+    .field-name-title-field
+      display: inline-block
+      width: auto
+  header
+    .meta
+      border-bottom: 1px solid $light_gray
+      padding-bottom: 5px
+    .info-community
+      display: block
+      margin-top: 3px
+      line-height: 1.5em
+    .date
+      border-left: 1px solid $gray
+      padding-left: 5px
+      margin-left: 5px
+    li
+      position: relative
+      margin: 0
+    .user-picture
+      float: left
+      img
+        width: 48px
+        height: 48px
+  article
+    border-bottom: 1px dashed $light_gray
+    .field-name-body
+      padding: 0 0 1em
+.public-community,
+.restricted-community,
+.private-community
+  display: block
+  overflow: hidden
+  white-space: nowrap
+  //width: 0
+  padding-left: 21px
+  background: image-url('ico-comunidad.png') 0 0 no-repeat
+// Page
+.page-user-my-communities
+  .panel-display
+    margin-left: 0
+  .panel-panel.panel-col-first
+    padding-top: 0
+    @extend .box-shadow
+    width: 73%
+    margin-right: 20px
+  .pane-create-community-link
+    height: 0
+    border: none
+    a
+      position: absolute
+      right: 13px
+      top: 18px
+      @extend button
+      border: none
+  #tabs .tabs.primary
+    +tabs($menu-icon)
+    a:before
+      margin-top: -25px

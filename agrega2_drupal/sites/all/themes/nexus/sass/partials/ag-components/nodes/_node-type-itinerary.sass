@@ -1,0 +1,96 @@
+.node-type-itinerary
+  .panel-display
+    padding-top: 0
+  .panel-panel.panel-col-first
+    .view-content
+      article
+        padding-top: 1em
+        @extend .box-shadow
+        margin-top: 1em
+    .pane-entity-view,
+    .view-empty
+      @extend .box-shadow
+      .field-name-title-field
+        +title-bg
+        font-size: 28px
+        padding-top: 0
+      .field-name-body
+        margin-top: 1em
+    .button-container
+      float: right
+      .clone-link,
+      .create-link
+        float: none
+        a
+          +button($orange)
+          &:hover
+            background-color: $dark_orange
+            color: $white
+      .clone-link
+        margin-left: 0.8em
+    .content
+      .field-name-field-knowledge-area,
+      .field-name-field-learning-context
+        clear: both
+        +clearfix
+        margin: 0
+        .field-label
+          +make-sm-column(3)
+          +label-grey()
+          border-right: 0
+          &+div
+            +make-sm-column(9)
+            +div-nextto-label-grey()
+            border-left: 1px solid $light_gray
+            .field-item
+              border-right: 1px solid $gray
+              padding-right: 5px
+              margin-right: 5px
+              display: inline-block
+              &:last-child
+                border: 0
+            a
+              background: transparent
+              padding: 0
+              margin: 0
+              border: 0
+              +border-radius(0)
+      .field-name-field-learning-context
+        border-bottom: 1px solid $light_gray
+      .field-type-taxonomy-term-reference
+        .field-items
+          float: none
+
+  .author-info
+    border-bottom: 0
+
+  .pane-itinerary-related-content
+    .pane-content
+      display: inline-block
+      padding: 15px
+  .pane-itinerary-base-detail
+    .pane-content
+      padding: 0 15px 15px 15px
+// Service links buttons.
+.node-itinerary
+  .social-networks-options,
+  .social
+    border-bottom: 1px solid $light_gray
+    padding: 0
+    > li
+      float: right !important
+      a
+        padding-right: 0
+    .share-outside-networks
+      width: auto
+      float: right !important
+      padding: 5px 14px
+      .toggle-social-networks
+        display: inline-block
+    .wrapper
+      display: none
+.node-full
+  &.node-itinerary
+    footer
+      border-top: 0
+      padding: 0

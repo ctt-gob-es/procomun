@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the ag_section_recursos_de_aprendizaje feature.
+ */
+
+include_once 'ag_section_recursos_de_aprendizaje.features.inc';

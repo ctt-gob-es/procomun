@@ -1,0 +1,114 @@
+.node-post.node-teaser
+  li.user-picture
+    margin-left: 0
+// Este archivo es SOLO para el view mode "full".
+.node-post.node-full,
+.page-comment-reply .node-post
+  +clearfix
+  .wrapper-other-authors
+    > div
+      display: block
+      margin-top: 5px
+      &:first-child
+        text-transform: uppercase
+        font-size: 13px
+        color: $steel
+      .field-item
+        display: inline-block
+        margin-left: 5px
+        padding-left: 5px
+        border-left: 1px solid $charcoal
+        &:first-child
+          border: 0
+  span.agComments-processed
+    a
+      text-align: center
+      display: block
+      margin: 5px
+      padding: 3px 0
+      cursor: pointer
+  .content .field-name-field-private-file
+    float: left
+    clear: both
+    width: 100%
+    .field-label
+      float: left
+      margin-top: 0.5em
+      min-width: 120px
+      background: $white
+      font-size: 12px
+      color: $navy
+      text-transform: uppercase
+      padding: 11px 8px 9px 8px
+      white-space: nowrap
+      padding-left: 16px
+      padding-right: 16px
+      font-weight: normal
+      text-align: left
+      border-bottom: 1px solid $white
+    .field-items
+      padding: 14px 8px 7px 8px
+      overflow: hidden
+      border-bottom: 1px dotted $gray
+      color: $navy
+      font-size: 14px
+      line-height: 1.2em
+  .content .field-name-field-labels
+    float: left
+    clear: both
+    width: 100%
+    margin: 2em 0
+    .field-label
+      float: left
+      min-width: 120px
+      background: $white
+      font-size: 12px
+      color: $navy
+      text-transform: uppercase
+      padding: 11px 8px 9px 8px
+      white-space: nowrap
+      padding-left: 16px
+      padding-right: 16px
+      font-weight: normal
+      text-align: left
+      border-bottom: 1px solid $white
+    .field-items
+      a
+        +tag()
+        margin-right: 8px
+        &:last-child
+          margin-right: 8px
+
+  .wrapper-other-authors
+    clear: both
+    padding: 10px 0px
+    div
+      span
+        font-weight: bold
+
+  footer
+    padding: 0
+    border: 0
+
+//Formulario del nodo
+#post-node-form
+  #edit-actions
+    .form-item.form-type-checkbox
+      @extend .checkbox-orange
+
+// Order draggable views.
+#field-contribuciones-ode-values
+  .delta-order,
+  thead th:nth-child(2)
+    display: none
+
+//Error message
+.not-found
+  display: block
+  padding: 15px 65px
+  +border-radius(4px)
+  border: 1px solid darken($warning, 20%)
+  z-index: 99
+  margin: 25px 0 20px
+  color: $charcoal
+  background: image-url('ico-warning.png') 15px 50% no-repeat $warning

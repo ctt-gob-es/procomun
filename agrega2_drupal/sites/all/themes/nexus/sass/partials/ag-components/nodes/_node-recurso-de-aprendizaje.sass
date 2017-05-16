@@ -1,0 +1,167 @@
+// Node form 'Learning resource'.
+#recurso-de-aprendizaje-node-form,
+#ode-node-form
+  #edit-field-nivel-educativo .form-item.form-type-select,
+  #edit-field-arbol-curricular .form-item.form-type-select
+    > label
+      display: none
+    > select
+      width: auto
+  #edit-actions
+    .form-item.form-type-checkbox
+      @extend .checkbox-orange
+      label
+        background: none
+        color: inherit
+        font-weight: bold
+        padding: 0 15px 0 40px
+      input
+        position: absolute
+        left: 14px
+        top: 3px
+
+// Node Full.
+$list-main-divs: '.field-name-field-conocimiento-previo', '.field-name-field-objetivos-did-cticos', '.field-name-field-destinatarios', '.field-name-field-agrupacion-de-alumnos', '.field-name-field-lugar-de-utilizaci-n', '.field-name-field-modalidad-de-uso', '.field-name-field-nivel-educativo', '.field-name-field-arbol-curricular', '.field-name-field-nombre-y-apellidos', '.field-name-field-organizaci-n','.field-name-field-correo-electr-nico', '.field-name-field-recurso-de-aprendizaje', '.field-name-field-recurso-educativo', '.field-name-field-certified', '.field-name-field-labels', '.field-name-og-group-ref', '.field-name-field-licencia', '.field-name-field-nombre-archivo', '.field-name-field-archivo'
+
+$list-header-divs: '.field-name-field-contribuciones', '.field-name-field-archivos-a-adjuntar'
+
+=set-label-field-styles-datos($div-list)
+  @each $list-main-div in $div-list
+    #{$list-main-div}
+      clear: both
+      +clearfix()
+      margin-bottom: .5em
+      // Use 4/8 for labels and content - 3/9 seems to be too narrow for the labels in this content type.
+      .field-label
+        +make-sm-column(4)
+        +label-grey()
+      .field-items
+        +make-sm-column(8)
+        +div-nextto-label-grey()
+
+=set-header-styles($div-list)
+  @each $list-main-div in $div-list
+    #{$list-main-div}
+      margin-top: 2em
+      & > .field-label
+        font-weight: bold
+        color: $navy
+        font-size: 18px
+        display: block
+        float: none
+        margin-bottom: .5em
+      & > .field-items
+        display: block
+        float: none
+        & > .field-item
+          margin-bottom: 2em
+
+.node-recurso-de-aprendizaje.node-full,
+.page-comment-reply .node-recurso-de-aprendizaje
+  header
+    background: $lightest_gray
+    padding: .5em
+    font-size: 13px
+    line-height: 1.2
+    .meta li
+      float: left
+      width: 15%
+      padding: 0 .5em
+      border-right: 1px solid $gray
+      text-align: center
+      min-height: 2.5em
+      &:first-child
+        width: 40%
+        text-align: left
+        padding-left: 0
+      &:last-child
+        border-right: none
+        margin-right: 0
+    .user-picture
+      float: left
+      margin-right: 1em
+    .meta-visits-value,
+    .meta-comments-value,
+    .meta-rating-value,
+    .meta-likes-value
+      font-size: 16px
+      line-height: 1.5
+      font-weight: bold
+    .meta-likes-value
+      +icon-aware("ico-likes.png", 4px)
+      line-height: 2
+  > .content
+    +set-label-field-styles-datos($list-main-divs)
+    +set-header-styles($list-header-divs)
+    padding: 1em 0
+    .field-name-field-imagen-miniatura
+      float: left
+      margin: 0 1em .5em 0
+    .node-top-share-links
+      height: 100%
+      overflow: hidden
+      margin-bottom: .5em
+      .share-modal
+        float: left
+      .service-links
+        float: right
+    .field-name-field-descripci-n
+      line-height: 1.2
+      margin-bottom: 1em
+    // Reset paddings and margins for the field collection.
+    .field-collection-view
+      padding: 0
+      margin: 0
+    // Add button styles for admin links.
+    .field-collection-view-links,
+    .action-links-field-collection-add
+      +clearfix
+      li
+        display: inline-block
+        position: relative
+        padding-top: 1em
+        height: 4em
+      a
+        color: $white
+        vertical-align: bottom
+        +button($main_blue)
+      .edit a
+        +button-icon($main_blue, "../images/ico-editar.png")
+    // Apply styles to the labels.
+    .field-name-field-labels .field-item
+      margin-right: .5em
+      display: inline-block
+      vertical-align: top
+      a
+        +tag()
+.node-recurso-de-aprendizaje.node-full .meta-author .user-picture
+  max-width: 52px
+.page-ode-add
+  #publish-new-ode-form
+    display: inline-block
+.page-node-add-ode,
+.page-node-add-post,
+.page-node-edit,
+.page-node-add-podcast,
+.page-node-add-webinar
+  .group-other-license
+    clear: both !important
+    .fieldset-title
+      +label-header()
+      font-size: 18px !important
+      padding-top: 0 !important
+      border-top: none !important
+      font-weight: normal !important
+.field-type-field-collection
+  .fieldset-wrapper
+    margin-top: 1em
+
+#edit-current-license
+  > a
+    float: left
+    margin-right: 1em
+  .license-link-text
+    width: 90%
+.field-type-field-collection
+  .fieldset-wrapper
+    margin-top: 1em

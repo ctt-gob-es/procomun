@@ -1,0 +1,17 @@
+diff --git a/sites/all/modules/patched/feeds_comment_processor/FeedsCommentProcessor.inc b/sites/all/modules/patched/feeds_comment_processor/FeedsCommentProcessor.inc
+index 6e52a5f..78cf990 100644
+--- a/sites/all/modules/patched/feeds_comment_processor/FeedsCommentProcessor.inc
++++ b/sites/all/modules/patched/feeds_comment_processor/FeedsCommentProcessor.inc
+@@ -85,8 +85,10 @@ class FeedsCommentProcessor extends FeedsProcessor {
+     if (strlen($comment->subject) > 29) {
+       $comment->subject = truncate_utf8(strip_tags($comment->subject), 29, TRUE);
+     }
+-    comment_submit($comment);
+-    comment_save($comment);
++    if ($comment->feeds_item->skip) {
++      comment_submit($comment);
++      comment_save($comment);
++    }
+   }
+ 
+   /**

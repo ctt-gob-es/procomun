@@ -1,0 +1,120 @@
+/* TOP BAR */
+.not-logged-in
+  .top-bar
+    padding-top: 10px
+.container.container-header
+  overflow: visible
+  +clearfix()
+  .top-bar
+    margin-top: 15px
+    padding-bottom: 15px
+    .ag-lang-block
+      +inline()
+      ul, ul.menu
+        text-align: center
+        +breakpoint($tablet-min)
+          float: left
+          width: 50%
+      li.leaf
+        list-style: none
+        margin: 0
+        padding: 0
+      ul, ul.menu
+        text-align: left
+        a
+          margin-right: 10px
+      li.active
+        a:hover
+          text-decoration: none
+          cursor: default
+          color: black
+    .ag-login-block
+      display: inline-block
+      float: right
+      +breakpoint(max-width $tablet-min)
+        margin-top: -15px
+#user-login-block
+  position: relative
+
+/* USER BAR */
+.user-bar
+  background: $navy
+  .container
+    overflow: visible
+    +clearfix()
+  #user-login-block
+    float: right
+    width: 50%
+    text-align: right
+    width: calc(100% - 230px)
+    position: relative
+    .block-header
+      margin: 0
+      padding: 0
+    .user-name 
+      margin-right: 12px
+      margin-left: 8px
+      text-transform: capitalize
+      font-size: 14px
+      color: $light_blue
+    .share-link
+      display: inline-block
+      margin-right: 12px
+      a
+        color: $orange
+    .user-settings
+      div
+        text-align: left
+        padding: 16px 23px
+        text-indent: -9999px
+        //background: $light_blue image-url('flecha-off.png') no-repeat center
+        &:hover,
+        &.active
+          //background: $main_blue image-url("flecha-on.png") no-repeat center
+    .user-logout
+      width: 50px
+      white-space: nowrap
+      background: $light_blue image-url("ico-salir.png") no-repeat 50% 13px
+      &:hover
+        background: $main_blue image-url("ico-salir.png") no-repeat 50% -25px
+      a
+        text-align: left
+        text-indent: -9999px
+        padding: 16px 6px 16px 5px
+        display: block
+    .block-body
+      text-align: left
+      margin: 0
+      padding: 0
+      right: 0px
+      width: 190px
+      z-index: 12
+      ul
+        +hide_bullets()
+        background-color: $main_blue
+        li.my-communities-menu-item
+          font-weight: bold
+          padding-left: 6px
+          padding: 10px
+          display: block
+          color: $white
+          a
+            padding-left: 14px
+            font-weight: normal
+        li
+          +no-bullet()
+          margin: 0
+          border-top: 1px dotted $deep_blue
+          &:first-child
+            border-top: 1px solid transparent
+          a
+            padding-left: 6px
+            padding: 10px
+            display: block
+            color: $white
+            &:hover
+              background-color: $deep_blue
+
+.messages.status
+  position: relative
+  z-index: 9

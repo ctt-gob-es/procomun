@@ -1,0 +1,1 @@
+* Para un script the inicio del contenedor de servlets (i.e. Jetty) más robusto revisar: http://wiki.apache.org/solr/ShawnHeisey

@@ -1,0 +1,2168 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY terms "http://purl.org/dc/terms/" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY ns "http://www.w3.org/2006/vcard/ns#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY lom2owl "http://www.agrega.es/ont/lom2owl#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://www.agrega.es/ont/lom2owl#"
+     xml:base="http://www.agrega.es/ont/lom2owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:ns="http://www.w3.org/2006/vcard/ns#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:lom2owl="http://www.agrega.es/ont/lom2owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <owl:Ontology rdf:about="">
+        <terms:title rdf:datatype="&rdfs;Literal"></terms:title>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <owl:AnnotationProperty rdf:about="&terms;language"/>
+    <owl:AnnotationProperty rdf:about="&ns;FN"/>
+    <owl:AnnotationProperty rdf:about="&terms;rights"/>
+    <owl:AnnotationProperty rdf:about="&ns;email"/>
+    <owl:AnnotationProperty rdf:about="&terms;format"/>
+    <owl:AnnotationProperty rdf:about="&terms;title"/>
+    <owl:AnnotationProperty rdf:about="&rdf;value"/>
+    <owl:AnnotationProperty rdf:about="&terms;identifier"/>
+    <owl:AnnotationProperty rdf:about="&terms;coverage"/>
+    <owl:AnnotationProperty rdf:about="&terms;type"/>
+    <owl:AnnotationProperty rdf:about="&ns;N"/>
+    <owl:AnnotationProperty rdf:about="&ns;ORG"/>
+    <owl:AnnotationProperty rdf:about="&terms;description"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#annotation -->
+
+    <owl:ObjectProperty rdf:about="#annotation">
+        <rdfs:comment xml:lang="en"
+            >Comments on the educational use of a learning object, containing information on when and by whom the comments were created. This category enables educators to share their assessments of learning objects, suggestions for use, etc. IEEE LOM element 8.</rdfs:comment>
+        <rdfs:range rdf:resource="#Annotation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#annotationDate -->
+
+    <owl:ObjectProperty rdf:about="#annotationDate">
+        <rdfs:comment xml:lang="en"
+            >Date that this annotation was created. IEEE LOM element 8.2.</rdfs:comment>
+        <rdfs:domain rdf:resource="#Annotation"/>
+        <rdfs:range rdf:resource="#DateTime"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#annotationEntity -->
+
+    <owl:ObjectProperty rdf:about="#annotationEntity"/>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#classification -->
+
+    <owl:ObjectProperty rdf:about="#classification">
+        <rdfs:comment xml:lang="en"
+            >Description of where a learning object falls within a particular classification system. IEEE LOM element 9.</rdfs:comment>
+        <rdfs:range rdf:resource="#Classification"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#classificationKeyword -->
+
+    <owl:ObjectProperty rdf:about="#classificationKeyword">
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Keywords and phrases descriptive of the learning object relative to the stated 9.1:Classification.Purpose of this specific classification, such as accessibility, security level, etc., most relevant first. IEEE LOM element 9.4</rdfs:comment>
+        <rdfs:domain rdf:resource="#Classification"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#classificationTaxon -->
+
+    <owl:ObjectProperty rdf:about="#classificationTaxon">
+        <rdfs:comment xml:lang="en"
+            >A particular term within a taxonomy which serves to classify a learning object. IEEE LOM element 9.2.2.</rdfs:comment>
+        <rdfs:range rdf:resource="#Taxon"/>
+        <rdfs:domain rdf:resource="#TaxonPath"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#contributionDateTime -->
+
+    <owl:ObjectProperty rdf:about="#contributionDateTime">
+        <rdfs:comment xml:lang="en"
+            >The date of the contribution. IEEE LOM element 3.2.3.</rdfs:comment>
+        <rdfs:domain rdf:resource="#Contribution"/>
+        <rdfs:range rdf:resource="#DateTime"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#contributionEntity -->
+
+    <owl:ObjectProperty rdf:about="#contributionEntity">
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >The identification of and information about entities (i.e., people, organizations) contributing to this learning object. The entities shall be ordered as most relevant first. IEEE LOM element 3.2.2.</rdfs:comment>
+        <rdfs:domain rdf:resource="#Contribution"/>
+        <rdfs:range rdf:resource="#VCard"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#coverage -->
+
+    <owl:ObjectProperty rdf:about="#coverage">
+        <terms:coverage rdf:datatype="&rdfs;Literal"></terms:coverage>
+        <rdfs:comment xml:lang="en"
+            >The time, culture, geography or region to which this learning object applies.
+The extent or scope of the content of the learning object. Coverage will typically include spatial location (a place name or geographic coordinates), temporal period (a period label, date, or date range) or jurisdiction (such as a named administrative entity). Recommended best practice is to select a value from a controlled vocabulary (for example, the Thesaurus of Geographic Names [TGN]) and that, where appropriate, named places or time periods be used in preference to numeric identifiers such as sets of coordinates or date ranges. IEEE LOM element 1.6.</rdfs:comment>
+        <rdfs:domain rdf:resource="#LearningObject"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#description -->
+
+    <owl:ObjectProperty rdf:about="#description">
+        <terms:description rdf:datatype="&rdfs;Literal"></terms:description>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Comments on how this learning object is to be used. IEEE LOM element 5.10</rdfs:comment>
+        <rdfs:comment xml:lang="en"
+            >A textual description of the content of this learning object. IEEE LOM element 1.4.</rdfs:comment>
+        <rdfs:domain rdf:resource="#LearningObject"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#duration -->
+
+    <owl:ObjectProperty rdf:about="#duration">
+        <rdfs:domain rdf:resource="#Duration"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#educational -->
+
+    <owl:ObjectProperty rdf:about="#educational">
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >This category describes the key educational or pedagogic characteristics of this learning object. IEEE LOM element 5.</rdfs:comment>
+        <rdfs:range rdf:resource="#Educational"/>
+        <rdfs:domain rdf:resource="#LearningObject"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#educationalTypicalAgeRange -->
+
+    <owl:ObjectProperty rdf:about="#educationalTypicalAgeRange">
+        <rdf:value rdf:datatype="&rdfs;Literal"></rdf:value>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Age of the typical intended user. IEEE LOM element 5.7.</rdfs:comment>
+        <rdfs:domain rdf:resource="#Educational"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#educationalTypicalLearningTime -->
+
+    <owl:ObjectProperty rdf:about="#educationalTypicalLearningTime">
+        <rdfs:range rdf:resource="#Duration"/>
+        <rdfs:domain rdf:resource="#Educational"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#hasRelatedResource -->
+
+    <owl:ObjectProperty rdf:about="#hasRelatedResource">
+        <rdfs:comment xml:lang="en"
+            >The target learning object that a relationship references. IEEE LOM element 7.2.</rdfs:comment>
+        <rdfs:range rdf:resource="#Identifier"/>
+        <rdfs:domain rdf:resource="#Relation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#hasResourceIdentifier -->
+
+    <owl:ObjectProperty rdf:about="#hasResourceIdentifier">
+        <rdfs:comment xml:lang="en"
+            >A globally unique label that identifies the target  learning object. IEEE LOM element 7.2.1.</rdfs:comment>
+        <rdfs:range rdf:resource="#Identifier"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#identifier -->
+
+    <owl:ObjectProperty rdf:about="#identifier">
+        <rdf:type rdf:resource="&owl;InverseFunctionalProperty"/>
+        <rdfs:comment xml:lang="en"
+            >This predicate represents the fact that a learning object has a label that identifies it. IEEE LOM element 1.1.</rdfs:comment>
+        <rdfs:range rdf:resource="#Identifier"/>
+        <rdfs:domain rdf:resource="#LearningObject"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#includesSingleLangString -->
+
+    <owl:ObjectProperty rdf:about="#includesSingleLangString">
+        <rdfs:comment xml:lang="en"
+            >LangString values may include multiple semantically equivalent character strings, such as translations or alternative descriptions. Each of these is represented by a singleLangString.</rdfs:comment>
+        <rdfs:range rdf:resource="#LangString"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#isCompositeOf -->
+
+    <owl:ObjectProperty rdf:about="#isCompositeOf">
+        <rdfs:comment xml:lang="en"
+            >When grouping multiple requirements, the composite requirement is satisfied when one of the component requirements is satisfied, i.e., the logical connector is OR. IEEE LOM element 4.4.1.</rdfs:comment>
+        <rdfs:range rdf:resource="#SingleTechnicalRequirement"/>
+        <rdfs:domain rdf:resource="#TechnicalRequirement"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#keyword -->
+
+    <owl:ObjectProperty rdf:about="#keyword">
+        <rdf:value rdf:datatype="&rdfs;Literal"></rdf:value>
+        <rdfs:comment xml:lang="en"
+            >A keyword or phrase describing the topic of this learning object. This data element should not be used for characteristics that can be described by other data elements. IEEE LOM element 1.5.</rdfs:comment>
+        <rdfs:domain rdf:resource="#LearningObject"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#lifeCycleContribution -->
+
+    <owl:ObjectProperty rdf:about="#lifeCycleContribution"/>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#metaMetadataContribution -->
+
+    <owl:ObjectProperty rdf:about="#metaMetadataContribution">
+        <rdfs:comment xml:lang="en"
+            >Those entities (i.e., people, organizations) that have contributed to the state of this learning object during its life cycle (e.g.,creation, edits, publication).</rdfs:comment>
+        <rdfs:domain rdf:resource="#LearningObject"/>
+        <rdfs:range rdf:resource="#LifeCycleContribution"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#metaMetadataIdentifier -->
+
+    <owl:ObjectProperty rdf:about="#metaMetadataIdentifier">
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >A globally unique label that identifies this metadata record. IEEE LOM element 3.1.</rdfs:comment>
+        <rdfs:range rdf:resource="#Identifier"/>
+        <rdfs:domain rdf:resource="#LearningObject"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#relatedResourceDescription -->
+
+    <owl:ObjectProperty rdf:about="#relatedResourceDescription">
+        <terms:description rdf:datatype="&rdfs;Literal"></terms:description>
+        <rdfs:range rdf:resource="#LangString"/>
+        <rdfs:domain rdf:resource="#Relation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#relation -->
+
+    <owl:ObjectProperty rdf:about="#relation">
+        <rdfs:comment xml:lang="en"
+            >Relationship between a learning object and other learning objects, if any.</rdfs:comment>
+        <rdfs:range rdf:resource="#Relation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#taxonPath -->
+
+    <owl:ObjectProperty rdf:about="#taxonPath">
+        <rdfs:comment xml:lang="en"
+            >A taxonomic path in a specific classification system according to which a learning object is classified. IEEE LOM element 9.2.</rdfs:comment>
+        <rdfs:domain rdf:resource="#Classification"/>
+        <rdfs:range rdf:resource="#TaxonPath"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#technicalDuration -->
+
+    <owl:ObjectProperty rdf:about="#technicalDuration">
+        <rdfs:domain rdf:resource="#Duration"/>
+        <rdfs:range rdf:resource="#LearningObject"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#technicalRequirements -->
+
+    <owl:ObjectProperty rdf:about="#technicalRequirements">
+        <rdfs:comment xml:lang="en"
+            >A technical capability necessary for using a learning object. IEEE LOM Element &quot;4.4. Requirement&quot;.</rdfs:comment>
+        <rdfs:range rdf:resource="#TechnicalRequirement"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#accessDescription -->
+
+    <owl:DatatypeProperty rdf:about="#accessDescription">
+        <rdfs:domain rdf:resource="#LearningObject"/>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#accessType -->
+
+    <owl:DatatypeProperty rdf:about="#accessType">
+        <rdfs:domain rdf:resource="#LearningObject"/>
+        <rdfs:range>
+            <rdf:Description>
+                <rdf:type rdf:resource="&owl;DataRange"/>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string">universal</rdf:first>
+                        <rdf:rest rdf:resource="&rdf;nil"/>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdf:Description>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#aggregationLevel -->
+
+    <owl:DatatypeProperty rdf:about="#aggregationLevel">
+        <rdfs:comment xml:lang="en"
+            >The functional granularity of this learning object. IEEE LOM element 1.8.</rdfs:comment>
+        <rdfs:domain rdf:resource="#LearningObject"/>
+        <rdfs:range>
+            <rdf:Description>
+                <rdf:type rdf:resource="&owl;DataRange"/>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string">1</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&rdf;List"/>
+                                <rdf:first rdf:datatype="&xsd;string">2</rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&rdf;List"/>
+                                        <rdf:first rdf:datatype="&xsd;string">3</rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                <rdf:first rdf:datatype="&xsd;string">4</rdf:first>
+                                                <rdf:rest rdf:resource="&rdf;nil"/>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdf:Description>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#annotationDescription -->
+
+    <owl:DatatypeProperty rdf:about="#annotationDescription">
+        <rdfs:domain rdf:resource="#Annotation"/>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#annotationEntity -->
+
+    <owl:DatatypeProperty rdf:about="#annotationEntity">
+        <owl:dataPropertyDomain rdf:resource="#Annotation"/>
+        <owl:dataPropertyRange rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#classificationDescription -->
+
+    <owl:DatatypeProperty rdf:about="#classificationDescription">
+        <rdfs:domain rdf:resource="#Classification"/>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#classificationPurpose -->
+
+    <owl:DatatypeProperty rdf:about="#classificationPurpose">
+        <rdfs:comment xml:lang="en"
+            >The purpose of classifying a learning object. IEEE LOM element 9.1.</rdfs:comment>
+        <rdfs:domain rdf:resource="#Classification"/>
+        <rdfs:range>
+            <rdf:Description>
+                <rdf:type rdf:resource="&owl;DataRange"/>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string">accessibility</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&rdf;List"/>
+                                <rdf:first rdf:datatype="&xsd;string">competency</rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&rdf;List"/>
+                                        <rdf:first rdf:datatype="&xsd;string">discipline</rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                <rdf:first rdf:datatype="&xsd;string"
+                                                    >educational level</rdf:first>
+                                                <rdf:rest>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="&rdf;List"/>
+                                                        <rdf:first rdf:datatype="&xsd;string"
+                                                            >educational objective</rdf:first>
+                                                        <rdf:rest>
+                                                            <rdf:Description>
+                                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                                <rdf:first rdf:datatype="&xsd;string">idea</rdf:first>
+                                                                <rdf:rest>
+                                                                    <rdf:Description>
+                                                                        <rdf:type rdf:resource="&rdf;List"/>
+                                                                        <rdf:first rdf:datatype="&xsd;string">prerequisite</rdf:first>
+                                                                        <rdf:rest>
+                                                                            <rdf:Description>
+                                                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                                                <rdf:first rdf:datatype="&xsd;string">restrictions</rdf:first>
+                                                                                <rdf:rest>
+                                                                                    <rdf:Description>
+                                                                                        <rdf:type rdf:resource="&rdf;List"/>
+                                                                                        <rdf:first rdf:datatype="&xsd;string">security level</rdf:first>
+                                                                                        <rdf:rest>
+                                                                                            <rdf:Description>
+                                                                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                                                                <rdf:first rdf:datatype="&xsd;string">skill level</rdf:first>
+                                                                                                <rdf:rest rdf:resource="&rdf;nil"/>
+                                                                                            </rdf:Description>
+                                                                                        </rdf:rest>
+                                                                                    </rdf:Description>
+                                                                                </rdf:rest>
+                                                                            </rdf:Description>
+                                                                        </rdf:rest>
+                                                                    </rdf:Description>
+                                                                </rdf:rest>
+                                                            </rdf:Description>
+                                                        </rdf:rest>
+                                                    </rdf:Description>
+                                                </rdf:rest>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdf:Description>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#copyrightAndOtherRestrictions -->
+
+    <owl:DatatypeProperty rdf:about="#copyrightAndOtherRestrictions">
+        <rdfs:comment xml:lang="en"
+            >Whether copyright or other restrictions apply to the use of this learning object. IEEE LOM element 6.2.</rdfs:comment>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#copyrightDescription -->
+
+    <owl:DatatypeProperty rdf:about="#copyrightDescription">
+        <rdfs:domain rdf:resource="#LearningObject"/>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#cost -->
+
+    <owl:DatatypeProperty rdf:about="#cost">
+        <rdfs:comment xml:lang="en"
+            >Whether use of the learning object requires payment. IEEE LOM element 6.1.</rdfs:comment>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#dateTimeDescription -->
+
+    <owl:DatatypeProperty rdf:about="#dateTimeDescription">
+        <rdfs:domain rdf:resource="#Contribution"/>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#dateTimeValue -->
+
+    <owl:DatatypeProperty rdf:about="#dateTimeValue">
+        <rdfs:comment xml:lang="en"
+            >Date time value in format: YYYY[-MM[-DD[Thh[:mm[:ss[.s[TZD]]]]]]]</rdfs:comment>
+        <rdfs:domain rdf:resource="#DateTime"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#durationDescription -->
+
+    <owl:DatatypeProperty rdf:about="#durationDescription">
+        <rdfs:domain rdf:resource="#Duration"/>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#durationValue -->
+
+    <owl:DatatypeProperty rdf:about="#durationValue">
+        <rdfs:domain rdf:resource="#Duration"/>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#educationalCognitiveProcess -->
+
+    <owl:DatatypeProperty rdf:about="#educationalCognitiveProcess">
+        <rdfs:comment
+            >Cognitive Process</rdfs:comment>
+        <rdfs:domain rdf:resource="#Educational"/>
+        <rdfs:range>
+            <rdf:Description>
+                <rdf:type rdf:resource="&owl;DataRange"/>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string">auniversal</rdf:first>
+                        <rdf:rest rdf:resource="&rdf;nil"/>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdf:Description>
+        </rdfs:range>
+        <rdfs:range>
+            <rdf:Description>
+                <rdf:type rdf:resource="&owl;DataRange"/>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string">universal</rdf:first>
+                        <rdf:rest rdf:resource="&rdf;nil"/>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdf:Description>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#educationalContext -->
+
+    <owl:DatatypeProperty rdf:about="#educationalContext">
+        <rdfs:comment xml:lang="en"
+            >The principal environment within which the learning and use of this learning object is intended to take place. IEEE LOM element 5.6.</rdfs:comment>
+        <rdfs:domain rdf:resource="#Educational"/>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+        <rdfs:range rdf:resource="&xsd;short"/>
+        <rdfs:range>
+            <rdf:Description>
+                <rdf:type rdf:resource="&owl;DataRange"/>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string"
+                            >higher education</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&rdf;List"/>
+                                <rdf:first rdf:datatype="&xsd;string">other</rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&rdf;List"/>
+                                        <rdf:first rdf:datatype="&xsd;string">school</rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                <rdf:first rdf:datatype="&xsd;string">training</rdf:first>
+                                                <rdf:rest rdf:resource="&rdf;nil"/>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdf:Description>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#educationalDifficulty -->
+
+    <owl:DatatypeProperty rdf:about="#educationalDifficulty">
+        <rdfs:comment xml:lang="en"
+            >How hard it is to work with or through this learning object for the typical intended target audience. IEEE LOM element 5.8</rdfs:comment>
+        <rdfs:domain rdf:resource="#Educational"/>
+        <rdfs:range>
+            <rdf:Description>
+                <rdf:type rdf:resource="&owl;DataRange"/>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string">difficult</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&rdf;List"/>
+                                <rdf:first rdf:datatype="&xsd;string">easy</rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&rdf;List"/>
+                                        <rdf:first rdf:datatype="&xsd;string">medium</rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                <rdf:first rdf:datatype="&xsd;string">very difficult</rdf:first>
+                                                <rdf:rest>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="&rdf;List"/>
+                                                        <rdf:first rdf:datatype="&xsd;string">very easy</rdf:first>
+                                                        <rdf:rest rdf:resource="&rdf;nil"/>
+                                                    </rdf:Description>
+                                                </rdf:rest>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdf:Description>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#educationalIntendedUserRole -->
+
+    <owl:DatatypeProperty rdf:about="#educationalIntendedUserRole">
+        <rdfs:comment xml:lang="en"
+            >Principal user(s) for which this learning object was designed, most dominant first. IEEE LOM element 5.5.</rdfs:comment>
+        <rdfs:domain rdf:resource="#Educational"/>
+        <rdfs:range>
+            <rdf:Description>
+                <rdf:type rdf:resource="&owl;DataRange"/>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string">author</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&rdf;List"/>
+                                <rdf:first rdf:datatype="&xsd;string">learner</rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&rdf;List"/>
+                                        <rdf:first rdf:datatype="&xsd;string">manager</rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                <rdf:first rdf:datatype="&xsd;string">teacher</rdf:first>
+                                                <rdf:rest rdf:resource="&rdf;nil"/>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdf:Description>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#educationalInteractivityLevel -->
+
+    <owl:DatatypeProperty rdf:about="#educationalInteractivityLevel">
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >The degree of interactivity characterizing this learning object. Interactivity in this context refers to the degree to which the learner can influence the aspect or behavior of the learning object. IEEE LOM element 5.3.</rdfs:comment>
+        <rdfs:domain rdf:resource="#Educational"/>
+        <rdfs:range>
+            <rdf:Description>
+                <rdf:type rdf:resource="&owl;DataRange"/>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string">high</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&rdf;List"/>
+                                <rdf:first rdf:datatype="&xsd;string">low</rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&rdf;List"/>
+                                        <rdf:first rdf:datatype="&xsd;string">medium</rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                <rdf:first rdf:datatype="&xsd;string">very high</rdf:first>
+                                                <rdf:rest>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="&rdf;List"/>
+                                                        <rdf:first rdf:datatype="&xsd;string">very low</rdf:first>
+                                                        <rdf:rest rdf:resource="&rdf;nil"/>
+                                                    </rdf:Description>
+                                                </rdf:rest>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdf:Description>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#educationalInteractivityType -->
+
+    <owl:DatatypeProperty rdf:about="#educationalInteractivityType">
+        <rdfs:comment xml:lang="en"
+            >Predominant mode of learning supported by this learning object. IEEE LOM element 5.1.</rdfs:comment>
+        <rdfs:domain rdf:resource="#Educational"/>
+        <rdfs:range>
+            <rdf:Description>
+                <rdf:type rdf:resource="&owl;DataRange"/>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string">active</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&rdf;List"/>
+                                <rdf:first rdf:datatype="&xsd;string">expositive</rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&rdf;List"/>
+                                        <rdf:first rdf:datatype="&xsd;string">mised</rdf:first>
+                                        <rdf:rest rdf:resource="&rdf;nil"/>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdf:Description>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#educationalLanguage -->
+
+    <owl:DatatypeProperty rdf:about="#educationalLanguage">
+        <rdfs:comment xml:lang="en"
+            >The primary human language or languages used within this learning object to communicate to the intended user. If the learning object had no lingual content (as in the case of a picture of the Mona Lisa, for example), then the appropriate value for this data element would be &quot;none&quot;. IEEE LOM element 1.3.</rdfs:comment>
+        <rdfs:domain rdf:resource="#LearningObject"/>
+        <rdfs:range>
+            <rdf:Description>
+                <rdf:type rdf:resource="&owl;DataRange"/>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string">ba</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&rdf;List"/>
+                                <rdf:first rdf:datatype="&xsd;string">ca</rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&rdf;List"/>
+                                        <rdf:first rdf:datatype="&xsd;string">es</rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                <rdf:first rdf:datatype="&xsd;string">ga</rdf:first>
+                                                <rdf:rest>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="&rdf;List"/>
+                                                        <rdf:first rdf:datatype="&xsd;string">none</rdf:first>
+                                                        <rdf:rest rdf:resource="&rdf;nil"/>
+                                                    </rdf:Description>
+                                                </rdf:rest>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdf:Description>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#educationalSemanticDensity -->
+
+    <owl:DatatypeProperty rdf:about="#educationalSemanticDensity">
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >The degree of conciseness of a learning object. The semantic density of a learning object may be estimated in terms of its size, span, or --in the case of self-timed resources such as audio or video-- duration. IEEE LOM element 5.4.</rdfs:comment>
+        <rdfs:domain rdf:resource="#Educational"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:range>
+            <rdf:Description>
+                <rdf:type rdf:resource="&owl;DataRange"/>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string">higherEducation</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&rdf;List"/>
+                                <rdf:first rdf:datatype="&xsd;string">other</rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&rdf;List"/>
+                                        <rdf:first rdf:datatype="&xsd;string">school</rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                <rdf:first rdf:datatype="&xsd;string">training</rdf:first>
+                                                <rdf:rest rdf:resource="&rdf;nil"/>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdf:Description>
+        </rdfs:range>
+        <rdfs:range>
+            <rdf:Description>
+                <rdf:type rdf:resource="&owl;DataRange"/>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string">high</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&rdf;List"/>
+                                <rdf:first rdf:datatype="&xsd;string">low</rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&rdf;List"/>
+                                        <rdf:first rdf:datatype="&xsd;string">medium</rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                <rdf:first rdf:datatype="&xsd;string">very high</rdf:first>
+                                                <rdf:rest>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="&rdf;List"/>
+                                                        <rdf:first rdf:datatype="&xsd;string">very low</rdf:first>
+                                                        <rdf:rest rdf:resource="&rdf;nil"/>
+                                                    </rdf:Description>
+                                                </rdf:rest>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdf:Description>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#email -->
+
+    <owl:DatatypeProperty rdf:about="#email">
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Email as it appears in the vCard</rdfs:comment>
+        <rdfs:domain rdf:resource="#VCard"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#hasTechnicalFormat -->
+
+    <owl:DatatypeProperty rdf:about="#hasTechnicalFormat">
+        <rdfs:comment xml:lang="en"
+            >Technical datatype(s) of (all the components of) this learning object. This information is used to identify the software needed to access the learning object. IEEE LOM element 4.1.</rdfs:comment>
+        <rdfs:domain rdf:resource="#LearningObject"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#hasValue -->
+
+    <owl:DatatypeProperty rdf:about="#hasValue">
+        <rdfs:comment xml:lang="en"
+            >This predicate relates a singleLangString to the character string containing its textual description.</rdfs:comment>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#identifierCatalog -->
+
+    <owl:DatatypeProperty rdf:about="#identifierCatalog">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:comment xml:lang="en"
+            >This predicate relates a lomIdentifier to the name or designator of the identification or cataloging scheme used for its identification. It is usually a namespace scheme. IEEE LOM element 1.1, 3.1, 7.2.1.</rdfs:comment>
+        <rdfs:domain rdf:resource="#Identifier"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#identifierEntry -->
+
+    <owl:DatatypeProperty rdf:about="#identifierEntry">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:comment xml:lang="en"
+            >This predicate relates a lomIdentifier to the value of the identifier within the identification or cataloging scheme that designates or identifies a learning object or a learning object metadata record (a namespace specific string).  IEEE LOM element 1.1, 3.1, 7.2.1.</rdfs:comment>
+        <rdfs:domain rdf:resource="#Identifier"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#lifeCycleContributionRole -->
+
+    <owl:DatatypeProperty rdf:about="#lifeCycleContributionRole">
+        <rdfs:comment xml:lang="en"
+            >Kind of contribution. IEEE LOM element 2.3.1.</rdfs:comment>
+        <rdfs:domain rdf:resource="#LifeCycleContribution"/>
+        <rdfs:range>
+            <rdf:Description>
+                <rdf:type rdf:resource="&owl;DataRange"/>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string">author</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&rdf;List"/>
+                                <rdf:first rdf:datatype="&xsd;string"
+                                    >content provider</rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&rdf;List"/>
+                                        <rdf:first rdf:datatype="&xsd;string">editor</rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                <rdf:first rdf:datatype="&xsd;string"
+                                                    >educational validator</rdf:first>
+                                                <rdf:rest>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="&rdf;List"/>
+                                                        <rdf:first rdf:datatype="&xsd;string"
+                                                            >graphical designer</rdf:first>
+                                                        <rdf:rest>
+                                                            <rdf:Description>
+                                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                                <rdf:first rdf:datatype="&xsd;string">initiator</rdf:first>
+                                                                <rdf:rest>
+                                                                    <rdf:Description>
+                                                                        <rdf:type rdf:resource="&rdf;List"/>
+                                                                        <rdf:first rdf:datatype="&xsd;string"
+                                                                            >instructional designer</rdf:first>
+                                                                        <rdf:rest>
+                                                                            <rdf:Description>
+                                                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                                                <rdf:first rdf:datatype="&xsd;string">publisher</rdf:first>
+                                                                                <rdf:rest>
+                                                                                    <rdf:Description>
+                                                                                        <rdf:type rdf:resource="&rdf;List"/>
+                                                                                        <rdf:first rdf:datatype="&xsd;string">script writer</rdf:first>
+                                                                                        <rdf:rest>
+                                                                                            <rdf:Description>
+                                                                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                                                                <rdf:first rdf:datatype="&xsd;string"
+                                                                                                    >subject matter expert</rdf:first>
+                                                                                                <rdf:rest>
+                                                                                                    <rdf:Description>
+                                                                                                        <rdf:type rdf:resource="&rdf;List"/>
+                                                                                                        <rdf:first rdf:datatype="&xsd;string"
+                                                                                                            >technical implementer</rdf:first>
+                                                                                                        <rdf:rest>
+                                                                                                            <rdf:Description>
+                                                                                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                                                                                <rdf:first rdf:datatype="&xsd;string"
+                                                                                                                    >technical validator</rdf:first>
+                                                                                                                <rdf:rest>
+                                                                                                                    <rdf:Description>
+                                                                                                                        <rdf:type rdf:resource="&rdf;List"/>
+                                                                                                                        <rdf:first rdf:datatype="&xsd;string">terminator</rdf:first>
+                                                                                                                        <rdf:rest>
+                                                                                                                            <rdf:Description>
+                                                                                                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                                                                                                <rdf:first rdf:datatype="&xsd;string">unknown</rdf:first>
+                                                                                                                                <rdf:rest>
+                                                                                                                                    <rdf:Description>
+                                                                                                                                        <rdf:type rdf:resource="&rdf;List"/>
+                                                                                                                                        <rdf:first rdf:datatype="&xsd;string">validator</rdf:first>
+                                                                                                                                        <rdf:rest rdf:resource="&rdf;nil"/>
+                                                                                                                                    </rdf:Description>
+                                                                                                                                </rdf:rest>
+                                                                                                                            </rdf:Description>
+                                                                                                                        </rdf:rest>
+                                                                                                                    </rdf:Description>
+                                                                                                                </rdf:rest>
+                                                                                                            </rdf:Description>
+                                                                                                        </rdf:rest>
+                                                                                                    </rdf:Description>
+                                                                                                </rdf:rest>
+                                                                                            </rdf:Description>
+                                                                                        </rdf:rest>
+                                                                                    </rdf:Description>
+                                                                                </rdf:rest>
+                                                                            </rdf:Description>
+                                                                        </rdf:rest>
+                                                                    </rdf:Description>
+                                                                </rdf:rest>
+                                                            </rdf:Description>
+                                                        </rdf:rest>
+                                                    </rdf:Description>
+                                                </rdf:rest>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdf:Description>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#lifeCycleStatus -->
+
+    <owl:DatatypeProperty rdf:about="#lifeCycleStatus">
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >The completion status or condition of this learning object. IEEE LOM element 2.2</rdfs:comment>
+        <rdfs:domain rdf:resource="#LearningObject"/>
+        <rdfs:range>
+            <rdf:Description>
+                <rdf:type rdf:resource="&owl;DataRange"/>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string">draft</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&rdf;List"/>
+                                <rdf:first rdf:datatype="&xsd;string">final</rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&rdf;List"/>
+                                        <rdf:first rdf:datatype="&xsd;string">revised</rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                <rdf:first rdf:datatype="&xsd;string">unavalaible</rdf:first>
+                                                <rdf:rest rdf:resource="&rdf;nil"/>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdf:Description>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#lifeCycleVersion -->
+
+    <owl:DatatypeProperty rdf:about="#lifeCycleVersion">
+        <rdfs:domain rdf:resource="#LearningObject"/>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#metaMetadataContributionRole -->
+
+    <owl:DatatypeProperty rdf:about="#metaMetadataContributionRole">
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Kind of contribution. IEEE LOM element 3.2.1.</rdfs:comment>
+        <rdfs:domain rdf:resource="#MetaMetadataContribution"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#metaMetadataLanguage -->
+
+    <owl:DatatypeProperty rdf:about="#metaMetadataLanguage">
+        <rdfs:comment xml:lang="en"
+            >Language of this metadata instance. This is the default language for all LangString values in this metadata instance. If a value for this data element is not present in a metadata instance, then there is no default language for LangString values. IEEE LOM element 3.4.</rdfs:comment>
+        <rdfs:domain rdf:resource="#LearningObject"/>
+        <rdfs:range>
+            <rdf:Description>
+                <rdf:type rdf:resource="&owl;DataRange"/>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string">ba</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&rdf;List"/>
+                                <rdf:first rdf:datatype="&xsd;string">ca</rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&rdf;List"/>
+                                        <rdf:first rdf:datatype="&xsd;string">es</rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                <rdf:first rdf:datatype="&xsd;string">ga</rdf:first>
+                                                <rdf:rest rdf:resource="&rdf;nil"/>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdf:Description>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#metadataSchema -->
+
+    <owl:DatatypeProperty rdf:about="#metadataSchema">
+        <rdfs:comment xml:lang="en"
+            >The name and version of the authoritative specification used to create this metadata instance. IEEE LOM element 3.3.</rdfs:comment>
+        <rdfs:domain rdf:resource="#LearningObject"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#orCompositeMaximumVersion -->
+
+    <owl:DatatypeProperty rdf:about="#orCompositeMaximumVersion">
+        <rdfs:comment xml:lang="en"
+            >Highest possible version of the required technology to use the learning object. IEEE LOM element 4.4.1.4.</rdfs:comment>
+        <rdfs:domain rdf:resource="#SingleTechnicalRequirement"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#orCompositeMinimumVersion -->
+
+    <owl:DatatypeProperty rdf:about="#orCompositeMinimumVersion">
+        <rdfs:comment xml:lang="en"
+            >Lowest possible version of the required technology to use the learning object. IEEE LOM element 4.4.1.3.</rdfs:comment>
+        <rdfs:domain rdf:resource="#SingleTechnicalRequirement"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#orCompositeName -->
+
+    <owl:DatatypeProperty rdf:about="#orCompositeName">
+        <rdfs:comment xml:lang="en"
+            >Name of the required technology to use a learning object. IEEE LOM element 4.4.1.2.</rdfs:comment>
+        <rdfs:domain rdf:resource="#SingleTechnicalRequirement"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#orCompositeType -->
+
+    <owl:DatatypeProperty rdf:about="#orCompositeType">
+        <rdfs:comment xml:lang="en"
+            >The technology required to use this learning object, e.g., hardware, software, network, etc. IEEE LOM element 4.4.1.1.</rdfs:comment>
+        <rdfs:domain rdf:resource="#SingleTechnicalRequirement"/>
+        <rdfs:range>
+            <rdf:Description>
+                <rdf:type rdf:resource="&owl;DataRange"/>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string">browser</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&rdf;List"/>
+                                <rdf:first rdf:datatype="&xsd;string"
+                                    >operating system</rdf:first>
+                                <rdf:rest rdf:resource="&rdf;nil"/>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdf:Description>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#otherPlatformRequirements -->
+
+    <owl:DatatypeProperty rdf:about="#otherPlatformRequirements">
+        <rdfs:domain rdf:resource="#LearningObject"/>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#relationKind -->
+
+    <owl:DatatypeProperty rdf:about="#relationKind">
+        <rdfs:comment xml:lang="en"
+            >Nature of the relationship between a learning object and the target learning object, identified by 7.2:Relation.Resource. IEEE LOM element 7.1.</rdfs:comment>
+        <rdfs:domain rdf:resource="#Relation"/>
+        <rdfs:range>
+            <rdf:Description>
+                <rdf:type rdf:resource="&owl;DataRange"/>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string">hasFormat</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&rdf;List"/>
+                                <rdf:first rdf:datatype="&xsd;string">hasPart</rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&rdf;List"/>
+                                        <rdf:first rdf:datatype="&xsd;string">hasVersion</rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                <rdf:first rdf:datatype="&xsd;string">isBasedOn</rdf:first>
+                                                <rdf:rest>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="&rdf;List"/>
+                                                        <rdf:first rdf:datatype="&xsd;string">isBasisFor</rdf:first>
+                                                        <rdf:rest>
+                                                            <rdf:Description>
+                                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                                <rdf:first rdf:datatype="&xsd;string">isFormatOf</rdf:first>
+                                                                <rdf:rest>
+                                                                    <rdf:Description>
+                                                                        <rdf:type rdf:resource="&rdf;List"/>
+                                                                        <rdf:first rdf:datatype="&xsd;string">isPartOf</rdf:first>
+                                                                        <rdf:rest>
+                                                                            <rdf:Description>
+                                                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                                                <rdf:first rdf:datatype="&xsd;string">isReferencedBy</rdf:first>
+                                                                                <rdf:rest>
+                                                                                    <rdf:Description>
+                                                                                        <rdf:type rdf:resource="&rdf;List"/>
+                                                                                        <rdf:first rdf:datatype="&xsd;string">isRequiredBy</rdf:first>
+                                                                                        <rdf:rest>
+                                                                                            <rdf:Description>
+                                                                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                                                                <rdf:first rdf:datatype="&xsd;string">isVersionOf</rdf:first>
+                                                                                                <rdf:rest>
+                                                                                                    <rdf:Description>
+                                                                                                        <rdf:type rdf:resource="&rdf;List"/>
+                                                                                                        <rdf:first rdf:datatype="&xsd;string">references</rdf:first>
+                                                                                                        <rdf:rest>
+                                                                                                            <rdf:Description>
+                                                                                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                                                                                <rdf:first rdf:datatype="&xsd;string">requires</rdf:first>
+                                                                                                                <rdf:rest rdf:resource="&rdf;nil"/>
+                                                                                                            </rdf:Description>
+                                                                                                        </rdf:rest>
+                                                                                                    </rdf:Description>
+                                                                                                </rdf:rest>
+                                                                                            </rdf:Description>
+                                                                                        </rdf:rest>
+                                                                                    </rdf:Description>
+                                                                                </rdf:rest>
+                                                                            </rdf:Description>
+                                                                        </rdf:rest>
+                                                                    </rdf:Description>
+                                                                </rdf:rest>
+                                                            </rdf:Description>
+                                                        </rdf:rest>
+                                                    </rdf:Description>
+                                                </rdf:rest>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdf:Description>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#structure -->
+
+    <owl:DatatypeProperty rdf:about="#structure">
+        <rdfs:comment xml:lang="en"
+            >Underlying organizational structure of this learning object. IEEE LOM element 1.7.</rdfs:comment>
+        <rdfs:domain rdf:resource="#LearningObject"/>
+        <rdfs:range>
+            <rdf:Description>
+                <rdf:type rdf:resource="&owl;DataRange"/>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string">atomic</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&rdf;List"/>
+                                <rdf:first rdf:datatype="&xsd;string">collection</rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="&rdf;List"/>
+                                        <rdf:first rdf:datatype="&xsd;string">hierarchical</rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="&rdf;List"/>
+                                                <rdf:first rdf:datatype="&xsd;string">linear</rdf:first>
+                                                <rdf:rest>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="&rdf;List"/>
+                                                        <rdf:first rdf:datatype="&xsd;string">networked</rdf:first>
+                                                        <rdf:rest rdf:resource="&rdf;nil"/>
+                                                    </rdf:Description>
+                                                </rdf:rest>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdf:Description>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#taxonEntry -->
+
+    <owl:DatatypeProperty rdf:about="#taxonEntry">
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#taxonId -->
+
+    <owl:DatatypeProperty rdf:about="#taxonId">
+        <rdfs:comment xml:lang="en"
+            >The identifier of the taxon, such as a number or letter combination provided by the source of the taxonomy. IEEE LOM element 9.2.2.1.</rdfs:comment>
+        <rdfs:domain rdf:resource="#Taxon"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#taxonpathSource -->
+
+    <owl:DatatypeProperty rdf:about="#taxonpathSource">
+        <rdfs:domain rdf:resource="#TaxonPath"/>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#technicalInstallationRemarks -->
+
+    <owl:DatatypeProperty rdf:about="#technicalInstallationRemarks">
+        <rdfs:domain rdf:resource="#LearningObject"/>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#technicalLocation -->
+
+    <owl:DatatypeProperty rdf:about="#technicalLocation">
+        <rdfs:comment xml:lang="en"
+            >A string that is used to access this learning object. It may be a location  (e.g., Universal Resource Locator), or a method that resolves to a location (e.g., Universal Resource Identifier). The first element of this list shall be the preferable location. IEEE LOM element 4.3.</rdfs:comment>
+        <rdfs:domain rdf:resource="#LearningObject"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#technicalSize -->
+
+    <owl:DatatypeProperty rdf:about="#technicalSize">
+        <rdfs:comment xml:lang="en"
+            >The size of the digital learning object in bytes (not Mbytes, GB, etc.). The size is represented as a decimal value. This data element shall refer to the actual size of this learning object. If the learning object is compressed, then this data element shall refer to the uncompressed size. IEEE LOM element 4.2.</rdfs:comment>
+        <rdfs:domain rdf:resource="#LearningObject"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#Annotation -->
+
+    <owl:Class rdf:about="#Annotation">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#dateTimeDescription"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#dateTimeValue"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#annotationEntity"/>
+                <owl:onClass rdf:resource="#VCard"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#annotationDescription"/>
+                <owl:someValuesFrom rdf:resource="&rdfs;Literal"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en"
+            >Comments on the educational use of a learning object, including information on when and by whom the comments were created.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#Classification -->
+
+    <owl:Class rdf:about="#Classification">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#classificationKeyword"/>
+                <owl:onClass rdf:resource="#LangString"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">40</owl:maxQualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#classificationDescription"/>
+                <owl:someValuesFrom rdf:resource="&rdfs;Literal"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#classificationPurpose"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#taxonPath"/>
+                <owl:onClass rdf:resource="#TaxonPath"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">15</owl:maxQualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en"
+            >Description of where a learning object falls within a particular classification system. To define multiple classifications, there may be multiple instances of this category for a learning object.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#Contribution -->
+
+    <owl:Class rdf:about="#Contribution">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Those entities (i.e., people, organizations) that have contributed to the state of this learning object during its life cycle (e.g., creation, edits, publication).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#DateTime -->
+
+    <owl:Class rdf:about="#DateTime">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#dateTimeValue"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="&xsd;dateTime"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en"
+            >A point in time with accuracy at least as small as one second, as described by IEEE LOM in clause 8 (IEEE 1484.12.1-2002).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#Duration -->
+
+    <owl:Class rdf:about="#Duration">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#durationDescription"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#durationValue"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en"
+            >An interval in time with accuracy at least as small as one second.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#Educational -->
+
+    <owl:Class rdf:about="#Educational">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#educationalInteractivityType"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#educationalContext"/>
+                <owl:maxCardinality rdf:datatype="&xsd;nonNegativeInteger">10</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#educationalIntendedUserRole"/>
+                <owl:maxCardinality rdf:datatype="&xsd;nonNegativeInteger">10</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#educationalSemanticDensity"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#description"/>
+                <owl:onClass rdf:resource="#LangString"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">10</owl:maxQualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#educationalLanguage"/>
+                <owl:maxCardinality rdf:datatype="&xsd;nonNegativeInteger">10</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#educationalDifficulty"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#educationalTypicalLearningTime"/>
+                <owl:onClass rdf:resource="#Duration"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#educationalInteractivityLevel"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#educationalTypicalAgeRange"/>
+                <owl:onClass rdf:resource="#LangString"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">5</owl:maxQualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#educationalCognitiveProcess"/>
+                <owl:someValuesFrom rdf:resource="&rdfs;Literal"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <terms:type rdf:datatype="&rdfs;Literal"></terms:type>
+    </owl:Class>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#Identifier -->
+
+    <owl:Class rdf:about="#Identifier">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#identifierCatalog"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <terms:identifier rdf:datatype="&rdfs;Literal"></terms:identifier>
+        <rdfs:comment xml:lang="en"
+            >A globally unique label that identifies either a learning object or a learning object metadata record.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#LangString -->
+
+    <owl:Class rdf:about="#LangString">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#hasValue"/>
+                <owl:someValuesFrom rdf:resource="&rdfs;Literal"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en"
+            >Each of the possible semantically equivalent character strings of a langString.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#LearningObject -->
+
+    <owl:Class rdf:about="#LearningObject">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#technicalInstallationRemarks"/>
+                <owl:someValuesFrom rdf:resource="&rdfs;Literal"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#structure"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#educational"/>
+                <owl:onClass rdf:resource="#Educational"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">100</owl:maxQualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#metaMetadataContribution"/>
+                <owl:onClass rdf:resource="#MetaMetadataContribution"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">10</owl:maxQualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#lifeCycleContribution"/>
+                <owl:onClass rdf:resource="#LifeCycleContribution"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">30</owl:maxQualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#aggregationLevel"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#technicalLocation"/>
+                <owl:maxCardinality rdf:datatype="&xsd;nonNegativeInteger">10</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#lifeCycleVersion"/>
+                <owl:someValuesFrom rdf:resource="&rdfs;Literal"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#annotation"/>
+                <owl:onClass rdf:resource="#Annotation"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">30</owl:maxQualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#cost"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="&xsd;boolean"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#identifier"/>
+                <owl:onClass rdf:resource="#Identifier"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">10</owl:maxQualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#description"/>
+                <owl:onClass rdf:resource="#LangString"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">10</owl:maxQualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#keyword"/>
+                <owl:onClass rdf:resource="#LangString"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">10</owl:maxQualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#accessType"/>
+                <owl:someValuesFrom rdf:resource="&rdfs;Literal"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#coverage"/>
+                <owl:onClass rdf:resource="#LangString"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">10</owl:maxQualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#technicalDuration"/>
+                <owl:onClass rdf:resource="#Duration"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#metaMetadataIdentifier"/>
+                <owl:onClass rdf:resource="#Identifier"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">10</owl:maxQualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#technicalSize"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#copyrightAndOtherRestrictions"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="&xsd;boolean"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#relation"/>
+                <owl:onClass rdf:resource="#Relation"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">100</owl:maxQualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#metadataSchema"/>
+                <owl:maxCardinality rdf:datatype="&xsd;nonNegativeInteger">10</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#classification"/>
+                <owl:onClass rdf:resource="#Classification"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">40</owl:maxQualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#lifeCycleStatus"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#technicalRequirements"/>
+                <owl:onClass rdf:resource="#TechnicalRequirement"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">40</owl:maxQualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#otherPlatformRequirements"/>
+                <owl:someValuesFrom rdf:resource="&rdfs;Literal"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#metaMetadataLanguage"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#accessDescription"/>
+                <owl:someValuesFrom rdf:resource="&rdfs;Literal"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <terms:format rdf:datatype="&rdfs;Literal"></terms:format>
+        <terms:language rdf:datatype="&rdfs;Literal"></terms:language>
+        <terms:rights rdf:datatype="&rdfs;Literal"></terms:rights>
+        <rdfs:comment>Learning Object</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#LifeCycleContribution -->
+
+    <owl:Class rdf:about="#LifeCycleContribution">
+        <rdfs:subClassOf rdf:resource="#Contribution"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#lifeCycleContributionRole"/>
+                <owl:maxCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#dateTimeValue"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#dateTimeDescription"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#MetaMetadataContribution -->
+
+    <owl:Class rdf:about="#MetaMetadataContribution">
+        <rdfs:subClassOf rdf:resource="#Contribution"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#metaMetadataContributionRole"/>
+                <owl:maxCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#dateTimeValue"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#dateTimeDescription"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#Relation -->
+
+    <owl:Class rdf:about="#Relation">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#relatedResourceDescription"/>
+                <owl:onClass rdf:resource="#LangString"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">10</owl:maxQualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#relationKind"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#identifier"/>
+                <owl:onClass rdf:resource="#Identifier"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">10</owl:maxQualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en"
+            >A concept which defines the relationship between a learning object and other learning objects, if any.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#SingleTechnicalRequirement -->
+
+    <owl:Class rdf:about="#SingleTechnicalRequirement">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#orCompositeName"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#orCompositeType"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#orCompositeMinimumVersion"/>
+                <owl:maxCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#orCompositeMaximumVersion"/>
+                <owl:maxCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en"
+            >A technical capability necessary for using a learning object.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#Taxon -->
+
+    <owl:Class rdf:about="#Taxon">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#taxonEntry"/>
+                <owl:someValuesFrom rdf:resource="&rdfs;Literal"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#taxonId"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en"
+            >A particular term within a taxonomy. A taxon is a node that has a defined label or
+term. A taxon may also have an alphanumeric designation or identifier for standardized reference. Either or both the label and the entry may be used to designate a particular taxon. An ordered list of taxons creates a taxonomic path, i.e., &quot;taxonomic stairway&quot;: this is a path from a more general to more specific entry in a classification.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#TaxonPath -->
+
+    <owl:Class rdf:about="#TaxonPath">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#taxonpathSource"/>
+                <owl:someValuesFrom rdf:resource="&rdfs;Literal"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#classificationTaxon"/>
+                <owl:onClass rdf:resource="#Taxon"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">15</owl:maxQualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en"
+            >A taxonomic path in a specific classification system. Each succeeding level is a refinement in the definition of the preceding level. There may be different paths, in the same or different classifications, which describe the same characteristic.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#TechnicalRequirement -->
+
+    <owl:Class rdf:about="#TechnicalRequirement">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#isCompositeOf"/>
+                <owl:onClass rdf:resource="#SingleTechnicalRequirement"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">40</owl:maxQualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en"
+            >The technical capabilities necessary for using a learning object. There can be multiple requirements, in which case all are required, i.e., the logical connector is AND.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#VCard -->
+
+    <owl:Class rdf:about="#VCard">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <ns:FN rdf:datatype="&rdfs;Literal"></ns:FN>
+        <ns:email rdf:datatype="&rdfs;Literal"></ns:email>
+        <ns:N rdf:datatype="&rdfs;Literal"></ns:N>
+        <ns:ORG rdf:datatype="&rdfs;Literal"></ns:ORG>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >A vCard is a collection of one or more properties. A property is a uniquely named value. A set of properties can be grouped within a vCard. For example, the properties for a telephone number and comment can be grouped in order to preserve the coupling of the annotation with the telephone number. In addition to property groupings, a vC. versit  is developing a comprehensive family of PDI technologies based on open specifications and interoperability agreements to help meet this technology need.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <owl:Class rdf:about="&owl;Thing"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.agrega.es/ont/lom2owl#annotationEntity -->
+
+    <owl:Thing rdf:about="#annotationEntity">
+        <rdfs:comment xml:lang="en"
+            >Entity (i.e., people, organization) that created this annotation. IEEE LOM element 8.1.</rdfs:comment>
+    </owl:Thing>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 2.2.1.1138) http://owlapi.sourceforge.net -->
+

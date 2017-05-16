@@ -1,0 +1,6 @@
+name = Dropdown menu user
+description = Module that provides a new user login into a block
+package = Dropdown menu user
+version = "7.x-1.x"
+core = "7.x"
+project = "dropdown_menu_user"

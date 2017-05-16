@@ -1,0 +1,13 @@
+name = Field Conditional State
+description = Set form field states attributes based on the values selected in other form fields using Drupal's states API
+core = 7.x
+package = Fields
+dependencies[] = field
+dependencies[] = system (>=7.14)
+
+; Information added by Drupal.org packaging script on 2014-05-03
+version = "7.x-2.0"
+core = "7.x"
+project = "field_conditional_state"
+datestamp = "1399129128"
+

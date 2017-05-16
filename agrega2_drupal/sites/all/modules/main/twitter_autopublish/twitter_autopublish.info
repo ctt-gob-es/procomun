@@ -1,0 +1,7 @@
+name = Twitter Autopublish
+description = Send a new tweet when a node has been created
+core = 7.x
+package = Emergya
+files[] = classes/TwitterTalker.inc
+files[] = twitter_autopublish.admin.inc
+configure = admin/config/twitter_autopublish

@@ -1,0 +1,173 @@
+/*------------------
+  Mixins
+  @todo doc all mixins please.
+  ------------------*/
+
+=clearfix()
+  &:after
+    content: "."
+    display: block
+    visibility: hidden
+    height: 0
+    clear: both
+
+.clearfix
+  +clearfix()
+
+=title-bg($bgcolor)
+  font-size: 17px
+  color: $white
+  padding: 10px
+  margin: 0
+  font-weight: normal
+  background-color: $bgcolor
+
+=title-grey-icon($image-name)
+  color: $gray
+  font-size: 21px
+  margin: 0
+  margin-bottom: 10px
+  padding-left: 25px
+  padding-bottom: 10px
+  border-bottom: 2px solid $gray
+  background: image-url($image-name) 0 -20% no-repeat
+
+
+=hide_bullets()
+  margin: 0
+  padding: 0
+  li
+    list-style-image: none
+    list-style-type: none
+    list-style: none
+    padding: 0
+
+=nofloat()
+  float: none
+
+=inline()
+  li
+    display: inline-block
+=last()
+  padding-right: 0
+
+=first()
+  padding-left: 0
+
+=title-grey()
+  color: $dark_gray
+
+=title-underline()
+  border-bottom: 1px solid $gray
+
+//=filter-content()
+
+
+=social-seach-icon()
+  background: $header_gray
+
+=ttags()
+  font-size: 12px
+  color: $blue
+  text-transform: uppercase
+  padding: 11px 8px 7px 8px
+  white-space: nowrap
+  height: auto
+
+=tag()
+  background-color: $light_gray
+  @include filter-gradient($light_gray, $light_blue, vertical)
+  @include background-image(linear-gradient(left,  $light_gray 80%,$light_blue 100%))
+  border: 1px solid $light_blue
+  border-left: 0
+  color: $blue
+  font-size: 14px
+  line-height: 1.2em
+  padding: 6px 8px 4px 8px
+  padding-left: 5px
+  margin-right: 15px
+  margin-left: 10px
+  position: relative
+  float: left
+  display: block
+
+  &.active
+    color: $blue
+    &:hover
+      color: $white
+  &:last-child
+    margin-right: 0
+  &:before
+    position: absolute
+    left: -10px
+    top: -1px
+    content: ''
+    background: image-url("pico-tag.png") 0 0 no-repeat
+    width: 12px
+    height: 31px
+  &:hover
+    background-color: $turquoise
+    @include filter-gradient($turquoise, $dark-turquoise, vertical)
+    @include background-image(linear-gradient(left,  $turquoise 80%,$dark-turquoise 100%))
+    border: 1px solid $dark-turquoise
+    border-left: 0
+    color: $white
+    text-decoration: none
+    &:before
+      background: image-url("pico-tag.png") 0px -35px no-repeat
+
+=button($bgcolor)
+  border: 0
+  +border-radius(5px)
+  background-color: $bgcolor
+  font-size: 14px
+  padding: 10px
+  color: $white
+  font-weight: normal
+  width: auto
+  &:hover
+    text-decoration: none
+
+=button-icon($bgcolor, $icon)
+  +button($bgcolor)
+  padding-left: 45px
+  background-image: url($icon)
+  background-repeat: no-repeat
+  background-position: 10px center
+
+=label-grey()
+  background-color: $beige
+  color: $blue
+  padding: 4px 10px
+  border: 1px solid $beige
+  font-size: 13px
+  font-weight: 400
+  line-height: 19px
+  text-transform: uppercase
+
+=div-nextto-label-grey()
+  border-top: 1px solid #fff
+  border-bottom: 1px dotted $border-gray
+  padding: 4px 10px
+  font-size: 13px
+  font-weight: 400
+  line-height: 19px
+
+=label-small()
+  background-color: transparent
+  color: $gray-dark
+  padding: 0
+  border: none
+  font-size: 12px
+  line-height: 1
+  text-transform: none
+
+=label-header()
+  color: $gray-dark
+  font-size: 22px
+
+/* It prepares an element to display an image based on its attributes */
+=bg-build($img, $repeat: no-repeat, $scroll: scroll, $x: 0, $y: 0, $color: transparent)
+  background: image-url($img) $repeat $scroll $x $y $color
+  width: image-width($img)
+  height: image-height($img)

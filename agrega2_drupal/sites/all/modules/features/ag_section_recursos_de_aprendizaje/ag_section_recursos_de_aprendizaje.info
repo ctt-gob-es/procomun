@@ -1,0 +1,14 @@
+name = ag_section_recursos_de_aprendizaje
+description = Feature que incluye las vistas del tdc recursos de aprendizaje
+core = 7.x
+package = Agrega2
+dependencies[] = entity
+dependencies[] = fe_nodequeue
+dependencies[] = views
+features[ctools][] = views:views_default:3.0
+features[fe_nodequeue][] = agrega2_home_highlighted_nodeque
+features[features_api][] = api:2
+features[views_view][] = agrega2_home_best_voted
+features[views_view][] = agrega2_home_highlighted
+features_exclude[dependencies][ctools] = ctools
+mtime = 1474543756

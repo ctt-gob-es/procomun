@@ -1,0 +1,139 @@
+.pane-comunity-public-dashboard
+  +pane-grey-bg($white)
+  .comunity-public-dashboard-header
+    padding: 10px 15px 0
+    border-bottom: 1px solid $light_gray
+    margin-bottom: .5em
+  .comunity-title h3
+    margin-top: 0
+    font-weight: normal
+    padding-right: 32px
+  .comunity-link-action
+    position: absolute
+    right: 5px
+    top: 5px
+    width: 32px
+    height: 32px
+    text-align: left
+    text-indent: -9999px
+    background-image: image-url('ico-inicio_2.png')
+    background-position: center
+    background-repeat: no-repeat
+    background-color: $main_blue
+    &:hover
+      cursor: pointer
+      background-color: $deep_blue
+  .comunity-link-action.active
+    background-color: $deep_blue
+  .comunity-public-dashboard-links
+    position: absolute
+    right: 0
+    top: 25px
+    width: 100%
+    height: auto
+    @extend .shadow
+    background: $white
+    &:before
+      left: 95%
+  .comunity-public-dashboard-links.active
+    //Make sure the list appears in front of the panels
+    z-index: 4
+    .comunity-wall-links
+      margin: 0
+      padding: 0
+      li
+        margin: 0
+        padding: 0
+        background: $white
+        position: relative
+        &.first a
+          padding-top: 15px
+        &.last a
+          padding-bottom: 15px
+        a
+          display: block
+          padding: 8px 20px
+          &:hover
+            text-decoration: none
+  .comunity-public-dashboard-counters
+    +clearfix()
+    text-align: center
+    padding-bottom: .5em
+    border-bottom: 1px solid $light_gray
+  .comunity-public-dashboard-count
+    float: left
+    width: 50%
+    margin: 5px 0
+    a
+      display: block
+      font-size: 18px
+      font-weight: 700
+      color: $dark_green
+      &:hover
+        color: $green
+        text-decoration: none
+    &:nth-child(1)
+      border-right: 1px solid $light_gray
+    .comunity-public-dashboard-count-title
+      text-transform: uppercase
+      font-weight: bold
+      font-size: 12px
+      color: $navy
+  .comunity-public-dashboard-administers
+    padding: 10px 15px
+    border-bottom: 1px solid $light_gray
+    .administers-label
+      text-transform: uppercase
+      font-weight: bold
+      font-size: 12px
+      color: $navy
+    .comunity-administers-list
+      margin: .5em 0
+      +clearfix()
+      li
+        float: left
+        margin: 0
+        margin-right: .5em
+      img
+        width: 32px
+        height: 32px
+        +border-radius(25px)
+  .comunity-public-dashboard-subscribe
+    text-align: center
+    padding: 15px
+    .comunity-access-type
+      padding-left: 25px
+      background: image-url('ico-comunidad.png') left center no-repeat
+      text-transform: uppercase
+      font-size: 12px
+      color: $cold_gray
+    .comunity-subscribe
+      +clearfix()
+      display: block
+      padding-top: 1em
+      color: $gray
+      font-size: 12px
+      .subscribe-link-text
+        display: inline-block
+        margin-bottom: 10px
+      a
+        +button($orange)
+        display: inline-block
+        width: 100%
+        margin-top: 10px
+        &:hover
+          background-color: $dark_orange
+          color: $white
+          text-decoration: none
+  .comunity-public-dashboard-share
+    +clearfix()
+    .screenViewer
+      background: none
+      color: $main_blue
+    .normal-actions
+      text-align: center
+      float: none !important
+    .insert
+      text-align: center
+      cursor: pointer
+      margin-bottom: 1em

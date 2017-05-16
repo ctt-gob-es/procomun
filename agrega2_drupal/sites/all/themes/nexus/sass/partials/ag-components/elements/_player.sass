@@ -1,0 +1,45 @@
+.sc-player
+  width: 100%
+  height: 150px
+  background: none
+  background-color: $bg-color-gray
+  .sc-artwork-list
+    width: 150px
+    li img
+      width: 150px
+    ol.sc-trackslist
+      display: none
+  .sc-controls
+    top: 25%
+    left: 200px
+  .sc-scrubber
+    left: 185px
+    top: 45%
+    width: calc(100% - 200px)
+    +box-shadow(none)
+    background-color: transparent
+    .sc-time-indicators
+      top: -100%
+      font-size: 14px
+    .sc-volume-slider
+      top: 55px
+    .sc-played
+      background-color: $white
+    .sc-buffer
+      background-color: transparent
+  .sc-trackslist
+    display: none
+  .sc-info
+    left: 245px
+    top: 0
+    margin-left: 0
+    width: calc( 100% - 330px)
+    height: 100%
+    background: transparent
+    a
+      color: $navy
+    h4,
+    p
+      display: none
+  .sc-info-close
+    display: none

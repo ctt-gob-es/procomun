@@ -1,0 +1,13 @@
+diff --git a/README.txt b/README.txt
+index ba12a73..bd2f2ed 100644
+--- a/README.txt
++++ b/README.txt
+@@ -39,6 +39,8 @@ supported by this module.
+ 
+ [3] https://drupal.org/project/search_api_multi
+ 
++CAUTION: If you configured autocomplete prior to version 1.4, you must manually visit the autocomplete configuration page for your indexes, edit the autocomplete, and then re-save the configuration. Otherwise, you will trigger fatal errors when autocomplete attempts to function.
++
+ - Supported searches
+ 
+ Currently, only search forms built by search pages or search views are

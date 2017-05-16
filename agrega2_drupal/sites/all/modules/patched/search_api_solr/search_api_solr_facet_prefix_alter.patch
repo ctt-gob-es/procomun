@@ -1,0 +1,13 @@
+diff --git a/sites/all/modules/patched/search_api_solr/includes/service.inc b/sites/all/modules/patched/search_api_solr/includes/service.inc
+index 28896e2..8ca0c2d 100644
+--- a/sites/all/modules/patched/search_api_solr/includes/service.inc
++++ b/sites/all/modules/patched/search_api_solr/includes/service.inc
+@@ -1682,7 +1682,7 @@ class SearchApiSolrService extends SearchApiAbstractService {
+       'rows' => 0,
+       'facet' => 'true',
+       'facet.field' => $facet_fields,
+-      'facet.prefix' => $incomp,
++      'facet.prefix' => $user_input, // By default was $incomp
+       'facet.limit' => $limit * 5,
+       'facet.mincount' => 1,
+       'spellcheck' => (!isset($this->options['autocorrect_spell']) || $this->options['autocorrect_spell']) ? 'true' : 'false',

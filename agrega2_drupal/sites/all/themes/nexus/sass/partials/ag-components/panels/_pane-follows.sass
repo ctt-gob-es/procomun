@@ -1,0 +1,29 @@
+.pane-agrega2-follows-panel-pane-1,
+.pane-agrega2-follows-panel-pane-2,
+.pane-agrega2-follows-panel-pane-3
+  .pane-content
+    padding: 0
+    .views-row
+      +clearfix()
+      position: relative
+      padding: 10px 15px
+      border-bottom: 1px dashed $gray
+      &:last-child
+        border: 0
+    .views-field-picture
+      position: relative
+      float: left
+      max-width: 52px
+      img
+        margin-right: 8px
+    .views-field-name .field-content
+      position: relative
+      display: block
+      min-height: 32px
+      height: 32px
+      a
+        position: relative
+        display: block
+        @extend %vertical-align
+.followers-list
+  margin: 0

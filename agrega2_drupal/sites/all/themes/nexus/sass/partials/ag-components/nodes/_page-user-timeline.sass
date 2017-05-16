@@ -1,0 +1,187 @@
+body.page-user-timeline,
+body.node-type-social-network,
+body.page-user-view-public,
+body.page-user-learning-paths
+  .view-user-timeline,
+  .view-community-wall-faceted-search,
+  .view-agrega2-profiles,
+  .view-my-learning-paths
+    article
+      header
+        h2
+          margin-top: 0
+      li.user-picture
+        margin-left: 0
+      &>.content
+        position: relative
+        .share-modal
+          margin-top: 0
+          width: auto
+          position: absolute
+          left: 0
+          bottom: 0
+      .posted
+        strong
+          height: auto
+        div
+          display: block
+        &>div
+          display: inline-block
+      .clone-lp
+        a
+          +button-border($main_blue)
+          float: right
+          margin-bottom: 10px
+    .node-question.node-teaser
+      &>.content
+        padding: 6px 0 0
+        .field-name-title-field
+          padding-top: 3px
+  ul.social
+    //> li
+      > ul.links.inline
+        margin-bottom: 0
+        > li:first-child
+          margin-left: 0
+  // Solo aplicamos el posicionamiento que necesita + algunos estilos extra.
+  // Toda la maquetación de este widget está en _social-actions.sass y solo
+  // hay que tocarla si hace falta una modificación que aplique en todos los
+  // lugares donde aparezca este widget ;)
+  .service-links
+    position: absolute
+    right: 0
+    bottom: 0
+    .service-label
+      border-left: 1px solid $light_gray
+      margin: 5px 10px 5px 0px
+      padding: 0 0 0 7px
+  li>article.node-poll
+    footer
+      margin-top: 1em
+      ul>li
+        margin-left: 0
+  .node-answer
+    .metadata
+      padding-top: 9px
+// Button 'create learning path'.
+.page-user-learning-paths
+  .create-lp
+    border: 1px solid $white
+    padding: 10px
+    background: lighten($main_blue, 40%)
+    +box-shadow(0px 2px 5px 0px $light_gray)
+    margin-bottom: 1.5em
+    width: 100%
+    display: inline-block
+    a
+      +button($orange)
+      &:hover
+        background-color: $dark_orange
+  .view-empty
+    @extend .box-shadow
+    .field-name-title-field
+      +title-bg
+      font-size: 28px
+      padding-top: 0
+    .field-name-body
+      margin-top: 1em
+
+.community-wall-header
+  .pane-title
+    text-transform: uppercase
+    margin-bottom: 0
+    font-size: 21px
+.author-info
+  border-bottom: 1px solid $light_gray
+  margin-bottom: 10px
+  display: table
+  width: 100%
+  position: relative
+  > *
+    display: table-cell
+    vertical-align: middle
+  .type
+    text-align: right
+    text-transform: uppercase
+    font-size: 13px
+    color: $dark_green
+    border-left: 1px solid $light_gray
+    white-space: nowrap
+    width: 1px
+    padding-left: 7px
+  .user-picture img
+    margin-bottom: 8px
+.more-link
+  text-align: right
+  display: block
+  text-decoration: underline
+  margin-top: 0.5em
+  margin-bottom: 5px
+.user-picture
+  img
+    width: 32px
+    height: 32px
+    +border-radius(30px)
+    margin-right: 5px
+.field-name-field-external-url
+  margin-bottom: 1em
+.public-activities .node-ode
+  ul
+    line-height: 9px
+    padding-top: 4px
+    .user-picture
+      margin-bottom: 0
+  .published
+    padding-top: 12px
+    margin: 0
+    display: inline-block
+  .date
+    display: block
+    padding-top: 12px
+
+.page-user-favourites,
+body.node-type-social-network,
+body.page-user-timeline
+  .node-teaser
+    h2
+      margin-top: 0
+    .content
+      #edit-actions
+        margin-bottom: 0
+      .field-name-body
+        img
+          float: none
+          margin-bottom: 1em
+          display: block
+        a.more-link
+          display: block
+.node-teaser
+  h2
+    font-size: 21px
+    margin-top: 0
+body.page-user-timeline
+  #new-content-block-form
+    div.chosen-container.error
+      border: 2px solid $orange
+      ul
+        a
+          border: none
+
+body.page-user-view
+  div.messages.warning
+    span.codedirection
+      display: none
+
+.node-type-social-network
+  h1.page-title
+    display: none
+
+// Load more.
+.page-user-
+  .col-md-6
+    .view
+      .attachment-after
+        border-top: 1px dashed $gray
+        text-align: center
+        padding-top: 1em
+        margin-top: 1em

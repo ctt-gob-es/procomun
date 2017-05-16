@@ -1,0 +1,47 @@
+name = Nexus Theme
+description = Custom Nexus Theme - Drupal 7 theme. Developed by Emergya.
+core = 7.x
+engine = phptemplate
+stylesheets[all][] = css/chosen.css
+stylesheets[all][] = css/bootstrap.css
+stylesheets[all][] = css/core.css
+stylesheets[all][] = css/main.css
+scripts[] = js/bootstrap/collapse.js
+scripts[] = js/bootstrap/tab.js
+
+scripts[] = js/chosen/chosen.jquery.min.js
+scripts[] = js/chosen/chosen.js
+
+scripts[] = js/custom.js
+scripts[] = js/Facet.js
+scripts[] = js/facets.behaviors.js
+scripts[] = js/css_browser.js
+
+; Panels layouts.
+plugins[panels][layouts] = plugins/layouts
+plugins[panels][styles] = plugins/styles
+
+regions[user_bar]       = User Bar
+regions[top_bar]        = Top Bar
+regions[info_bar]       = Info Bar
+regions[nav]            = Nav
+regions[preface]        = Preface
+regions[header]         = Header
+regions[sidebar_first]  = First Sidebar
+regions[sidebar_second] = Second Sidebar
+regions[content_top]    = Content Top
+regions[help]           = Help
+regions[content]        = Content
+regions[content_bottom] = Content Bottom
+regions[footer]         = Footer
+features[] = logo
+features[] = name
+features[] = slogan
+features[] = node_user_picture
+features[] = comment_user_picture
+features[] = comment_user_verification
+features[] = favicon
+features[] = main_menu
+features[] = secondary_menu
+settings[grid_display]  = 1
+settings[breadcrumbs]  = 1

@@ -1,0 +1,111 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_section_post.features.field_instance.inc: n/a
+#  ag_section_post.features.inc: n/a
+#  ag_section_post.module: n/a
+#  ag_section_post.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2014-09-01 10:23+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: ag_section_post.features.field_instance.inc:733
+msgid "Archivo"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:734
+msgid "Author"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:735
+msgid "Author others"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:736
+msgid "Categoría"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:737
+msgid "Compartir en otras comunidades"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:738
+msgid "Description"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:739
+msgid "Etiquetas"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:740
+msgid "Groups audience"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:741
+msgid "Original user"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:742
+msgid "Title"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:743
+msgid "Valora"
+msgstr ""
+
+#: ag_section_post.features.field_instance.inc:744
+msgid "solrID"
+msgstr ""
+
+#: ag_section_post.features.inc:22
+msgid "Post"
+msgstr ""
+
+#: ag_section_post.features.inc:24
+msgid "Use Post to share in communities new messages."
+msgstr ""
+
+#: ag_section_post.features.inc:26
+msgid "Título"
+msgstr ""
+
+#: ag_section_post.module:75;79
+msgid "Publish as @org_name"
+msgstr ""
+
+#: ag_section_post.module:84
+msgid "Publish this content as a organization"
+msgstr ""
+
+#: ag_section_post.module:93
+msgid "My organizations"
+msgstr ""
+
+#: ag_section_post.module:13
+msgid "register Autocomplete"
+msgstr ""
+
+#: ag_section_post.info:0
+msgid "ag_section_post"
+msgstr ""
+
+#: ag_section_post.info:0
+msgid "Feature with all config about post"
+msgstr ""
+
+#: ag_section_post.info:0
+msgid "Agrega2"
+msgstr ""
+

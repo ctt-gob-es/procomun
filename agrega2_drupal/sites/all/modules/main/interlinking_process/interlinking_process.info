@@ -1,0 +1,5 @@
+name = Interlinking process
+description = Interlinking process block
+package = Interlinking process
+version = "7.x-1.x"
+core = "7.x"

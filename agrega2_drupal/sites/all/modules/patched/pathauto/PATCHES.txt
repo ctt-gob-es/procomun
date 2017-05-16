@@ -1,0 +1,7 @@
+PATCHES APPLIED
+---------------
+- Change alias exists function without check language.
+  See: custom_patch_125746_duplicate_alias.patch
+
+- Update of bulk alias for all languages.
+  See: update_bulk_alias_all_language.patch

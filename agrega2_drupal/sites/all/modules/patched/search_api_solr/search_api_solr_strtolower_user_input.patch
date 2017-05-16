@@ -1,0 +1,40 @@
+diff --git a/sites/all/modules/patched/search_api_solr/includes/service.inc b/sites/all/modules/patched/search_api_solr/includes/service.inc
+index b9182b4..28896e2 100644
+--- a/sites/all/modules/patched/search_api_solr/includes/service.inc
++++ b/sites/all/modules/patched/search_api_solr/includes/service.inc
+@@ -1727,14 +1727,19 @@ class SearchApiSolrService extends SearchApiAbstractService {
+         if (isset($response->facet_counts->facet_fields)) {
+           foreach ($response->facet_counts->facet_fields as $facet_field => $terms) {
+             foreach ($terms as $term => $count) {
+-              if (isset($matches[$term])) {
+-                // If we just add the result counts, we can easily get over the
+-                // total number of results if terms appear in multiple fields.
+-                // Therefore, we just take the highest value from any field.
+-                $matches[$term] = max($matches[$term], $count);
+-              }
+-              else {
+-                $matches[$term] = $count;
++              // Ideally, Solr should return us only the facet results that contain the user input.
++              // At this moment, using an OR looks not possible so, this is a TODO.
++              // We are excluding strings not containing the string inserted by the user.
++              if (strpos(strtolower($term), strtolower($user_input)) !== false) {
++                if (isset($matches[$term])) {
++                  // If we just add the result counts, we can easily get over the
++                  // total number of results if terms appear in multiple fields.
++                  // Therefore, we just take the highest value from any field.
++                  $matches[$term] = max($matches[$term], $count);
++                }
++                else {
++                  $matches[$term] = $count;
++                }
+               }
+             }
+             // Add Matches to an array with facet names.
+@@ -1806,7 +1811,6 @@ class SearchApiSolrService extends SearchApiAbstractService {
+       unset($params['facet.prefix']);
+       $keys = trim ($keys . ' ' . $incomplete_key);
+     }
+-
+     return $suggestions;
+   }
+ 

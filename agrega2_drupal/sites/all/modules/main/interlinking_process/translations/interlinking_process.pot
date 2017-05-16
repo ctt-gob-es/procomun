@@ -1,0 +1,50 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  interlinking_process.module: n/a
+#  interlinking_process.info: n/a
+#  templates/interlinking-process.tpl.php: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2015-01-05 13:10+0100\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: interlinking_process.module:31 interlinking_process.info:0
+msgid "Interlinking process block"
+msgstr ""
+
+#: interlinking_process.module:46
+msgid "It may interest you"
+msgstr ""
+
+#: interlinking_process.module:104
+msgid "See +"
+msgstr ""
+
+#: interlinking_process.module:116
+msgid "No links have been found for interlinking process"
+msgstr ""
+
+#: interlinking_process.info:0;0
+msgid "Interlinking process"
+msgstr ""
+
+#: templates/interlinking-process.tpl.php:9
+msgid "Show more"
+msgstr ""
+
+#: templates/interlinking-process.tpl.php:13
+msgid "This information belongs to third parties. INTEF not responsible\n                    for the accuracy of the information or the information contained."
+msgstr ""
+

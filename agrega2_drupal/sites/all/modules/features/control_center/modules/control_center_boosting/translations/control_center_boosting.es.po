@@ -1,0 +1,124 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  control_center_boosting.features.field_instance.inc: n/a
+#  control_center_boosting.features.inc: n/a
+#  control_center_boosting.views_default.inc: n/a
+#  control_center_boosting.module: n/a
+#  control_center_boosting.install: n/a
+#  control_center_boosting.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2016-08-29 12:32+0200\n"
+"PO-Revision-Date: 2016-08-29 12:32+0200\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: control_center_boosting.features.field_instance.inc:245
+msgid "Body"
+msgstr "Cuerpo"
+
+#: control_center_boosting.features.field_instance.inc:246
+msgid "Boosting weight"
+msgstr ""
+
+#: control_center_boosting.features.field_instance.inc:247
+msgid "Título"
+msgstr ""
+
+#: control_center_boosting.features.inc:35
+msgid "Solr fields"
+msgstr ""
+
+#: control_center_boosting.features.inc:37
+msgid "Content type to boosting of Solr fields."
+msgstr ""
+
+#: control_center_boosting.features.inc:39
+msgid "Title"
+msgstr "Título"
+
+#: control_center_boosting.views_default.inc:105
+msgid "Master"
+msgstr "Maestro"
+
+#: control_center_boosting.views_default.inc:106
+msgid "more"
+msgstr "más"
+
+#: control_center_boosting.views_default.inc:107
+msgid "Apply"
+msgstr "Aplicar"
+
+#: control_center_boosting.views_default.inc:108
+msgid "Reset"
+msgstr "Reiniciar"
+
+#: control_center_boosting.views_default.inc:109
+msgid "Sort by"
+msgstr "Ordenar por"
+
+#: control_center_boosting.views_default.inc:110
+msgid "Asc"
+msgstr "Asc"
+
+#: control_center_boosting.views_default.inc:111
+msgid "Desc"
+msgstr "Desc"
+
+#: control_center_boosting.views_default.inc:112
+msgid "There is no fields to config."
+msgstr ""
+
+#: control_center_boosting.views_default.inc:113
+msgid "Field"
+msgstr "Campo"
+
+#: control_center_boosting.views_default.inc:114
+msgid "Descripción"
+msgstr ""
+
+#: control_center_boosting.views_default.inc:115
+msgid "Boosting"
+msgstr ""
+
+#: control_center_boosting.views_default.inc:117
+msgid "Panel de contenido"
+msgstr ""
+
+#: control_center_boosting.views_default.inc:118
+msgid "View panes"
+msgstr "Vista panel"
+
+#: control_center_boosting.module:16;34
+msgid "Restore defaults"
+msgstr "Restaurar valores por defecto"
+
+#: control_center_boosting.module:69
+msgid "The boosting values are saved correctly"
+msgstr "Los valores boosting se han guardado correctamente"
+
+#: control_center_boosting.install:45
+msgid "Processed @records records. Finished."
+msgstr ""
+
+#: control_center_boosting.install:96
+msgid "Error creating solr_field: !name"
+msgstr "Error creando solr_field: !name"
+
+#: control_center_boosting.info:0
+msgid "Control center Boosting"
+msgstr ""
+
+#: control_center_boosting.info:0
+msgid "Agrega2"
+msgstr "Agrega2"

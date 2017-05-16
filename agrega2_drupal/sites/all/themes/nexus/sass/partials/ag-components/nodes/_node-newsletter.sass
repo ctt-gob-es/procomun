@@ -1,0 +1,128 @@
+.node-newsletter
+  border-bottom: $light_gray 1px solid
+  clear: both
+  padding: 15px 0
+  .field-name-title-field
+    display: block
+    h2
+      margin-top: 5px
+  .content
+    clear: both
+    font-size: 1em
+  .content-bottom
+    clear: both
+    text-align: left
+    display: block
+    margin-top: 1em
+    position: relative
+  ul li
+    padding-left: 0
+    margin-bottom: 10px
+  .poll
+    padding: 1em 0
+.field-name-field-simplenews-content-ref
+  width: 600px
+  +box-shadow(0 0 5px $gray)
+  margin: 0 auto
+  padding: .5em
+  &>.field-label
+    float: none
+    clear: both
+/* View a newsletter */
+.node-type-simplenews
+  .field-type-text-with-summary
+    margin: 1em auto
+    font-size: 16px
+  .field-name-field-simplenews-content-ref
+    width: auto
+    +box-shadow(none)
+    padding: 0
+    .field-label
+      font-size: 18px
+      margin: 35px 0 15px
+      color: $navy
+    .field-items
+      +box-shadow(3px 3px 6px $light_gray)
+      padding: 15px 0
+      width: 100%
+      +border-radius(5px)
+      border: 1px solid $light_gray
+      .field-item
+        float: left
+        overflow: hidden
+        margin: 0 15px
+        width: calc(50% - 30px)
+        h4 a
+          white-space: nowrap
+          text-overflow: ellipsis
+          overflow: hidden
+          display: block
+      .node-newsletter
+        border-width: 0
+        > .content
+          @extend .hide
+      .miniatura-newsletter
+        width: 100px
+        float: left
+        margin-right: 15px
+        text-align: center
+      header
+        float: left
+        width: calc(100% - 115px)
+        h4
+          margin-top: 0!important
+        .submitted
+          text-transform: uppercase
+          font-size: 12px
+  .flag-outer-og-newsletter
+    display: none
+/* @end - view a newsletter */
+.page-node-generate-newsletter 
+  .views-exposed-widget 
+    width: 100%
+    label
+      background-repeat: no-repeat
+      min-height: 24px
+      background-color: transparent
+      border-bottom: 1px solid #ccc
+      width: 100%
+      margin-bottom: .5em
+  .ctools-modal-modal-newsletter-new
+    +button($main_blue)
+    &:hover
+      background-color: $deep_blue
+  .views-exposed-form .views-exposed-widget .form-submit
+    margin-top: .7em
+  .node-newsletter
+    .flag-outer-og-newsletter
+      display: inline-block
+      float: right
+      position: absolute
+      top: 20px
+      right: 0
+      .flag-action
+        +button($main_blue)
+        &:hover
+          background-color: $deep_blue
+      .unflag-action
+        +button($orange)
+        &:hover
+          background-color: $dark_orange
+      .flag-message
+        display: none
+.node-event.node-newsletter
+  h4
+    border: 0
+  .title.title 
+    margin: 10px 0
+  .content
+    margin-top: 2.2em
+.view-ag-newsletter
+  .view-content
+    margin-top: 1em
+    &>.item-list>ul>li
+      position: relative
+      header
+        max-width: 75%
+    &>.item-list>ul>li:first-child
+      border-top: $light_gray 1px solid

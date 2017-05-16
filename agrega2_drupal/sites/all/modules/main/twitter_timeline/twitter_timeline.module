@@ -1,0 +1,96 @@
+<?php
+
+/**
+ * @file Implements twitter_timeline module
+ */
+
+/**
+ * Implements hook_block_info().
+ * Block definition for the twitter timeline
+ */
+function twitter_timeline_block_info() {
+  $blocks['twitter_block'] = array(
+    'info' => t('Block which renders a Twitter timeline'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ * Define the content of the block
+ */
+function twitter_timeline_block_view($delta = '') {
+  //This is the block
+  $block = array();
+
+  switch ($delta) {
+    case 'twitter_block':
+      $block['subject'] = t('Twitter timeline');
+      $block['content'] = array(
+        '#theme' => 'twitter_timeline_widget_block',
+        '#widget_id' => variable_get('twitter_timeline_widget_id', ''),
+        '#widget_title' => variable_get('twitter_timeline_widget_title', ''),
+      );
+      break;
+  }
+
+  return $block;
+}
+
+/**
+ * Implements hook_block_configure().
+ * Define the configuration options
+ */
+function twitter_timeline_block_configure($delta = '') {
+  //The configuration form
+  $form = array();
+
+  if ($delta == 'twitter_block') {
+    // Widget id
+    $form['twitter_timeline_widget_id'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Widget ID'),
+      '#default_value' => variable_get('twitter_timeline_widget_id', ''),
+      '#description' => t('Twitter unique identifier for widget to load'),
+      '#required' => TRUE,
+    );
+
+    // Widget title
+    $form['twitter_timeline_widget_title'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Widget title'),
+      '#default_value' => variable_get('twitter_timeline_widget_title', ''),
+      '#description' => t('Please, write in English, so it can be successfully translated'),
+    );
+  }
+
+  return $form;
+}
+
+/**
+ * Implements hook_block_save().
+ * Save the configuration options
+ */
+function twitter_timeline_block_save($delta = '', $edit = array()) {
+  if ($delta == 'twitter_block') {
+    variable_set('twitter_timeline_widget_id', $edit['twitter_timeline_widget_id']);
+    variable_set('twitter_timeline_widget_title', $edit['twitter_timeline_widget_title']);
+  }
+}
+
+/**
+ * Implements hook_theme(),
+ * Theme function for rendering the widget
+ */
+function twitter_timeline_theme($existing, $type, $theme, $path) {
+  return array(
+    'twitter_timeline_widget_block' => array(
+      'variables' => array(
+        'widget_id' => '',
+        'widget_title' => '',
+      ),
+      'template' => 'twitter-timeline-widget',
+    ),
+  );
+}

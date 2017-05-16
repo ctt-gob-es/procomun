@@ -1,0 +1,102 @@
+# $Id$
+#
+# Catalan translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_mozilla_openbadges_displayer.forms.inc: n/a
+#  ag_mozilla_openbadges_displayer.module: n/a
+#  templates/user-mozilla-badges.tpl.php: n/a
+#  ag_mozilla_openbadges_displayer.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2015-06-15 13:07+0200\n"
+"PO-Revision-Date: 2015-06-15 13:07+0200\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Catalan <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: ag_mozilla_openbadges_displayer.forms.inc:10
+msgid "My profile"
+msgstr "El meu perfil"
+
+#: ag_mozilla_openbadges_displayer.forms.inc:11 ag_mozilla_openbadges_displayer.module:67;69
+msgid "Configure your badges"
+msgstr "Configura les teves insígnies"
+
+#: ag_mozilla_openbadges_displayer.forms.inc:30
+msgid "Select groups badges to show in profile"
+msgstr "Selecciona els grups d'insígnies a mostrar en el perfil d'usuari"
+
+#: ag_mozilla_openbadges_displayer.forms.inc:36
+msgid "No groups to show"
+msgstr "No hi ha grups a mostrar"
+
+#: ag_mozilla_openbadges_displayer.forms.inc:50
+msgid "Save"
+msgstr "Desa"
+
+#: ag_mozilla_openbadges_displayer.forms.inc:55
+msgid "Back to profile"
+msgstr "Tornar al perfil d'usuari"
+
+#: ag_mozilla_openbadges_displayer.forms.inc:91
+msgid "The changes have been saved. They will take effect in minutes."
+msgstr "Els canvis han estat desats. Tindran efecte en uns minuts."
+
+#: ag_mozilla_openbadges_displayer.module:57 templates/user-mozilla-badges.tpl.php:8
+msgid "Badges"
+msgstr "Insígnies"
+
+#: ag_mozilla_openbadges_displayer.module:204
+msgid "Name"
+msgstr "Nom"
+
+#: ag_mozilla_openbadges_displayer.module:205
+msgid "Description"
+msgstr "Descripció"
+
+#: ag_mozilla_openbadges_displayer.module:207
+msgid "Criteria"
+msgstr "Criteri"
+
+#: ag_mozilla_openbadges_displayer.module:208
+msgid "Issuer Name"
+msgstr "Nom de l'emissor"
+
+#: ag_mozilla_openbadges_displayer.module:209
+msgid "Url"
+msgstr "Url"
+
+#: ag_mozilla_openbadges_displayer.module:210
+msgid "Issued"
+msgstr "Emesa"
+
+#: ag_mozilla_openbadges_displayer.module:14
+msgid "Configure your badges to display"
+msgstr "Configura les teves insígnies a mostrar"
+
+#: ag_mozilla_openbadges_displayer.info:0
+msgid "Agrega Mozilla Openbadges Displayer"
+msgstr ""
+
+#: ag_mozilla_openbadges_displayer.info:0
+msgid "Display mozilla openbadges with public badges."
+msgstr ""
+
+#: ag_mozilla_openbadges_displayer.info:0
+msgid "Agrega2"
+msgstr ""
+
+#: templates/user-mozilla-badges.tpl.php:27
+msgid "Issuer details"
+msgstr "Detalls del emissor"
+
+#: templates/user-mozilla-badges.tpl.php:32
+msgid "Badge details"
+msgstr "Detalls de la insígnia"

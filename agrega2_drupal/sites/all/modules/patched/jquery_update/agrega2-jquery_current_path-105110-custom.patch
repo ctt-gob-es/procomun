@@ -1,0 +1,48 @@
+diff --git a/sites/all/modules/patched/jquery_update/jquery_update.module b/sites/all/modules/patched/jquery_update/jquery_update.module
+index 9d143be..87ac2dd 100644
+--- a/sites/all/modules/patched/jquery_update/jquery_update.module
++++ b/sites/all/modules/patched/jquery_update/jquery_update.module
+@@ -90,8 +90,18 @@ function jquery_update_library_alter(&$javascript, $module) {
+     $admin_version = variable_get('jquery_update_jquery_admin_version', '');
+ 
+     if (!empty($admin_version) && path_is_admin(current_path())) {
+-      if (version_compare($version, $admin_version, '!=')) {
+-        $version = $admin_version;
++      $current_path = explode('/', current_path());
++
++      $breadcrumbs = $current_path[2] == 'path-breadcrumbs';
++      $control_center = (($current_path[0] == 'admin') && ($current_path[1] == 'control-center'));
++      $simplenews = (($current_path[0] == 'node') && ($current_path[2] == 'simplenews'));
++      if ($current_path[0] == 'user' || $breadcrumbs || $control_center || $simplenews) {
++        $version = $version;
++      }
++      else {
++        if (version_compare($version, $admin_version, '!=')) {
++          $version = $admin_version;
++        }
+       }
+     }
+     // If the ajax version is set then that one always win.
+diff --git a/sites/all/modules/patched/jquery_update/js/jquery_update.js b/sites/all/modules/patched/jquery_update/js/jquery_update.js
+index ccef03b..6a2455c 100644
+--- a/sites/all/modules/patched/jquery_update/js/jquery_update.js
++++ b/sites/all/modules/patched/jquery_update/js/jquery_update.js
+@@ -1,7 +1,11 @@
+-(function (D) {
+-  var beforeSerialize = D.ajax.prototype.beforeSerialize;
+-  D.ajax.prototype.beforeSerialize = function (element, options) {
+-    beforeSerialize.call(this, element, options);
+-    options.data['ajax_page_state[jquery_version]'] = D.settings.ajaxPageState.jquery_version;
+-  }
+-})(Drupal);
++(function($) {
++  $(document).ready(function() {
++    (function (D) {
++      var beforeSerialize = D.ajax.prototype.beforeSerialize;
++      D.ajax.prototype.beforeSerialize = function (element, options) {
++        beforeSerialize.call(this, element, options);
++        options.data['ajax_page_state[jquery_version]'] = D.settings.ajaxPageState.jquery_version;
++      }
++    })(Drupal);
++  });
++})(jQuery);

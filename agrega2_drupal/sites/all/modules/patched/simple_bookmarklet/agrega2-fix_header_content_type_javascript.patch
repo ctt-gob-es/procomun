@@ -1,0 +1,13 @@
+diff --git a/sites/all/modules/patched/simple_bookmarklet/simple_bookmarklet.module b/sites/all/modules/patched/simple_bookmarklet/simple_bookmarklet.module
+index efe1ab9..19bed67 100644
+--- a/sites/all/modules/patched/simple_bookmarklet/simple_bookmarklet.module
++++ b/sites/all/modules/patched/simple_bookmarklet/simple_bookmarklet.module
+@@ -71,7 +71,7 @@ function _simple_bookmarklet_prepopulate() {
+  * Page callback for `simple_bookmarklet/js`.
+  */
+ function simple_bookmarklet_js() {
+-  drupal_add_http_header('Content-Type', 'application/json');
++  drupal_add_http_header('Content-Type', 'application/javascript');
+ 
+   $node_type = variable_get('simple_bookmarklet_content_type', 'page');
+ 

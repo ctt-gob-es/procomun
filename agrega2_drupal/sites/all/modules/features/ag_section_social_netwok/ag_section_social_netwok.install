@@ -1,0 +1,190 @@
+<?php
+/**
+ * @file This file contains the neccesary code for uninstall the ag_section_social_network
+ *       module
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function ag_section_social_netwok_uninstall() {
+  //Delete the followring variables:
+  variable_del('global_community_procomun');
+}
+
+/**
+ * Implements hook_update_N().
+ * All communities are processed (but not saved) in order to update solr field communityAdminSupr with their administrators.
+ */
+function ag_section_social_netwok_update_7001(&$sandbox) {
+  //Prepare all variables in first iteration
+  if (!isset($sandbox['total'])) {
+
+    //Prepare elements
+    //Fix inconsistent communities
+    $sandbox['elements'] = array_values(db_query("SELECT nid,nid FROM node WHERE type = 'social_network' AND nid NOT IN (31028, 31029, 31035, 31038)")->fetchAllKeyed());
+    $sandbox['current'] = 0;
+    $sandbox['total'] = count($sandbox['elements']);
+  }
+
+  //Get batch, or number of entities to process each time.
+  $nodes_per_pass = 10;
+  $end = $sandbox['current'] + $nodes_per_pass;
+
+  $preloaded_batch = array_slice($sandbox['elements'], $sandbox['current'], $nodes_per_pass);
+
+  //Loop. Use db_query_range if any query needs to be split between batches.
+  while($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    $number = $sandbox['current'];
+    $nid = $sandbox['elements'][$number];
+
+    //Heavy operations
+    $status = ag_section_social_netwok_update_community_administrators($nid);
+
+    //Notify and stop if failed.
+    if (empty($status)) {
+      drupal_set_message(t('Problems connecting with Solr. Stopping update.'));
+      throw new DrupalUpdateException(t('Problems connecting with Solr. Stopping update.'));
+    }
+
+    //Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1, meaning we are done.
+  // Also, avoid division by zero
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @nodes social networks to update communityAdminSupr field in solr. Finished.', array('@nodes' => $sandbox['total'])));
+  }
+}
+
+/**
+ * Implements hook_update_N().
+ * Reassign the content to Procomun (21091) community when it does not belong to
+ * any.
+ */
+function ag_section_social_netwok_update_7002(&$sandbox) {
+  // Prepare all variables in first iteration.
+  if (!isset($sandbox['total'])) {
+    // Prepare array from query.
+    ag_section_social_netwok_prepare_batch_update_community($sandbox);
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = ag_section_social_netwok_get_total_batch_operations($sandbox);
+  }
+
+  // Get batch, or number of entities to process each time.
+  $nodes_per_pass = 10;
+  $end = $sandbox['current'] + $nodes_per_pass;
+
+  // Loop.
+  while($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    // Heavy operations.
+    $element = ag_section_social_netwok_get_element($sandbox);
+    ag_section_social_netwok_update_update_community($sandbox, $element);
+
+    // Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1,
+  // meaning we are done.
+  // Also, avoid division by zero.
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @records records. Finished.', array('@records' => $sandbox['total'])));
+  }
+}
+
+/**
+ * Return number of operations that will be done.
+ *
+ * @param array $sandbox
+ *   Data needed for batch operations.
+ *
+ * @return int
+ *   Number of operations to be performed.
+ */
+function ag_section_social_netwok_get_total_batch_operations($sandbox) {
+  return isset($sandbox['elements']) ? count($sandbox['elements']) : 0;
+}
+
+/**
+ * Gets element with sandbox data.
+ *
+ * @param array $sandbox
+ *   Data needed for batch operations.
+ *
+ * @return array|object
+ *   Current sandbox's element we are working with.
+ */
+function ag_section_social_netwok_get_element($sandbox) {
+  $position = isset($sandbox['current']) ? $sandbox['current'] : 0;
+  return !empty($sandbox['elements']) ? $sandbox['elements'][$position] : array();
+}
+
+/**
+ * Return content will be processed.
+ *
+ * @param array $sandbox
+ *   Data needed for batch operations.
+ */
+function ag_section_social_netwok_prepare_batch_update_community(&$sandbox) {
+  $query = db_query("SELECT node.nid AS nid, node.type AS node_type
+                     FROM node node LEFT JOIN og_membership og_membership
+                     ON node.nid = og_membership.etid
+                     WHERE og_membership.etid IS NULL
+                     AND node.type IN ('post', 'question', 'answer', 'debate', 'event', 'external_content', 'itinerary')
+                     AND node.status = 1")->fetchAllKeyed();
+
+  $result = array();
+  foreach ($query as $key => $value) {
+    $result[] = array($key, $value);
+  }
+
+  // Return by storing the array in sandbox variable. It will be static and
+  // accessible by all update batch executions.
+  $sandbox['elements'] = $result;
+}
+
+/**
+ * Process content: reassign the content to Procomun (21091) community when it
+ * does not belong to any.
+ *
+ * @param array $sandbox
+ *   Data needed for batch operations.
+ */
+function ag_section_social_netwok_update_update_community(&$sandbox, $element) {
+  if (!empty($element)) {
+    try {
+      $wrapper = entity_metadata_wrapper('node', $element[0]);
+      $og_group_ref = $wrapper->og_group_ref->raw();
+
+      if ((count($og_group_ref) <= 1) && !in_array('21091', $og_group_ref)) {
+        $og_group_ref[] = '21091';
+        $wrapper->og_group_ref->set($og_group_ref);
+        $wrapper->save();
+      }
+    }
+    catch (EntityMetadataWrapperException $e) {
+      drupal_set_message(t('Content could not be updated'), 'error');
+    }
+  }
+  else {
+    drupal_set_message(t('Error: No node sent'), 'error');
+    throw new DrupalUpdateException(t('Error: No node sent'));
+  }
+}

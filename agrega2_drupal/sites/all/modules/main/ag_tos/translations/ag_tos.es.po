@@ -1,0 +1,23 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_tos.module
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2014-07-02 10:44+0200\n"
+"PO-Revision-Date: 2014-07-02 10:44+0200\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: configurable_home.assignment.inc:32
+msgid "You must read and accept the terms of use and privacy policy on this zone. Please, read them, check the the \"checkbox\" (fisrt line under the tabs) if you agree and click at the \"Save\" button located at the end of the page"
+msgstr "Debe usted leer y aceptar las condiciones de uso y política de privacidad en esta zona. Léalas, marque el “check” (primera línea bajo las pestañas) si está de acuerdo y pulse sobre el botón “Guardar” situado al final de la página."

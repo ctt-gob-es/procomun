@@ -1,0 +1,1790 @@
+<?php
+/**
+ * @file
+ * Code for the ag_general feature.
+ */
+
+include_once 'ag_general.features.inc';
+// The footer's constant version of the templates 'page.tpl.php' and its variants.
+define('FOOTER_VERSION', '3.5.1');
+/**
+ * Implements hook_menu().
+ */
+function ag_general_menu() {
+  $items['ag_user/autocomplete'] = array(
+    'title' => 'Custom user autocomplete',
+    'page callback' => 'ag_general_custom_autocomplete',
+    'access callback' => 'ag_general_users_autocomplete_access_callback',
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['ag_user/field_author_ref/autocomplete'] = array(
+    'title' => 'Custom user autocomplete',
+    'page callback' => 'ag_general_field_author_ref_autocomplete',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+
+  //Cl@ve configuration page
+  $items['admin/config/clave'] = array(
+    'title' => 'Cl@ve configuration',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('clave_configuration_form'),
+    'access arguments' => array('clave configuration'),
+    'file' => 'ag_general.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  //Cl@ve login page
+  $items['login/clave'] = array(
+    'title' => 'Cl@ve authentication',
+    'page callback' => 'clave_login_page',
+    'access arguments' => array('clave login'),
+    'type' => MENU_CALLBACK,
+  );
+
+  //Cl@ve auth page
+  $items['clave'] = array(
+    'title' => 'Cl@ve authentication',
+    'page callback' => 'clave_auth_page',
+    'access arguments' => array('clave login'),
+    'type' => MENU_CALLBACK,
+  );
+
+  //Home notification for stop services
+  $items['admin/config/development/notification'] = array(
+    'title' => 'Stop service notification',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('stop_service_notification_form'),
+    'access arguments' => array('stop service notification'),
+    'file' => 'ag_general.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  $items['node/%/mark/%'] = array(
+    'title' => 'Change novelty of content',
+    'description' => 'Change novelty of content',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('change_content_novelty_form', 1, 3),
+    'access arguments' => array('administer content'),
+    'file' => 'ag_general.forms.inc',
+    'modal' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_modal_paths
+ */
+function ag_general_modal_paths() {
+  $paths = array();
+
+  $paths['node/%/mark/%'] = array(
+    'style' => 'modal-novelty-status',
+    'reload' => TRUE,
+  );
+  return $paths;
+}
+
+/**
+ * Implements hook_modal_styles().
+ */
+function ag_general_modal_styles() {
+  $styles = array();
+
+  $styles['modal-novelty-status'] = array(
+    'modalSize' => array(),
+    'modalClass' => 'status-node',
+  );
+  return $styles;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function ag_general_permission() {
+  return array(
+    'administer ckeditor content type' => array(
+      'title' => t('Administer CKeditor in content types'),
+      'description' => t('Allows use CKEditor in some content types.'),
+    ),
+
+    'administer ckeditor comments' => array(
+      'title' => t('Administer CKeditor in comments'),
+      'description' => t('Allows use CKEditor in comments.'),
+    ),
+
+    'autocomplete users access' => array(
+      'title' => t('Autocomplete users access'),
+      'description' => t('Allows use autocomplete functionality in add member to group.'),
+    ),
+    'clave configuration' => array(
+      'title' => t('Cl@ve configuration form'),
+      'description' => t('Allow access to Cl@ve configuration form.'),
+    ),
+    'clave login' => array(
+      'title' => t('Cl@ve login'),
+      'description' => t('Allow login with Cl@ve.'),
+    ),
+  );
+}
+
+/**
+ * Implements custom callback for check autocomplete users access.
+ */
+function ag_general_users_autocomplete_access_callback() {
+  return user_access('access user profiles') || user_access('autocomplete users access');
+}
+
+/**
+ * Implementation of hook_ctools_plugin_directory().
+ */
+function ag_general_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'ctools' && $plugin == 'content_types') {
+    return 'plugins/' . $plugin;
+  }
+}
+
+/**
+ * Implements hook_entity_preview().
+ */
+function ag_general_entity_view($entity, $type, $view_mode, $langcode) {
+  if ($type === 'node') {
+    $allowed_view_modes = array('teaser');
+    $allowed_types = array(
+      'recurso_de_aprendizaje',
+      'post',
+      'ode',
+      'podcast',
+      'webinar'
+    );
+    if (in_array($entity->type, $allowed_types) && in_array($view_mode, $allowed_view_modes) ) {
+      global $user;
+      if (isset($entity->uid) && ($user->uid !== $entity->uid)) {
+        // Add the link to follow user only if the author is diferente that user logged:
+        $entity->content['links']['follow_flag'] = array(
+          '#type' => 'markup',
+          '#markup' => flag_create_link('follow_user', $entity->uid),
+        );
+      }
+    }
+
+    $allowed_readmore_types = array('event');
+    // in this case the read more is only available for teaser view mode
+    if (!in_array($entity->type, $allowed_readmore_types)) {
+      // Unset link "Read more"
+      if (isset($entity->content['links']['node']['#links']['node-readmore'])) {
+        unset($entity->content['links']['node']['#links']['node-readmore']);
+      }
+    }
+
+    //Change default title for readmore link in events
+    $allowed_readmore_types_message = array('event');
+    if (in_array($entity->type, $allowed_readmore_types_message)) {
+      if (!empty($entity->content['links']['node']['#links']['node-readmore']['title'])) {
+        $entity->content['links']['node']['#links']['node-readmore']['title'] = t('See more');
+      }
+    }
+  }
+
+  // Refs #158375. Mark content as novelty or not.
+  if (isset($entity->field_novelty) && user_access('administer content')) {
+    $link = ag_general_generate_novelty_status_link($entity);
+
+    // Add field to display this button.
+    $entity->content['links']['flag']['#links']['flag-novelty'] = array(
+      'title' => $link,
+      'html' => TRUE,
+    );
+  }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ */
+function ag_general_preprocess_page(&$variables) {
+
+  // PROCOMUN FOOTER
+  // Add footer title block
+  $variables['footer_links_procomun']['title'] = array(
+    '#type' => 'markup',
+    '#prefix' => '<h2 class="footer-title-block">',
+    '#markup' => t('Procomun'),
+    '#suffix' => '</h2>'
+  );
+
+  // Add a new link to footer for Terms of use page
+  $variables['footer_links_procomun']['about'] = array(
+    '#theme' => 'link',
+    '#text' => t('About'),
+    '#path' => 'node/33',
+    '#options' => array(
+      'attributes' => array(
+        'title' => t('About'),
+      ),
+      'html' => FALSE,
+    ),
+  );
+
+  // Add a new link to footer for Terms of use page
+  $variables['footer_links_procomun']['legal_conditions'] = array(
+    '#theme' => 'link',
+    '#text' => t('Legal conditions'),
+    '#path' => 'node/1',
+    '#options' => array(
+      'attributes' => array(
+        'title' => t('Legal conditions'),
+      ),
+      'html' => FALSE,
+    ),
+  );
+
+  // Add a new link to footer for privacy page
+  $variables['footer_links_procomun']['privacy'] = array(
+    '#theme' => 'link',
+    '#text' => t('Terms of privacy'),
+    '#path' => 'node/2',
+    '#options' => array(
+      'attributes' => array(
+        'title' => t('Terms of privacy'),
+      ),
+      'html' => FALSE,
+    ),
+  );
+
+  // HELP FOOTER
+  // Add footer title block
+  $variables['footer_links_help']['title'] = array(
+    '#type' => 'markup',
+    '#prefix' => '<h2 class="footer-title-block">',
+    '#markup' => t('Help'),
+    '#suffix' => '</h2>'
+  );
+
+  // Add a new link to footer for Help section
+  $variables['footer_links_help']['faq'] = array(
+    '#theme' => 'link',
+    '#text' => t('FAQ'),
+    '#path' => 'help/faq',
+    '#options' => array(
+      'attributes' => array(
+        'title' => t('FAQ'),
+      ),
+      'html' => FALSE,
+    ),
+  );
+
+  // Add a new link to footer for Help section
+  $variables['footer_links_help']['manual'] = array(
+    '#theme' => 'link',
+    '#text' => t('User manual'),
+    '#path' => 'help/manual',
+    '#options' => array(
+      'attributes' => array(
+        'title' => t('User manual'),
+      ),
+      'html' => FALSE,
+    ),
+  );
+
+  // Contact link:
+  $variables['footer_links_help']['contact'] = array(
+    '#theme' => 'link',
+    '#text' => t('Contact'),
+    // To obfuscate the mail we use the rot13 algorithm
+    // Javascript will uncrypt the string to show it correctly
+    '#path' => 'mailto:' . str_rot13('meducacion@intef.educacion.es'),
+    '#options' => array(
+      'attributes' => array(
+        'title' => t('Contact'),
+        'class' => 'contact_email',
+      ),
+      'absolute' => TRUE,
+      'html' => FALSE,
+    ),
+  );
+
+  // MORE VISITED FOOTER
+  // Add footer title block
+  $variables['footer_links_visited']['title'] = array(
+    '#type' => 'markup',
+    '#prefix' => '<h2 class="footer-title-block">',
+    '#markup' => t('The most visited'),
+    '#suffix' => '</h2>'
+  );
+
+  // Add most visited list
+  $variables['footer_links_visited']['list'] = array(
+    '#type' => 'markup',
+    '#prefix' => '<div class="footer-visited-block">',
+    '#markup' => variable_get('cached_ag_home_most_visited'),
+    '#suffix' => '</div>'
+  );
+
+  // SOCIAL LINKS FOOTER
+  // Add Twitter footer link
+  $variables['footer_links_social']['twitter'] = array(
+    '#theme' => 'link',
+    '#text' => t('Twitter'),
+    '#path' => 'https://twitter.com/educalab',
+    '#options' => array(
+      'attributes' => array(
+        'title' => t('Twitter'),
+        'class' => 'twitter',
+      ),
+      'html' => FALSE,
+    ),
+  );
+
+  // Add Facebook footer link
+  $variables['footer_links_social']['facebook'] = array(
+    '#theme' => 'link',
+    '#text' => t('Facebook'),
+    '#path' => 'https://facebook.com/educalab',
+    '#options' => array(
+      'attributes' => array(
+        'title' => t('Facebook'),
+        'class' => 'facebook',
+      ),
+      'html' => FALSE,
+    ),
+  );
+
+  // Add Youtube footer link
+  $variables['footer_links_social']['youtube'] = array(
+    '#theme' => 'link',
+    '#text' => t('Youtube'),
+    '#path' => 'https://www.youtube.com/user/Educacionlab',
+    '#options' => array(
+      'attributes' => array(
+        'title' => t('Youtube'),
+        'class' => 'youtube',
+      ),
+      'html' => FALSE,
+    ),
+  );
+
+  // Add Pinterest footer link
+  $variables['footer_links_social']['pinterest'] = array(
+    '#theme' => 'link',
+    '#text' => t('Pinterest'),
+    '#path' => 'https://pinterest.com/educalab',
+    '#options' => array(
+      'attributes' => array(
+        'title' => t('Pinterest'),
+        'class' => 'pinterest',
+      ),
+      'html' => FALSE,
+    ),
+  );
+
+  // Add RSS footer link
+  $variables['footer_links_social']['procomun_rss'] = array(
+    '#theme' => 'link',
+    '#text' => t('Subscribe to RSS'),
+    '#path' => 'latest-podcasts',
+    '#options' => array(
+      'attributes' => array(
+        'title' => t('Subscribe to RSS'),
+        'class' => 'procomun-rss',
+        'target' => '_blank',
+      ),
+      'html' => FALSE,
+    ),
+  );
+}
+
+/**
+ * Implements hook_theme
+ */
+function ag_general_theme($existing, $type, $theme, $path) {
+
+  return array(
+    'ag_current_search' => array(
+      'template' => 'ag_current_search',
+      'path' => $path . '/templates/',
+      'type' => 'theme',
+      'variables' => array(
+        'properties' => array(),
+      ),
+    ),
+    'ag_stop_service_notification' => array(
+      'template' => 'ag_stop_service_notification',
+      'path' => $path . '/templates/',
+      'type' => 'theme',
+      'variables' => array(
+        'title' => NULL,
+        'link' => NULL,
+        'description' => NULL,
+      ),
+    ),
+    'custom_translatable_block' => array(
+      'variables' => array(
+        'block_title' => NULL,
+        'block_content' => NULL,
+        'block_class' => NULL,
+      ),
+      'path' => $path . '/templates/',
+      'type' => 'theme',
+      'template' => 'ag_custom_translatable_block',
+    ),
+  );
+
+}
+
+/**
+ * Implements hook_block_info
+ *
+ * @return mixed
+ */
+function ag_general_block_info() {
+
+  // Block with current facets
+  $blocks['ag_current_search'] = array(
+    'info' => t('AG Current Search'),
+    'cache' => DRUPAL_CACHE_PER_PAGE, /* This block will get its content by JS, then is cachable */
+  );
+
+  $blocks['ag_stop_service_notification'] = array(
+    'info' => t('AG stop service notification'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+
+  return $blocks;
+}
+
+
+/**
+ * Implements hook_block_view().
+ */
+function ag_general_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'ag_current_search':
+      $block['title'] = t('Filters applied');
+      $block['content'] = theme("ag_current_search");
+      break;
+    case 'ag_stop_service_notification':
+      $show_notification = variable_get('stop_service_notification_check', 0);
+      $block['content'] = !empty($show_notification) ? ag_general_show_notification() : NULL;
+      break;
+  }
+
+  return $block;
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function ag_general_form_alter(&$form, &$form_state, $form_id) {
+  // Fields must have hidden CKEditor toolbar.
+  $fields = field_read_fields(array('type' => array('text_long', 'text_with_summary')));
+  callback_hide_wysiwyg($form, $fields);
+
+  // Disable CKEditor for some content types.
+  if ($form_id == 'page_node_form' || $form_id == 'banner_node_form') {
+    $form['body']['und']['0']['#wysiwyg'] = user_access('administer ckeditor content type');
+  }
+
+  // Disable CKEditor for comments.
+  if (isset($form['#entity_type']) == 'comment') {
+    $form['comment_body']['und']['0']['#wysiwyg'] = user_access('administer ckeditor comments');
+  }
+
+  //Add extra validation to avoid duplicated alias, with custom alias
+  if (isset($form['path']['#element_validate'])) {
+    $form['path']['#element_validate'] = array_merge(array('ag_general_custom_validate_alias'), $form['path']['#element_validate']);
+  }
+
+  //Add labels fields description to all content types that have this field
+  if (isset($form['field_labels'])) {
+    $form['field_labels'][LANGUAGE_NONE]['#description'] = t('Tags (separated by commas): Try to enter terms that describe specifically the content of the resource, avoiding ambiguities, words that do not provide any meaning and plurals.');
+  }
+
+  //Login form and block login form
+  if ($form_id == 'user_login' || $form_id == 'user_login_block') {
+    //Unset google form from gauth module for put in another position
+    unset($form['submit_google']);
+  }
+
+  // Create labels for field_question_share and field_debate_share.
+  if ($form_id == 'ode_node_form' || $form_id == 'post_node_form' ||
+      $form_id == 'recurso_de_aprendizaje_node_form' ||
+      $form_id == 'question_node_form' ||
+      $form_id == 'itinerary_node_form' || $form_id == 'podcast_node_form' ||
+      $form_id == 'webinar_node_form') {
+
+    $form['field_question_share']['visibility_label'] = array(
+      '#type' => 'markup',
+      '#prefix' => '<span class="visibility-label">',
+      '#markup' => t('Visibility'),
+      '#suffix' => '</span>',
+      '#weight' => 0,
+    );
+  }
+
+  if ($form_id == 'debate_node_form') {
+    $form['field_debate_share']['visibility_label'] = array(
+      '#type' => 'markup',
+      '#prefix' => '<span class="visibility-label">',
+      '#markup' => t('Visibility'),
+      '#suffix' => '</span>',
+      '#weight' => 0,
+    );
+  }
+
+  // Create label for field_novelty.
+  if ($form_id == 'event_node_form' || $form_id == 'post_node_form' ||
+      $form_id == 'debate_node_form' || $form_id == 'podcast_node_form' ||
+      $form_id == 'webinar_node_form') {
+    $form['field_novelty']['novelty_label'] = array(
+      '#type' => 'markup',
+      '#prefix' => '<span class="novelty-label">',
+      '#markup' => t('Novelty'),
+      '#suffix' => '</span>',
+      '#weight' => 0,
+    );
+
+    // Hide field_novelty for no admin users
+    global $user;
+
+    if (!empty($form['#node_edit_form']) && isset($form['field_novelty']) && !in_array('administrator', $user->roles)) {
+      $form['field_novelty']['#access'] = FALSE;
+    }
+  }
+
+  // Apply t function for translate flag abuse messages
+  if ($form_id == 'flag_form') {
+    $form['messages']['flag_short']['#default_value'] = t($form['messages']['flag_short']['#default_value']);
+    $form['messages']['flag_long']['#default_value'] = t($form['messages']['flag_long']['#default_value']);
+    $form['messages']['flag_message']['#default_value'] = t($form['messages']['flag_message']['#default_value']);
+    $form['messages']['unflag_short']['#default_value'] = t($form['messages']['unflag_short']['#default_value']);
+    $form['messages']['unflag_long']['#default_value'] = t($form['messages']['unflag_long']['#default_value']);
+    $form['messages']['unflag_message']['#default_value'] = t($form['messages']['unflag_message']['#default_value']);
+    $form['access']['unflag_denied_text']['#default_value'] = t($form['access']['unflag_denied_text']['#default_value']);
+    $form['display']['link_options_confirm']['flag_confirmation']['#default_value'] = t($form['display']['link_options_confirm']['flag_confirmation']['#default_value']);
+    $form['display']['link_options_confirm']['unflag_confirmation']['#default_value'] = t($form['display']['link_options_confirm']['unflag_confirmation']['#default_value']);
+  }
+
+  // @jgarcia - Build array of content types that are allowed to be saved as draft.
+  // At this time we are going to build this static according to task #167765.
+  // publish_new_ode_form is changed on ag_visualization_ode itself.
+  $available_to_save_as_draft = array(
+    'ode_node_form',
+    'post_node_form',
+    'event_node_form',
+    'external_content_node_form',
+    'itinerary_node_form',
+  );
+
+  if (in_array($form_id, $available_to_save_as_draft)) {
+    $form['actions']['draft'] = array(
+      '#type' => 'submit',
+      '#access' => TRUE,
+      '#value' => t('Save as draft'),
+      '#weight' => 6,
+      '#submit' => array(
+        'callback_save_as_unpublished',
+        'entity_translation_language_widget_submit',
+        'i18n_node_form_submit',
+      ),
+    );
+
+    if ($form_id == 'ode_node_form') {
+      // Add those callbacks only on ODE form.
+      $form['actions']['draft']['#submit'][] = 'ag_visualization_ode_form_publish_contributors_validation';
+      $form['actions']['draft']['#submit'][] = 'ag_visualization_ode_check_groups';
+      $form['actions']['draft']['#validate'][] = 'ag_visualization_ode_check_certified_value';
+    }
+
+    // Add this submit callback on first place.
+    array_unshift($form['actions']['submit']['#validate'], 'callback_save_as_published');
+    array_unshift($form['actions']['submit']['#submit'], 'callback_save_as_published');
+  }
+}
+
+/**
+ * Hide the appeareance of CKEditor.
+ *
+ * @param $form
+ *   An associative array containing the structure of the form.
+ * @param $fields
+ *   Fields with CKEditor disabled.
+ *
+ * @ingroup callbacks
+ */
+function callback_hide_wysiwyg(&$form, $fields) {
+  foreach ($fields as $key => $value) {
+    // Hide the CKEditor toolbar.
+    if (isset($form[$key])) {
+      $form[$key]['#after_build'][] = 'callback_hide_text_format';
+    }
+  }
+}
+
+/**
+ * Hide the text format of CKEditor.
+ *
+ * @param $form
+ *   An associative array containing the structure of the form.
+ *
+ * @return mixed
+ *   Same form without access to text formats.
+ *
+ * @ingroup callbacks
+ */
+function callback_hide_text_format(&$form) {
+  // Hide CKEditor toolbar.
+  $lang = $form['#language'];
+  $form[$lang][0]['format']['#access'] = FALSE;
+
+  return $form;
+}
+
+/**
+ * Set content as not published in order to show it as draft.
+ *
+ * @ingroup callbacks
+ */
+function callback_save_as_unpublished(&$form, &$form_state) {
+  // Just set value to unpublished.
+  $form_state['values']['status'] = NODE_NOT_PUBLISHED;
+  // Force redirect to draft panel.
+  $_GET['destination'] = 'user/draft';
+}
+
+/**
+ * Set content as published.
+ *
+ * @ingroup callbacks
+ */
+function callback_save_as_published(&$form, &$form_state) {
+  // Just set value to published.
+  $form_state['values']['status'] = NODE_PUBLISHED;
+}
+
+/**
+ * Implements hook_page_alter().
+ */
+function ag_general_page_alter() {
+  ag_general_set_breadcrumb();
+}
+
+/**
+ * Override init Path Breadcrumbs.
+ */
+function ag_general_set_breadcrumb($path = NULL) {
+  global $user;
+
+  if (!isset($path)) {
+    $path = current_path();
+  }
+  if ($path == 'ode-search') {
+    $path = (!empty($_GET['type'])) ? $_GET['type'] : 'ode-search' ;
+  }
+
+  // Replace breadcrumb in my contributions "page".
+  if (arg(0) == 'user' && arg(2) == 'timeline') {
+    $uid_facet = ag_section_user_timeline_get_facet_author();
+
+    if ($uid_facet == $user->uid) {
+      $breadcrumbs = drupal_get_breadcrumb();
+      $breadcrumbs[1] = t('My contributions');
+      drupal_set_breadcrumb($breadcrumbs);
+    }
+  }
+  else {
+    // See if current page has path breadcrumbs.
+    $path_breadcrumbs_data = path_breadcrumbs_load_variant($path);
+
+    // Set breadcrumbs for current page if it exists.
+    if ($path_breadcrumbs_data && isset($path_breadcrumbs_data->build)) {
+      drupal_set_breadcrumb($path_breadcrumbs_data->build);
+    }
+  }
+}
+
+/**
+ * Implements hook_field_formatter_info()
+ *
+ * This formatter add a link for the tags to the general finder.
+ *
+ * @return array
+ */
+function ag_general_field_formatter_info() {
+  $info = array(
+    'link_tags_finder' => array(
+      'label' => t('Link the term to the finder'),
+      'field types' => array('taxonomy_term_reference', 'list_text'),
+      'description' => t('Link the term to the finder.'),
+      'settings' => array('facet_name' => ''),
+    ),
+    'ag2_og_list_default' => array(
+      'label' => t('Agrega2 OG audience list'),
+      'field types' => array('entityreference'),
+     ),
+    'text_token' => array(
+      'label' => t('Text with tokens'),
+      'description' => t('Allows use tokens on description field'),
+      'field types' => array('text', 'text_long', 'text_with_summary'),
+    ),
+  );
+
+  return $info;
+}
+
+/**
+ * Implements hook_field_formatter_settings_form()
+ *
+ * This formatter add a link for the tags to the general search view. Its values in the select
+ * form depends on the values ag_section_solr_sarnia sets in agrega2_add_facet_field_query.
+ *
+ * @return array
+ */
+function ag_general_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+  if (isset($instance['display'][$view_mode]['type']) && $instance['display'][$view_mode]['type'] == 'link_tags_finder') {
+
+    //This gets the view_mode where our settings are stored
+    $display = $instance['display'][$view_mode];
+    //This gets the actual settings
+    $settings = $display['settings'];
+    //Initialize the element variable
+    $element = array();
+
+    //Select solr type from node_type
+    switch ($form['#bundle']) {
+      case 'debate':
+        $type = 'DISCUSSION';
+        break;
+      case 'question':
+        $type = 'QUESTION';
+        break;
+      case 'post':
+        $type = 'POST';
+        break;
+      case 'event':
+        $type = 'EVENT';
+        break;
+      case 'ode':
+        $type = '(LEARNING_RESOURCE OR ODE)';
+        break;
+      case 'social_network':
+        $type = 'COMMUNITY';
+        break;
+    }
+
+    //Options to select - Get all facets configured by code in ag_section_solr_sarnia module.
+    //Normal label is old behaviour => LabelStr field, depending on node_type.
+    $options[''] = t('Normal label');
+    $sarnia_facets = agrega2_add_facet_field_query($type);
+    $sarnia_facets = array_combine($sarnia_facets, $sarnia_facets);
+
+    $options = array_merge($options, $sarnia_facets);
+
+    //Add select box
+    $element['facet_name'] = array(
+      '#type'           => 'select',
+      '#title'          => t('Facet field'),
+      '#description'    => t('Select which facet in Solr is this field'),
+      '#default_value'  => $settings['facet_name'],
+      '#options'        => $options,
+    );
+    return $element;
+  }
+}
+
+/**
+* Implements hook_field_formatter_settings_summary()
+* Defines a string to show to admins in node structure/fields definition.
+*/
+function ag_general_field_formatter_settings_summary($field, $instance, $view_mode) {
+  if ($instance['display'][$view_mode]['type'] == 'link_tags_finder') {
+
+    $display = $instance['display'][$view_mode];
+    $settings = $display['settings'];
+    $summary = t('Specify which facet field apply to this field as link. @facet_name', array(
+      '@facet_name'     => $settings['facet_name'],
+    ));
+    return $summary;
+  }
+}
+/**
+ * Implements hook_field_formatter_view().
+ *
+ * @param $entity_type
+ * @param $entity
+ * @param $field
+ * @param $instance
+ * @param $langcode
+ * @param $items
+ * @param $display
+ * @return array
+ */
+function ag_general_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+
+  // Add the type and the correct label to build the query.
+  switch ($entity->type) {
+    case 'debate':
+      $type = 'DISCUSSION';
+      $label = 'discussionLabelsStr';
+      break;
+    case 'question':
+      $type = 'QUESTION';
+      $label = 'questionLabelsStr';
+      break;
+    case 'post':
+      $type = 'POST';
+      $label = 'postLabelsStr';
+      break;
+    case 'event':
+      $type = 'EVENT';
+      $label = 'eventLabelsStr';
+      break;
+    case 'recurso_de_aprendizaje':
+      $type = 'LEARNING_RESOURCE';
+      $label_type = 'type';
+      $label = 'generalKeywordStr';
+      break;
+    case 'social_network':
+      $type = 'COMMUNITY';
+      $label = 'communityLabelsStr';
+      break;
+  }
+
+  //Override label if user chose any options in custom formatter form.
+  if ($display['type'] == 'link_tags_finder' && !empty($display['settings']['facet_name'])) {
+    $label = $display['settings']['facet_name'];
+  }
+
+
+  global $user;
+
+  $settings = $display['settings'];
+
+
+  // Search for the taxonomy name and build the query filtering by this terms.
+  switch ($display['type']) {
+    case 'link_tags_finder':
+      //If it is a taxonomy, load and create facet.
+      if ($field['type'] == 'taxonomy_term_reference') {
+        foreach ($items as $delta => $item) {
+          $name = db_query('SELECT name FROM {taxonomy_term_data} WHERE tid = :tid limit 1', array(':tid' => $item['tid']))->fetchField();
+          $query['type'] = $type;
+          $query['f[0]'] = $label . ':"' . $name . '"';
+          // "Learning Resources" has 2 filters.
+          if ($entity->type == 'recurso_de_aprendizaje') {
+            $query['f[1]'] = $label_type . ':"LEARNING_RESOURCE"';
+          }
+          $element[$delta] = array(
+            '#markup' => l($name , 'ode-search', array('query' => $query)),
+          );
+        }
+      }
+      else if ($field['type'] == 'list_text') {
+        foreach ($items as $delta => $item) {
+          $query['type'] = $type;
+          $query['f[0]'] = $label . ':"' . $item['value'] . '"';
+          // "Learning Resources" has 2 filters.
+          if ($entity->type == 'recurso_de_aprendizaje') {
+            $query['f[1]'] = $label_type . ':"LEARNING_RESOURCE"';
+          }
+
+          //General language must show value, not key. Item must be processed with field allowed values.
+          //This might be needed for other list_text fields, but for now, just language.
+          if ($field['field_name'] == 'field_general_language') {
+            $language_code = $item['value'];
+            $item['value'] = $field['settings']['allowed_values'][$language_code];
+          }
+
+          $element[$delta] = array(
+            '#markup' => l($item['value'] , 'ode-search', array('query' => $query)),
+          );
+        }
+      }
+      break;
+
+    case 'ag2_og_list_default':
+      $accessible_ids = array();
+      $private = FALSE;
+      $wrapper = entity_metadata_wrapper($entity_type, $entity);
+      $field_name = $field['field_name'];
+      if (!$wrapper->{$field_name}->value()) {
+        return;
+      }
+      if ($field['cardinality'] == 1) {
+        // Single-value field.
+        if ($wrapper->{$field_name}->entityAccess('view')) {
+          $id = $wrapper->{$field_name}->getIdentifier();
+          $accessible_ids[$id] = TRUE;
+        }
+        else {
+          $private = TRUE;
+        }
+      }
+      else {
+        // Multi-value field.
+        foreach ($wrapper->{$field_name} as $wrapper_field) {
+          $id = $wrapper_field->value(array('identifier' => TRUE));
+          if ($wrapper_field->entityAccess('view')) {
+            $accessible_ids[$id] = TRUE;
+          }
+          else {
+            $private = TRUE;
+          }
+        }
+      }
+
+      if ($entity_type == 'user') {
+        // Show only the groups a user is active in.
+        foreach ($wrapper->{$field_name . '__og_membership'}->value() as $og_membership) {
+          if ($og_membership->state != OG_STATE_ACTIVE) {
+            unset($accessible_ids[$og_membership->gid]);
+          }
+        }
+      }
+      $group_type = $field['settings']['target_type'];
+      $accessible_entity = entity_load($group_type, array_keys($accessible_ids));
+      $element = array();
+      foreach ($items as $delta => $item) {
+        if (!empty($accessible_ids[$item['target_id']]) && !empty($accessible_entity[$item['target_id']])) {
+          $wrapper = entity_metadata_wrapper($group_type, $item['target_id']);
+          $element[$delta] = array(
+            '#type' => 'link',
+            '#title' => $wrapper->label(),
+            '#href' => $wrapper->url->value(),
+            // Add the group type and group ID, so it's easier for implementing
+            // modules to extend the formatter.
+            '#group_type' => $group_type,
+            '#gid' => $wrapper->getIdentifier(),
+          );
+        }
+      }
+      break;
+
+    case 'text_token':
+      global $user;
+
+      foreach ($items as $delta => $item) {
+        $item['value'] = token_replace($item['value'], array('user' => $user));
+        $element[$delta] = array('#markup' => $item['value']);
+      }
+      break;
+
+  }
+
+  return $element;
+}
+
+/**
+ * Implements hook_cron().
+ * Remove last day messages as required.
+ */
+function ag_general_cron() {
+  $cron_last = db_query('SELECT timestamp FROM {watchdog} WHERE type=:type ORDER BY timestamp DESC', array(':type' => 'cron'))->fetchField();
+  // Once daily.
+  if (date('ymd', $cron_last) != date('ymd', time())) {
+    db_query('TRUNCATE TABLE {drupalchat_msg}');
+  }
+}
+
+/**
+ * Implements hook_token_info().
+ */
+function ag_general_token_info() {
+  $info['tokens']['site']['url-abs'] = array(
+    'name' => t('Absolute URL'),
+    'description' => t('Url of the site, without language prefix'),
+  );
+
+  return $info;
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function ag_general_tokens($type, $tokens, array $data = array(), array $options = array()) {
+  global $base_root;
+
+  $replacements = array();
+  if ($type == 'site') {
+    foreach ($tokens as $name => $value) {
+      switch ($name) {
+        case 'url-abs':
+          $replacements[$value] = $base_root;
+          break;
+      }
+    }
+  }
+
+  return $replacements;
+}
+
+/**
+ *  Implements hook_user_login().
+ */
+function ag_general_user_login(&$edit, $account) {
+  $is_organization = in_array('organization', array_values($account->roles));
+  if (!$is_organization) {
+    $redirection = 'user/' . $account->uid . '/timeline';
+
+    if (empty($_GET['destination']) && !is_null($redirection)
+      && (!isset($_POST['form_id']) || $_POST['form_id'] != 'user_pass_reset')) {
+      $_GET['destination'] = $redirection;
+    }
+  }
+}
+
+/**
+ * Cancel users without requiring e-mail confirmation
+ */
+function ag_general_form_user_cancel_confirm_form_alter(&$form, &$form_state, $form_id) {
+
+  #Delete check for confirm deletion in email
+  unset($form['user_cancel_confirm']);
+
+  #Delete user directly
+  $form['#submit'][] = 'ag_general_user_cancel_form_submit';
+}
+
+function ag_general_user_cancel_form_submit(&$form, &$form_state) {
+  // Rather than negating the complex access expression from the original form we can
+  // just make the change in the else portion
+
+  global $user;
+
+  $account = $form_state['values']['_account'];
+  if (user_access('administer users') && empty($form_state['values']['user_cancel_confirm']) && $account->uid != $user->uid) {
+    // Account has already been cancelled by the system.
+  }
+  else {
+    // Cancel the account
+    user_cancel($form_state['values'], $account->uid, $form_state['values']['user_cancel_method']);
+
+    // Delete email message
+    unset($_SESSION['messages']);
+
+    //Force redirect to home page
+    $form_state['redirect'] = '';
+  }
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+function ag_general_menu_alter(&$items) {
+  // Disable the page at node/add
+  $items['node/add']['access callback'] = FALSE;
+
+  //Hide login with facebook tab
+  $items['user/simple-fb-connect']['type'] = MENU_CALLBACK;
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function ag_general_form_og_ui_add_users_alter(&$form, &$form_state, $form_id) {
+  //Make translatable og roles name
+  $options = $form['og_user']['roles']['#options'];
+
+  foreach($options as $key => $value) {
+    $form['og_user']['roles']['#options'][$key] = t($value);
+  }
+
+  //Change autocomplete path for custom function
+  $form['og_user']['name']['#autocomplete_path'] = 'ag_user/autocomplete';
+  //Add custom validate to transform autocomplete input value to user->name
+  $form['#validate'] = array_merge(array('ag_general_custom_autocomplete_validate'), $form['#validate']);
+}
+
+/**
+ * Menu callback; Retrieve a JSON object containing autocomplete suggestions for existing users, based in name and surname fields
+ */
+function ag_general_custom_autocomplete($string = '') {
+  $matches = array();
+  if ($string) {
+    $result = ag_general_user_autocomplete_query($string);
+
+    foreach ($result as $user) {
+      if (empty($user->field_profile_name_value) && empty($user->field_profile_surname_value)) {
+        $name_to_show = $user->name;
+      }
+      else {
+        $name_to_show = $user->field_profile_name_value . ' ' . $user->field_profile_surname_value;
+      }
+      $matches[$name_to_show . ' (' . $user->name . ')'] = check_plain($name_to_show);
+    }
+  }
+
+  drupal_json_output($matches);
+}
+
+/**
+ * Menu callback; Retrieve a JSON object containing autocomplete suggestions for existing users, based in name and surname fields
+ */
+function ag_general_field_author_ref_autocomplete($string = '') {
+  $matches = array();
+  if ($string) {
+    $result = ag_general_user_autocomplete_query($string);
+
+    foreach ($result as $user) {
+      if (empty($user->field_profile_name_value) && empty($user->field_profile_surname_value)) {
+        $name_to_show = $user->uid;
+      }
+      else {
+        $name_to_show = $user->field_profile_name_value . ' ' . $user->field_profile_surname_value;
+      }
+      $matches[$name_to_show . ' (' . $user->uid . ')'] = check_plain($name_to_show);
+    }
+  }
+
+  drupal_json_output($matches);
+}
+
+/**
+ * Helper function to execute query
+ */
+function ag_general_user_autocomplete_query($string) {
+  $query = db_select('users', 'u');
+  $query->join('profile', 'p', 'u.uid = p.uid');
+  $query->join('field_data_field_name_surname', 'fdfnm', 'p.pid = fdfnm.entity_id');
+  $query->join('field_data_field_profile_name', 'fdfpn', 'fdfnm.field_name_surname_value = fdfpn.entity_id');
+  $query->join('field_data_field_profile_surname', 'fdfps', 'fdfnm.field_name_surname_value = fdfps.entity_id');
+  $result = $query->fields('u', array('uid', 'name'))
+    ->fields('fdfpn', array('field_profile_name_value'))
+    ->fields('fdfps', array('field_profile_surname_value'))
+    ->condition('u.status', 0, '<>')
+    ->where("CONCAT(fdfpn.field_profile_name_value, ' ', fdfps.field_profile_surname_value) LIKE :pattern", array(':pattern' => '%' . $string . '%'))
+    ->range(0, 10)
+    ->execute();
+
+  return $result;
+}
+
+/**
+ * Function to validate and transform input field value to user->name for custom autocomplete
+ */
+function ag_general_custom_autocomplete_validate($form, &$form_state) {
+  //Get input field value
+  $temp_name = $form_state['values']['name'];
+
+  //Explode user->name from complete name and surname
+  preg_match('!\(([^\)]+)\)!', $temp_name, $matches);
+
+  //Replace value for user->name
+  if (!empty($matches[1])) {
+    $form_state['values']['name'] = $matches[1];
+  }
+}
+
+/**
+ * Function to validate and transform input field value to user->uid for field_author_ref autocomplete
+ */
+function ag_general_field_author_ref_autocomplete_validate($form, &$form_state) {
+  // Get input field value
+  $temp_uid = $form_state['values']['uid'];
+
+  // Explode user->uid from complete name and surname
+  preg_match('/\((\w+)\)/', $temp_uid, $matches);
+
+  // Replace value for user->uid
+  if (!empty($matches[1])) {
+    $form_state['values']['name'] = $matches[1];
+  }
+}
+
+/**
+ * Implements hook_user_cancel().
+ */
+function ag_general_user_cancel($edit, $account, $method) {
+  switch ($method) {
+    case 'user_cancel_block':
+      //"Delete" DNI and email field when blocking user account for future register. This is for not reassing content to anonymous user
+      //Not use entity metadata wrapper because can't set '' value for email. db_update neither empty this fields
+      $edit['mail'] = '';
+      $edit['init'] = '';
+      user_save($account, $edit);
+
+      //Update profile dni manually without metadata wrapper because this field not loaded in it
+      //Get profile id
+      $query = db_select('profile', 'p');
+      $query->fields('p', array('pid'));
+      $query->condition('p.uid', $account->uid);
+      $result = $query->execute()->fetchAssoc();
+
+      if (!empty($result['pid'])) {
+        //With profile id update field_nif
+        db_update('field_data_field_dni')
+          ->fields(array('field_dni_number' => NULL, 'field_dni_first_letter' => NULL, 'field_dni_last_letter' => NULL))
+          ->condition('entity_id', $result['pid'])
+          ->condition('entity_type', 'profile2')
+          ->execute();
+      }
+
+      //Get all groups and unsubcribe
+      $user_groups = og_get_groups_by_user($account, 'node');
+
+      foreach ($user_groups as $group) {
+        og_ungroup('node', $group, 'user', $account->uid);
+      }
+
+      break;
+  }
+}
+
+/**
+ * Extra validate function to check existing custom alias
+ */
+function ag_general_custom_validate_alias($element,  &$form_state, $form) {
+  $alias = trim($form_state['values']['path']['alias']);
+  if (!empty($alias)) {
+    $path = $form_state['values']['path'];
+
+    //Check if alias already exists without language verification
+    $query = db_select('url_alias')
+      ->condition('alias', $path['alias']);
+    if (!empty($path['source'])) {
+      $query->condition('source', $path['source'], '<>');
+    }
+    $query->addExpression('1');
+    $query->range(0, 1);
+
+    if ($query->execute()->fetchField()) {
+      form_error($element, t('The alias is already in use.'));
+    }
+  }
+}
+
+/**
+ * Implements hook_action_info().
+ */
+function ag_general_action_info() {
+  return array(
+    'ag_general_unblock_user_action' => array(
+      'label' => t('Unblock the user'),
+      'type' => 'user',
+      'configurable' => FALSE,
+      'triggers' => array('any'),
+    ),
+  );
+}
+
+/**
+ * Unblocks a user, defaulting to the current user.
+ *
+ * @ingroup actions
+ */
+function ag_general_unblock_user_action(&$entity, $context = array()) {
+  // First priority: If there is a $entity->uid, unblock that user.
+  // This is most likely a user object or the author if a node or comment.
+  if (isset($entity->uid)) {
+    $uid = $entity->uid;
+  }
+  // Otherwise get user ID from the context.
+  elseif (isset($context['uid'])) {
+    $uid = $context['uid'];
+  }
+  $account = user_load($uid);
+  $account = user_save($account, array('status' => 1));
+  watchdog('action', 'Unblocked user %name.', array('%name' => $account->name));
+}
+
+/**
+ * Implements hook_og_membership_insert().
+ */
+function ag_general_og_membership_insert(OgMembership $og_membership) {
+  if ($og_membership->entity_type == 'user') {
+    // Expire the community wall url.
+    ag_general_clear_cache_url($og_membership->gid);
+  }
+}
+
+/**
+ * Implements hook_og_membership_delete().
+ */
+function ag_general_og_membership_delete(OgMembership $og_membership) {
+  if ($og_membership->entity_type == 'user') {
+    // Expire the community wall url.
+    ag_general_clear_cache_url($og_membership->gid);
+  }
+}
+
+/**
+ * Implements hook_expire_urls_alter().
+ */
+function ag_general_expire_urls_alter(&$urls, $object_type, $object) {
+  if ($object_type == 'node') {
+    //Expire internal paths in social_networks
+    $delete_paths = array(
+      'debates',
+      'encuestas',
+      'eventos',
+      'acerca-de',
+      'miembros',
+    );
+    $extra_delete_paths = array('events', 'members');
+    $content_types = array(
+      'question',
+      'poll',
+      'event',
+      'social_network',
+      'ode',
+      'post',
+    );
+    if (in_array($object->type, $content_types)) {
+      $urls_add = array();
+      foreach ($urls as $url => $abs_url) {
+        if (substr_count($url, 'comunidades') > 0) {
+          foreach ($delete_paths as $short_path) {
+            $urls_add[$url . '/' . $short_path] = $abs_url . '/' . $short_path;
+          }
+        }
+        elseif (substr_count($url, 'node') > 0) {
+          foreach ($extra_delete_paths as $short_path) {
+            $urls_add[$url . '/' . $short_path] = $abs_url . '/' . $short_path;
+          }
+        }
+      }
+      $urls = array_merge($urls, $urls_add);
+    }
+
+  }
+  elseif ($object_type == 'user') {
+    // Expire user public profile url.
+    $urls['profile/' . $object->uid . '/public'] = 'profile/' . $object->uid . '/public';
+  }
+}
+
+/**
+ * Function to expire a node url.
+ *
+ * @param $entity_id
+ *  Entity: ID.
+ */
+function ag_general_clear_cache_url($entity_id) {
+  if (module_exists('expire') && !empty($entity_id)) {
+    $node = entity_load_single('node', $entity_id);
+    expire_execute_expiration('node', $node, EXPIRE_NODE_UPDATE);
+  }
+}
+
+/**
+ * Function to get social links login
+ */
+function ag_general_social_links_login() {
+  $output = '';
+
+  $social_links = array();
+  //Facebook
+  if (module_exists('simple_fb_connect') && module_enable(array('simple_fb_connect'))) {
+    $social_links[] = l(t('Facebook'), 'user/simple-fb-connect', array('attributes' => array('class' => array('facebook-login'), 'title' => t('Login with Facebook'))));
+  }
+
+  //Twitter
+  if (module_exists('twitter') && module_exists('twitter_signin') && module_enable(array('twitter', 'twitter_signin'))) {
+    $social_links[] = l(t('Twitter'), 'twitter/redirect', array('attributes' => array('class' => array('twitter-login'), 'title' => t('Login with Twitter'))));
+  }
+
+  //List RRSS
+  $output .= '<span class="user-social-login">' . t('Login with social networks') . '</span>';
+  $output .= '<div class ="login-social-rrss">';
+  if (!empty($social_links)) {
+    $output .= theme('item_list', array('items' => $social_links, 'attributes' => array('class' => array('user-social-login-list'))));
+  }
+
+  //Form RRSS for google
+  if (module_exists('gauth') && module_exists('gauth_login') && module_enable(array('gauth', 'gauth_login'))) {
+    $google_form = drupal_get_form('ag_general_google_form_login');
+    $output .= drupal_render($google_form);
+  }
+  $output .= '</div>';
+
+  return $output;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function ag_general_form_user_login_alter(&$form, &$form_state) {
+  //Add RRSS links and form after login form
+  $extra_login = '';
+  $clave = variable_get('clave_start_stop');
+  //Checks if cl@ave is enabled
+  if ($clave != 0) {
+    $clave_login = l(t('Login with Cl@ve'), 'login/clave', array('attributes' => array('title' => t('Login with Cl@ve'), 'class' => array('login-clave'))));
+    $extra_login .= $clave_login;
+  }else{
+    //Otherwise disable login and show the message
+    $clave_login = l(t('Login with Cl@ve disabled temporally'),'http://clave.gob.es', array(
+      'attributes' => array('title' => t('Login with Cl@ve disabled temporally'),
+        )
+    ));
+
+    $clave_login.= l(t('What is Cl@ve?'), 'http://clave.gob.es', array(
+      'absolute' => TRUE,
+      'external' => TRUE,
+      'attributes' => array(
+        'title' => t('What is Cl@ve?'),
+        'class' => array('info-clave'),
+        'target' => '_blank',
+      )
+    ));
+    $extra_login .= $clave_login;
+  }
+
+  $extra_login .= ag_general_social_links_login();
+  $form['#suffix'] = $extra_login;
+}
+
+/**
+ * Custom form callback for login with Google
+ */
+function ag_general_google_form_login($form_state) {
+  $form = array();
+
+  //Force action with a unique query parameter for avoid cache
+  $cpath = current_path();
+  $form['#action'] = url($cpath, array('query' => array('gr' => drupal_random_key())));
+
+  $form['submit_google'] = array(
+    '#type' => 'submit',
+    '#value' => t('Login with google'),
+    '#submit' => array('gauth_login_user_login_submit'),
+    '#limit_validation_errors' => array(),
+  );
+  return $form;
+}
+
+/**
+ * Custom function for auth with Cl@ve
+ */
+function clave_auth_page() {
+  $output = '';
+  $parameters = drupal_get_query_parameters($_POST);
+
+  //Get response param
+  if (isset($parameters['usuarioClave'])) {
+    //Decode base64 response
+    $user_response = base64_decode($parameters['usuarioClave']);
+    $user_response_parse = decode_entities($user_response);
+
+    $xml = simplexml_load_string($user_response_parse);
+
+    if (!empty($xml)) {
+      //Check email key property
+      $item_email = $xml->xpath('//propiedades/entry/key[.="Email"]');
+
+      if (!empty($item_email)) {
+        $items = $xml->xpath('//propiedades/entry');
+
+        foreach ($items as $item) {
+          if ($item->key == 'Email') {
+            $user_email = $item->value->item;
+            break;
+          }
+        }
+
+        if (!empty($user_email)) {
+          //Load user from email
+          $user_data = user_load_by_mail($user_email);
+
+          if ($user_data !== FALSE && $user_data->uid != 1) {
+            //If user is found login him
+            global $user;
+
+            $user = $user_data;
+            //Regenerate session
+            drupal_session_regenerate();
+
+            //Redirect user to timeline
+            drupal_goto('user/' . $user->uid . '/timeline');
+          }
+          else {
+            drupal_set_message(t('No user data found'), 'error');
+          }
+        }
+        else {
+          drupal_set_message(t('Empty email in the identification data'), 'error');
+        }
+      }
+      else {
+        drupal_set_message(t('It was not found email in the identification data'), 'error');
+      }
+    }
+    else {
+      drupal_set_message(t('Error loading identification data'), 'error');
+    }
+  }
+  else {
+    drupal_set_message(t('Error in identification process. No user data received'), 'error');
+  }
+
+  $output .= t('Error in identification process with Cl@ve');
+
+  return $output;
+}
+
+/**
+ * Custom function for login with Cl@ve
+ */
+function clave_login_page() {
+  $output = '';
+
+  //Informative text
+  $output .= t('To access through Cl@ve you must be registered with the same email account used in Procomún. Remember to register for Cl@ve permanently to associate your email to the digital certificate.');
+
+  //Login button
+  module_load_include('inc', 'ag_general', 'ag_general.forms');
+  $form_clave = drupal_get_form('clave_login_form');
+  $output .= drupal_render($form_clave);
+
+  return $output;
+}
+
+/**
+ * Implements wysiwyg_filter_elements_blacklist_alter().
+ */
+function ag_general_wysiwyg_filter_elements_blacklist_alter(&$blacklist) {
+  // Remove iframe tag from blacklist for avoid iframe videos.
+  $key = array_search('iframe', $blacklist);
+
+  if ($key !== FALSE) {
+    unset($blacklist[$key]);
+  }
+}
+
+/**
+ * Function to check if show facet filter.
+ */
+function ag_general_show_facet_filters() {
+  global $user;
+
+  $show_filters = FALSE;
+
+  // Get params from url.
+  $query_params = drupal_get_query_parameters();
+
+  // Check if searching by myself facet author.
+  $uid_facet = ag_section_user_timeline_get_facet_author();
+
+  if (!empty($query_params['f']) && count($query_params['f']) > 0 && $uid_facet != $user->uid) {
+    $show_filters = TRUE;
+  }
+  elseif (!empty($uid_facet) && $uid_facet == $user->uid && !empty($query_params['f']) && count($query_params['f']) > 1) {
+    $show_filters = TRUE;
+  }
+
+  return $show_filters;
+}
+
+/**
+ * Custom function to generate link to change node novelty status.
+ * @param $node
+ * @return string
+ */
+function ag_general_generate_novelty_status_link($node) {
+  $link = '';
+  $mark = '';
+  $wrapper = entity_metadata_wrapper('node', $node);
+
+  // Check for novelty field.
+  if(isset($wrapper->field_novelty)) {
+    $operation = ($wrapper->field_novelty->raw() == '1') ? 'default' : 'novelty';
+
+    // Links classes.
+    $classes = array('flag');
+    $action_class = ($operation == 'default') ? 'unflag-action' : 'flag-action';
+    $classes[] = $action_class;
+    // Build link to operation.
+    $path = 'node/' . $wrapper->getIdentifier() . '/mark/' . $operation;
+    $link = l(t('Novelty'), $path, array(
+      'attributes' => array(
+        'class' => $classes,
+      )
+    ));
+  }
+
+  return $link;
+}
+
+/**
+ * Function to get current language for templates.
+ */
+function ag_general_current_lang() {
+  global $language;
+  return $language;
+}
+
+/**
+ * Custom function to generate notification block content.
+ */
+function ag_general_show_notification() {
+  $title = variable_get('stop_service_notification_title', '');
+  $description = variable_get('stop_service_notification_text', '');
+  $url = variable_get('stop_service_notification_link', '');
+  $url_text = variable_get('stop_service_notification_link_text', '');
+
+  // Build link.
+  if (!empty($url)) {
+    $attributes = array(
+      'attributes' => array(
+        'target' => '_blank',
+        'class' => 'notification-link',
+      )
+    );
+
+    // If URL text is empty, show the URL as text.
+    $url_text = (empty($url_text)) ? $url : $url_text;
+
+    // Build anchor.
+    $link = l(t($url_text), $url, $attributes);
+  }
+
+  return theme("ag_stop_service_notification", array(
+    'title' => $title,
+    'description' => $description,
+    'link' => (isset($link)) ? $link : '',
+  ));
+}
+
+/**
+ * Custom function to generate rrss rendered structure.
+ */
+function ag_general_get_rrss() {
+  $output = '';
+
+  if (module_exists('service_links')) {
+    $render_service_links = array(
+      '#theme' => 'item_list',
+      '#items' => service_links_render(NULL),
+      '#attributes' => array(
+        'html' => TRUE,
+        'class' => array('services_link'),
+      ),
+    );
+
+    $rrss['links'] = $render_service_links;
+    $output = theme('rrss_dropdown_widget', array('links' => $rrss));
+  }
+
+  return $output;
+}
+
+/**
+ *
+ */
+function ag_general_service_links(){
+  $links['Symbaloo'] = array(
+    'name' => 'Symbaloo',
+    'link'=>'',
+    'description' => t('Add this bookmark to Symbaloo'),
+    'callback' => '_ag_general_symbaloo_service_links',
+  );
+  return $links;
+}
+
+
+/**
+ * Function to set correctly and to alter the Symbaloo link
+ * @param $context
+ * @param $service
+ */
+
+function _ag_general_symbaloo_service_links(&$context, &$service) {
+
+  //Get the URLs.
+  global $base_url;
+  $url = '?url=' . $service['raw-encoded-url'];
+  $symbalooLink = 'http://www.symbaloo.com/go/add/';
+
+  //Get the query from service.
+  $query = $service['query'];
+  $queryService = explode('/', $query);
+
+  //Get the type of the resource
+  $events = strpos($service['url'], 'eventos');
+  $article = strpos($service['url'], 'articulos');
+  $comunities = strpos($service['url'], 'comunidades');
+  $ode = strpos($service['url'], 'ode');
+
+  //Check the resource(Article, Events or Comunities)
+  if ($events || $article || $comunities) {
+    //Get the image recovered by node-id
+    $nodeDetails = node_load($queryService[1]);
+    if ($article || $comunities) {
+      $imageArticle = $nodeDetails->field_imagen_miniatura['und'][0];
+      if (!is_null($imageArticle)) {
+        $image = '&icon=' . $base_url . '/sites/default/files/' . $imageArticle['filename'];
+      }
+      else {
+        $image = '&icon=' . $base_url . '/sites/all/themes/nexus/images/recursos_default.jpg';
+      }
+    }
+    else {
+      $image = '&icon=' . $base_url . '/sites/all/themes/nexus/images/eventos_default.jpg';
+    }
+    $title = '&title=' . $service['raw-encoded-title'];
+  }
+
+  //Check if is a Learn Resource (without node-id)
+  if ($ode) {
+    //Get the details recovered by ode-id (SolrId)
+    $odeDetails = ag_visualization_ode_get_solr_ode($queryService[2]);
+    $image = '&icon=http://' . $odeDetails['preview'];
+    $title = '&title=' . $odeDetails['titleStr'];
+  }
+
+  //Set the link of Symbaloo with 3 blocks: URL,TITLE & ICON.
+  $link = $symbalooLink . $url . $title . $image;
+  $context['url'][0] = $link;
+
+}
+
+/**
+ * Runs any batch operation.
+ *
+ * @param array $sandbox
+ *   Contains all data needed for batch operation.
+ * @param string $callback
+ *   Callback executed to perform operations needed with all items.
+ * @param int $nodes_per_pass
+ *   Number of items to be executed on every batch pass
+ *
+ * @throws \DrupalUpdateException
+ */
+function ag_general_batch_run(&$sandbox, $callback, $nodes_per_pass = 100) {
+  $end = $sandbox['current'] + $nodes_per_pass;
+
+  // Loop.
+  while (($sandbox['current'] < $end) && ($sandbox['current'] < $sandbox['total'])) {
+    // Heavy operations.
+    $element = ag_general_get_element($sandbox);
+
+    if (function_exists($callback)) {
+      $callback($sandbox, $element);
+    }
+    else {
+      throw new DrupalUpdateException(t('Invalid callback'));
+    }
+
+    // Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1.
+  // Also, avoid division by zero.
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+  if ($sandbox['#finished'] === 1) {
+    $finished_message = t('Processed @records records. Finished.', array('@records' => $sandbox['total']));
+    drupal_set_message($finished_message);
+  }
+}

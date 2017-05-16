@@ -1,0 +1,168 @@
+.view-accordion-generic,
+.view-faq,
+.view-manual-content,
+.view-new-functionalities
+  .views-exposed-widget
+    width: 100%
+    > *
+      width: 100%
+    label
+      font-weight: normal
+      width: auto
+      display: inline-block
+    .chosen-single
+      color: $navy
+      +border-radius(4px)
+      font-size: 14px
+    .chosen-container
+      display: inline-block
+      margin-left: 10px
+      min-width: 150px
+      &.chosen-with-drop
+        .chosen-single
+          border-bottom-left-radius: 0
+          border-bottom-right-radius: 0
+  textarea
+    +border-radius(4px)
+  h3
+    font-size: 18px
+    font-weight: 700
+  // Accordion
+  .ui-widget
+    font-family: $font_pt_sans
+  .ui-icon
+    background: image-url('triangulo.png')
+    width: 12px
+    background-repeat: no-repeat
+  .ui-state-active
+    .ui-icon
+      background-position: 0 -40px
+  .ui-accordion
+    font-size: 16px
+    a
+      color: $deep_blue
+  .ui-accordion-header
+    border: 1px solid $light_gray
+    margin: 0
+    +border-radius(0)
+    background-image: none
+    background-color: $white
+    padding: .5em .75em
+    padding-right: 2.2em
+    border-bottom-width: 0
+    &:hover
+      background-color: $header_gray
+    .ui-accordion-header-icon
+      right: .75em
+      left: initial
+    // View Fields
+    .faq-title
+      color: $deep_blue
+    .faq-author
+      text-transform: lowercase
+      font-size: 14px
+      a
+        text-transform: none
+    .faq-num-comments
+      float: right
+    .faq-post-date,
+    .faq-num-comments
+      color: $gray
+      font-size: 14px
+      text-transform: lowercase
+  .ui-widget-content
+    border-width: 0
+    border-top: 1px solid $light_gray
+    color: $navy
+    padding: 0
+    line-height: 1.5em
+    font-size: 14px
+    color: $cold_gray
+    // View Fields
+    .views-field-body
+      padding: .5em .75em
+      margin-top: 1em
+    .views-field-value
+      padding: 1em .75em
+      margin-top: .5em
+      border-top: 1px dotted $gray
+  // Answers
+  .answers-results
+    margin-top: 2em
+    color: $cold_gray
+    > span
+      display: block
+      width: 100%
+      font-size: 18px
+      border-top: 1px solid $light_gray
+      border-bottom: 1px solid $light_gray
+      color: $navy
+      background: image-url('ico_respuestas.png') .75em center no-repeat
+      padding: .5em .75em .5em 2.6em
+      margin-bottom: 1em
+    .views-row
+      border-bottom: 1px solid $light_gray
+      overflow: hidden
+      margin: 1em 0
+      padding: 0 .75em 1em
+      display: table
+      width: 100%
+    .answer-info
+      width: 125px
+      border-right: 1px dotted $light_gray
+      padding-right: 1em
+      font-size: 14px
+      display: table-cell
+      position: relative
+      padding-bottom: 30px
+      .views-field-vote-widget-custom-field
+        position: absolute
+        bottom: 0
+    .answer-body
+      font-size: 14px
+      padding-left: 1em
+      display: table-cell
+  // Answers form
+  .view-empty,
+  .answer-question
+    margin-left: 9.5em
+    h2
+      font-size: 18px
+      color: $navy
+      font-weight: normal
+    .ckeditor_links
+      display: none!important
+    input.form-submit
+      float: right
+      overflow: hidden
+      margin: 1em 0 2em
+      line-height: 16px
+      font-weight: bold
+      font-size: 14px
+      min-width: 120px
+  .views-row-last 
+    .ui-accordion-header:not(.ui-state-active)
+      border-bottom-width: 1px
+
+.view-faq
+  .ui-widget-content
+    font-size: 16px
+    color: $navy
+
+// Messages
+.answer-message,
+.message-error,
+.message-status
+  display: none
+  margin: 10px 0
+  padding: 10px 15px
+  color: $white
+  +border-radius(6px)
+  text-align: center
+  background-color: $orange
+.message-success,
+.message-status
+  background-color: $green
+.message-error
+  background-color: $orange
+

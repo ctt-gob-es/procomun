@@ -1,0 +1,91 @@
+diff --git a/sites/all/modules/patched/simple_bookmarklet/js/simple_bookmarklet.js b/sites/all/modules/patched/simple_bookmarklet/js/simple_bookmarklet.js
+index 74ed324..fe05c3b 100644
+--- a/sites/all/modules/patched/simple_bookmarklet/js/simple_bookmarklet.js
++++ b/sites/all/modules/patched/simple_bookmarklet/js/simple_bookmarklet.js
+@@ -45,10 +45,49 @@
+           case 'selected':
+             return getSelText();
+             break;
++          case 'video':
++            return getVideo();
++            break;
++          case 'selected_video':
++            if (getSelText() == '') {
++              return getVideo();
++            }
++            else {
++              return getSelText() + '<br><br>' + getVideo();
++            }
++            break;
+         }
+         return "";
+       }
+ 
++// Function to get video
++      function getVideo() {
++        var videoWidth = 420;
++        var videoHeight = 315;
++        var iframe = "";
++
++        // Direct Youtube page video
++        if ($('[itemprop="embedURL"]').attr("href") != undefined) {
++          iframe += '<iframe width="' + videoWidth + '" height="' + videoHeight + '" src="' + $('[itemprop="embedURL"]').attr("href") + '" frameborder="0" allowfullscreen></iframe><br>';
++        }
++
++        // Embed iframe Youtube video
++        $('[src^="https://www.youtube.com"]').each(function() {
++          if ($(this).attr("src") != undefined) {
++            iframe += '<iframe width="' + videoWidth + '" height="' + videoHeight + '" src="' + $(this).attr("src") + '" frameborder="0" allowfullscreen></iframe><br>';
++          }
++        });
++
++        // Embed iframe Vimeo video
++        $('[src^="//player.vimeo.com"]').each(function() {
++          if ($(this).attr("src") != undefined) {
++            iframe += '<iframe width="' + videoWidth + '" height="' + videoHeight + '" src="' + $(this).attr("src") + '" frameborder="0" allowfullscreen></iframe><br>';
++          }
++        });
++
++        return iframe;
++      }
++
+       // Function to get text selected by the user
+       function getSelText() {
+         var s = '';
+@@ -59,12 +98,8 @@
+         } else if (document.selection) {
+           s = document.selection.createRange().text;
+         }
+-        if (s == "") {
+-          return document.title;
+-        }
+-        else {
+-          return s;
+-        }
++
++        return s;
+       }
+ 
+       // Function that creates the bookmarklet
+diff --git a/sites/all/modules/patched/simple_bookmarklet/simple_bookmarklet.module b/sites/all/modules/patched/simple_bookmarklet/simple_bookmarklet.module
+index 0ddb595..efe1ab9 100644
+--- a/sites/all/modules/patched/simple_bookmarklet/simple_bookmarklet.module
++++ b/sites/all/modules/patched/simple_bookmarklet/simple_bookmarklet.module
+@@ -62,6 +62,8 @@ function _simple_bookmarklet_prepopulate() {
+     'url' => t('URL of the page'),
+     'title' => t('Page title'),
+     'selected' => t('Text selected by the user'),
++    'video' => ('Video iframe on page'),
++    'selected_video' => ('Text selected by the user and video iframe on page'),
+   );
+ }
+ 
+@@ -91,7 +93,7 @@ function simple_bookmarklet_js() {
+     'default_stylesheet' => $css2,
+     'strings' => array(),
+     'prepopulate' => array(),
+-    'url' => url('node/add/' . $node_type,
++    'url' => url('node/add/' . str_replace('_', '-', $node_type),
+                  array('query' => array('simple_bookmarklet' => 1),
+                        'absolute' => TRUE)),
+   );

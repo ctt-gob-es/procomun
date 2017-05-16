@@ -1,0 +1,85 @@
+diff --git a/sites/all/modules/patched/wsclient/wsclient_rest/wsclient_rest.module b/sites/all/modules/patched/wsclient/wsclient_rest/wsclient_rest.module
+index 2370692..8c4527f 100644
+--- a/sites/all/modules/patched/wsclient/wsclient_rest/wsclient_rest.module
++++ b/sites/all/modules/patched/wsclient/wsclient_rest/wsclient_rest.module
+@@ -98,38 +98,53 @@ class WSClientRESTEndpoint extends WSClientEndpoint {
+       $data = $arguments[$operation['data']];
+       unset($arguments[$operation['data']]);
+     }
+-    
+-    #Si una key no tiene valor, lo elimino del array para evitar errores por parte
+-    #del orquestador
+-    foreach($arguments as $key => $value) {
+-      #Si es un campo atómico
+-      if (!is_array($value)) {
+-        if (!$value) {
+-          unset($arguments[$key]);
+-          continue;
++    if ($type == 'POST') {
++      #Si una key no tiene valor, lo elimino del array para evitar errores por parte
++      #del orquestador
++      foreach($arguments as $key => $value) {
++        #Si es un campo atómico
++        if (!is_array($value)) {
++          if (!$value) {
++            unset($arguments[$key]);
++            continue;
++          }
+         }
+-      }
+-      #Si es un campo multivaluado
+-      else {
+-        #Si es un array, compruebo que todos sus keys tengan valor, de lo contrario los elimino.
+-        foreach($value as $key_arr => $value_arr) {
+-          if (!$value_arr) unset($arguments[$key][$key_arr]);
++        #Si es un campo multivaluado
++        else {
++          #Si es un array, compruebo que todos sus keys tengan valor, de lo contrario los elimino.
++          foreach($value as $key_arr => $value_arr) {
++            if (!$value_arr) unset($arguments[$key][$key_arr]);
++          }
++          
++          #Si finalmente ninguno de los keys del array tiene valor, elimino el array directamente.
++          if (count($arguments[$key]) == 0) unset($arguments[$key]);
+         }
+-        
+-        #Si finalmente ninguno de los keys del array tiene valor, elimino el array directamente.
+-        if (count($arguments[$key]) == 0) unset($arguments[$key]);
+       }
++  
++      $options = array(
++        'method' => $type,
++        'data' => json_encode($arguments),
++        'timeout' => 15,
++        'headers' => array('Content-Type' => 'application/json'),
++      );
++  
++      $result = drupal_http_request($this->service->url . $operation_url, $options);
++      return $result;
+     }
++    else {
++      try {
++        $response = $client->execute(new HttpClientRequest($this->service->url . $operation_url, array(
++          'method' => $type,
++          'parameters' => $arguments,
++          'data' => $data,
++        )));
+ 
+-    $options = array(
+-      'method' => $type,
+-      'data' => json_encode($arguments),
+-      'timeout' => 15,
+-      'headers' => array('Content-Type' => 'application/json'),
+-    );
+-
+-    $result = drupal_http_request($this->service->url . $operation_url, $options);
+-    return $result;
++        return $response;
++      }
++      catch (HttpClientException $e) {
++        throw new WSClientException('Error invoking the REST service %name, operation %operation: %error', array('%name' => $this->service->label, '%operation' => $operation_name, '%error' => $e->getMessage()));
++      }      
++    }
+   }
+ 
+   public function formAlter(&$form, &$form_state) {

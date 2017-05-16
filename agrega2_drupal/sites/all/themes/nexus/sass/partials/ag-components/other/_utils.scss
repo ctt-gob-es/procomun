@@ -1,0 +1,5 @@
+// Cualquier elemento que tenga este class hace que todos sus hijos de primer nivel estén alineados.
+.inline > * {
+  display: inline-block;
+}
+

@@ -1,0 +1,17 @@
+diff --git a/includes/og.field.inc b/includes/og.field.inc
+index e2fbe6a..aa27234 100644
+--- a/includes/og.field.inc
++++ b/includes/og.field.inc
+@@ -305,7 +305,11 @@ function og_complex_widget_element_validate($element, &$form_state, $form) {
+   drupal_array_set_nested_value($form_state['values'], array_slice($element['#parents'], 0, -1), $ids, TRUE);
+ 
+   // If the element is required, ensure that at least one group has been chosen.
+-  if ($element['#required']) {
++  // Also options_field_widget_validate will already checks that an options has been
++  // set and checking again causes duplicate errors.
++  $is_admin = isset($element['admin']);
++  $default_empty_checked = (isset($element['default']['#element_validate'][0]) && ($element['default']['#element_validate'][0] == 'options_field_widget_validate'));
++  if ($element['#required'] && ($is_admin || !$default_empty_checked)) {
+     $subform = drupal_array_get_nested_value($form_state['values'], $element['#array_parents']);
+     if (empty($subform)) {
+       form_error($element, t('!name field is required.', array('!name' => $element['#title'])));

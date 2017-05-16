@@ -1,0 +1,5 @@
+PATCHES APPLIED
+---------------
+- Enable CKEditor in the steps when we are creating a new demo.
+  Change the path matching in order to work with "$_GET" parameters.
+  See: demo_tour-enable-ckeditor-and-paths-matching.patch

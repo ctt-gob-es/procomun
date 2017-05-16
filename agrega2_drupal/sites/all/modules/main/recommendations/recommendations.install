@@ -1,0 +1,77 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the recommendations module.
+ */
+
+/**
+ * Implementation of hook_schema().
+ */
+function recommendations_schema() {
+
+  $schema['recommendations_shared_content'] = array(
+    'description' => 'Table storing content sharing',
+    'fields' => array(
+      'sc_id' => array(
+        'description' => 'Unique identifier for this table.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE
+      ),
+      'uid' => array(
+        'description' => 'The primary identifier for a user.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE
+      ),
+      'nid' => array(
+        'description' => 'How many nodes this queue will hold',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'gid' => array(
+        'description' => 'The group id that the content was shared',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'timestamp' => array(
+        'description' => 'Time stamp',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+    ), // fields
+    'primary key' => array('sc_id'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implements hook_update_N().
+ */
+function recommendations_update_7000() {
+  $spec = array(
+    'description' => 'The group id that the content was shared',
+    'type' => 'int',
+    'not null' => TRUE,
+    'unsigned' => TRUE,
+  );
+  db_add_field( 'recommendations_shared_content', 'gid', $spec);
+}
+
+/**
+ * Implements hook_update_N().
+ */
+function recommendations_update_7001() {
+  try {
+    db_add_index('recommendations_shared_content', 'nid', array('nid'));
+    db_add_index('recommendations_shared_content', 'uid', array('uid'));
+  }
+  catch (DatabaseSchemaObjectExistsException $e) {
+    watchdog('recommendations', 'Excepción esperada, ya existe el índice en la tabla recommendations_shared_content: ' . $e->getMessage);
+  }
+}

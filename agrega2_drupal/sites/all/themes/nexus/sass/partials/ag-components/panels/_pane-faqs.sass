@@ -1,0 +1,230 @@
+.page-help,
+.page-help-functionalities,
+.page-help-faq
+  .pane-title
+    font-size: 20px
+    color: $navy
+  .panel-display
+    padding-top: 1em
+// Header
+.help-header
+  float: right
+  margin-top: 1em
+  margin-bottom: 3em
+.contact-link
+  span
+    &:first-child
+      color: $gray
+      font-size: 16px
+      font-style: italic
+      padding-right: 1.4em
+      margin-right: .25em
+      background: image-url('arrow.png') right center no-repeat
+    &.help-contact-us
+      font-size: 16px
+      text-decoration: underline
+// Search
+.search-header
+  margin-bottom: 3em
+  float: left
+  input
+    min-width: 420px
+    padding: 8px 40px 8px 10px
+    background: $white image-url('lupa.png') 97% center no-repeat
+// Tabs
+.help-tabs
+  clear: both
+  margin-bottom: 3em
+  .tabs
+    padding: 0
+    li
+      width: 33.3%
+      a
+        background: $header_gray
+        +border-radius(0)
+        padding: 25px 15px 15px 90px
+        background-position: 15px center
+        background-repeat: no-repeat
+        min-height: 75px
+        border: 1px solid $light_gray
+        text-transform: none
+        font-weight: 700
+        font-size: 18px
+        &:hover
+          border-bottom-color: $light_gray
+        &.active
+          border-bottom-width: 0
+          cursor: default
+      &:first-child
+        a
+          background-image: image-url('img_manual_peq.png')
+      &:nth-child(2)
+        a
+          background-image: image-url('img_preguntas_peq.png')
+      &:last-child
+        a
+          background-image: image-url('img_novedades_peq.png')
+          margin-right: 0
+// Index
+.manual-index
+  padding: 0
+  .pane-content
+    background-color: $lightest_gray
+    padding: .75em .5em
+    padding-top: 0.1em
+    table
+      display: block
+      margin-top: 1em
+    tbody
+      display: block
+    caption
+      font-size: 15px
+      font-weight: 700
+      color: $gray
+      text-align: left
+      border-bottom: 1px solid $light_gray
+      padding-bottom: .5em
+      margin-bottom: .5em
+      display: block
+    tr
+      background-color: transparent
+      border-bottom: 1px dotted $light_gray
+      display: block
+    td
+      padding: .75em
+      display: block
+      border-width: 0
+      a
+        margin-right: 10px
+    .form-actions
+      margin: 0
+      input
+        margin-top: 1em
+// Content
+.manual-content
+  padding-right: 0
+  .panel-display
+    padding-top: 0
+  .views-field-edit-node
+    @extend .edit-link
+  .views-field-value
+    clear: both
+// Buttons
+.pane-ag-section-help-custom-help-manual-buttons
+  float: right
+  position: relative
+  z-index: 9
+  margin-top: 4px
+  .pane-content
+    .manual-help-pdf-button
+      margin-left: 15px
+    a
+      +button($orange)
+      font-weight: bold
+      &:hover
+        color: $white
+        background-color: $dark_orange
+    span:hover
+      a
+        color: $white
+        background-color: $dark_orange
+
+// New content
+.pane-faq-form
+  position: relative
+  // Modal
+  #ag-section-help-add-faq-form
+    position: absolute
+    clear: both
+    border: 1px solid $light_gray
+    +border-radius(5px)
+    +box-shadow(0px 3px 6px $light_gray)
+    position: relative
+    padding: 15px
+    position: absolute
+    width: 100%
+    z-index: 9
+    background: $white
+    top: 50px
+    &:after,
+    &:before
+      bottom: 100%
+      left: 95%
+      border: solid transparent
+      content: " "
+      height: 0
+      width: 0
+      position: absolute
+      pointer-events: none
+    &:after
+      border-color: transparent
+      border-bottom-color: $white
+      border-width: 10px
+      margin-left: -10px
+    &:before
+      border-color: transparent
+      border-bottom-color: $light_gray
+      border-width: 11px
+      margin-left: -11px
+    // Title
+    h2
+      font-weight: normal
+      font-size: 18px
+      color: $navy
+      border-bottom: 1px solid $light_gray
+      margin-bottom: 30px
+      margin-top: 10px
+      padding-bottom: 10px
+      padding-left: 50px
+      background: image-url('ico_pregunta.png') 15px top no-repeat
+    // Form
+    .text-format-wrapper,
+    .form-item-title
+      padding: 0 50px
+    label
+      display: block
+      margin-bottom: 10px
+      color: $gray
+      font-size: 16px
+    input[type=text],
+    textarea
+      +border-radius(3px)
+      width: 100%
+    .ckeditor_links
+      display: none!important
+    // Buttons
+    .submit-buttons
+      width: 100%
+      text-align: right
+      margin-top: 30px
+      padding: 0 50px 15px
+    input.form-submit
+      border: 1px solid $main_blue
+    .cancel-question-button,
+    input.form-submit
+      display: inline-block
+      min-width: 120px
+      text-align: center
+      margin-left: 10px
+      font-weight: bold
+      line-height: 16px
+
+// Title & button for new content
+.pane-ag-section-help-custom-faq-pane-title
+  float: left
+  margin-bottom: 0
+.new-content-button
+  float: right
+  a
+    color: inherit
+    &:hover
+      text-decoration: none
+      color: $white
+  span
+    +button($orange)
+    cursor: pointer
+    position: relative
+    z-index: 10
+    font-weight: bold
+    &:hover
+      background-color: $dark_orange

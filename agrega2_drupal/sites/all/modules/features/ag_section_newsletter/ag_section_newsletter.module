@@ -1,0 +1,713 @@
+<?php
+/**
+ * @file
+ * Code for the ag_section_newsletter feature.
+ */
+
+include_once 'ag_section_newsletter.features.inc';
+
+/**
+ * Implementation of hook_ctools_plugin_directory().
+ */
+function ag_section_newsletter_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'ctools' && $plugin == 'content_types') {
+    return 'plugins/' . $plugin;
+  }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function ag_section_newsletter_menu() {
+  $items = array();
+
+  $items['admin/config/group/ag_section_newsletter'] = array(
+    'title' => 'OG Simplenews',
+    'description' => 'Config Organic groups simplenews settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ag_section_newsletter_admin_form'),
+    'access arguments' => array('config og simplenews'),
+    'file' => 'includes/ag_section_newsletter.admin.inc',
+  );
+
+  $items['ag_section_newsletter/%/%/%/%user'] = array(
+    'title' => 'Ag newsletter subscribe-unsubscribe',
+    'page callback' => 'ag_section_newsletter_manage_newsletter_subscriptions',
+    'page arguments' => array(1, 2, 3, 4),
+    'access callback' => 'ag_section_newsletter_access_subscribe_newsletter',
+    'access arguments' => array(1, 2, 4),
+    'file' => 'includes/ag_section_newsletter.pages.inc',
+  );
+  // Default tab for administer newsletters
+  $items['ag_section_newsletter/%/simplenews'] = array(
+    'title' => 'Newsletters',
+    'description' => 'List newsletters and newsletter sent status.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ag_section_newsletter_admin_newsletter_issues', 1),
+    'access callback' => 'og_user_access',
+    'access arguments' => array('node', 1, 'administer og newsletter'),
+    'file' => 'includes/ag_section_newsletter.pages.inc',
+  );
+  // Default tab for administer newsletters issues.
+  $items['ag_section_newsletter/%/simplenews/newsletters'] = array(
+    'title' => 'Administer newsletters',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+
+  // Tab for administer subscriptions. This is the same screen
+  $items['ag_section_newsletter/%/simplenews/subscribers'] = array(
+    'title' => 'Administer subscribers',
+    'description' => 'List newsletters and newsletter sent status.',
+    'type' => MENU_LOCAL_TASK,
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ag_section_newsletter_admin_subscription', 1),
+    'access callback' => 'og_user_access',
+    'access arguments' => array('node', 1, 'administer og newsletter'),
+    'file' => 'includes/ag_section_newsletter.pages.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+function ag_section_newsletter_menu_alter(&$items) {
+  if (isset($items['newsletter/confirm/remove/%/%/%/%'])) {
+    $items['newsletter/confirm/remove/%/%/%/%']['access arguments'][0] = 'unsubscribe from the newsletter';
+  }
+}
+
+/**
+ * Acces callback para ag_section_newsletter/%/%/%/%user path.
+ * @param  [Integer] $group_id
+ *         Group indentifier
+ * @param  [String] $op
+ *         Operation, posble values:
+ *          - subscribe
+ *          - unsubscribe
+ * @param  [Object  $user
+ *         $user object
+ */
+function ag_section_newsletter_access_subscribe_newsletter($group_id, $op, $user) {
+  return og_user_access('node', $group_id, "$op to newsletter", $user);
+}
+
+/**
+ * Implements hook_permission().
+ */
+function ag_section_newsletter_permission() {
+  $permissions = array();
+
+  $permissions['config og simplenews'] = array(
+    'title' => t('Access to OG simplenews settings'),
+  );
+
+  $permissions['unsubscribe from the newsletter'] = array(
+    'title' => t('Unsubscribe from the newsletter'),
+  );
+
+  return $permissions;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function ag_section_newsletter_block_info() {
+  return array(
+    'generate_new_newsletter' => array(
+      'info' => t('Generate new newsletter'),
+      'cache' => DRUPAL_CACHE_PER_PAGE,
+    ),
+  );
+}
+
+/**
+ * Implements hook block_view().
+ */
+function ag_section_newsletter_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'generate_new_newsletter':
+      $group = og_context();
+      if (!empty($group) && og_user_access('node', $group['gid'], 'administer og newsletter')) {
+        $block['content'] = l(t('Generate new newsletter'), 'node/' . $group['gid'] . '/ag_section_newsletter/new');
+      }
+      break;
+  }
+
+  return $block;
+}
+
+
+/**
+ * Implements hook_entity_insert().
+ */
+function ag_section_newsletter_entity_insert($entity, $entity_type) {
+  global $language;
+
+  // If the entity is not a group, return.
+  if (!og_is_group($entity_type, $entity)) {
+    return;
+  }
+
+  // If the bundle is not set to get a default newsletter we should do nothing.
+  $groups_with_default_newsletter = variable_get('ag_section_newsletter_groups_with_default_newsletter', array());
+  if (!in_array($entity->type, array_filter($groups_with_default_newsletter))) {
+    return;
+  }
+
+  // If the new entity is a group content create a new newsletter for it.
+  $wp_entity = entity_metadata_wrapper($entity_type, $entity);
+  $entity_id = $wp_entity->getIdentifier();
+  $newsletter = ag_section_newsletter_get_all_by_group($entity_id);
+  if (is_array($newsletter)) {
+    $newsletter = reset($newsletter);
+  }
+
+  if (!$newsletter) {
+    // Create a default newsletter for this community:
+    $entity_title = check_plain($entity->title_field[$language->language][0]['value']);
+    $newsletter = entity_create('simplenews_newsletter', array(
+      'name' => t('@group_name newsletter', array('@group_name' => $entity->title_field[$language->language][0]['value'])),
+    ));
+    $wrapper = entity_metadata_wrapper('simplenews_newsletter', $newsletter);
+    $wrapper->og_group_ref->set(array($entity_id));
+    $wrapper->save();
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function ag_section_newsletter_form_simplenews_node_form_alter(&$form, &$form_state) {
+  global $user;
+
+  /* Add a custom validate to ensure that og_group_ref is syncronized with the
+  newsleter entity og_group_ref */
+  $form['#validate'][] = 'ag_section_newsletter_form_simplenews_node_form_validate';
+
+  //Hide og_group_ref. A newsletter is always published on its network. Leave for uid=1 user.
+  if (!isset($user->uid) || $user->uid != 1) {
+    $form['og_group_ref']['#access'] = FALSE;
+  }
+
+  // Force show this field. For unknown reasons, it doesn't load in edit forms to non owners
+  if (!empty($form['field_simplenews_scheduled_date'])) {
+    $form['field_simplenews_scheduled_date']['#access'] = TRUE;
+  }
+
+  // Hide "Newsletter" field, so it isn't necesary to users to save newsletter properly
+  if (!empty($form['simplenews_newsletter'])) {
+    $form['simplenews_newsletter']['#access'] = FALSE;
+  }
+}
+
+/**
+ * Validate function for simplenews_node_form.
+ */
+function ag_section_newsletter_form_simplenews_node_form_validate(&$form, &$form_state) {
+  // Get the value of simplenews_newsletter field
+  if (isset($form_state['values']['simplenews_newsletter'][LANGUAGE_NONE][0]['target_id'])) {
+    $newsletter_ref = $form_state['values']['simplenews_newsletter'][LANGUAGE_NONE][0]['target_id'];
+  }
+
+  // Get the value of og_group_ref field
+  if (isset($form_state['values']['og_group_ref'][LANGUAGE_NONE][0]['target_id'])) {
+    $og_group_ref = $form_state['values']['og_group_ref'][LANGUAGE_NONE][0]['target_id'];
+  }
+
+  if (!empty($newsletter_ref) && !empty($og_group_ref)) {
+    // Get the og_group_ref  of the entity:
+    if (!og_is_member('node', $og_group_ref, 'simplenews_newsletter', $newsletter_ref)) {
+      // The selected newsletter is not the same og_group_ref than $og_group_ref field:
+      form_set_error('simplenews_newsletter', t('You must select a newsletter from ypur community'));
+    }
+  }
+}
+
+/**
+ * Implements hook_og_permission().
+ */
+function ag_section_newsletter_og_permission() {
+  return array(
+    'administer og newsletter' => array(
+      'title' => t('Administer organic groups newsletter'),
+      'description' => t('Allow OG members to administer newsletters'),
+      'roles' => array(OG_AUTHENTICATED_ROLE),
+      'default role' => array(OG_AUTHENTICATED_ROLE),
+    ),
+    'subscribe to newsletter' => array(
+      'title' => t('Subscribe to organic groups newsletter'),
+      'description' => t('Allow OG members to subscribe to OG newsletters'),
+      'roles' => array(OG_AUTHENTICATED_ROLE),
+      'default role' => array(OG_AUTHENTICATED_ROLE),
+    ),
+    'unsubscribe to newsletter' => array(
+      'title' => t('Unsubscribe to organic groups newsletter'),
+      'description' => t('Allow OG members to unsubscribe to OG newsletters'),
+      'roles' => array(OG_AUTHENTICATED_ROLE),
+      'default role' => array(OG_AUTHENTICATED_ROLE),
+    ),
+  );
+}
+
+/**
+ * Implements hook_flag_access().
+ */
+function ag_section_newsletter_flag_alter(&$flag) {
+  $current_path = current_path();
+  $destination = drupal_get_destination();
+
+  // Get GID to make flag and handlers aren't lost.
+  if ($flag->name == 'og_newsletter' || ($current_path == $destination['destination'])) {
+    $gid = explode('/', $destination['destination']);
+    if (!empty($gid['1']) && is_numeric($gid['1'])) {
+      $flag->og_group_ref = $gid['1'];
+    }
+  }
+}
+
+/**
+ * Implements hook_flag_alter().
+ */
+function ag_section_newsletter_flag_access($flag, $entity_id, $action, $account) {
+  // get Flag name:
+  $flag_type = $flag->name;
+  if ($flag_type === 'og_newsletter' && !empty($flag->og_group_ref)) {
+    return og_user_access('node', $flag->og_group_ref, 'administer og newsletter');
+  }
+  else if ($flag_type === 'og_newsletter') {
+    // If no context return False:
+    return FALSE;
+  }
+}
+
+/**
+ * Implements hook_flag_flag().
+ */
+function ag_section_newsletter_flag_flag($flag, $entity_id, $account, $flagging) {
+  if ($flag->name === 'og_newsletter' && !empty($flag->og_group_ref)) {
+    // Update the row with the og_group_ref:
+    $query = 'UPDATE {flagging} SET gid = :og_group_ref ';
+    $query .= 'WHERE fid = :fid AND entity_id = :entity_id AND uid = :uid ';
+
+    $query_params = array(
+      ':fid' => $flag->fid,
+      ':entity_id' => $entity_id,
+      ':og_group_ref' => $flag->og_group_ref,
+      ':uid' => $account->uid,
+    );
+    db_query($query, $query_params);
+  }
+}
+
+/**
+ * Loads all visible newsletters for a Og group.
+ *
+ * Does not include newsletters with the opt-out/opt-in setting set to hidden.
+ *
+ * @return array All newsletter entities.
+ *
+ * @ingroup newsletter
+ */
+function ag_section_newsletter_get_all_by_group($gid) {
+  $query = new EntityFieldQuery;
+  $result = $query
+    ->entityCondition('entity_type', 'simplenews_newsletter')
+    ->fieldCondition('og_group_ref', 'target_id', $gid)
+    ->propertyOrderBy('weight')
+    ->execute();
+  return isset($result['simplenews_newsletter']) ? simplenews_newsletter_load_multiple(array_keys($result['simplenews_newsletter'])) : NULL;
+}
+
+/**
+ * Retrieve a rendered array wiht the links to subscribe or unsubscribe to news_leter
+ */
+function ag_section_newsletter_retrieve_subscribe_user_link($nid, $account = NULL) {
+  // If is not set $uid load teh current user uid
+  if (!isset($account)) {
+    global $user;
+    $account = $user;
+  }
+
+  // Get the newsletter for this group:
+  $newsletters = ag_section_newsletter_get_all_by_group($nid);
+  if (!empty($newsletters)) {
+    $newsletter = array_pop($newsletters);
+    //Check if the user is already a subscriber:
+    $is_subscriber = simplenews_user_is_subscribed($account->mail, $newsletter->newsletter_id);
+    // Define our Ajax wrapper:
+    $newsletter_wrapper = array(
+      '#type' => 'container',
+      '#attributes' => array(
+        'id' => "newsletter-notifications-$account->uid",
+        'class' => "newsletter-notificacion",
+      ),
+    );
+    if (!$is_subscriber && og_user_access('node', $nid, 'subscribe to newsletter')) {
+      // Show the subscribe link:
+      $newsletter_wrapper['content']['link'] = array(
+        '#type' => 'link',
+        '#title' => t('Subscribe to the newsleter'),
+        '#href' => "ag_section_newsletter/$nid/subscribe/$newsletter->newsletter_id/$account->uid/nojs",
+        '#ajax' => array(
+          'wrapper' => "newsletter-notifications-$account->uid",
+          'method' => 'html',
+        ),
+      );
+    }
+    elseif ($is_subscriber && og_user_access('node', $nid, 'unsubscribe to newsletter')) {
+      // Show the unsubscribe link:
+      $newsletter_wrapper['content']['link'] = array(
+        '#type' => 'link',
+        '#title' => t('Unsubscribe from the newsleter'),
+        '#href' =>
+          "ag_section_newsletter/$nid/unsubscribe/$newsletter->newsletter_id/$account->uid/nojs",
+        '#ajax' => array(
+          'wrapper' => "newsletter-notifications-$account->uid",
+          'method' => 'html',
+        ),
+      );
+    }
+  }
+
+  return isset($newsletter_wrapper['content']) ? $newsletter_wrapper : array();
+}
+
+/*
+ * Implements hook_entity_info_alter().
+ */
+function ag_section_newsletter_entity_info_alter(&$entity_info) {
+  // Declare Newsletter view mode:
+  $entity_info['node']['view modes']['newsletter'] = array(
+    'label' => t('Newsletter'),
+    'custom settings' => TRUE,
+  );
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function ag_section_newsletter_preprocess_node(&$vars) {
+  if ($vars['view_mode'] == 'newsletter' ) {
+    $vars['theme_hook_suggestions'][] = 'node__' . $vars['type'] . '__listing';
+  }
+}
+
+
+function ag_section_newsletter_generate_newsletter($params, $op) {
+  global $user;
+
+  switch ($op) {
+    case 'new':
+      $newsletter = entity_create('node', array('type' => 'simplenews'));
+      break;
+
+    case 'edit':
+      $newsletter = entity_load_single('node', $params['newsletter_id']);
+      break;
+  }
+
+  $newsletter->uid = $user->uid;
+  // Create a Entity Wrapper of that new Entity
+  $wp_newsletter = entity_metadata_wrapper('node',$newsletter);
+  // Specify the title
+  $wp_newsletter->title = $params['title'];
+
+  if (isset($params['gid'])) {
+    $wp_newsletter->og_group_ref->set(array($params['gid']));
+    $og_newsletters = ag_section_newsletter_get_all_by_group($params['gid']);
+    if (is_array($og_newsletters)) {
+      $simplenews_newsletter = reset($og_newsletters)->newsletter_id;
+      $wp_newsletter->simplenews_newsletter->set(array($simplenews_newsletter));
+    }
+
+    // Unflag content with og_newsletter flag
+    _ag_section_newsletter_unflag_newsletter_contents($params);
+  }
+
+  // Add the scheduled sending date to the entity wrapper
+  // There's a problem with setting date fields this way,
+  // so we need to get the timestamp to set the date field.
+  if ($params['scheduled_send'] && !empty($params['scheduled_date'])) {
+    $wp_newsletter->field_simplenews_scheduled_send->set(TRUE);
+
+    $scheduled_date = new DateTime($params['scheduled_date']);
+    $timestamp = $scheduled_date->getTimestamp();
+    $wp_newsletter->field_simplenews_scheduled_date->set($timestamp);
+  }
+  else {
+    $wp_newsletter->field_simplenews_scheduled_send->set(FALSE);
+  }
+
+  // Update values:
+  if (isset($params['body'])) {
+    $wp_newsletter->body->set($params['body']);
+  }
+  if (isset($params['related_content'])) {
+    $wp_newsletter->field_simplenews_content_ref->set(array_keys($params['related_content']));
+  }
+  // Save the changes:
+  $wp_newsletter->save();
+
+  return isset($newsletter->nid) ? $newsletter : 0;
+}
+
+/**
+ * Implements hook_token_info().
+ */
+function ag_section_newsletter_token_info() {
+  $types = array(
+    'name' => t('procomun-newsletter'),
+    'description' => t('Tokens related to procomun'),
+  );
+
+  $custom['og-ref'] = array(
+    'name' => t('Referenced organic groups'),
+    'description' => t('Referenced organic groups'),
+  );
+
+  return array(
+    'types' => array(
+      'procomun-newsletter' => $types,
+    ),
+    'tokens' => array(
+      'procomun-newsletter' => $custom,
+    ),
+  );
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function ag_section_newsletter_tokens($type, $tokens, array $data = array(), array $options = array()) {
+  $replacements = array();
+
+  foreach ($tokens as $name => $original) {
+    switch ($name) {
+      case 'og-ref':
+        // By default try to get form url:
+        $parameters = drupal_get_query_parameters();
+        if (!empty($parameters) && isset($parameters['og_group_ref'])) {
+          $group = check_plain($parameters['og_group_ref']);
+        }
+        else {
+          // Searh if there is a og_context().
+          $group = og_context();
+          if (empty($group) && isset($_SESSION['og_context'])) {
+            $group = $_SESSION['og_context'];
+          }
+          if (!empty($group)) {
+            $group = $group['gid'];
+          }
+        }
+        // If is set gorups:
+        if (isset($group)) {
+          $replacements[$original] = $group;
+        }
+        break;
+    }
+  }
+
+  return $replacements;
+}
+
+/**
+ * Unflag the contents that as been sent by newsletter
+ * @param  [type] $params [description]
+ */
+function _ag_section_newsletter_unflag_newsletter_contents($params) {
+  $query = db_select('flag', 'f');
+  $query->fields('f', array('fid'));
+  $query->condition('name', 'og_newsletter');
+  $fid = $query->execute()->fetchField(0);
+  // Get the contents flagged:
+  $query = db_select('flagging', 'f');
+  $flags = $query->condition('f.gid', $params['gid'])
+    ->condition('fid', $fid)
+    ->fields('f', array('entity_id', 'uid'))
+    ->execute()
+    ->fetchAll();
+  // For each flag for this OG unflag it
+  if (!empty($flags)) {
+    foreach($flags as $flag) {
+      // Tenemos que tener en cuenta que varios usuarios admin de un mismo OG pueden haber marcado
+      // un mismo contenido, por ello debemos unflagear para ambos users.
+      $account = user_load($flag->uid);
+      flag('unflag', 'og_newsletter', $flag->entity_id, $account);
+    }
+  }
+}
+
+/**
+ * Subscribe user to a specific group newsletter.
+ */
+function ag_section_newsletter_subscribe_user($account, $gid) {
+  // Get the newsletter for this group:
+  $newsletters = ag_section_newsletter_get_all_by_group($gid);
+
+  if (!empty($newsletters)) {
+    if (is_array($newsletters)) {
+      $newsletter = array_pop($newsletters);
+    }
+
+    if (isset($newsletter->newsletter_id)) {
+      // Check if the user is already a subscriber:
+      $is_subscriber = simplenews_user_is_subscribed($account->mail, $newsletter->newsletter_id);
+
+      // Subscribe only if it wasn't subscribed.
+      if (!$is_subscriber) {
+        simplenews_subscribe($account->mail, $newsletter->newsletter_id, FALSE, 'website', '');
+      }
+    }
+  }
+}
+
+/**
+ * Unsubscribe user to a specific group newsletter.
+ */
+function ag_section_newsletter_unsubscribe_user($account, $gid) {
+  // Get the newsletter for this group:
+  $newsletters = ag_section_newsletter_get_all_by_group($gid);
+
+  if (!empty($newsletters)) {
+    if (is_array($newsletters)) {
+      $newsletter = array_pop($newsletters);
+    }
+
+    if (isset($newsletter->newsletter_id)) {
+      // Check if the user is already a subscriber.
+      $is_subscriber = simplenews_user_is_subscribed($account->mail, $newsletter->newsletter_id);
+
+      // Unsubscribe only if it wasn't subscribed.
+      if ($is_subscriber) {
+        simplenews_unsubscribe($account->mail, $newsletter->newsletter_id, FALSE, 'website');
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_og_membership_insert().
+ * Adds a user to community newsletter when joining the community.
+ */
+function ag_section_newsletter_og_membership_insert($og_membership) {
+  if ($og_membership->entity_type === 'user' && !empty($og_membership->etid) && !empty($og_membership->gid)) {
+    // Get user mail throught uid in membership info and subscribe it to community newsletter
+    $account = DrupalToolkit::getUserData($og_membership->etid, ['mail']);
+    ag_section_newsletter_subscribe_user($account, $og_membership->gid);
+  }
+}
+
+/**
+ * Implements hook_og_membership_delete().
+ * Removes a user from community newsletter when leaving the community.
+ */
+function ag_section_newsletter_og_membership_delete($og_membership) {
+  if ($og_membership->entity_type === 'user' && !empty($og_membership->etid) && !empty($og_membership->gid)) {
+    // Get user mail throught uid in membership info and unsubscribe it from community newsletter
+    $account = DrupalToolkit::getUserData($og_membership->etid, ['mail']);
+    ag_section_newsletter_unsubscribe_user($account, $og_membership->gid);
+  }
+}
+
+/**
+ * Implements hook_user_presave().
+ * Update newsletter subscriptions when a user changes email
+ */
+function ag_section_newsletter_user_presave(&$edit, $account, $category) {
+  // If user changes email
+  if (!empty($account->mail) && !empty($edit['mail']) && $account->mail !== $edit['mail']) {
+    // Update table simplenews_subscriber
+    db_update('simplenews_subscriber')
+      ->fields(array(
+        'mail' => $edit['mail'],
+      ))
+      ->condition('uid', $account->uid)
+      ->execute();
+  }
+}
+
+/**
+ * Implements hook_cron().
+ * Use newsletter date field to mark newsletter for a scheduled send.
+ */
+function ag_section_newsletter_cron() {
+  // Load simplenews files
+  module_load_include('inc', 'simplenews', 'includes/simplenews.admin');
+  module_load_include('inc', 'simplenews', 'includes/simplenews.mail');
+
+  // Get current timestamp
+  $time = REQUEST_TIME;
+
+  // Start query - Join tables
+  $query = db_select('field_data_field_simplenews_scheduled_date', 'sd');
+  $query->join('field_data_field_simplenews_scheduled_send', 'ss', 'sd.entity_id = ss.entity_id');
+  $query->leftjoin('field_data_simplenews_issue_status', 'sis', 'sd.entity_id = sis.entity_id');
+
+  // Add fields and conditions
+  $scheduled_newsletters = $query
+    ->fields('sd', ['entity_id'])
+    ->condition('ss.field_simplenews_scheduled_send_value', 1)
+    ->where('sis.simplenews_issue_status_value = 0 OR sis.simplenews_issue_status_value IS NULL')
+    ->where("UNIX_TIMESTAMP(CONVERT_TZ(sd.field_simplenews_scheduled_date_value, '+00:00', 'SYSTEM')) < " . $time)
+    ->execute()
+    ->fetchAllKeyed(0, 0);
+
+  // Process the result data
+  foreach ($scheduled_newsletters as $entity_id) {
+    simplenews_issue_send([$entity_id]);
+  }
+}
+
+/**
+ * Implements hook_newsletter_menu_local_tasks_alter().
+ */
+function ag_section_newsletter_menu_local_tasks_alter(&$data, $router_item, $root_path) {
+  $node = !empty($router_item['page_arguments'][0]) ? $router_item['page_arguments'][0] : '';
+  if ($root_path == 'node/%' && is_object($node) && $node->type == 'simplenews') {
+    // Modify edit path
+    $data['tabs'][0]['output'][1]['#link']['href'] = 'node/' . $node->og_group_ref[LANGUAGE_NONE][0]['target_id'] . '/ag_section_newsletter/' . $node->nid . '/edit';
+    // Unset send boletin tab
+    unset($data['tabs'][0]['output'][2]);
+  }
+}
+
+function ag_section_newsletter_views_pre_render(&$view) {
+  // Modify view results order
+  if ($view->name == 'ag_newsletter' && $view->current_display == 'panel_pane_2') {
+    // Get newsletter id argument
+    $newsletter_id = explode('/', $_GET['q']);
+    if (!empty($newsletter_id['3']) && is_numeric($newsletter_id['3'])) {
+      $nid = $newsletter_id['3'];
+
+      // Prepare arrays for compare
+      $results_view = array();
+      foreach ($view->result as $result) {
+        $results_view[] = $result->nid;
+      }
+
+      $results_newsletter = array();
+      $newsletter = entity_load_single('node', $nid);
+      foreach ($newsletter->field_simplenews_content_ref[LANGUAGE_NONE] as $content) {
+        $results_newsletter[] = $content['target_id'];
+      }
+
+      // Calculate array diff between view and related content
+      $results_diff = array_diff($results_view, $results_newsletter);
+      $results_newsletter = array_merge($results_newsletter, $results_diff);
+
+      // Sort results view based on new drag and drop order
+      foreach ($results_newsletter as $content) {
+        $key = array_search($content, $results_view);
+        if ($key !== FALSE) {
+          $results[] = $view->result[$key];
+        }
+      }
+
+      $view->result = $results;
+    }
+  }
+}

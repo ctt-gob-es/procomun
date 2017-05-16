@@ -1,0 +1,161 @@
+//Copied all the styles from modules/poll/poll.css for easy overwrite of module styles
+.poll
+  overflow: hidden
+
+.poll .text
+  display: block!important
+  clear: both
+  font-size: 18px
+  font-weight: 700
+  font-family: $font_narrow
+  margin-bottom: .75em
+
+.poll .bar
+  height: 20px
+  margin: 1px 0
+  background-color: rgba($green, 0.2)
+  +border-radius(10px)
+  padding: 3px
+  overflow: hidden
+  min-width: 50%
+  display: block
+  float: left
+  margin-bottom: 1em
+
+.poll .bar .foreground
+  background: linear-gradient(left, #30EAB8 0%, #13BF91 100%)
+  +border-radius(10px)
+  height: 1em
+  float: left /* LTR */
+
+.poll .links
+  text-align: left
+
+.poll .percent
+  text-align: left /* LTR */
+  display: block
+  float: left
+  margin-left: 1em
+  color: $navy
+  font-weight: 700
+  > span
+    font-weight: 400
+    margin-left: 1em
+
+.poll .total
+  @extend .content-count
+  position: absolute
+  width: 10%
+  top: 0
+  right: 0em
+  height: 43px
+
+.poll .vote-form
+  text-align: left
+
+.poll .vote-form .choices
+  text-align: left /* LTR */
+  margin: 0
+  display: table
+  width: 100%
+
+.poll .vote-form .choices .title
+  font-weight: bold
+.poll .vote-form .choices
+  border-bottom: 1px solid $light_gray
+  margin-bottom: 1em
+  .form-type-radios
+    margin-top: 0
+    .form-item
+      margin: 2em 0
+      &:first-child
+        margin-top: 1em
+
+#poll-cancel-form
+  clear: both
+
+.node-form #edit-poll-more
+  margin: 0
+
+.node-form #poll-choice-table .form-text
+  display: inline
+  width: auto
+
+.node-form #poll-choice-table td.choice-flag
+  white-space: nowrap
+  width: 4em
+
+td.poll-chtext
+  width: 80%
+
+td.poll-chvotes .form-text
+  width: 85%
+
+//Custom styles added to adapt to theme
+.node-type-poll
+  .field-name-field-poll-status
+    border-top: 0
+  .content
+    position: relative
+  .field
+    margin-top: 1em
+    margin-bottom: 1em
+  ul.links.inline
+    float: right
+
+  .poll .form-submit
+    float: right
+
+.node-poll.node-teaser
+  .author-info
+    margin-bottom: 0
+    border-bottom: 0
+.node.node-poll .poll
+  margin-top: 1em
+  .form-item
+    margin-top: 0
+    + .form-item
+      margin-top: 1em
+
+.node-poll.node-teaser
+  span.type
+    width: 70px
+    text-align: center
+  .poll
+    .total
+      padding: 4px 5px
+      width: 70px
+
+.view-ag2-og-polls-list .views-row-odd,
+.view-ag2-og-polls-list .views-row-even
+  margin-bottom: 1em!important
+  padding: 10px
+  h2.title
+    margin-top: 0
+
+// Poll
+.field-name-field-poll-status
+  border-top: 1px solid $light_gray
+  border-bottom: 1px solid $light_gray
+  padding: 1em 0
+  .field-label
+    display: inline-block !important
+    text-transform: uppercase
+    color: $navy
+    font-size: 13px
+    font-weight: 700
+    margin-right: 5px
+  .field-item
+    color: $charcoal
+    font-size: 14px
+    text-transform: none
+    margin-top: -1px
+
+// Block sidebar
+.view-agrega2-polls
+  .poll
+    .total
+      top: -7px
+      height: 30px
+      span
+        margin: 0

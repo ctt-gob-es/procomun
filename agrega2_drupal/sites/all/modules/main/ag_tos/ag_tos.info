@@ -1,0 +1,4 @@
+name = "Agrega2 Term Of Services"
+description = "Module to force user to accept the TOS of the site"
+package = Emergya
+core = "7.x"

@@ -1,0 +1,94 @@
+<?php
+/**
+ * @file
+ * Code for the Control center Boosting feature.
+ */
+
+include_once 'control_center_boosting.features.inc';
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function control_center_boosting_form_editableviews_entity_form_solr_fields_boosting_list_alter(&$form, &$form_state, $form_id) {
+  // Add boosting restore defaults button
+  $form['actions']['restore'] = array(
+    '#type' => 'submit',
+    '#value' => t('Restore defaults'),
+  );
+
+  // Add a last submit to all send data to solr.
+  $form['#submit'][] = 'control_center_boosting_boosting_submit';
+}
+
+/**
+ * Custom function to send all solr_fields data to solr service.
+ */
+function control_center_boosting_boosting_submit(&$form, &$form_state) {
+  // Get all nodes with solr_field type in order to send them to solr.
+  $nodes = node_load_multiple(array(), array('type' => 'solr_fields'));
+  foreach ($nodes as $node) {
+    $wrapper = entity_metadata_wrapper('node', $node);
+    $body = $wrapper->body->value();
+
+    // Restore boosting defaults values if this operation is selected
+    if ($form_state['values']['op'] == t('Restore defaults')) {
+      switch($wrapper->title->value()) {
+        case 'title':
+          $wrapper->field_boosting_weight->set(50);
+          break;
+        case 'labels':
+          $wrapper->field_boosting_weight->set(25);
+          break;
+        case 'description':
+          $wrapper->field_boosting_weight->set(20);
+          break;
+        case 'text':
+          $wrapper->field_boosting_weight->set(5);
+          break;
+        default:
+          $wrapper->field_boosting_weight->set(0);
+          break;
+      }
+    }
+    $wrapper->save();
+
+    // Build array needed for service.
+    $boosting_fields[] = array(
+      'fieldName' => $wrapper->title->value(),
+      'boosting' => $wrapper->field_boosting_weight->value(),
+      'description' => $body['value'],
+    );
+  }
+
+  $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+  list($status, $result) = $OS_orchestrator_inyection->Update_fieldsBoosting($boosting_fields);
+  if ($status != 1) {
+    drupal_set_message(t($result), 'error');
+  }
+  else {
+    drupal_set_message(t('The boosting values are saved correctly'));
+  }
+}
+
+/**
+ * Implements hook_services_resources().
+ */
+function control_center_boosting_services_resources() {
+  return array(
+    'boosting' => array(
+      'operations' => array(
+        'index' => array(
+          'help' => 'List all solr boosting fields',
+          'file' => array(
+            'type' => 'inc',
+            'module' => 'control_center_boosting',
+            'name' => 'control_center_boosting'
+          ),
+          'callback' => '_boosting_information_retrieve',
+          'access arguments' => array('access content'),
+          'args' => array(),
+        ),
+      ),
+    ),
+  );
+}

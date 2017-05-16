@@ -1,0 +1,52 @@
+h2.tab-title
+  font-size: 28px
+  font-family: $font_pt_sans
+  margin-bottom: 1.5em
+  margin-top: 50px
+.tabs.primary,
+.nav-tabs.nav
+  clear: both
+  border-bottom: 1px solid $light_gray
+  border-collapse: collapse
+  height: auto
+  line-height: normal
+  list-style: none
+  margin: 0
+  padding: 0
+  white-space: nowrap
+  overflow: visible
+  li
+    display: inline-block
+    float: none
+    margin-bottom: 0
+    a
+      display: block
+      background-color: $white //$lightest_gray
+      //color: $gray
+      border: 1px solid transparent
+      height: auto
+      padding: .5em 1em
+      text-decoration: none
+      text-transform: uppercase
+      font-size: 13px
+      margin-right: 1em
+      margin-bottom: -1px
+      +border-radius(4px 4px 0 0)
+      border-bottom: 1px solid $light_gray
+      &:hover
+        background-color: $snow
+        border: 1px solid $light_gray
+  li.active
+    a
+      background-color: $white
+      border: 1px solid $light_gray
+      border-bottom: 1px solid $white
+      color: $navy
+
+.page-user-edit,
+.page-user-messages,
+.page-user-devel,
+.page-user-imce
+  .tabs.primary
+    +tabs($menu-icon, 5)
+    margin-bottom: 2em

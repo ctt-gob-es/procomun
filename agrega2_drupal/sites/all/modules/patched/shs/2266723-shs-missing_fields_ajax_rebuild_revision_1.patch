@@ -1,0 +1,13 @@
+diff --git a/shs.module b/shs.module
+index a332381..cdbdd6d 100644
+--- a/shs.module
++++ b/shs.module
+@@ -458,7 +458,7 @@ function shs_field_widget_afterbuild($element, &$form_state) {
+   $parents = array();
+   // Get default value from form state and set it to element.
+   $default_value = drupal_array_get_nested_value($form_state['values'], $element['#parents']);
+-  if (!empty($default_value)) {
++  if (!empty($default_value) && $default_value != '_none') {
+     // Use value from form_state (for example for fields with cardinality = -1).
+     $element['#default_value'] = $default_value;
+   }

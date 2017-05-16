@@ -1,0 +1,288 @@
+// Contains the styles for ode detail pages
+.detail-ode
+  // Base config
+  $margin-inner-sections: 20px
+  $margin-sections: 25px
+  $font-size: 14px
+  $line-height: 1.5em
+  font-size: $font-size
+  line-height: $line-height
+  // Helpers, mixins and implementations (@todo check for further reuse)
+  =margin-section
+    margin-bottom: $margin-sections
+  =margin-inner-section
+    margin-bottom: $margin-inner-sections
+  // @todo check for further reuse
+  .valign-middle > *
+    vertical-align: middle
+  // @todo check for further reuse
+  .do-inline
+    +clearfix
+    margin: 0
+    padding: 0
+    > *
+      // for using precedence don't make it specific
+      vertical-align: middle
+      margin: 0 5px 0 0
+      padding: 0
+      display: inline-block
+      &:last-child
+        margin-right: 0
+  // @todo check for further reuse
+  .space-inline-elements
+    > *
+      margin-right: 10px
+      &:last-child
+        margin-right: 0
+  .space-m-inline-elements
+    @extend .space-inline-elements
+    > *
+      margin-right: 15px
+  .space-l-inline-elements
+    @extend .space-inline-elements
+    > *
+      margin-right: 20px
+  // End of helpers
+  .ajax-progress-throbber
+    position: absolute
+    left: 110px
+    width: 200px
+  .section
+    +clearfix
+  .inner-section
+    +clearfix
+    &.detail-ode-keyword
+      margin-bottom: 20px
+  .detail-ode-lifecycle
+    table tr th
+      +label-grey()
+      padding: 8px
+      border-bottom: 0
+    table tr td
+      +div-nextto-label-grey()
+      border-right: 1px solid $light_gray
+    table tr td, table tr th
+      &:first-child
+        padding-left: 0
+        text-transform: capitalize
+      &:last-child
+        text-align: right
+  .detail-ode-keyword
+    a
+      +tag
+      margin-right: 5px
+      margin-bottom: 5px
+  .detail-ode-authors
+    max-width: calc(100% - 100px)
+    > div
+      display: inline-block
+      border-left: 1px solid $charcoal
+      padding-left: 6px
+      &:first-child
+        border: 0
+        padding: 0
+  // Block facetapi
+  #ode-detail-related-facets
+    section
+      border-bottom: 0
+      &:last-child
+        margin-bottom: 0
+        border-bottom: 1px dashed $gray
+    h3
+      margin: 0
+      padding-bottom: 8px
+    ul
+      margin: 0
+    li
+      border-top: 1px dashed $gray
+  // Link for send email when the resource viewer fails
+  .email-error-report
+    text-align: right
+  // ode detail info + stats
+  .info-author
+    display: table
+    text-align: left
+    width: 100%
+    .body
+      display: table-cell
+      vertical-align: middle
+      color: $cold_gray
+  .detail-ode-info
+    .ode-picture
+      margin-right: 15px
+      display: table-cell
+      width: 75px
+      padding-bottom: 10px
+      img
+        width: 60px
+        +border-radius(60px)
+    .author
+      border-right: 1px solid $cold_gray
+      margin-right: 5px
+      padding-right: 5px
+    .stats-info
+      text-align: center
+      font-size: 13px
+      line-height: 1em
+      margin-top: 1.5em
+      > div
+        border-left: 1px solid $light_gray
+        display: inline-block
+        margin-left: 15px
+        padding: 8px 0 45px 21px
+        height: 40px
+        vertical-align: top
+        .title
+          text-transform: uppercase
+          font-weight: 700
+          font-size: 12px
+        &:first-child
+          border-width: 0
+        &:last-child
+          margin-right: 15px
+        .value
+          margin-top: 5px
+          font-size: 18px
+          color: $dark_green
+          font-weight: bold
+      .like-number
+        .value
+          padding-top: 3px
+          .ico
+            margin-right: 10px
+    // Ode Certification
+    .certified
+      a
+        background: image-url('ico-certificate-gray.png') 0 0 no-repeat
+        width: 32px
+        height: 32px
+        font-size: 0
+        color: transparent
+        line-height: 0
+        display: block
+  // summary
+  .summary
+    .title
+      padding-bottom: 5px
+      margin-bottom: 20px
+    .content
+      > *
+        margin-bottom: 1.5em
+      .detail-ode-license-description-wrapper
+        margin-bottom: 0em
+        > div
+          @extend .license-link
+        .license-link-text
+          margin-top: -5px
+  // accordion
+  #accordion
+    .panel-body
+      padding: 0
+      border-width: 0
+      margin: 0.5em 0 2em
+      > *
+        margin-bottom: 10px
+    .panel-body > div
+      clear: both
+      +clearfix
+      margin: 0
+      border-bottom: 1px solid $light_gray
+      &:last-child
+        border-width: 0
+    .panel-body > div > label
+      +make-sm-column(3)
+      +label-grey()
+      &+div
+        +make-sm-column(9)
+        +div-nextto-label-grey()
+    .panel
+      border: 0
+      .highlight-header
+        border-top: 1px dashed $gray
+        border-bottom: 0
+        cursor: pointer
+        padding-left: 0
+      + .panel
+        margin-top: 0
+        box-shadow: none
+    .panel-title
+      h2
+        margin-top: 0
+        margin-bottom: 0
+        line-height: image-height("ico-mas.png")
+        display: inline-block
+        text-transform: uppercase
+  .accordion-collapse-icon
+    float: right
+  #accordion .showhide
+    .hide
+      display: block !important
+  ul.social-block.social
+    background: none
+    border: 0
+    padding-top: 20px
+    border-top: 1px solid $light_gray
+    .social-like, .social-comment, .social-favorite
+      float: left
+  .active .ico.ico-mas
+    background-position: 0 bottom
+  .wrapper-column
+    padding-right: 0
+    section.block, div.block
+      margin-bottom: 2em
+      .view-empty
+        padding: 1em
+  .field-type-fivestar.field-type-fivestar
+    display: table-cell
+    vertical-align: middle
+    position: relative
+  // Certificate button
+  .certificate-ode
+    a
+      float: left
+      +button($main_blue)
+      padding-left: 42px
+      background-image: image-url('ico-certificate-white.png')
+      background-repeat: no-repeat
+      background-position: 5px center
+      background-size: 30px 30px
+      &:hover
+        background-color: $deep_blue
+        color: $white
+    // Message status
+    div:last-child
+      float: left
+      padding: 10px
+  // Certificate delete button
+  #delete-ode
+    a
+      float: left
+      +button($orange)
+      padding-left: 42px
+      background-image: image-url('ico-delete-white.png')
+      background-repeat: no-repeat
+      background-position: 5px center
+      background-size: 30px 30px
+      &:hover
+        background-color: $dark_orange
+        color: $white
+    // Message status
+    div:last-child
+      float: left
+      padding: 10px
+
+// Certificate
+.detail-ode
+  #certificate-ode
+    float: right
+.certified
+  .certificate-ode
+    float: right
+    a
+      background: image-url('ico-certificate-green.png') 0 0 no-repeat
+      width: 32px
+      height: 32px
+      display: block
+      font-size: 0
+      line-height: 0
+      color: transparent

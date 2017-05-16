@@ -1,0 +1,13 @@
+diff --git a/sites/all/modules/patched/sarnia/sarnia.module b/sites/all/modules/patched/sarnia/sarnia.module
+index e89cc0f..9fdbce5 100644
+--- a/sites/all/modules/patched/sarnia/sarnia.module
++++ b/sites/all/modules/patched/sarnia/sarnia.module
+@@ -903,7 +903,7 @@ function sarnia_preprocess_views_view(&$vars) {
+   $view = $vars['view'];
+   if (isset($view->result)) {
+     if ($view->name == 'ode_search'){
+-        $vars['current_page'] = ($view->query->pager->current_page * 10) + 1;
++        $vars['first_result_position'] = ($view->query->pager->current_page * 10) + 1;
+         $vars['last_result_position'] = (($view->query->pager->current_page  + 1) * 10 > $view->query->pager->total_items) ? $view->query->pager->total_items :($view->query->pager->current_page  + 1) * 10;
+         $vars['total_items'] = $view->query->pager->total_items;
+         foreach ($view->result as $result) {

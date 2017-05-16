@@ -1,0 +1,56 @@
+.region-nav
+  clear: both
+  float: right
+  position: relative
+  z-index: 5
+  .block-superfish
+    z-index: 5
+    position: relative
+  .sf-menu
+    margin-top: 1em
+    li
+      a.sf-depth-1
+        font-size: 17px
+        color: $main_blue
+        display: block
+        font-weight: 700
+        padding: 0 1.5em 0em
+        &:after
+          display: block
+          content: ''
+          border-bottom: solid 3px $orange
+          +transform(scaleX(0.0001))
+          transition: transform 250ms ease-in-out
+          height: 0.5em
+          width: calc(100% + 3em)
+          margin-left: -1.5em
+        &.active,
+        &:hover
+          color: $main_blue
+          text-decoration: none
+          border-bottom-color: $orange
+          &:after
+            +transform(scaleX(1))
+      &.sfHover
+        a:after
+          +transform(scaleX(1))
+    &.sf-horizontal.sf-shadow ul
+      background: $white
+      +border-radius(0px)
+      @extend .box-shadow
+      margin-top: -9px
+      padding: 0!important
+      z-index: 5
+      width: 100%!important
+      li
+        background: $white
+        a
+          color: $main_blue
+          padding: 10px 15px
+          font-weight: 700
+          border-bottom-width: 0
+          text-align: center
+          &:hover
+            color: $deep_blue
+            text-decoration: none
+            background: $snow

@@ -1,0 +1,100 @@
+<!--
+
+FileName: db-emple-config.xml
+
+Description: 
+
+The "query" gives the data needed to populate fields of the Solr document in full-import
+The "deltaImportQuery" gives the data needed to populate fields when running a delta-import
+The "deltaQuery" gives the primary keys of the current entity which have changes since the last index time
+
+Command to invoke the DIH:
+	
+	Directly
+	- Full import -> http://<host>:<port>/solr/aprimo?command=full-import
+	- Delta import -> http://<host>:<port>/solr/aprimo?command=delta-import
+	- Status of import -> http://<host>:<port>/solr/aprimo?command=status
+	
+	Using SOLR admin console:	
+	- Interactive Devlopment UI -> http://<host>:<port>/solr/admin/dataimport.jsp?handler=/aprimo 
+	
+For more details refer to URL : http://wiki.apache.org/solr/DataImportHandler
+
+-->
+<dataConfig>
+	<dataSource name="oracle_jdbc" driver="oracle.jdbc.driver.OracleDriver" url="jdbc:oracle:thin:@//144.76.158.39:53521/agrega2" user="AGREGA" password="agrega23E" batchSize="100" />
+	<document name="lomes">
+		<entity name="lomesdata" pk="id" 
+				dataSource="oracle_jdbc" 
+				query="select &quot;id&quot;, &quot;gen_title&quot;, &quot;gen_aggregationLevel_value&quot;,
+						&quot;lif_version_string&quot;, &quot;lif_status_value&quot;, &quot;lif_contribute_entity&quot;, &quot;tech_size&quot;,
+						&quot;educ_language&quot;, &quot;educ_interactivityType_value&quot;, &quot;educ_interactivityLevel_value&quot;
+					from LOMES_METADATA where &quot;id&quot;>1 and &quot;id&quot;&lt;100"
+				deltaQuery="FIX ME TODO"
+				deltaImportQuery=""
+				transformer="TemplateTransformer,DateFormatTransformer,RegexTransformer">
+<!-- order by &quot;id&quot;, &quot;gen_title&quot; -->
+			<field name="id" column="id"/>
+			<field name="general_title" column="gen_title"/>
+			<!--<field name="general_description_string" column="gen_description"/> -->
+			<field name="general_aggregationLevel" column="gen_aggregationLevel_value"/>
+			<field name="lifecycle_version" column="lif_version_string"/>
+			<field name="lifecycle_status" column="lif_status_value"/>
+			<field name="lifecycle_contribute_entity" column="lif_contribute_entity"/>
+			<field name="technical_size" column="tech_size"/>
+			<field name="educational_language" column="educ_language"/>
+			<field name="educational_interactivityType" column="educ_interactivityType_value"/>
+			<field name="educational_interactivityLevel" column="educ_interactivityLevel_value"/>
+			
+			<entity name="general_identifier" query="select &quot;prop_value&quot; from LOMES_METADATA_MULTIPLE where &quot;id_lom&quot;=${lomesdata.id} and &quot;prop_name&quot;='general_identifier_entry'">
+				<field name="general_identifier" column="prop_value"/>
+			</entity>
+			
+			<entity name="general_description_string" query="select &quot;prop_value&quot; from LOMES_METADATA_MULTIPLE where &quot;id_lom&quot;=${lomesdata.id} and &quot;prop_name&quot;='general_description_string'">
+				<field name="general_description" column="prop_value"/>
+			</entity>
+
+			<entity name="general_keyword" query="select &quot;prop_value&quot; from LOMES_METADATA_MULTIPLE where &quot;id_lom&quot;=${lomesdata.id} and &quot;prop_name&quot;='general_keyword_string'">
+				<field name="general_keyword" column="prop_value"/>
+			</entity>
+
+			<entity name="general_language" query="select &quot;prop_value&quot; from LOMES_METADATA_MULTIPLE where &quot;id_lom&quot;=${lomesdata.id} and &quot;prop_name&quot;='general_language'">
+				<field name="general_language" column="prop_value"/>
+			</entity>
+
+			<entity name="general_coverage" query="select &quot;prop_value&quot; from LOMES_METADATA_MULTIPLE where &quot;id_lom&quot;=${lomesdata.id} and &quot;prop_name&quot;='general_coverage_string'">
+				<field name="general_coverage" column="prop_value"/>
+			</entity>
+
+			<entity name="technical_location" query="select &quot;prop_value&quot; from LOMES_METADATA_MULTIPLE where &quot;id_lom&quot;=${lomesdata.id} and &quot;prop_name&quot;='technical_location'">
+				<field name="technical_location" column="prop_value"/>
+			</entity>
+
+			<entity name="technical_format" query="select &quot;prop_value&quot; from LOMES_METADATA_MULTIPLE where &quot;id_lom&quot;=${lomesdata.id} and &quot;prop_name&quot;='technical_format'">
+				<field name="technical_format" column="prop_value"/>
+			</entity>
+
+			<entity name="technical_requirement" query="select &quot;prop_value&quot; from LOMES_METADATA_MULTIPLE where &quot;id_lom&quot;=${lomesdata.id} and &quot;prop_name&quot;='technical_requirement_orComposite_name_value'">
+				<field name="technical_requirement" column="prop_value"/>
+			</entity>
+
+			<entity name="educational_learningResourceType" query="select &quot;prop_value&quot; from LOMES_METADATA_MULTIPLE where &quot;id_lom&quot;=${lomesdata.id} and &quot;prop_name&quot;='educational_learningResourceType_value'">
+				<field name="educational_learningResourceType" column="prop_value"/>
+			</entity>
+
+			<entity name="educational_typicalAgeRange" query="select &quot;prop_value&quot; from LOMES_METADATA_MULTIPLE where &quot;id_lom&quot;=${lomesdata.id} and &quot;prop_name&quot;='educational_typicalAgeRange_string'">
+				<field name="educational_typicalAgeRange" column="prop_value"/>
+			</entity>
+				
+			<!-- 
+			<field name="general_keyword_string" column="general_keyword_string"/>
+			<field name="general_language" column="general_language"/>
+			<field name="general_coverage_string" column="general_coverage_string"/>
+			<field name="technical_location" column="technical_location"/>
+			<field name="technical_format" column="technical_format"/>
+			<field name="technical_requirement_orComposite_name_value" column="technical_requirement_orComposite_name_value"/>
+			<field name="educational_learningResourceType_value" column="educational_learningResourceType_value"/>
+			<field name="educational_typicalAgeRange_string" column="educational_typicalAgeRange_string"/> -->
+		</entity>
+	</document>
+</dataConfig>

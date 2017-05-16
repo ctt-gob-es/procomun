@@ -1,0 +1,834 @@
+<?php
+
+/**
+ * Implements hook_update_N().
+ * #120711 - Set variable user_failed_login_user_limit to 10 attempts
+ */
+function ag_general_update_7000() {
+  variable_set('user_failed_login_user_limit', 10);
+}
+
+/**
+ * Implements hook_update_N().
+ * #121223 - Increasing attempts and time to block IP on error login
+ */
+function ag_general_update_7001() {
+  variable_set('user_failed_login_ip_limit', 100);
+  variable_set('user_failed_login_ip_window', 900);
+}
+
+/**
+ * Implements hook_update_N().
+ * #110920 - Assign all users to procomun and help&faqs social networks.
+ */
+function ag_general_update_7002(&$sandbox) {
+  //Prepare all variables in first iteration
+  if (!isset($sandbox['total'])) {
+    //Get members of both social networks. They will be ignored.
+    $procomun_members = ag_general_get_procomun_members();
+    $faqs_members = ag_general_get_faqs_members();
+    $members_of_both = array_intersect($faqs_members, $procomun_members);
+
+    //Prepare elements: All users, but avoid organizations, admin, and anonymous user.
+    $all_users = db_query("SELECT u.uid FROM users u INNER JOIN profile p ON p.uid=u.uid WHERE u.uid > 1 AND p.type = 'datos_personales'")->fetchCol();
+
+    //Those who are already on both social networks will be ignored (most of the users, update will be faster).
+    $sandbox['elements'] = array_values(array_diff($all_users, $members_of_both));
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = count($sandbox['elements']);
+
+    //Additional log details.
+    $sandbox['procomun'] = 0;
+    $sandbox['faqs'] = 0;
+  }
+
+  //Get batch, or number of entities to process each time.
+  $elements_per_pass = 20;
+  $end = $sandbox['current'] + $elements_per_pass;
+
+  $preloaded_batch = user_load_multiple(array_slice($sandbox['elements'], $sandbox['current'], $elements_per_pass));
+  //Loop. Use db_query_range if any query needs to be split between batches.
+  while ($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    //Heavy operations
+    $number = $sandbox['current'];
+    $uid = $sandbox['elements'][$number];
+    $account = $preloaded_batch[$uid];
+
+    ag_general_assign_users_default_networks($sandbox, $account);
+
+    //Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1, meaning we are done.
+  // Also, avoid division by zero
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @users users. Added @procomun users to Procomun and @faqs users to FAQs Finished.',
+                       array('@users' => $sandbox['total'], '@procomun' => $sandbox['procomun'], '@faqs' => $sandbox['faqs'])));
+  }
+}
+
+/**
+* Auxiliary function for update 7002. Assign a user account by og to the two default social_networks.
+*/
+function ag_general_assign_users_default_networks(&$sandbox, $account) {
+  if (!empty($account)) {
+    //Get user groups. Do not interfere if user already belongs to any of these two social_networks.
+    $user_groups = og_get_groups_by_user($account, 'node');
+    if (!is_array($user_groups)) {
+      $user_groups = array();
+    }
+
+    // A new user is inserted in BD, we should add it to global community procomun and FAQS community:
+    $global_procomun = variable_get('global_community_procomun', 0);
+
+    // Add to Procomun network if it is not already on it.
+    if (!empty($global_procomun) && !array_key_exists($global_procomun, $user_groups)) {
+      // Subcribe the user:
+      og_group('node', $global_procomun, array('entity' => $account));
+      $sandbox['procomun'] = isset($sandbox['procomun']) ? $sandbox['procomun'] + 1 : 1;
+    }
+
+    //Also, add this user to faqs community.
+    $global_faqs = variable_get('global_community_faqs', 0);
+    if (empty($global_faqs)) {
+      //If variable was not found, update.
+      variable_set('global_community_faqs', _getFaqNid());
+      $global_faqs = _getFaqNid();
+    }
+
+    //Finally, if community faqs was found, add user to ir.
+    if (!empty($global_faqs) && !array_key_exists($global_faqs, $user_groups)) {
+      // Subcribe the user:
+      og_group('node', $global_faqs, array('entity' => $account));
+      $sandbox['faqs'] = isset($sandbox['faqs']) ? $sandbox['faqs'] + 1 : 1;
+    }
+  }
+}
+
+/**
+* Auxiliary function for update 7002. Get the list of procomun members.
+*/
+function ag_general_get_procomun_members() {
+  //Get those already inside Procomun.
+  $global_procomun = variable_get('global_community_procomun', 0);
+
+  if (empty($global_procomun)) {
+    throw new DrupalUpdateException(t('No global Procomun network found.'));
+  }
+  $procomun_members = db_query("SELECT etid FROM og_membership
+                                WHERE entity_type = 'user' AND group_type = 'node' and etid > 1 and state = 1 and gid = :procomun",
+                                array(':procomun' => $global_procomun))->fetchCol();
+  return $procomun_members;
+}
+
+/**
+* Auxiliary function for update 7002. Get the list of faqs members.
+*/
+function ag_general_get_faqs_members() {
+  //Also, add this user to faqs community.
+  $global_faqs = variable_get('global_community_faqs', 0);
+  $global_faqs = empty($global_faqs) ? _getFaqNid() : $global_faqs;
+
+  if (empty($global_faqs)) {
+    throw new DrupalUpdateException(t('No global Faqs network found.'));
+  }
+  $faqs_members = db_query("SELECT etid FROM og_membership
+                            WHERE entity_type = 'user' AND group_type = 'node' and etid > 1 and state = 1 and gid = :faqs",
+                            array(':faqs' => $global_faqs))->fetchCol();
+  return $faqs_members;
+}
+
+/**
+ * Implements hook_update_N().
+ * Add publicationDate field in Solr for nodes
+ */
+function ag_general_update_7003(&$sandbox) {
+  //Prepare all variables in first iteration
+  if (!isset($sandbox['total'])) {
+    //Prepare array from query
+    ag_general_prepare_batch_publication_date($sandbox);
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = ag_general_get_total_batch_operations($sandbox);
+  }
+
+  //Get batch, or number of entities to process each time.
+  $nodes_per_pass = 5;
+  $end = $sandbox['current'] + $nodes_per_pass;
+
+  $preloaded_batch = node_load_multiple(array_slice($sandbox['elements'], $sandbox['current'], $nodes_per_pass));
+
+  //Loop
+  while($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    //Heavy operations
+    $element = ag_general_get_element($sandbox);
+    $node = $preloaded_batch[$element];
+    ag_general_update_publication_date($sandbox, $node);
+
+    //Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1, meaning we are done.
+  // Also, avoid division by zero
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @records records. Finished.', array('@records' => $sandbox['total'])));
+
+    //Close log file
+    if (!empty($sandbox['fh_log'])) {
+      fclose($sandbox['fh_log']);
+    }
+  }
+}
+
+/**
+ * Return number of operations that will be done.
+ *
+ * @param array $sandbox
+ *   Data needed for batch operations.
+ *
+ * @return int
+ *   Number of operations to be performed.
+ */
+function ag_general_get_total_batch_operations($sandbox) {
+  return isset($sandbox['elements']) ? count($sandbox['elements']) : 0;
+}
+
+/**
+ * Gets element with sandbox data.
+ *
+ * @param array $sandbox
+ *   Data needed for batch operations.
+ *
+ * @return array|object
+ *   Current sandbox's element we are working with.
+ */
+function ag_general_get_element($sandbox) {
+  $position = isset($sandbox['current']) ? $sandbox['current'] : 0;
+  return !empty($sandbox['elements']) ? $sandbox['elements'][$position] : array();
+}
+
+/**
+ * Get contents to add publication date
+ */
+function ag_general_prepare_batch_publication_date(&$sandbox) {
+  // Open log file handler.
+  ag_general_open_log_file($sandbox, 'nodes_not_found_solr.log');
+
+  $query = db_select('node', 'n')
+    ->fields('n', array('nid'))
+    ->condition('n.type', array('answer', 'post', 'poll', 'debate', 'event', 'external_content', 'question', 'social_network'), 'IN')
+    ->condition('n.status', NODE_PUBLISHED, '=');
+  $result = $query->execute()->fetchCol();
+
+  //Return by storing the array in sandbox variable. It will be static and accessible by all update batch executions.
+  $sandbox['elements'] = $result;
+}
+
+/**
+ * Function for share ode into procomun social network
+ */
+function ag_general_update_publication_date(&$sandbox, $node) {
+  if (!empty($node) && is_object($node)) {
+    // Update node info in solr.
+    $result = orchestrator_services_update_entity_solr($node);
+
+    // Check for errors.
+    if ($result[0] == -1) {
+      // Pass iteration but register into log file.
+      $error_log = t('The element with idDrupal: @idDrupal and solrid: @solrid is not register in SOLR.', array('@idDrupal' => $node->nid, '@solrid' => $node->field_solrid[LANGUAGE_NONE][0]['value']));
+      ag_general_write_log($sandbox['fh_log'], $error_log);
+    }
+    elseif ($result[0] == -2) {
+      // Pass iteration but register into log file.
+      $error_log = t('The element with idDrupal: @idDrupal does not have solrid in Drupal.', array('@idDrupal' => $node->nid));
+      ag_general_write_log($sandbox['fh_log'], $error_log);
+    }
+    elseif ($result[0] != 1) {
+      drupal_set_message(t('Error updating node data in solr with idDrupal: @idDrupal', array('@idDrupal' => $node->nid)), 'error');
+      throw new DrupalUpdateException(t('Error updating node data in solr with idDrupal: @idDrupal', array('@idDrupal' => $node->nid)));
+    }
+  }
+  else {
+    drupal_set_message(t('Error: No node sent'), 'error');
+    throw new DrupalUpdateException(t('Error: No node sent'));
+  }
+}
+
+/**
+ * Implements hook_update_N().
+ * Add publicationDate field in Solr for users
+ */
+function ag_general_update_7004(&$sandbox) {
+  //Prepare all variables in first iteration
+  if (!isset($sandbox['total'])) {
+    //Prepare array from query
+    ag_general_prepare_batch_publication_date_users($sandbox);
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = ag_general_get_total_batch_operations($sandbox);
+  }
+
+  //Get batch, or number of entities to process each time.
+  $users_per_pass = 5;
+  $end = $sandbox['current'] + $users_per_pass;
+
+  $preloaded_batch = user_load_multiple(array_slice($sandbox['elements'], $sandbox['current'], $users_per_pass));
+
+  //Loop
+  while($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    //Heavy operations
+    $element = ag_general_get_element($sandbox);
+    $account = $preloaded_batch[$element];
+    ag_general_update_publication_date_user($sandbox, $account);
+
+    //Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1, meaning we are done.
+  // Also, avoid division by zero
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @users users. Finished.', array('@users' => $sandbox['total'])));
+
+    //Close log file
+    if (!empty($sandbox['fh_log'])) {
+      fclose($sandbox['fh_log']);
+    }
+  }
+}
+
+/**
+ * Implements hook_update_N().
+ * Check for solr and drupal title based on CSV file.
+ */
+function ag_general_update_7005(&$sandbox) {
+  //Prepare all variables in first iteration
+  if (!isset($sandbox['total'])) {
+    //Prepare array from query
+    ag_general_prepare_batch_get_title_data($sandbox);
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = ag_general_get_total_batch_operations($sandbox);
+  }
+
+  //Get batch, or number of entities to process each time.
+  $nodes_per_pass = 10;
+  $end = $sandbox['current'] + $nodes_per_pass;
+
+  //Loop
+  while($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    //Heavy operations
+    $element = ag_general_get_element($sandbox);
+    ag_general_check_element_title($sandbox, $element);
+
+    //Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1, meaning we are done.
+  // Also, avoid division by zero
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+  if ($sandbox['#finished'] === 1) {
+    if(isset($sandbox['message_ok'])) {
+      print_node_data($sandbox['message_ok']);
+    }
+
+    if(isset($sandbox['empty_title'])) {
+      print_node_data($sandbox['empty_title']);
+    }
+
+    if(isset($sandbox['empty_nid'])) {
+      print_node_data($sandbox['empty_nid']);
+    }
+
+    drupal_set_message(t('Processed @nodes nodes. Finished.', array('@nodes' => $sandbox['total'])));
+  }
+}
+
+/**
+ * Implements hook_update_N().
+ * Add publicationDate field in Solr for nodes v2 (Second update)
+ */
+function ag_general_update_7006(&$sandbox) {
+  //Prepare all variables in first iteration
+  if (!isset($sandbox['total'])) {
+    //Prepare array from query
+    ag_general_prepare_batch_publication_date_v2($sandbox);
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = ag_general_get_total_batch_operations($sandbox);
+  }
+
+  //Get batch, or number of entities to process each time.
+  $nodes_per_pass = 10;
+  $end = $sandbox['current'] + $nodes_per_pass;
+
+  $ids = array();
+  foreach ($sandbox['elements'] as $element) {
+    $ids[] = $element['idDrupal'];
+  }
+
+  $preloaded_batch = node_load_multiple(array_slice($ids, $sandbox['current'], $nodes_per_pass));
+
+  //Loop
+  while($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    //Heavy operations
+    $element = ag_general_get_element($sandbox);
+    $node = $preloaded_batch[$element['idDrupal']];
+    ag_general_update_publication_date_v2($sandbox, $node, $element);
+
+    //Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1, meaning we are done.
+  // Also, avoid division by zero
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @records records. Finished.', array('@records' => $sandbox['total'])));
+
+    //Close log file
+    if (!empty($sandbox['fh_log'])) {
+      fclose($sandbox['fh_log']);
+    }
+  }
+}
+
+/**
+ * Get contents to add publication date
+ */
+function ag_general_prepare_batch_publication_date_v2(&$sandbox) {
+  // Open log file handler.
+  ag_general_open_log_file($sandbox, 'nodes_fail.log');
+
+  //Get solrid from orquestator
+  $orchestrator = new OS_orchestrator_selection();
+  $params = array(
+    'q' => '-publicationDate:[* TO *]',
+    'rows' => 100000,
+    'fields' => array('idDrupal', 'id'),
+    'fq' => 'type:(ODE OR POST OR QUESTION OR DISCUSSION OR POLL OR EVENT OR URL OR RESPONSE) AND published:1',
+  );
+  $response = $orchestrator->multipleSelectionOdeFields($params);
+
+  $result = array();
+  if (!empty($response[1])) {
+    foreach ($response[1] as $element) {
+      if (isset($element['idDrupal']) && !empty($element['idDrupal'])) {
+        $result[] = $element;
+      }
+    }
+  }
+
+  //Return by storing the array in sandbox variable. It will be static and accessible by all update batch executions.
+  $sandbox['elements'] = $result;
+}
+
+/**
+ * Function for share ode into procomun social network
+ */
+function ag_general_update_publication_date_v2(&$sandbox, $node, $element) {
+  if (!empty($node) && is_object($node)) {
+    if ($element['id'] == $node->field_solrid[LANGUAGE_NONE][0]['value']) {
+      // Update node info in solr.
+      $result = orchestrator_services_update_entity_solr($node);
+
+      // Check for errors.
+      if ($result[0] == -1) {
+        // Pass iteration but register into log file.
+        $error_log = t('The element with idDrupal: @idDrupal and solrid: @solrid is not register in SOLR.', array('@idDrupal' => $node->nid, '@solrid' => $node->field_solrid[LANGUAGE_NONE][0]['value']));
+        ag_general_write_log($sandbox['fh_log'], $error_log);
+      }
+      elseif ($result[0] == -2) {
+        // Pass iteration but register into log file.
+        $error_log = t('The element with idDrupal: @idDrupal does not have solrid in Drupal.', array('@idDrupal' => $node->nid));
+        ag_general_write_log($sandbox['fh_log'], $error_log);
+      }
+      elseif ($result[0] != 1) {
+        drupal_set_message(t('Error updating node data in solr with idDrupal: @idDrupal', array('@idDrupal' => $node->nid)), 'error');
+        throw new DrupalUpdateException(t('Error updating node data in solr with idDrupal: @idDrupal', array('@idDrupal' => $node->nid)));
+      }
+    }
+    else {
+      // Pass iteration but register into log file.
+      $error_log = t('The SOLR id of element with idDrupal: @idDrupal does not match.', array('@idDrupal' => $node->nid));
+      ag_general_write_log($sandbox['fh_log'], $error_log);
+    }
+  }
+  else {
+    $error_log = t('Node with nid: @nid not exists in Drupal', array('@nid' => $element['idDrupal']));
+    ag_general_write_log($sandbox['fh_log'], $error_log);
+  }
+}
+
+/**
+ * Implements hook_update_N().
+ * Update publicationDate in SOLR and created date in DRUPAL from lifecycle VCARD date for published ODEs
+ */
+function ag_general_update_7007(&$sandbox) {
+  //Prepare all variables in first iteration
+  if (!isset($sandbox['total'])) {
+    //Prepare array from query
+    ag_general_prepare_batch_publication_date_v3($sandbox);
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = ag_general_get_total_batch_operations($sandbox);
+  }
+
+  //Get batch, or number of entities to process each time.
+  $nodes_per_pass = 100;
+  $end = $sandbox['current'] + $nodes_per_pass;
+
+  $ids = array();
+  foreach ($sandbox['elements'] as $element) {
+    $ids[] = $element['idDrupal'];
+  }
+
+  //Loop
+  while($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    //Heavy operations
+    $element = ag_general_get_element($sandbox);
+    ag_general_update_publication_date_v3($sandbox, $element);
+
+    //Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1, meaning we are done.
+  // Also, avoid division by zero
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @records records. Finished.', array('@records' => $sandbox['total'])));
+
+    //Close log file
+    if (!empty($sandbox['fh_log'])) {
+      fclose($sandbox['fh_log']);
+    }
+  }
+}
+
+/**
+ * Get contents to add publication date
+ */
+function ag_general_prepare_batch_publication_date_v3(&$sandbox) {
+  // Open log file handler.
+  ag_general_open_log_file($sandbox, 'not_updated_solr_drupal.log');
+
+  //Get solrid from orquestator
+  $orchestrator = new OS_orchestrator_selection();
+  $params = array(
+    'q' => '*:*',
+    'rows' => 100000,
+    'fields' => array('idDrupal', 'id', 'lifecycleContributeStr'),
+    'fq' => 'type:ODE AND published:1',
+  );
+  $response = $orchestrator->multipleSelectionOdeFields($params);
+
+  $result = array();
+  if (!empty($response[1])) {
+    foreach ($response[1] as $element) {
+      if (isset($element['idDrupal']) && !empty($element['idDrupal'])) {
+        $result[] = $element;
+      }
+    }
+  }
+
+  //Return by storing the array in sandbox variable. It will be static and accessible by all update batch executions.
+  $sandbox['elements'] = $result;
+}
+
+/**
+ * Function for update publicationDate in SOLR and created date in DRUPAL from VCARD lifecycle
+ */
+function ag_general_update_publication_date_v3(&$sandbox, $element) {
+  // Extract from lifecycle the most recent publication date
+  $lifecycle_date_temp = array();
+  foreach ($element['lifecycleContributeStr'] as $lifecycle) {
+    $date = explode('END:VCARD##', $lifecycle);
+    $date = explode('##', $date[1]);
+    $date = $date[0];
+    $date_solr = $date;
+
+    $date = str_replace('T', ' ', $date);
+    $date = str_replace('Z', '', $date);
+
+    $timestamp = strtotime($date);
+    $lifecycle_date_temp[$date_solr] = $timestamp;
+  }
+
+  $drupal_date = max($lifecycle_date_temp);
+  $solr_date = array_search($drupal_date, $lifecycle_date_temp);
+
+  if ($drupal_date) {
+    // Update in SOLR
+    $nid = !empty($element['idDrupal']) ? $element['idDrupal'] : NULL;
+    $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+    list($status, $result) = $OS_orchestrator_inyection->UpdateSolr($nid, $element['id'], $solr_date);
+
+    if ($status != 1){
+      // Error: can't update in SOLR
+      $error_log = t($result);
+      ag_general_write_log($sandbox['fh_log'], $error_log);
+    }
+    else if ($nid != NULL) {
+      // Query for solrid field.
+      try {
+        $solrid = db_query('SELECT field_solrid_value FROM field_data_field_solrid WHERE entity_id = :nid limit 1', array(':nid' => $nid))->fetchField();
+      }
+      catch (Exception $e) {
+        // Error: can't getting solrid in DRUPAL
+        $error_log = t('Error getting solrid from node with idDrupal: @idDrupal in Drupal.', array('@idDrupal' => $nid));
+        ag_general_write_log($sandbox['fh_log'], $error_log);
+      }
+      if ($element['id'] == $solrid) {
+        // Update in DRUPAL.
+        try {
+          db_query('UPDATE node SET created = :drupal_date where nid = :nid', array(':drupal_date' => $drupal_date, ':nid'=> $nid));
+        }
+        catch (Exception $e) {
+          // Error: can't update in DRUPAL
+          $error_log = t('Error updating node with idDrupal: @idDrupal in Drupal.', array('@idDrupal' => $nid));
+          ag_general_write_log($sandbox['fh_log'], $error_log);
+        }
+      }
+      else {
+        // Pass iteration but register into log file.
+        $error_log = t('The SOLR id of element with idDrupal: @idDrupal does not match.', array('@idDrupal' => $nid));
+        ag_general_write_log($sandbox['fh_log'], $error_log);
+      }
+    }
+    else {
+      $error_log = t('Node with nid: @nid not exists in Drupal', array('@nid' => $element['idDrupal']));
+      ag_general_write_log($sandbox['fh_log'], $error_log);
+    }
+  }
+}
+
+function print_node_data($data) {
+  $message = '';
+
+  foreach ($data as $item) {
+    $message .= $item . "\n";
+  }
+
+  print $message;
+}
+
+/**
+ * Get users to add publication date
+ */
+function ag_general_prepare_batch_publication_date_users(&$sandbox) {
+  // Open log file handler.
+  ag_general_open_log_file($sandbox, 'users_not_found_solr.log');
+
+  $query = db_select('users', 'u')
+    ->fields('u', array('uid'))
+    ->condition('u.status', 1, '=');
+  $result = $query->execute()->fetchCol();
+
+  //Return by storing the array in sandbox variable. It will be static and accessible by all update batch executions.
+  $sandbox['elements'] = $result;
+}
+
+/**
+ * Function for share ode into procomun social network
+ */
+function ag_general_update_publication_date_user(&$sandbox, $account) {
+  if (!empty($account) && is_object($account)) {
+    // Update node info in solr.
+    $result = orchestrator_services_update_entity_solr($account);
+
+    // Check for errors.
+    if ($result[0] == -1) {
+      // Pass iteration but register into log file.
+      $error_log = t('The element with idDrupal: @idDrupal is not register in SOLR.', array('@idDrupal' => $account->uid));
+      ag_general_write_log($sandbox['fh_log'], $error_log);
+    }
+    elseif ($result[0] == -2) {
+      // Pass iteration but register into log file.
+      $error_log = t('The element with idDrupal: @idDrupal does not have solrid in Drupal.', array('@idDrupal' => $account->uid));
+      ag_general_write_log($sandbox['fh_log'], $error_log);
+    }
+    elseif ($result[0] != 1) {
+      drupal_set_message(t('Error updating user data in solr with idDrupal: @idDrupal', array('@idDrupal' => $account->uid)), 'error');
+      throw new DrupalUpdateException(t('Error updating user data in solr with idDrupal: @idDrupal', array('@idDrupal' => $account->uid)));
+    }
+  }
+  else {
+    drupal_set_message(t('Error: No user sent'), 'error');
+    throw new DrupalUpdateException(t('Error: No user sent'));
+  }
+}
+
+/**
+ * Function for open log file handler for batch process.
+ */
+function ag_general_open_log_file(&$sandbox, $filename) {
+  //Get path. File must be in public folder with this name. It will be imported just once.
+  $public_path = variable_get('file_public_path', conf_path() . '/files');
+  $real_path = drupal_realpath($public_path);
+  $logfile = $real_path . '/' . $filename;
+
+  //Open log file
+  $fh_log = fopen($logfile, 'a');
+
+  if ($fh_log === FALSE) {
+    drupal_set_message(t('Log Path: @path not writing. Finished.', array('@path' => $logfile)));
+    throw new DrupalUpdateException(t('Log Path: @path not writing. Finished.', array('@path' => $logfile)));
+  }
+  else {
+    //If file opened successfully, save the handler into sandbox variable
+    $sandbox['fh_log'] = $fh_log;
+  }
+}
+
+/**
+ * Function for writting into log file.
+ */
+function ag_general_write_log($fh, $error_log) {
+  if (!empty($fh)) {
+    fwrite($fh, $error_log . "\n");
+  }
+}
+
+function ag_general_prepare_batch_get_title_data(&$sandbox) {
+  $csv_file = drupal_get_path('module', 'ag_general') . '/csv/noTitle.csv';
+  $results = array();
+
+  if (($gestor = fopen($csv_file, "r")) !== FALSE) {
+    // Get each row
+    while (($row = fgetcsv($gestor, 500, ",")) != FALSE) {
+      $results[] = $row;
+    }
+
+    fclose($gestor);
+  }
+  else {
+    drupal_set_message('No se ha podido abrir el fichero', 'error');
+  }
+
+  $sandbox['elements'] = $results;
+}
+
+function ag_general_check_element_title(&$sandbox, $element) {
+  $message = $empty = '';
+
+  if (!empty($element[2])) {
+    $node_title = DrupalToolKit::getNodeTitle(array($element[2]))->title;
+
+    if (!empty($node_title)) {
+      $sandbox['message_ok'][] = $element[2] . ',' . $element[0] . ',' . $node_title;
+    }
+    else {
+      $sandbox['empty_title'][] = $element[2] . ',' . $element[0] . ',';
+    }
+  }else {
+    $sandbox['empty_nid'][] = ',' . $element[0] . ',';
+  }
+}
+
+/**
+ * Update text_format for body field according to new CKEditor filter.
+ */
+function ag_general_update_7008(&$sandbox) {
+  // Prepare all variables in first iteration.
+  if (!isset($sandbox['total'])) {
+    // Prepare array from query.
+    ag_general_prepare_batch_update_text_format($sandbox);
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = ag_general_get_total_batch_operations($sandbox);
+  }
+
+  // Run batch.
+  ag_general_batch_run($sandbox, 'ag_general_update_text_format');
+}
+
+/**
+ * Retrieves all the content with wrong filter on body field.
+ *
+ * @param array $sandbox
+ *   Elements needed for batch operation.
+ *
+ * @ingroup database
+ */
+function ag_general_prepare_batch_update_text_format(&$sandbox) {
+  $query = db_select('field_data_body', 'fdb');
+  $query->fields('fdb', array('entity_id', 'body_format', 'bundle', 'language'));
+  $query->condition('fdb.bundle', array('post', 'social_network', 'external_content', 'debate', 'poll', 'event', 'ode', 'answer'), 'IN');
+  $query->where('(fdb.body_format!=:filtered_html OR fdb.body_format IS NULL)', array(':filtered_html' => 'filtered_html'));
+  $result = $query->execute()->fetchAll();
+
+  // Set all records with body_format wrong to the sandbox element.
+  $sandbox['elements'] = $result;
+}
+
+/**
+ * Updates the current element with according format for body field.
+ *
+ * Callback for ag_general_update_7008().
+ *
+ * @param object $element
+ *   Current item we are working with.
+ *
+ * @throws \DrupalUpdateException
+ *
+ * @ingroup callbacks
+ */
+function ag_general_update_text_format(&$sandbox, &$element) {
+  $query = db_update('field_data_body');
+  $query->fields(array('body_format' => 'filtered_html'));
+  $query->condition('entity_id', $element->entity_id);
+  $query->condition('language', $element->language);
+  $update = $query->execute();
+
+  if ($update < 1) {
+    throw new DrupalUpdateException(t('Can\'t update field_data_body record with entity_id: @id.', array('@id' => $element->entity_id)));
+  }
+}

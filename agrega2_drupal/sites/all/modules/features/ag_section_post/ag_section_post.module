@@ -1,0 +1,580 @@
+<?php
+/**
+ * @file
+ * Code for the ag_section_post feature.
+ */
+
+include_once 'ag_section_post.features.inc';
+include_once 'ag_section_post.forms.inc';
+
+function ag_section_post_menu() {
+  $items = array();
+
+  $items['ag_section_post/autocomplete'] = array(
+    'title' => 'register Autocomplete',
+    'page callback' => 'ag_section_post_user_autocomplete',
+    'access arguments' => array('educative center autocomplete'),
+    'type' => MENU_CALLBACK,
+  );
+
+  //Old gnoss site links. Resources/posts go by this link.
+  $items['comunidad/%/recurso/%/%'] = array(
+    'page callback' => 'ag_section_post_old_gnoss_links',
+    'page arguments' => array(1, 3, 4),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['node/%/status/%'] = array(
+    'title' => 'Change node status confirmation',
+    'description' => 'Change node status confirmation',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('node_change_status_form', 1, 3),
+    'access arguments' => array('edit node publication'),
+    'file' => 'ag_section_post.forms.inc',
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+* Callback function that parses old gnoss site links to new locations, depending
+* on migration identifiers.
+*/
+function ag_section_post_old_gnoss_links($social_network, $resource_name, $resource_id) {
+  //Clean just in case
+  $resource_id = check_plain($resource_id);
+
+  //If it is not empty and matches gnoss id formats
+  if(!empty($resource_id) && preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{8}/', $resource_id) > 0) {
+
+    //Execute the query
+    $query = db_select('temp_map_content_id', 't');
+    $query->fields('t', array('cid'));
+    $query->condition('t.proid', $resource_id);
+    $result = $query->execute()->fetchField();
+
+    //If the content was found, then redirect user to it.
+    if (!empty($result) && is_numeric($result)) {
+      drupal_goto('node/' . $result);
+    }
+    else{
+      try {
+        //Try to get it from temp_map_content_gnoss_odes new table, built with odes.xml from migration.
+        $query = db_select('temp_map_content_gnoss_odes', 't');
+        $query->fields('t', array('mec'));
+        $query->condition('t.proid', $resource_id);
+        $result = $query->execute()->fetchField();
+      }
+      catch (PDOException $e){
+        watchdog('GNOSS wrong link', t('Impossible to find resource: @resource_id, because of database wrong structure.'), array('@resource_id' => $resource_id));
+      }
+  
+      //If we have a result from the database, ode gnoss id was found, and we have a mecIdentifier to use for solr.
+      if (!empty($result) && is_string($result)) {
+  
+        $orchestrator = new OS_orchestrator_selection();
+        $ode_service = $orchestrator->selectOdeByMec($result);
+  
+        //If there exists an ode with this mecIdentifier, go for it! Access with solrid normally.
+        if (isset($ode_service[1][0]['id']) && is_string($ode_service[1][0]['id'])) {
+          drupal_goto('ode/view/' . $ode_service[1][0]['id']);
+        }
+      }
+    }
+  }
+
+  //Nothing was successful, then just 404 as normally.
+  drupal_not_found();
+}
+
+function ag_section_post_user_autocomplete($string) {
+  $output = array();
+
+  // Get Name and surname of users filtered by NAme or surname. Notice that user should check name
+  // and surname for to allow be acceded.
+  $query = 'SELECT fdfpn.field_profile_name_value, fdfps.field_profile_surname_value ';
+  $query .= 'FROM {field_collection_item} fci ';
+  $query .= 'INNER JOIN {field_data_field_visibility} fdfv ON (fci.item_id = fdfv.entity_id AND fdfv.field_visibility_value = :vis_value) ';
+  $query .= 'LEFT JOIN {field_data_field_profile_name} fdfpn ON (fci.item_id = fdfpn.entity_id) ';
+  $query .= 'LEFT JOIN {field_data_field_profile_surname} fdfps ON (fci.item_id = fdfps.entity_id) ';
+  $query .= 'WHERE fci.field_name = :fci_field_name ';
+  $query .= 'AND fdfpn.field_profile_name_value LIKE :name ';
+  $query .= 'OR fdfps.field_profile_surname_value LIKE :name ';
+  $query .= 'LIMIT 3';
+
+  $params = array(
+    ':vis_value' => 1,
+    ':fci_field_name' => 'field_name_surname',
+    ':name' => '%' . db_like(check_plain($string)) . '%',
+  );
+
+  $result = db_query($query, $params)->fetchAll();
+  foreach ($result as $value) {
+    $value = implode(' ', array_map('check_plain', (array)$value));
+    $output[$value] = $value;
+  }
+
+  // Return the values to JS via Json.
+  drupal_json_output($output);
+}
+
+/**
+* Implements hook_form_alter().
+* Extends "publish as organization" use case to every other node type that has that field.
+*/
+function ag_section_post_form_alter(&$form, &$form_state, $form_id) {
+  if (!empty($form['#node_edit_form']) && isset($form['field_original_user'])) {
+    // Ocultamos el campo original_user si esta:
+    if (isset($form['field_original_user'])) {
+      $form['field_original_user']['#type'] = 'hidden';
+    }
+
+    //Publish as organization is only available when creating the node.
+    if (empty($form_state['node']->nid)) {
+      global $user;
+      $account = user_load($user->uid);
+      $wp_user = entity_metadata_wrapper('user', $user);
+
+      if (isset($wp_user->field_organization_reference) && user_access('create content as organization')) {
+        $orgs = $wp_user->field_organization_reference->value();
+
+        if (empty ($orgs)) {
+          // This user hasn't organizations:
+          return;
+        }
+
+        // Construct the option values:, we have to be careful if we have only one organization or serveral of them.
+        $orgs_options = array(t('No publish as organization'));
+        if (is_array($orgs)) {
+          foreach ($orgs as $org_entity) {
+            $orgs_options[$org_entity->uid] = t('Publish as @org_name', array('@org_name' => $org_entity->name));
+          }
+        }
+        else {
+          $orgs_options[$orgs->uid] = t('Publish as @org_name', array('@org_name' => $orgs->name));
+        }
+        // This user is a member of a organization:
+        $form['publish_organization_fieldset'] = array(
+          '#type' => 'fieldset',
+          '#title' => t('Publish this content as a organization'),
+          '#collapsible' => TRUE,
+          '#collapsed' => TRUE,
+          '#weight' => $form['og_group_ref']['#weight'] + 1,
+        );
+
+        $form['publish_organization_fieldset']['publish_organization'] = array(
+          '#type' => 'radios',
+          '#options' => $orgs_options,
+          '#title' => t('My organizations'),
+          '#default_value' => 0,
+        );
+      }
+    }
+
+  }
+}
+
+/**
+ * Implements hook_node_submit().
+ */
+function ag_section_post_node_submit($node, $form, &$form_state) {
+  if (user_access('create content as organization')) {
+    //No need to check node type. Form alter and here, we check if content has field_original_user.
+    if (isset($form_state['values']['publish_organization']) && isset($node->field_original_user) && $form_state['values']['publish_organization'] != 0) {
+      // Set the original user:
+      $form_state['node']->field_original_user[LANGUAGE_NONE][0]['target_id'] = $form_state['node']->uid;
+      // Publish the content as the selected organization:
+      $form_state['node']->uid = $form_state['values']['publish_organization'];
+    }
+  }
+
+  // Map old authors fields with new authors fields.
+  if (isset($form_state['values']['field_contribuciones_ode'][LANGUAGE_NONE]) && !empty($form_state['values']['field_contribuciones_ode'][LANGUAGE_NONE])) {
+    $authors = $form_state['values']['field_contribuciones_ode'][LANGUAGE_NONE];
+    array_pop($authors);
+
+    // Temp arrays.
+    $temp_authors = array();
+    $temp_others = array();
+    // The first author every is the creator.
+    $temp_authors[0] = $form_state['node']->field_author_ref[LANGUAGE_NONE][0];
+
+    $delta_authors = 1;
+    $delta_others = 0;
+    foreach ($authors as $author) {
+      $author_email = $author['field_correo_electr_nico'][LANGUAGE_NONE][0]['email'];
+      $author_uid = DrupalToolKit::getUserDataByMail($author_email, array('uid'))->uid;
+      if (isset($author_uid) && !empty($author_uid) &&
+          $author_uid != $temp_authors[0]['target_id']) {
+        $author_name = $author['field_contribuidor'][LANGUAGE_NONE][0]['value'];
+
+        if ($author_uid != 0) {
+          $temp_authors[$delta_authors]['target_id'] = $author_uid;
+          $delta_authors++;
+        }
+        else if (isset($author_name) && !empty($author_name)){
+          $temp_others[$delta_others]['value'] = $author_name;
+          $delta_others++;
+        }
+      }
+    }
+
+    // Map field_author_ref with field_contribuciones_ode (users in Procomún).
+    $form_state['node']->field_author_ref[LANGUAGE_NONE] = $temp_authors;
+    // Map field_author_others with field_contribuciones_ode (users not in Procomún).
+    $form_state['node']->field_author_others[LANGUAGE_NONE] = $temp_others;
+  }
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function ag_section_post_field_widget_form_alter(&$element, &$form_state, $context) {
+  if ($context['field']['field_name'] == 'field_author_others') {
+    $element['value']['#autocomplete_path'] = 'ag_section_post/autocomplete';
+  }
+
+  if ($context['field']['field_name'] == 'field_author_ref') {
+    // Override autocomplete widget to allow perm
+    $element['target_id']['#autocomplete_path'] = 'ag_user/field_author_ref/autocomplete';
+
+    // Avoid 'restricted access' to referenced user entity on post edit form
+    if (!empty($element['target_id']['#entity']->field_author_ref[LANGUAGE_NONE][$element['target_id']['#delta']])) {
+      $referenced_uid = (int) $element['target_id']['#entity']->field_author_ref[LANGUAGE_NONE][$element['target_id']['#delta']]['target_id'];
+      if (!empty($referenced_uid)) {
+        // Get referenced user name and surname, and include it overriding field default value
+        $name_surname = ag_section_profile_users_get_name_surname_cached($referenced_uid);
+        $element['target_id']['#default_value'] = $name_surname . ' (' . $referenced_uid . ')';
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_entityreference_prepopulate_providers_info()
+ * This info is in entityreference_prepopulate.api
+ */
+function ag_section_post_entityreference_prepopulate_providers_info() {
+  return array(
+    //Provider definition
+    'user' => array(
+      'title' => t('User'),
+      'description' => t('Prepopulate from user that is logged in'),
+      'callback' => 'ag_section_post_get_logged_user',
+    ),
+  );
+}
+
+/**
+ * Callback for the provider for prepopulate the logged user uid in field_author_ref
+*/
+function ag_section_post_get_logged_user($field, $instance) {
+  global $user;
+
+  if (isset($user->uid) && $user->uid != 1) {
+    return array($user->uid);
+  }
+}
+
+/**
+ * Implements hook_entity_presave($entity, $type).
+ */
+function ag_section_post_entity_presave($entity, $type) {
+  if ($type == 'node' && ($entity->type == 'post' ||
+      $entity->type == 'podcast' || $entity->type == 'webinar')) {
+    //Check field_imagen_miniatura exists on post.
+    $field_image_info = field_info_instance('node', 'field_imagen_miniatura', 'post');
+
+    //Created new service in solr, to update preview images for odes.
+    if (module_exists('orchestrator_services')
+        && !empty($field_image_info)
+        && isset($entity->field_imagen_miniatura[LANGUAGE_NONE][0]['fid'])
+        && isset($entity->field_solrid[LANGUAGE_NONE][0]['value'])) {
+
+      //Get raw url
+      $raw_url = isset($entity->field_imagen_miniatura[LANGUAGE_NONE][0]['uri']) ? $entity->field_imagen_miniatura[LANGUAGE_NONE][0]['uri'] : '';
+
+      //When editing, uri might not be available in field_imagen_miniatura.
+      if (empty($raw_url)) {
+        //Load file
+        $file = file_load($entity->field_imagen_miniatura[LANGUAGE_NONE][0]['fid']);
+        $raw_url = $file->uri;
+      }
+
+      if (!empty($raw_url)) {
+        //Get file uri or entire path. drupal_realpath: path with server folder structure. file_create_url: external url.
+        $external_url = file_create_url($raw_url);
+
+        //Remove host info
+        $url = parse_url($external_url);
+        $path = $url['path'];
+
+        //Get solrid
+        $solr_id = $entity->field_solrid[LANGUAGE_NONE][0]['value'];
+
+        //Created new service in solr, to update preview images for odes.
+        $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+        list($status, $result) = $OS_orchestrator_inyection->UpdatePreview($solr_id, $path);
+
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_view($entity, $type, $view_mode, $langcode).
+ */
+function ag_section_post_entity_view_alter(&$build, $type) {
+  //Put license icon, if license checkboxes are valid and applied to creative commons.
+  //Rendering depends on three fields, but it should be changed to a proper field_formatter for field_original_author.
+  if ($type == 'node' && ($build['#bundle'] == 'post' ||
+      $build['#bundle'] == 'podcast' || $build['#bundle'] == 'webinar') &&
+      $build['#view_mode'] == 'full') {
+    $node = $build['#node'];
+
+    //Get field values.
+    $original_user = isset($node->field_original_author[LANGUAGE_NONE][0]['value']) ? $node->field_original_author[LANGUAGE_NONE][0]['value'] : NULL;
+    $allow_modifications = isset($node->field_allow_modifications[LANGUAGE_NONE][0]['value']) ? $node->field_allow_modifications[LANGUAGE_NONE][0]['value'] : NULL;
+    $comercial_use = isset($node->field_comercial_use[LANGUAGE_NONE][0]['value']) ? $node->field_comercial_use[LANGUAGE_NONE][0]['value'] : NULL;
+
+    //Show only if it is a Creative Commons license, and these two fields were introduced.
+    if ($allow_modifications != NULL && $comercial_use != NULL) {
+       //Get license link if it is Creative Commons.
+      $link = ag_visualization_ode_get_license_link($allow_modifications, $comercial_use, $original_user, TRUE);
+
+      //Set right before general language.
+      if (!empty($link)) {
+        $build['license_image']['#markup'] = '<div class="license-link">' . $link . '</div>';
+
+        //There must be a previous weight to hold to. Body is required.
+        $weight = isset($build['body']['#weight']) ? $build['body']['#weight'] + 0.5 : NULL;
+
+        //Else, just set 10.
+        $build['license_image']['#weight'] = empty($weight) ? 10 : $weight;
+      }
+    }
+
+    //Unrelated long-delayed fix. Remove duplicate external authors, if they already exist as normal author.
+    ag_section_post_remove_duplicate_authors($build);
+
+    //Force view user link. We can check profile user permission and block user access
+    if (!empty($build['field_author_ref']['#items'])) {
+      foreach ($build['field_author_ref']['#items'] as $user_data) {
+        if ($user_data['access'] === FALSE) {
+          $build['field_author_ref'][] = array('#markup' => l(ag_section_profile_users_get_name_surname_cached($user_data['target_id']), 'user/' . $user_data['target_id']));
+        }
+      }
+    }
+
+    // Add js to only show first three communities and hide the others
+    drupal_add_js([
+      'ag_general' => [
+        'parent_selector' => 'div.field-name-og-group-ref div.field-items',
+        'child_selector' => 'div.field-item',
+        'how_content_show' => 3
+      ]
+    ], 'setting');
+    drupal_add_js(drupal_get_path('module', 'ag_general') . '/js/toggle-content.js');
+  }
+}
+
+/**
+ * Implements hook_entity_view($entity, $type, $view_mode, $langcode).
+ */
+function ag_section_post_entity_view($entity, $type, $view_mode, $langcode) {
+  // Go only through needed content types.
+  $content_types = array('post', 'node', 'itinerary', 'podcast', 'webinar');
+  if (((isset($entity->type) && isset($entity->service_links_rendered) ) && (in_array($entity->type, $content_types)))) {
+    // RRSS links.
+    $rrss = ag_general_get_rrss();
+
+    if (!empty($rrss)) {
+      $entity->service_links_rendered = $rrss;
+    }
+
+    if ($entity->comment == COMMENT_NODE_OPEN && user_access('post comments') && $view_mode == 'full') {
+      $entity->content['links']['comment']['#links']['comment-add']['title'] = t('Make a comment');
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function ag_section_post_preprocess_node(&$vars) {
+  if ($vars['type'] == 'post' || $vars['type'] == 'podcast' ||
+      $vars['type'] == 'webinar') {
+    // Move add comment to last position.
+    $comment_link = $vars['content']['links']['comment'];
+    unset($vars['content']['links']['comment']);
+    $vars['content']['links']['comment'] = $comment_link;
+
+    if ($vars['type'] == 'podcast') {
+      // Move license after podcast widget.
+      $vars['content']['license_image']['#weight'] = '2.3';
+    }
+
+    if ($vars['type'] == 'webinar') {
+      // Move license after webinar login/access/view.
+      $vars['content']['license_image']['#weight'] = '7';
+    }
+  }
+}
+
+/**
+* Removes duplicates authors. If a user exists on our database, it is removed from external authors field.
+*/
+function ag_section_post_remove_duplicate_authors(&$build) {
+  if (isset($build['field_author_ref']) && isset($build['field_author_others'])) {
+    //String with all authors, as link or otherwise.
+    $all_authors = '';
+    foreach ($build['field_author_ref'] as $key => $value) {
+      if (!is_numeric($key)) {
+        continue;
+      }
+      if (isset($value['#markup'])) {
+        $all_authors = $all_authors . ag_section_post_remove_accents(drupal_strtolower($value['#markup']));
+      }
+    }
+
+    //Check if external author already exists as normal one. If it does, remove it from external list.
+    foreach ($build['field_author_others'] as $key => $value) {
+      if (!is_numeric($key)) {
+        continue;
+      }
+      if (isset($value['#markup'])) {
+        $other_author = ag_section_post_remove_accents(mb_strtolower($value['#markup']));
+        if (strpos($all_authors, $other_author) !== false) {
+          $build['field_author_others'][$key]['#markup'] = '';
+        }
+      }
+    }
+  }
+}
+
+/**
+* Replaces accents in a string. Much more reliable than iconv function, that depends on the configured locale of the server.
+*/
+function ag_section_post_remove_accents($string) {
+  $search = explode(",","ç,æ,œ,á,é,í,ó,ú,à,è,ì,ò,ù,ä,ë,ï,ö,ü,ÿ,â,ê,î,ô,û,å,e,i,ø,u");
+  $replace = explode(",","c,ae,oe,a,e,i,o,u,a,e,i,o,u,a,e,i,o,u,y,a,e,i,o,u,a,e,i,o,u");
+  return str_replace($search, $replace, $string);
+}
+
+/**
+* Edit form values so that body does not reference to any old procomun images.
+*/
+function ag_section_post_edit_form_fix_oldprocomun_images(&$form) {
+  foreach($form['body'] as $key => $value) {
+    if (isset($form['body'][$key][0]['#default_value'])) {
+      ag_section_post_fix_oldprocomun_images($form['body'][$key][0]['#default_value']);
+    }
+  }
+
+  $language = $form['language']['#value'];
+  if (isset($form['#node']->body[$language][0]['value'])) {
+    ag_section_post_fix_oldprocomun_images($form['#node']->body[$language][0]['value']);
+    ag_section_post_fix_oldprocomun_images($form['#node']->body[$language][0]['safe_value']);
+  }
+}
+
+/**
+* Implements hook_node_view_alter().
+*/
+function ag_section_post_node_view_alter(&$build) {
+  //Workaround for entity_reference permissions. Anonymous and logged users have not permission "access user profiles".
+  //They, in fact, are automatically redirected to profile/XXX/public path, thanks to theme_preprocess_link.
+  //In order to avoid granting that permission just to see field field_original_user, we will prepare again the render array,
+  //ignoring the original access=false limitation.
+  if (!isset($build['field_original_user']) && !empty($build['#node']->field_original_user[LANGUAGE_NONE][0]['target_id'])) {
+    $build['field_original_user'] = field_view_field($build['#entity_type'], $build['#node'], 'field_original_user', $build['#view_mode']);
+  }
+
+  if (isset($build['body'][0]['#markup']) && isset($build['body']['#bundle']) &&
+           ($build['body']['#bundle'] == 'post' ||
+            $build['body']['#bundle'] == 'podcast' ||
+            $build['body']['#bundle'] == 'webinar')) {
+    ag_section_post_fix_oldprocomun_images($build['body'][0]['#markup']);
+  }
+}
+
+/**
+* Receives a variable where there are links to older image locations.
+* By regular expressions, these are modified and redirected to our public folder location.
+*/
+function ag_section_post_fix_oldprocomun_images(&$markup) {
+  if (strpos($markup, 'ImagenesCKEditor') !== false) {
+    $old_images_path = variable_get('old_procomun_ckeditor_images', 'public://ImagenesCKEditor/');
+    $realpath = file_create_url($old_images_path);
+    $markup = preg_replace('/src=\"(.*?)ImagenesCKEditor(.*?)\"/' , 'src="' . $realpath . '$2"', $markup);
+  }
+}
+
+/**
+* Avoids base64 images from loading in search view, in order to avoid sending every user
+* lots of MB of images in each print call, causing loss of performance. They will be seen
+* only in node detail. These base64 images come from migration, and they should be either
+* removed or processed as normal files in Drupal.
+*/
+function ag_section_post_remove_base64_images_from_search(&$markup) {
+  if (strpos($markup, 'base64') !== false) {
+    $markup = preg_replace('/<img.*?src="data:image\/.*?base64.*?(\/>|img>)/' , '', $markup);
+  }
+}
+
+/**
+ *  Implements hook_node_grants().
+ */
+function ag_section_post_node_grants($account, $op) {
+  $grants = array();
+  $grants['authors_edit_content'][] = $account->uid;
+
+  return $grants;
+}
+
+/**
+ * Implements hook_node_access_records().
+ */
+function ag_section_post_node_access_records($node) {
+  if (empty($node->status)) {
+    // Node is unpublished, so we don't allow user to see it
+    return array();
+  }
+
+  $grants = array();
+  $allowed_contents = array('post');
+
+  if (in_array($node->type, $allowed_contents)) {
+    $wrapper = entity_metadata_wrapper('node', $node);
+
+    if (!empty($wrapper->field_author_ref)) {
+      $refs_authors = $wrapper->field_author_ref->raw();
+
+      foreach ($refs_authors as $author_uid) {
+        $grants[] = array(
+          'realm' => 'authors_edit_content',
+          'gid' => $author_uid,
+          'grant_view' => 1,
+          'grant_update' => 1,
+          'grant_delete' => 0,
+          'priority' => 0,
+        );
+      }
+    }
+  }
+  return $grants;
+}
+
+/**
+ * Implements hook_permission
+ */
+function ag_section_post_permission() {
+  return array(
+    'edit node publication' => array(
+      'title' => t('Unpublish or publish nodes'),
+      'description' => t('Edit node publication. Set it published or unpublished.'),
+    ),
+  );
+}

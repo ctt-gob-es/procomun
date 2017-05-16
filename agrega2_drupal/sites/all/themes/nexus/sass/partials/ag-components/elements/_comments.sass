@@ -1,0 +1,237 @@
+.pane-answers-content-in-questions,
+.node-answer:not(.node-teaser),
+#comments
+  width: calc(100% + 4em)
+  margin-left: -2em
+  margin-bottom: -2em
+  background: $snow
+  .pane-title,
+  h2.title
+    background: shade($snow, 5%)
+    padding: 10px 28px
+    text-transform: none
+    font-family: $font_narrow
+    font-weight: 400
+  .title.comment-form
+    text-transform: uppercase
+    font-weight: normal
+    font-size: 16px
+    padding-bottom: .5em
+    border-bottom: 1px dotted $light_gray
+    margin-bottom: 0
+  .user-picture
+    width: auto
+
+ul.answers-list
+  margin-bottom: 0
+
+  //Styles for the filter option below a textarea field
+  .filter-wrapper.form-wrapper
+    .form-item,
+    .filter-help,
+    .filter-guidelines
+      float: none
+      padding: 0
+    .filter-help
+      text-align: right
+      a
+        padding-left: 0
+  .comments-hidden-link
+    display: block
+    text-align: center
+    padding: .2em 0
+    margin-top: 5px
+    margin-bottom: 1em
+    background-color: $lightest_gray
+
+// Page comment reply
+.page-comment-reply
+  .comment-form
+    width: calc(100% + 4em)
+    padding: 2em 2em 1em
+    margin-left: -2em
+    margin-bottom: -2em
+
+// Comentario
+.answer,
+.comment
+  display: table
+  width: calc(100% - 4em)
+  margin: 1em 2em
+  border-bottom: 1px solid $light_gray
+  padding: 1em
+  position: relative
+  &:last-child
+    margin-bottom: 0
+    border-bottom-width: 0
+  > *
+    display: table-cell
+  .attribution
+    width: 270px
+    padding-right: 15px
+    border-right: 1px solid $light_gray
+    .user-picture
+      float: left
+      margin-right: 5px
+    .comment-submitted
+      overflow: hidden
+      p
+        margin: 0
+      .comment-time
+        margin-top: 5px
+  .answer-text,
+  .comment-text
+    padding-left: 15px
+    word-break: break-word
+    overflow-wrap: break-word
+    max-width: 625px
+  .new
+    position: absolute
+    top: 0
+    right: 1em
+    color: $orange
+    font-size: .8em
+    font-weight: bold
+    text-transform: capitalize
+  .social-links
+    @extend .social-links-block
+    .comment_forbidden
+      margin-top: 10px
+      margin-left: -1em
+.indented
+  margin-left: calc(270px + 28px)
+  margin-right: 2em
+  background: shade($snow, 5%)
+  .new
+    top: 5px
+  .comment-links
+    border-top: 1px solid $light_gray
+    margin-top: 0
+    margin: 0 1em
+    padding: 1em 1em
+    &:last-child
+      border-bottom: 0
+      margin-bottom: 0
+  &:after
+    width: calc(100% + 270px + 28px)
+    content: ''
+    display: block
+    height: 1em
+    border-bottom: 1px dashed $gray
+    margin-left: calc(-270px + -28px)
+    background: $snow
+  .comment
+    padding: 20px
+    border: 0
+    position: relative
+    margin: 0
+    width: 100%
+    .attribution
+      width: 145px
+  // Old content
+  .indented
+    margin-left: 0
+    &:last-child
+      &:after
+        content: initial
+
+// Comment links
+.answer-links,
+.comment-links
+  margin: 0em 2em 1em
+  border-bottom: 1px dashed $gray
+  padding: 0em 1em 0.75em
+  li
+    margin-right: 1em
+    display: inline-block
+  &:last-child
+    margin-bottom: 0
+    border-bottom: 0
+
+// Timeline comments
+.see-more-comments
+  background: shade($snow, 5%)
+  display: block
+  padding: 1em
+  text-align: center
+  text-decoration: underline
+  width: 100%
+  a
+    display: block
+.timeline-comments
+  width: calc(100% + 4em)
+  margin-top: 1em
+  margin-left: -2em
+  margin-bottom: -2em
+  background: $snow
+  border-top: 1px solid $light_gray
+.view-ag-teaser-comments
+  padding: 1.5em 2em
+  .views-row
+    display: table
+    margin-bottom: 15px
+    padding-bottom: 15px
+    border-bottom: 1px dashed $gray
+    width: 100%
+    &.views-row-last
+      margin: 0
+      padding: 0
+      border-width: 0
+.timeline-comment-info
+  width: 130px
+  padding-right: 20px
+  display: table-cell
+  border-right: 1px solid $light_gray
+  .views-field-name
+    line-height: 1.2em
+    margin-bottom: 0.5em
+  .views-field-created
+    margin-bottom: 1em
+  .views-field-replyto-comment
+    +icon-aware('ico-responder.png', 2px)
+.timeline-comment-body
+  padding-left: 20px
+  display: table-cell
+  word-break: break-word
+  overflow-wrap: break-word
+//Formulario de nuevo comentario
+form.comment-form
+  position: relative
+  background: $header_gray
+  padding: 1em
+  border-top: none
+  > div
+    //padding-left: 50px
+    display: block
+    > *
+      vertical-align: top
+      display: block
+  .user-picture
+    display: none
+  .form-actions
+    vertical-align: bottom
+    text-align: right
+    > *
+      margin: 5px
+      display: inline-block
+  .field-name-comment-body
+    padding-left: 0
+    label
+      display: none
+    .form-item
+      margin-top: 0
+    .grippie
+      display: none
+    .form-textarea-wrapper
+      position: relative
+      border: 1px solid $light_gray
+      textarea
+        border-color: transparent
+        &:focus
+          outline: 1px solid transparent
+
+// Modal
+#modal-content
+  form
+    background: transparent
+    padding: 0 1em

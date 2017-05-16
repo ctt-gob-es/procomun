@@ -1,0 +1,23 @@
+.pane-ag-section-profile-users-follow-user-block
+  .flag-wrapper.flag-follow-user
+    +button($orange)
+    display: block
+    text-align: center
+    position: relative
+    a
+      position: absolute
+      width: 100%
+      height: 100%
+      left: 0
+      top: 10px
+      color: $white
+      font-size: 18px
+      &:hover
+        text-decoration: none
+    //remove the icon for social actions
+    &:before
+      background: none
+      width: 0
+      height: 0
+    &:hover
+      background-color: $dark_orange

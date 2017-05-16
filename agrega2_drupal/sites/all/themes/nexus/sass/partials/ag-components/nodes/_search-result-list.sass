@@ -1,0 +1,86 @@
+#block-ag-section-search-solr-sarnia-sort-ode-search
+  input#edit-op
+    display: none
+.view
+  .view-content
+    position: relative
+//    z-index: -2
+.ag-filter-exposed
+  display: none
+  overflow: hidden
+  margin-bottom: 3em
+  .applied-filters
+    a
+      float: left
+      font-size: 14px
+      display: block
+      padding: 9px 10px
+      margin-top: 10px
+      padding-right: 35px
+      background: $white
+      margin-right: 10px
+      position: relative
+      border: 1px solid $main_blue
+      padding-right: 35px
+      &:after
+        content: '×'
+        position: absolute
+        right: 10px
+        font-size: 33px
+        top: -1px
+      &:hover
+        border-color: $deep_blue
+        text-decoration: none
+
+
+  .result
+    font-size: 21px
+    font-family: $font_narrow
+    color: $navy
+  .text
+    border-bottom: 1px solid $light_gray
+    position: relative
+    margin-top: 30px
+    span
+      display: block
+      font-size: 12px
+      color: $navy
+      text-transform: uppercase
+      margin-bottom: 5px
+      font-weight: 700
+    .clear-all-filter
+      position: absolute
+      right: 0
+      top: -16px
+      font-size: 14px
+      color: $main_blue
+      width: auto
+      height: 33px
+      text-align: right
+      text-indent: 25px
+      line-height: 2em
+      &:before
+        content: '×'
+        font-size: 33px
+        position: relative
+        top: 6px
+      &:hover
+        color: $deep_blue
+  body:not(.page-ode-search):not(.page-user-events) &
+    @extend .box-shadow
+    //+box-shadow(0px -4px 4px 1px lighten($cold_gray, 15%))
+    margin-bottom: 0
+    .text
+      margin-top: 0
+.node-type-social-network
+  .ag-filter-exposed   
+    +box-shadow(0px)
+.view-ode-search
+  .search-result.post-result
+    .description
+      img
+        max-height: 120px!important
+        width: auto!important
+    .node-readmore
+      float: right
+      clear: both

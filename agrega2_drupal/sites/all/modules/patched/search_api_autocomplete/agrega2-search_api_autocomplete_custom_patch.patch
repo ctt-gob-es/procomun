@@ -1,0 +1,149 @@
+diff --git a/sites/all/modules/patched/search_api_autocomplete/search_api_autocomplete.js b/sites/all/modules/patched/search_api_autocomplete/search_api_autocomplete.js
+index 97a3cdc..bbd26d6 100644
+--- a/sites/all/modules/patched/search_api_autocomplete/search_api_autocomplete.js
++++ b/sites/all/modules/patched/search_api_autocomplete/search_api_autocomplete.js
+@@ -1,4 +1,10 @@
+ (function ($) {
++// When de doc is ready we need always to reset the hidden value for the autocomplete option. So, when we search again
++//from the main search box this field should be empty.This field may be only populated when selecting an autocomplete
++//option.
++$(document).ready(function() {
++  $('input[name="auto"]').val("");
++});
+ 
+ // Auto-submit main search input after autocomplete
+ if (typeof Drupal.jsAC != 'undefined') {
+@@ -89,8 +95,18 @@ if (typeof Drupal.jsAC != 'undefined') {
+         Drupal.search_api_ajax.navigateQuery($(this.input).val());
+       }
+       else {
+-        var selector = getSetting(this.input, 'selector', ':submit');
+-        $(selector, this.input.form).trigger('click');
++        // Obtain the facet field from the span.
++        // We need to use the facet field name to alter the query on form submit.
++        $('.search-api-autocomplete-suggestion').click(function() {
++          var facetfield = $('.facet-field', this).text();
++          // Add the clicked value to the main query searchbox field.
++          var selection = $('.autocomplete-suggestion-suffix', this).text();
++          $('input[name="query"]').val(selection);
++          // Add the value of the facet fjieldd to the hidden field "auto".
++          $('input[name="auto"]').val(facetfield);
++          // Submit the form right away!
++          $("#views-exposed-form-ode-search-page").submit();
++        });
+       }
+       return true;
+     }
+@@ -132,9 +148,9 @@ Drupal.ACDB.prototype.search = function (searchString) {
+   searchString = searchString.replace(/\s+/g, ' ');
+ 
+   // See if this key has been searched for before.
+-  if (this.cache[searchString]) {
++  /*if (this.cache[searchString]) {
+     return this.owner.found(this.cache[searchString]);
+-  }
++  }*/
+ 
+   var db = this;
+   this.searchString = searchString;
+@@ -156,7 +172,7 @@ Drupal.ACDB.prototype.search = function (searchString) {
+     else {
+       // We use Drupal.encodePath instead of encodeURIComponent to allow
+       // autocomplete search terms to contain slashes.
+-      url = db.uri + '/' + Drupal.encodePath(searchString);
++      url = db.uri + '/' + Drupal.encodePath(searchString) + '/' + $('#edit-type option:selected').val();
+     }
+ 
+     // Ajax GET request for autocompletion.
+diff --git a/sites/all/modules/patched/search_api_autocomplete/search_api_autocomplete.module b/sites/all/modules/patched/search_api_autocomplete/search_api_autocomplete.module
+index d107552..da705fc 100644
+--- a/sites/all/modules/patched/search_api_autocomplete/search_api_autocomplete.module
++++ b/sites/all/modules/patched/search_api_autocomplete/search_api_autocomplete.module
+@@ -56,10 +56,10 @@ function search_api_autocomplete_search_api_autocomplete_suggester_info() {
+  */
+ function search_api_autocomplete_menu() {
+   // Autocompletion path
+-  $items['search_api_autocomplete/%search_api_autocomplete_search'] = array(
++  $items['search_api_autocomplete/%search_api_autocomplete_search/%'] = array(
+     'title' => 'Search API autocomplete',
+     'page callback' => 'search_api_autocomplete_autocomplete',
+-    'page arguments' => array(1),
++    'page arguments' => array(1, 2),
+     'access callback' => 'search_api_autocomplete_access',
+     'access arguments' => array(1),
+     'type' => MENU_CALLBACK,
+diff --git a/sites/all/modules/patched/search_api_autocomplete/search_api_autocomplete.pages.inc b/sites/all/modules/patched/search_api_autocomplete/search_api_autocomplete.pages.inc
+index 3cb2821..454e534 100644
+--- a/sites/all/modules/patched/search_api_autocomplete/search_api_autocomplete.pages.inc
++++ b/sites/all/modules/patched/search_api_autocomplete/search_api_autocomplete.pages.inc
+@@ -16,7 +16,7 @@
+  * @param string $keys
+  *   The user input so far.
+  */
+-function search_api_autocomplete_autocomplete(SearchApiAutocompleteSearch $search, $fields, $keys = '') {
++function search_api_autocomplete_autocomplete(SearchApiAutocompleteSearch $search, $fields, $keys = '', $type) {
+   $ret = array();
+   try {
+     if ($search->supportsAutocompletion()) {
+@@ -26,6 +26,7 @@ function search_api_autocomplete_autocomplete(SearchApiAutocompleteSearch $searc
+         // @todo Maybe make range configurable?
+         $query->range(0, 10);
+         $query->setOption('search id', 'search_api_autocomplete:' . $search->machine_name);
++        $query->setOption('search type', $type);
+         if (!empty($search->options['fields'])) {
+           $query->fields($search->options['fields']);
+         }
+@@ -36,6 +37,7 @@ function search_api_autocomplete_autocomplete(SearchApiAutocompleteSearch $searc
+         $query->preExecute();
+         $suggestions = $search->getSuggester()->getAutocompleteSuggestions($query, $incomplete, $keys);
+         if ($suggestions) {
++          //dfb($suggestions);
+           foreach ($suggestions as $suggestion) {
+             // Convert suggestion strings into an array.
+             if (is_string($suggestion)) {
+@@ -77,7 +79,9 @@ function search_api_autocomplete_autocomplete(SearchApiAutocompleteSearch $searc
+               // Also set the "keys" key so it will always be available in alter
+               // hooks and the theme function.
+               if (!isset($suggestion['keys'])) {
+-                $suggestion['keys'] = $suggestion['suggestion_prefix'] . $suggestion['user_input'] . $suggestion['suggestion_suffix'];
++                // We should use just the term. IE if "sofia" and "Sofia" are two suggestions then we can't exclude one.
++                // Before if the user input is "sof" we were excluding the second one.
++                $suggestion['keys'] = $suggestion['term'];
+               }
+               $key = trim($suggestion['keys']);
+             }
+@@ -139,9 +143,11 @@ function theme_search_api_autocomplete_suggestion(array $variables) {
+   $user_input = $variables['user_input'];
+   $suggestion_suffix = $variables['suggestion_suffix'];
+   $results = $variables['results'];
++  $term = $variables['term'];
++  $facet_field = $variables['facet_field'];
+ 
+   $output = '';
+-  if ($prefix) {
++  /*if ($prefix) {
+     $output .= "<span class=\"autocomplete-suggestion-note\">$prefix</span> ";
+   }
+   if ($suggestion_prefix) {
+@@ -152,9 +158,20 @@ function theme_search_api_autocomplete_suggestion(array $variables) {
+   }
+   if ($suggestion_suffix) {
+     $output .= "<span class=\"autocomplete-suggestion-suffix\">$suggestion_suffix</span>";
++  }*/
++  // For the moment whe only need the term and the number of results.
++  if ($term) {
++    $output .= "<span class=\"autocomplete-suggestion-suffix\">$term</span>";
+   }
+-  if ($results) {
++
++  // By customer request the number of results deactivates Search
++  /*if ($results) {
+     $output .= " <span class=\"autocomplete-suggestion-results\">$results</span>";
++  }*/
++
++  // Adding the facet field to detect which filter may be executed on autocomplete selection.
++  if ($facet_field) {
++    $output .= ' <span class="facet-field" style="visibility:hidden">' . $facet_field . '</span>';
+   }
+ 
+   return "<div class=\"search-api-autocomplete-suggestion\">$output</div>";

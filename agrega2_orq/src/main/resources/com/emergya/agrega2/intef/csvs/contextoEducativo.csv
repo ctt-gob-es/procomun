@@ -1,0 +1,32 @@
+TESAURO INTEF – NPROCOMUN,ÁRBOL CURRICULAR LOE,ETB LRE
+Educación Especial,1#Educación Especial,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##1227#educación especial
+Educación Infantil,2#Educación Infantil,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##1017#educación preescolar
+Educación Primaria,3#Educación Primaria,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##1024#educación primaria
+6 -7 años / Primer curso,3#Educación Primaria##3.1#Primer ciclo##3.1.1#Primer curso,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##1024#educación primaria
+7 - 8 años / Segundo curso,3#Educación Primaria##3.1#Primer ciclo##3.1.2#Segundo curso,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##1024#educación primaria
+8 - 9 años / Tercer curso,3#Educación Primaria##3.2#Segundo ciclo##3.2.1#Tercer curso,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##1024#educación primaria
+9 - 10 años / Cuarto curso,3#Educación Primaria##3.2#Segundo ciclo##3.2.2#Cuarto curso,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##1024#educación primaria
+10 - 11 años / Quinto curso,3#Educación Primaria##3.3#Tercer ciclo##3.3.1#Quinto curso,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##1024#educación primaria
+11 - 12 / Sexto curso,3#Educación Primaria##3.3#Tercer ciclo##3.3.2#Sexto curso,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##1024#educación primaria
+Educación Secundaria Obligatoria,4#Educación Secundaria Obligatoria,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##1158#educación secundaria
+12 - 13 años / Primer curso,4#Educación Secundaria Obligatoria##4.1#Primer curso,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##1158#educación secundaria
+13 - 14 años / Segundo curso,4#Educación Secundaria Obligatoria##4.2#Segundo curso,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##1158#educación secundaria
+14 - 15 años / Tercer curso,4#Educación Secundaria Obligatoria##4.3#Tercer curso,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##1158#educación secundaria
+15 - 16 / Cuarto curso,4#Educación Secundaria Obligatoria##4.4#Cuarto curso,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##1158#educación secundaria
+Bachillerato,6#Bachillerato,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##1158#educación secundaria
+Formación Profesional,8#Formación Profesional###7#Programas de Cualificación Profesional Inicial,M60#60 SISTEMA EDUCATIVO##386#educación##1369#formación profesional
+Formación Profesional Básica (más de 15 años),7#Programas de Cualificación Profesional Inicial,M60#60 SISTEMA EDUCATIVO##386#educación##1369#formación profesional##3110#formación profesional inicial
+Ciclo formativo grado medio (más de 16 años),8#Formación Profesional##8.1#Ciclo formativo de grado medio,M60#60 SISTEMA EDUCATIVO##386#educación##1369#formación profesional##4659#formación profesional específica##3538#ciclos formativos de grado medio
+Ciclo formativo grado superior (más de 18 años),8#Formación Profesional##8.2#Ciclo formativo de grado superior,M60#60 SISTEMA EDUCATIVO##386#educación##1369#formación profesional##4659#formación profesional específica##2939#ciclos formativos de grado superior
+Educación de Personas Adultas,9#Educación de personas adultas,M60#60 SISTEMA EDUCATIVO##386#educación##28#educación de adultos
+Enseñanza oficial de idiomas,10#Enseñanzas de Régimen Especial##10.1#Escuela oficial de idiomas,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##4782#enseñanzas oficiales de idiomas
+Nivel básico (A),10#Enseñanzas de Régimen Especial##10.1#Escuela oficial de idiomas##10.1.1#Nivel básico,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##4782#enseñanzas oficiales de idiomas
+Nivel intermedio (B),10#Enseñanzas de Régimen Especial##10.1#Escuela oficial de idiomas##10.1.2#Nivel intermedio,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##4782#enseñanzas oficiales de idiomas
+Nivel avanzado ( C ),10#Enseñanzas de Régimen Especial##10.1#Escuela oficial de idiomas##10.1.3#Nivel avanzado,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##4782#enseñanzas oficiales de idiomas
+Enseñanzas de artes plásticas y diseño,10#Enseñanzas de Régimen Especial##10.2#Enseñanzas artísticas##10.2.1#Enseñanzas de artes plásticas y diseño###10#Enseñanzas de Régimen Especial##10.2#Enseñanzas artísticas##10.2.2#Estudios superiores de artes plásticas y diseño,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##1623#enseñanzas artísticas
+Enseñanzas de música,10#Enseñanzas de Régimen Especial##10.2#Enseñanzas artísticas##10.2.3#Enseñanzas de música,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##1623#enseñanzas artísticas
+Enseñanzas de danza,10#Enseñanzas de Régimen Especial##10.2#Enseñanzas artísticas##10.2.4#Enseñanzas de danza,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##1623#enseñanzas artísticas
+Enseñanzas de arte dramático,10#Enseñanzas de Régimen Especial##10.2#Enseñanzas artísticas##10.2.5#Enseñanzas de arte dramático,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##1623#enseñanzas artísticas
+Enseñanzas deportivas,10#Enseñanzas de Régimen Especial##10.3#Enseñanzas deportivas,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##4676#enseñanzas deportivas
+Enseñanzas Universitarias,11#Enseñanzas Universitarias,M60#60 SISTEMA EDUCATIVO##403#sistema educativo##587#educación superior
+Formación del Profesorado,,M60#60 SISTEMA EDUCATIVO##386#educación##1273#formación de profesores

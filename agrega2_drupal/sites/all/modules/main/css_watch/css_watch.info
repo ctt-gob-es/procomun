@@ -1,0 +1,11 @@
+; $Id: css_watch.info,v 1.2 2011/02/17 03:42:42 dustincurrie Exp $
+name = "CSS Watch"
+description = "Development tool that allows live editing of css"
+package = "Development"
+core = 7.x
+; Information added by drupal.org packaging script on 2011-02-17
+version = "7.x-1.0-beta1"
+core = "7.x"
+project = "css_watch"
+datestamp = "1297914745"
+

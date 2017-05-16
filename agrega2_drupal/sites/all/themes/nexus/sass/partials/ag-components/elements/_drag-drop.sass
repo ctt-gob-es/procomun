@@ -1,0 +1,30 @@
+.droppable
+  border: none
+  width: 100%
+  .droppable-message
+    border: 2px dashed $light_gray
+    margin-bottom: 16px
+    &.drag-over
+      background: $snow
+      border: 2px dashed $main_blue
+    &:before
+      content: ''
+      height: 100px
+      width: 100%
+      background-image: image-url('upload-icon.png')
+      background-repeat: no-repeat
+      background-position: top center
+      background-size: contain
+      display: inline-block
+      margin-top: 15px
+.droppable-standard-upload
+  display: inline
+.droppable-preview-file
+  text-align: left
+  padding-left: 15px
+  min-height: 25px
+.preview-remove
+  text-align: center
+  min-height: 25px
+.droppable-message
+  line-height: 45px

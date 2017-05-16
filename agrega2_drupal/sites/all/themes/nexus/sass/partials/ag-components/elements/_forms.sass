@@ -1,0 +1,85 @@
+form
+  label
+    font-weight: normal
+    margin-bottom: 0
+  input,
+  select,
+  textarea
+    max-width: 100%
+    padding: 10px
+    background-color: $white
+    line-height: 18px
+    border: 1px solid $light_gray
+    +border-radius(3px)
+  .form-item label
+    height: 40px
+  .description
+    color: $gray
+    font-size: 0.85em
+    line-height: 1.5em
+  input[type="file"]
+    font-size: 13px
+    line-height: 1
+
+
+html.js input.form-autocomplete
+  background-image: image-url("throbber_3.gif")
+  background-position: 100% 15px
+html.js input.throbbing
+  background-position: 100% -13px
+  background-image: image-url("throbber_3.gif")
+
+//Overwrite the Drupal modules/field/theme/field.css
+form .field-multiple-table
+  margin: 0
+form .field-multiple-table th.field-label
+  //No side-padding for labels as there are no borders
+  padding-left: 0
+  padding-right: 0
+form .field-multiple-table td.field-multiple-drag
+  width: 30px
+  padding-right: 0
+form .field-multiple-table td.field-multiple-drag a.tabledrag-handle
+  padding-right: .5em
+form .field-add-more-submit
+  margin: .5em 0 0
+//END: Overwrite the Drupal modules/field/theme/field.css
+
+//Overwrite Bootstrap styñe
+input[type="radio"],
+input[type="checkbox"]
+  margin: 0 0
+  margin-top: 1px \9
+  /* IE8-9 */ line-height: normal
+
+//Hierarchical Select style corrections
+tr.odd .form-item.shs-wrapper-processed,
+tr.even .form-item.shs-wrapper-processed
+  white-space: normal
+  .shs-select
+    margin-right: 1em
+    margin-bottom: 1em
+
+//Overwrite file.css styles for file/image upload
+.form-managed-file .form-file,
+.form-managed-file .form-submit
+  display: inline-block
+  margin: 0 1em 0 0
+
+.confirmation
+  #edit-cancel
+    +button($orange)
+    float: right
+    padding: 13px
+    font-weight: bold
+    &:hover
+      background: $dark_orange
+  #edit-submit
+    +button($green)
+    +no-icon(12px)
+// Create or edit any node entity.
+.page-node-add,
+.page-node-edit
+  tr.draggable
+    .form-item
+      margin-bottom: 1em

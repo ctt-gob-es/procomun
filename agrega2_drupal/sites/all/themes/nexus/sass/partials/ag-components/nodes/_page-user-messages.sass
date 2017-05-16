@@ -1,0 +1,110 @@
+body.page-messages
+  //The container for the buttons is different for users who have messages and for those who don't
+  .container-inline,
+  .form-type-select
+    margin: 3em 0
+  .action-links
+    margin: 0
+    height: 0
+  .action-links li
+    display: inline-block
+  a.new-msg-button
+    +button-white
+    display: inline-block
+    float: left
+    line-height: 19px
+
+  table.privatemsg-list
+    @extend %table-style-2
+
+  .privatemsg-author-avatar
+    width: auto
+    display: block
+  .privatemsg-message-participants
+    padding: 2em
+  .privatemsg-message
+    box-shadow: 0 0 3px $gray
+    margin: 0 auto
+    padding: 1em 1em 0
+  .privatemsg-message-actions li a
+    +hide-text
+    float: right
+    i
+      font-size: 12px
+      color: $main_blue
+  .privatemsg-message-column
+    width: 85%
+    float: left
+    margin-left: 3%
+  #privatemsg-form-reply
+    .text-format-wrapper
+      +clearfix()
+      padding-bottom: .5em
+    .form-item.form-type-textarea
+      +clearfix()
+      padding-bottom: .5em
+      > label
+        +special-label
+      > .form-textarea-wrapper
+        +special-input
+      > .form-textarea-wrapper ~ .description
+        +special-description()
+      ~ .ckeditor_links
+        +special-description()
+        display: block
+    .filter-wrapper.form-wrapper
+      float: left
+      width: $input-width
+      margin-left: $label-width + $label-margin
+      .form-item,
+      .filter-help,
+      .filter-guidelines
+        float: none
+        padding: 0
+      .filter-help a
+        padding-left: 0
+  #content-wrap
+    padding-top: 1px
+  .tabs-wrapper ul.tabs.primary
+    height: 0
+    border: none
+    +tabs($menu-icon)
+    margin-top: 0
+  .content
+    .new-msg-button
+      +button-white
+      margin: 0 1em 0 0!important
+
+.page-messages-blocked
+  .description
+    display: none
+  .form-item-name
+    display: inline-block
+    padding-right: 25px
+    label
+      display: block
+      padding-bottom: 10px
+  .blocked-user-list
+    border-top: 1px dashed $gray
+    padding-top: 25px
+    text-transform: uppercase
+  legend
+    border-bottom: none
+    padding-bottom: 15px
+    padding-top: 0
+    span
+      font-size: 21px
+      font-weight: 700
+      font-family: "PT Sans Narrow", "PT Sans", sans-serif
+  .tab-title
+    margin-top: 45px
+  .fieldset-description
+    padding-bottom: 10px
+  table.sticky-enabled
+    tr
+      border-bottom: 1px solid $light_gray
+    th.active
+      width: 100%
+    td,
+    th
+      padding: 10px

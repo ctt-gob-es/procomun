@@ -1,0 +1,531 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_general.admin.inc: n/a
+#  ag_general.context.inc: n/a
+#  ag_general.features.menu_custom.inc: n/a
+#  ag_general.forms.inc: n/a
+#  ag_general.module: n/a
+#  templates/ag_current_search.tpl.php: n/a
+#  ag_general.install: n/a
+#  ag_general.info: n/a
+#  js/toggle-content.js: n/a
+#  plugins/content_types/custom_translatable_block/custom_translatable_block.inc: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2016-08-31 11:21+0200\n"
+"PO-Revision-Date: 2016-08-31 11:21+0200\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: ag_general.admin.inc:10
+msgid "Cl@ve url server"
+msgstr "Ruta servidor Cl@ve"
+
+#: ag_general.admin.inc:11
+msgid "Cl@ve url server with http or https protocol"
+msgstr "Ruta servidor Cl@ve inluyendo el protocolo http o https"
+
+#: ag_general.admin.inc:18
+msgid "Level 2"
+msgstr ""
+
+#: ag_general.admin.inc:18
+msgid "Level 3"
+msgstr ""
+
+#: ag_general.admin.inc:18
+msgid "Level 4"
+msgstr ""
+
+#: ag_general.admin.inc:19;20
+msgid "Identification level"
+msgstr "Nivel de identificación"
+
+#: ag_general.admin.inc:28
+msgid "Service providers"
+msgstr "Proveedores de servicio"
+
+#: ag_general.admin.inc:35
+msgid "Application id"
+msgstr "Id de aplicación"
+
+#: ag_general.admin.inc:36
+msgid "Application id for Procomun"
+msgstr "Id de aplicación para Procomún"
+
+#: ag_general.admin.inc:43
+msgid "Sia code"
+msgstr "Código Sia"
+
+#: ag_general.admin.inc:44
+msgid "Sia code for Procomun"
+msgstr "Código Sia para Procomún"
+
+#: ag_general.admin.inc:51
+msgid "Enable Cl@ve authentication login"
+msgstr "Activar acceso con Cl@ve"
+
+#: ag_general.admin.inc:70
+msgid "Stop service notification title"
+msgstr "Título notificación parada de servicio"
+
+#: ag_general.admin.inc:71
+msgid "Stop service notification title in English"
+msgstr "Título en inglés notificación parada de servicio"
+
+#: ag_general.admin.inc:79
+msgid "Stop service notification text"
+msgstr "Texto notificación parada de servicio"
+
+#: ag_general.admin.inc:80
+msgid "Stop service notification text in English"
+msgstr "Texto en inglés notificación parada de servicio"
+
+#: ag_general.admin.inc:91
+msgid "Link to display on notification"
+msgstr ""
+
+#: ag_general.admin.inc:93
+msgid "Link to be displayed on notification"
+msgstr ""
+
+#: ag_general.admin.inc:100
+msgid "Text to display on link"
+msgstr ""
+
+#: ag_general.admin.inc:102
+msgid "Use a text in English to be displayed as Link title"
+msgstr ""
+
+#: ag_general.admin.inc:108
+msgid "Put stop service notification in homepage"
+msgstr "Mostrar notificación parada de servicio en la home"
+
+#: ag_general.admin.inc:110
+msgid "When enabled, a notification appears in homepage"
+msgstr "Cuando esté marcada, la notificación aparece en la home"
+
+#: ag_general.admin.inc:136
+msgid "Notification link must be a valid URL"
+msgstr ""
+
+#: ag_general.admin.inc:143
+msgid "If it is a external link, must start with http:// or https://"
+msgstr ""
+
+#: ag_general.context.inc:65;121
+msgid "Ag general"
+msgstr "Ag general"
+
+#: ag_general.context.inc:66
+msgid "Not logged"
+msgstr ""
+
+#: ag_general.features.menu_custom.inc:23
+msgid "El menú <em>Principal</em> se usa en muchos sitios web para mostrar las secciones principales del sitio, generalmente en una barra de navegación superior."
+msgstr ""
+
+#: ag_general.features.menu_custom.inc:24
+msgid "Menú principal"
+msgstr ""
+
+#: ag_general.forms.inc:49 ag_general.module:1318;1318
+msgid "Login with Cl@ve"
+msgstr "Acceso con Cl@ve"
+
+#: ag_general.forms.inc:70
+msgid "Are you sure you want to mark this content as novelty?"
+msgstr ""
+
+#: ag_general.forms.inc:73
+msgid "Are you sure you want to mark this content as not novelty?"
+msgstr ""
+
+#: ag_general.forms.inc:106
+msgid "Content successfully marked as @msg"
+msgstr ""
+
+#: ag_general.forms.inc:109;113
+msgid "Content could not be updated"
+msgstr ""
+
+#: ag_general.module:109
+msgid "Administer CKeditor in content types"
+msgstr ""
+
+#: ag_general.module:110
+msgid "Allows use CKEditor in some content types."
+msgstr "Permite usar CKEditor en algunos tipos de contenidos"
+
+#: ag_general.module:114
+msgid "Administer CKeditor in comments"
+msgstr "Administrar CKEditor en comentarios"
+
+#: ag_general.module:115
+msgid "Allows use CKEditor in comments."
+msgstr "Permite usar CKEditor en comentarios"
+
+#: ag_general.module:119
+msgid "Autocomplete users access"
+msgstr ""
+
+#: ag_general.module:120
+msgid "Allows use autocomplete functionality in add member to group."
+msgstr ""
+
+#: ag_general.module:123
+msgid "Cl@ve configuration form"
+msgstr ""
+
+#: ag_general.module:124
+msgid "Allow access to Cl@ve configuration form."
+msgstr ""
+
+#: ag_general.module:127
+msgid "Cl@ve login"
+msgstr ""
+
+#: ag_general.module:128
+msgid "Allow login with Cl@ve."
+msgstr ""
+
+#: ag_general.module:180
+msgid "See more"
+msgstr "Ver más"
+
+#: ag_general.module:207
+msgid "Procomun"
+msgstr "Procomún"
+
+#: ag_general.module:214;218
+msgid "About"
+msgstr "Acerca de"
+
+#: ag_general.module:227;231
+msgid "Legal conditions"
+msgstr "Condiciones legales"
+
+#: ag_general.module:240;244
+msgid "Terms of privacy"
+msgstr "Términos de privacidad"
+
+#: ag_general.module:255
+msgid "Help"
+msgstr "Ayuda"
+
+#: ag_general.module:262;266
+msgid "FAQ"
+msgstr "FAQ"
+
+#: ag_general.module:275;279
+msgid "User manual"
+msgstr "Manual de uso"
+
+#: ag_general.module:288;294
+msgid "Contact"
+msgstr "Contacto"
+
+#: ag_general.module:307
+msgid "The most visited"
+msgstr "Lo más visitado"
+
+#: ag_general.module:327;1291
+msgid "Twitter"
+msgstr ""
+
+#: ag_general.module:341;1286
+msgid "Facebook"
+msgstr ""
+
+#: ag_general.module:355
+msgid "Youtube"
+msgstr ""
+
+#: ag_general.module:369
+msgid "Pinterest"
+msgstr ""
+
+#: ag_general.module:424
+msgid "AG Current Search"
+msgstr "Ag búsqueda actual"
+
+#: ag_general.module:429
+msgid "AG stop service notification"
+msgstr ""
+
+#: ag_general.module:445 templates/ag_current_search.tpl.php:2
+msgid "Filters applied"
+msgstr "Filtros aplicados"
+
+#: ag_general.module:478
+msgid "Tags (separated by commas): Try to enter terms that describe specifically the content of the resource, avoiding ambiguities, words that do not provide any meaning and plurals."
+msgstr ""
+
+#: ag_general.module:494;504
+msgid "Visibility"
+msgstr "Visibilidad"
+
+#: ag_general.module:515;1487
+msgid "Novelty"
+msgstr "Novedad"
+
+#: ag_general.module:551
+msgid "Save as draft"
+msgstr "Guardar como borrador"
+
+#: ag_general.module:598
+msgid "My contributions"
+msgstr "Mis contribuciones"
+
+#: ag_general.module:623
+msgid "Link the term to the finder"
+msgstr "Enlaza el término al buscador"
+
+#: ag_general.module:625
+msgid "Link the term to the finder."
+msgstr "Enlaza el término al buscador"
+
+#: ag_general.module:629
+msgid "Agrega2 OG audience list"
+msgstr ""
+
+#: ag_general.module:633
+msgid "Text with tokens"
+msgstr ""
+
+#: ag_general.module:634
+msgid "Allows use tokens on description field"
+msgstr ""
+
+#: ag_general.module:684
+msgid "Normal label"
+msgstr ""
+
+#: ag_general.module:693
+msgid "Facet field"
+msgstr "Campo faceta"
+
+#: ag_general.module:694
+msgid "Select which facet in Solr is this field"
+msgstr ""
+
+#: ag_general.module:711
+msgid "Specify which facet field apply to this field as link. @facet_name"
+msgstr ""
+
+#: ag_general.module:902
+msgid "Absolute URL"
+msgstr "URL absoluta"
+
+#: ag_general.module:903
+msgid "Url of the site, without language prefix"
+msgstr ""
+
+#: ag_general.module:1159
+msgid "The alias is already in use."
+msgstr "Ese alias ya está en uso."
+
+#: ag_general.module:1170
+msgid "Unblock the user"
+msgstr "Desbloquear usuario"
+
+#: ag_general.module:1286
+msgid "Login with Facebook"
+msgstr "Acceso con Facebbok"
+
+#: ag_general.module:1291
+msgid "Login with Twitter"
+msgstr "Acceso con Twitter"
+
+#: ag_general.module:1295
+msgid "Login with social networks"
+msgstr "Acceso con redes sociales"
+
+#: ag_general.module:1338
+msgid "Login with google"
+msgstr ""
+
+#: ag_general.module:1390
+msgid "No user data found"
+msgstr "No se ha encontrado información del usuario"
+
+#: ag_general.module:1394
+msgid "Empty email in the identification data"
+msgstr "Email vacío en los datos de identificación"
+
+#: ag_general.module:1398
+msgid "It was not found email in the identification data"
+msgstr "No se ha encontrado el email en los datos de identificación"
+
+#: ag_general.module:1402
+msgid "Error loading identification data"
+msgstr "Error cargando los datos de identificación"
+
+#: ag_general.module:1406
+msgid "Error in identification process. No user data received"
+msgstr ""
+"Error en el proceso de identificación. No se han recibido los datos "
+"del usuario"
+
+#: ag_general.module:1409
+msgid "Error in identification process with Cl@ve"
+msgstr "Error en el proceso de identificación con Cl@ve"
+
+#: ag_general.module:1421
+msgid "To access through Cl@ve you must be registered with the same email account used in Procomún. Remember to register for Cl@ve permanently to associate your email to the digital certificate."
+msgstr ""
+"Para acceder a través de Cl@ve debe estar registrado con la misma "
+"cuenta de correo que utiliza en Procomún. Recuerde registrarse en "
+"Cl@ve permanente para asociar su email al certificado digital."
+
+#: ag_general.module:1195
+msgid "action"
+msgstr "acción"
+
+#: ag_general.module:1195
+msgid "Unblocked user %name."
+msgstr ""
+
+#: ag_general.module:14;21
+msgid "Custom user autocomplete"
+msgstr ""
+
+#: ag_general.module:29
+msgid "Cl@ve configuration"
+msgstr ""
+
+#: ag_general.module:39;47
+msgid "Cl@ve authentication"
+msgstr "Autenticación con Cl@ve"
+
+#: ag_general.module:55
+msgid "Stop service notification"
+msgstr ""
+
+#: ag_general.module:64;65
+msgid "Change novelty of content"
+msgstr ""
+
+#: ag_general.install:74
+msgid "Processed @users users. Added @procomun users to Procomun and @faqs users to FAQs Finished."
+msgstr ""
+
+#: ag_general.install:125
+msgid "No global Procomun network found."
+msgstr ""
+
+#: ag_general.install:142
+msgid "No global Faqs network found."
+msgstr ""
+
+#: ag_general.install:192
+msgid "Processed @records records. Finished."
+msgstr "Se han procesado @records registros. Finalizado"
+
+#: ag_general.install:244
+msgid "The element with idDrupal: @idDrupal and solrid: @solrid is not register in SOLR."
+msgstr ""
+
+#: ag_general.install:249;410
+msgid "The element with idDrupal: @idDrupal does not have solrid in Drupal."
+msgstr ""
+
+#: ag_general.install:253;254
+msgid "Error updating node data in solr with idDrupal: @idDrupal"
+msgstr ""
+
+#: ag_general.install:258;259
+msgid "Error: No node sent"
+msgstr ""
+
+#: ag_general.install:305
+msgid "Processed @users users. Finished."
+msgstr ""
+
+#: ag_general.install:364
+msgid "Processed @nodes nodes. Finished."
+msgstr ""
+
+#: ag_general.install:405
+msgid "The element with idDrupal: @idDrupal is not register in SOLR."
+msgstr ""
+
+#: ag_general.install:414;415
+msgid "Error updating user data in solr with idDrupal: @idDrupal"
+msgstr ""
+
+#: ag_general.install:419;420
+msgid "Error: No user sent"
+msgstr ""
+
+#: ag_general.install:437;438
+msgid "Log Path: @path not writing. Finished."
+msgstr ""
+
+#: ag_general.info:0
+msgid "ag_general"
+msgstr "ag_general"
+
+#: ag_general.info:0
+msgid "General feature with some resources which are used in several sections"
+msgstr ""
+"Feature general con algunos recursos que son usado en varias "
+"secciones."
+
+#: ag_general.info:0
+msgid "Agrega2"
+msgstr "Agrega2"
+
+#: js/toggle-content.js:0;0
+msgid "See +"
+msgstr "Ver +"
+
+#: js/toggle-content.js:0
+msgid "See -"
+msgstr "Ver -"
+
+#: plugins/content_types/custom_translatable_block/custom_translatable_block.inc:12
+msgid "Content type add translatable block"
+msgstr ""
+
+#: plugins/content_types/custom_translatable_block/custom_translatable_block.inc:13
+msgid "Custom ct pane add translatable block."
+msgstr ""
+
+#: plugins/content_types/custom_translatable_block/custom_translatable_block.inc:14
+msgid "Custom blocks"
+msgstr ""
+
+#: plugins/content_types/custom_translatable_block/custom_translatable_block.inc:57
+msgid "Block title"
+msgstr "Título del bloque"
+
+#: plugins/content_types/custom_translatable_block/custom_translatable_block.inc:58
+msgid "Use &lt;none&gt; from empty title"
+msgstr ""
+
+#: plugins/content_types/custom_translatable_block/custom_translatable_block.inc:65
+msgid "Block title link"
+msgstr ""
+
+#: plugins/content_types/custom_translatable_block/custom_translatable_block.inc:66
+msgid "Internal relative path"
+msgstr ""
+
+#: plugins/content_types/custom_translatable_block/custom_translatable_block.inc:73
+msgid "Block content"
+msgstr ""
+
+#: plugins/content_types/custom_translatable_block/custom_translatable_block.inc:80
+msgid "Block class"
+msgstr ""

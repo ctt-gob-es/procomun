@@ -1,0 +1,175 @@
+.page-user-view
+  #content-wrap
+    @extend .box-shadow
+  &:not(.page-user-cancel):not(.not-logged-in):not(.page-user-badges):not(.page-user-edit):not(.page-user-imce)
+    #content-wrap
+      padding-top: 0
+.page-user-my-communities
+  .panel-panel.panel-col-first
+    padding-top: 0
+    @extend .box-shadow
+.page-user-events
+  .panel-panel.center
+    padding-top: 0
+    @extend .box-shadow
+.page-user-favourites,
+.page-user-timeline,
+.page-user-my-communities,
+.page-user-events,
+.page-user-learning-paths
+  #content-wrap
+    background: transparent
+    padding: 0
+    +box-shadow(none)
+.page-user-,
+.page-profile
+  .panel-display
+    padding-top: 0
+  .wrapper-detail-content
+    padding-top: 1px
+  .region-content .nav-tabs
+    +tabs($menu-icon)
+    margin-top: 0
+    li
+      width: 25%
+  .profile
+
+    > a
+      clear: both
+      display: block
+      padding-top: 1em
+    #profile-mi-cuenta
+      margin-top: 40px
+    h3
+      border: none
+      clear: both
+    > h3
+      text-transform: uppercase
+      margin-bottom: 25px
+      border-top: 1px dashed $light_gray
+      padding-top: 45px
+    .user-mozilla-badges
+      > h2
+        text-transform: uppercase
+      .user-mozilla-badges-group
+        list-style-type: none
+        display: block
+        float: left
+        margin-right: 30px
+        .user-mozilla-badges-item
+          +border-radius(50%)
+          background-color: $gray-lighter
+          width: 140px
+          height: 140px
+          position: relative
+          text-align: center
+          margin: 0 .75em 1em 0
+          &:nth-child(5n)
+            margin-right: 0
+          img
+            border: none
+            max-width: 100%
+            margin: 21px auto
+            float: none
+            width: 100px
+            height: 100px
+    .user-picture
+      margin: 0
+      float: left
+      img
+        margin-right: 10px
+    .posted
+      display: block
+      margin-top: .5em
+      div
+        display: inline-block
+        margin-right: 5px
+    .public-activity
+      > li:last-child
+        border-bottom: 1px dashed $light_gray
+      .content
+        margin-bottom: 1em
+        position: relative
+  img
+    border: none
+
+.page-user-my-communities
+  .pane-create-community-link
+    height: 0
+    border: none
+    a
+      position: absolute
+      right: 13px
+      top: 18px
+      @extend button
+      border: none
+  #tabs .tabs.primary
+    +tabs($menu-icon)
+    li
+      width: 25%
+
+.page-profile,
+.page-user-
+  .profile
+    img
+      border: none
+      float: left
+      margin-right: 40px
+  .pane-ag-section-profile-users-follow-user-block
+    .flag-wrapper a
+      &:before
+        content: none
+  .profile2-datos-personales
+    .field-type-text,
+    .field-type-list-text,
+    .field-type-link-field,
+    .field-name-field-dni,
+    .field-type-text-long,
+    .field-type-datetime,
+    .most-used-tags
+      .field-label,
+      .field-item
+        border-bottom: 1px solid $light_gray
+        padding: 12px 0
+        height: 40px
+      .field-item,
+      .most-used-tags .item-list
+        padding-left: 15px
+    .field-type-taxonomy-term-reference
+      margin-top: 15px
+    .most-used-tags
+      display: table
+      width: 100%
+      > div
+        display: table-cell
+        vertical-align: top
+      .field-label
+        border-bottom: none
+        +label()
+        width: 24.99%
+        border-right: 1px solid $light_gray
+      .item-list
+        ul
+          padding: 7px 15px
+          li
+            display: block
+            float: left
+            margin: 0
+    .field-name-field-facebook
+      .field-item
+        border-bottom: none
+
+  #profile-datos-personales
+    h3
+      margin-bottom: 25px
+
+.page-user-edit
+  .nav.nav-tabs
+    +tabs($menu-icon, 6)
+
+// Nodes
+.node-activities
+  .content
+    position: relative
+    .poll .total
+      padding-top: 5px

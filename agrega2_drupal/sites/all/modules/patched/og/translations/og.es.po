@@ -1,0 +1,2212 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  og.info.inc: n/a
+#  includes/views/og.views.inc: n/a
+#  og.rules.inc: n/a
+#  plugins/access/og_member.inc: n/a
+#  plugins/access/og_perm.inc: n/a
+#  plugins/relationships/og_membership_from_group_and_user.inc: n/a
+#  og.module: n/a
+#  og.info: n/a
+#  og_access/og_access.info: n/a
+#  og_context/og_context.info: n/a
+#  og_field_access/og_field_access.info: n/a
+#  og_register/og_register.info: n/a
+#  og_ui/og_ui.module: n/a
+#  og_ui/og_ui.info: n/a
+#  og_ui/plugins/content_types/membership_links/membership_links.inc: n/a
+#  plugins/content_types/node_create_links/node_create_links.inc: n/a
+#  plugins/content_types/wall_node_create_links/wall_node_create_links.inc: n/a
+#  plugins/entityreference/selection/og.inc: n/a
+#  og_ui/og_ui.admin.inc: n/a
+#  og_example/og_example.features.field_instance.inc: n/a
+#  og_example/og_example.features.inc: n/a
+#  plugins/entityreference/selection/OgSelectionHandler.class.php: n/a
+#  og.install: n/a
+#  includes/og.admin.inc: n/a
+#  og_context/og_context.admin.inc: n/a
+#  includes/og.field.inc: n/a
+#  includes/actions/membership_delete.action.inc: n/a
+#  includes/actions/set_state.action.inc: n/a
+#  includes/actions/user_roles.action.inc: n/a
+#  includes/migrate/7000/og_add_fields.inc: n/a
+#  includes/migrate/7000/og_content.inc: n/a
+#  includes/migrate/7000/og_group.inc: n/a
+#  includes/migrate/7000/og_ogur.migrate.inc: n/a
+#  includes/migrate/7000/og_ogur_roles.migrate.inc: n/a
+#  includes/migrate/7000/og_user.inc: n/a
+#  includes/migrate/7200/og_og_membership.migrate.inc: n/a
+#  includes/migrate/7200/og_roles.migrate.inc: n/a
+#  includes/migrate/7200/og_user_roles.migrate.inc: n/a
+#  includes/migrate/plugins/destinations/og_membership.inc: n/a
+#  includes/views/og.views_default.inc: n/a
+#  includes/views/handlers/og_handler_field_og_membership_link_delete.inc: n/a
+#  includes/views/handlers/og_handler_field_og_membership_link_edit.inc: n/a
+#  includes/views/handlers/og_handler_field_user_roles.inc: n/a
+#  includes/views/handlers/og_handler_filter_group_audience_state.inc: n/a
+#  includes/views/handlers/og_plugin_argument_default_user_groups.inc: n/a
+#  includes/views/handlers/og_plugin_argument_validate_group.inc: n/a
+#  og_context/includes/views/handlers/og_context_plugin_access_og_perm.inc: n/a
+#  og_context/includes/views/handlers/og_context_plugin_argument_default_group_context.inc: n/a
+#  og_access/og_access.module: n/a
+#  og_context/og_context.module: n/a
+#  plugins/access/og_is_node_group.inc: n/a
+#  plugins/access/og_is_node_group_content.inc: n/a
+#  og_context/includes/views/og_context.views.inc: n/a
+#  og_example/og_example.info: n/a
+#  og_example/plugins/entityreference/selection/og_example.inc: n/a
+#  og_field_access/og_field_access.module: n/a
+#  og_register/og_register.module: n/a
+#  og_ui/og_ui.pages.inc: n/a
+#  og_ui/includes/migrate/7000/add_field.inc: n/a
+#  og_ui/includes/migrate/7000/populate_field.inc: n/a
+#  og_ui/includes/migrate/7000/set_roles.inc: n/a
+#  og_ui/includes/views/og_ui.views.inc: n/a
+#  og_ui/includes/views/handlers/og_ui_handler_area_og_membership_overview.inc: n/a
+#  plugins/entityreference/behavior/OgBehaviorHandler.class.php: n/a
+#  plugins/entityreference/behavior/OgWidgetHandler.class.php: n/a
+#  plugins/entityreference/behavior/og_behavior.inc: n/a
+#  plugins/entityreference/behavior/og_widget.inc: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2014-11-07 17:17+0100\n"
+"PO-Revision-Date: 2014-11-07 17:17+0100\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: og.info.inc:29 includes/views/og.views.inc:217
+msgid "OG group"
+msgstr ""
+
+#: og.info.inc:31
+msgid "The OG group associated with the OG membership."
+msgstr "El grupo OG asociado a la suscripción OG"
+
+#: og.info.inc:42 og.rules.inc:141;162;500;514
+msgid "Entity"
+msgstr "Entidad"
+
+#: og.info.inc:44
+msgid "The entity that is a group content."
+msgstr "La entidad que es un contenido de grupo."
+
+#: og.rules.inc:21
+msgid "The user's OG membership"
+msgstr "La suscripción OG del usuario"
+
+#: og.rules.inc:25;185;210;230;256;441;453;527 plugins/access/og_member.inc:20 plugins/access/og_perm.inc:21 plugins/relationships/og_membership_from_group_and_user.inc:19
+msgid "User"
+msgstr "Usuario"
+
+#: og.rules.inc:28 og.module:156 includes/views/og.views.inc:125;141;156;171
+msgid "OG membership"
+msgstr "Suscripción OG"
+
+#: og.rules.inc:32
+msgid "User has become a group member"
+msgstr "El usuario se ha unido al grupo"
+
+#: og.rules.inc:33
+msgid "A user has become a group member, but might have been not yet approved."
+msgstr ""
+"Un usuario se ha convertido en miembro de un grupo, pero su "
+"afiliación puede que aún no haya sido aprobada."
+
+#: og.rules.inc:36
+msgid "User membership has been approved"
+msgstr "La suscripción del usuario ha sido aprobada"
+
+#: og.rules.inc:39
+msgid "User membership has been blocked"
+msgstr "La suscripción del usuario ha sido bloqueada"
+
+#: og.rules.inc:42
+msgid "User has been removed from group"
+msgstr "El usuario ha sido eliminado del grupo"
+
+#: og.rules.inc:43
+msgid "A user has been removed from group and is no longer a group member."
+msgstr ""
+"Un usuario ha sido eliminado del grupo y ya no está suscrito al "
+"mismo."
+
+#: og.rules.inc:46
+msgid "OG role granted to user"
+msgstr "Rol de OG otorgado al usuario"
+
+#: og.rules.inc:47
+msgid "An OG role has been granted to this user."
+msgstr "Un rol de OG ha sido asignado a este usuario"
+
+#: og.rules.inc:51;62
+msgid "OG role ID"
+msgstr "ID rol OG"
+
+#: og.rules.inc:52;63
+msgid "The id of the OG user role."
+msgstr "El ID del user rol de OG"
+
+#: og.rules.inc:57
+msgid "OG role revoked from user"
+msgstr "Rol de OG eliminado del usuario"
+
+#: og.rules.inc:58
+msgid "An OG role has been revoked from this user."
+msgstr "Un rol de OG ha sido eliminado de este usuario"
+
+#: og.rules.inc:76
+msgid "Get group members from group audience"
+msgstr "Obtener miembros de grupo en base a la audiencia de grupo"
+
+#: og.rules.inc:77;95;112;136;157;181;206;226;252;424;449;475;495;509;523 og.info:0;0 og_access/og_access.info:0 og_context/og_context.info:0 og_field_access/og_field_access.info:0 og_register/og_register.info:0 og_ui/og_ui.module:894;163 og_ui/og_ui.info:0 og_ui/plugins/content_types/membership_links/membership_links.inc:14 plugins/content_types/node_create_links/node_create_links.inc:11 plugins/content_types/wall_node_create_links/wall_node_create_links.inc:11 plugins/entityreference/selection/og.inc:4
+msgid "Organic groups"
+msgstr "Grupos Orgánicos"
+
+#: og.rules.inc:81;99;128 og_ui/og_ui.admin.inc:940 og_ui/og_ui.module:932
+msgid "Group content"
+msgstr "Contenido de grupo"
+
+#: og.rules.inc:82;100
+msgid "The group content determining the group audience."
+msgstr "El contenido de grupo que determina la audiencia de grupo."
+
+#: og.rules.inc:87
+msgid "List of group members"
+msgstr "Lista de miembros del grupo"
+
+#: og.rules.inc:94
+msgid "Get group managers from group audience"
+msgstr "Obtener administradores de grupo a partir de la audiencia de grupo."
+
+#: og.rules.inc:104
+msgid "List of group managers"
+msgstr "Listado de administradores de grupo"
+
+#: og.rules.inc:111
+msgid "Get group content from a group"
+msgstr "Obtener el contenido de grupo de un grupo"
+
+#: og.rules.inc:116;147;168;191;216;236;262;435;458;486;532 og.module:1084 includes/views/og.views.inc:186;198 og_example/og_example.features.field_instance.inc:289 og_example/og_example.features.inc:57 og_ui/og_ui.admin.inc:132;280;385;423;479;721;940 og_ui/og_ui.module:912;151
+msgid "Group"
+msgstr "Grupo"
+
+#: og.rules.inc:117
+msgid "The group for which to fetch content."
+msgstr "El grupo del que se obtendrá el contenido."
+
+#: og.rules.inc:122
+msgid "Entity type"
+msgstr "Tipo de entidad"
+
+#: og.rules.inc:123
+msgid "The entity type of the content which is to be fetched."
+msgstr "El tipo de entidad del contenido que va a ser obtenido."
+
+#: og.rules.inc:135
+msgid "Add entity to group"
+msgstr "Añadir entidad al grupo"
+
+#: og.rules.inc:142
+msgid "The group content which is to be added to a group."
+msgstr "El contenido de grupo que va a ser añadido a un grupo."
+
+#: og.rules.inc:156
+msgid "Remove entity from group"
+msgstr "Eliminar entidad del grupo"
+
+#: og.rules.inc:163
+msgid "The entity which is to be removed from a group."
+msgstr "La entidad que va a ser eliminada de un grupo."
+
+#: og.rules.inc:180
+msgid "Subscribe user to group"
+msgstr "Suscribir usuario al grupo"
+
+#: og.rules.inc:186
+msgid "The user who will be subscribed."
+msgstr "El usuario que va a ser suscrito."
+
+#: og.rules.inc:205
+msgid "Unsubscribe user from group"
+msgstr "Cancelar suscripción del usuario al grupo"
+
+#: og.rules.inc:211
+msgid "The user who will be unsubscribed."
+msgstr "El usuario que va a ser dado de baja."
+
+#: og.rules.inc:225
+msgid "Grant OG role"
+msgstr "Ortorgar rol de OG"
+
+#: og.rules.inc:231
+msgid "The user who will be granted this role."
+msgstr "El usuario al que se va a añadir este rol"
+
+#: og.rules.inc:241;267;537
+msgid "Group roles"
+msgstr "Roles de grupo"
+
+#: og.rules.inc:251
+msgid "Revoke OG role"
+msgstr "Eliminar rol de OG"
+
+#: og.rules.inc:257
+msgid "The user who will have the role revoked."
+msgstr "El usuario al que se va a eliminar el rol"
+
+#: og.rules.inc:423
+msgid "User has group permission"
+msgstr "El usuario tiene el permiso de grupo"
+
+#: og.rules.inc:428 og_ui/og_ui.admin.inc:902
+msgid "Permission"
+msgstr "Permiso"
+
+#: og.rules.inc:429
+msgid "The permission to check for."
+msgstr "El permiso a comprobar."
+
+#: og.rules.inc:436
+msgid "The group for which permission should be checked."
+msgstr "El grupo para el que se debe comprobar el permiso."
+
+#: og.rules.inc:448
+msgid "User is group member"
+msgstr "El usuario es miembro del grupo"
+
+#: og.rules.inc:463
+msgid "Membership states"
+msgstr "Estados de membresía"
+
+#: og.rules.inc:474
+msgid "Entity is in group"
+msgstr "Entidad está en grupo"
+
+#: og.rules.inc:480
+msgid "Group content entity"
+msgstr "Entidad de contenido de grupo"
+
+#: og.rules.inc:481
+msgid "The group content which will be checked."
+msgstr "El contenido de grupo que será revisado"
+
+#: og.rules.inc:494
+msgid "Entity is group"
+msgstr "La entidad es un grupo"
+
+#: og.rules.inc:508
+msgid "Entity is group content"
+msgstr "La entidad es contenido de grupo"
+
+#: og.rules.inc:522
+msgid "User has group role"
+msgstr "Usuario tien el rol de grupo"
+
+#: og.rules.inc:586
+msgid "Evaluates to TRUE if the user is a member of the group and the membership meets the configured valid membership state."
+msgstr ""
+"Es evaluado a VERDADERO si el usuario es miembro del grupo y la "
+"suscripción se corresponde con el estado de suscripción configurado."
+
+#: og.rules.inc:600
+msgid "Determines whether the entity is an active group."
+msgstr "Determina si la entidad es un grupo activo."
+
+#: og.rules.inc:614
+msgid "Determines whether the entity is group content, i.e. it can be or is used as group content."
+msgstr ""
+"Determina si la entidad es contenido de grupo, es decir, que es o "
+"puede ser utilizada como contenido de grupo."
+
+#: og.module:84
+msgid "Read the <a href='@url'>README.txt</a> file in the Organic groups module directory."
+msgstr ""
+"Lea el archivo <a href='@url'>README.txt</a> en el directorio del "
+"módulo de Grupos Orgánicos."
+
+#: og.module:85
+msgid "Information about Organic Groups can also be found on the module's<a href='@og'>documentation page</a>."
+msgstr ""
+"Se puede obtener más información sobre Organic Groups en la <a "
+"href='@og'>página de documentación del módulo</a>."
+
+#: og.module:121 plugins/entityreference/selection/OgSelectionHandler.class.php:61
+msgid "OG membership type"
+msgstr "Tipo de suscripción OG"
+
+#: og.module:212
+msgid "OG memberships"
+msgstr "Suscripciones OG"
+
+#: og.module:214
+msgid "A list of all OG memberships of the @name entity."
+msgstr "Una lista de todas las suscripciones OG de la entidad @name."
+
+#: og.module:223
+msgid "@state OG membership"
+msgstr "@state de la suscripción OG"
+
+#: og.module:224
+msgid "A list of all OG memberships of the @name entity with @state state."
+msgstr ""
+"Una lista de todas las suscripciones OG de la entidad @name con el "
+"estado @state."
+
+#: og.module:233
+msgid "OG membership from field @label"
+msgstr "Suscripción OG del campo @label"
+
+#: og.module:237
+msgid "A list of all OG memberships registered in field @label."
+msgstr ""
+"Una lista de todas las suscripciones OG registradas en el campo "
+"@label."
+
+#: og.module:251
+msgid "@state OG memberships from field @label"
+msgstr "Suscripciones OG @state del campo @label"
+
+#: og.module:252
+msgid "A list of all OG memberships with @state registered in field @label."
+msgstr ""
+"Una lista de todas las suscripciones OG con el estado @state "
+"registradas en el campo @label."
+
+#: og.module:261
+msgid "Group members"
+msgstr "Miembros del grupo"
+
+#: og.module:263
+msgid "A list group members of the @name entity."
+msgstr "Una lista de miembros de la entidad @name."
+
+#: og.module:272
+msgid "@state group members"
+msgstr "Miembros de grupo @state"
+
+#: og.module:273
+msgid "A list of all users of the @name entity with @state state."
+msgstr ""
+"Una lista de todos los usuarios de la entidad @name con el estado "
+"@state."
+
+#: og.module:447
+msgid "Administer Organic groups permissions"
+msgstr "Administrar permisos de Organic groups"
+
+#: og.module:448
+msgid "Administer all groups and permissions."
+msgstr "Administrar todos los grupos y permisos."
+
+#: og.module:461
+msgid "Edit group"
+msgstr "Editar grupo"
+
+#: og.module:462
+msgid "Edit the group. Note: This permission controls only node entity type groups."
+msgstr ""
+"Editar el grupo. Nota: Este permiso sólo se aplica a los grupos cuyo "
+"tipo de entidad es nodo."
+
+#: og.module:466
+msgid "Administer group"
+msgstr "Administrar grupo"
+
+#: og.module:467
+msgid "Manage group members and content in the group."
+msgstr "Administrar miembros y contenido del grupo."
+
+#: og.module:568
+msgid "This comunity is private. Contact with the administrator"
+msgstr "Esta comunidad es privada. Contacte con el administrador"
+
+#: og.module:684
+msgid "Group membership"
+msgstr "Suscripción"
+
+#: og.module:778
+msgid "You must select one or more groups for this content."
+msgstr "Debes seleccionar uno o más grupos para este contenido"
+
+#: og.module:846
+msgid "Can't save entity as group, because user @name can't be subscribed to group and become a manager."
+msgstr ""
+"No se puede guardar la entidad como un grupo, porque el usuario @name "
+"no puede ser suscrito al grupo y convertirse en administrador."
+
+#: og.module:1073
+msgid "Determine if this should be a group."
+msgstr "Determinar si este debe ser un grupo."
+
+#: og.module:1085 og_example/og_example.features.field_instance.inc:288
+msgid "Determine if this is an OG group."
+msgstr "Determina si esta es un Grupo orgánico"
+
+#: og.module:1098;1132;1190
+msgid "Full"
+msgstr "Completo"
+
+#: og.module:1103;1137;1195
+msgid "Teaser"
+msgstr "Resumen"
+
+#: og.module:1113
+msgid "Determine if group should use default roles and permissions."
+msgstr "Determina si el grupo utilizará los roles y permisos por defecto."
+
+#: og.module:1121
+msgid "Group roles and permissions"
+msgstr "Permisos y roles del Grupo"
+
+#: og.module:1148
+msgid "Determine to which groups this group content is assigned to."
+msgstr "Determina a qué grupos está asignado este contenido de grupo."
+
+#: og.module:1169 og_example/og_example.features.field_instance.inc:290
+msgid "Groups audience"
+msgstr "Grupos de audiencia"
+
+#: og.module:1670
+msgid "OG orphans"
+msgstr ""
+
+#: og.module:1845
+msgid "@entity in group @group"
+msgstr "@entity en el grupo @group"
+
+#: og.module:3371
+msgid "Home"
+msgstr "Inicio"
+
+#: og.module:3422;3432
+msgid "Active"
+msgstr "Activo"
+
+#: og.module:3423;3433
+msgid "Pending"
+msgstr "Pendiente"
+
+#: og.module:3434
+msgid "Blocked"
+msgstr "Bloqueado"
+
+#: og.module:3474
+msgid "Create %type_name content"
+msgstr "Crear contenido %type_name"
+
+#: og.module:3478
+msgid "Edit own %type_name content"
+msgstr "Editar el contenido propio de tipo %type_name"
+
+#: og.module:3481
+msgid "Edit any %type_name content"
+msgstr "Editar cualquier contenido de tipo %type_name"
+
+#: og.module:3484
+msgid "Delete own %type_name content"
+msgstr "Eliminar el contenido propio de tipo %type_name"
+
+#: og.module:3487
+msgid "Delete any %type_name content"
+msgstr "Eliminar cualquier contenido de tipo %type_name"
+
+#: og.module:3676
+msgid "OG Role"
+msgstr "OG Rol"
+
+#: og.module:3683
+msgid "OG Permissions"
+msgstr "OG Permisos"
+
+#: og.module:99;106
+msgid "Entity Reference Autocomplete"
+msgstr "Autocompletado de Refrencia de Entidad"
+
+#: og.install:32
+msgid "Request message"
+msgstr "Mensaje de la solicitud"
+
+#: og.install:33
+msgid "This is the text a user may send to the group administrators."
+msgstr ""
+"Este es el texto que un usuario puede enviar a los administradores del "
+"grupo."
+
+#: og.install:891
+msgid "Renamed Organic groups 6 tables. Enable \"Migrate-UI\" module to continue the migration of data. Once migration is done you may disable \"Migrate\" module"
+msgstr ""
+"Renombradas las tablas de Organic Groups 6. Active el módulo "
+"\"Migrate-UI\" para continuar con la migración de datos. Una vez que "
+"la migración esté completada, puede desactivar el módulo "
+"\"Migrate\""
+
+#: og.install:893
+msgid "No change needed in Organic groups schema."
+msgstr "No se necesitan cambios en la estructura de Organic Groups."
+
+#: og.install:925
+msgid "Added table indexes to {og_membership} table."
+msgstr "Añadida la tabla indexes a la tabla {og_membership}."
+
+#: og.install:1028
+msgid "Enable \"Migrate-UI\" module to continue the migration of data. Once migration is done you may disable \"Migrate\" module"
+msgstr ""
+"Active el módulo \"Migrate-UI\" para continuar con la migración de "
+"datos. Una vez que la migración esté completada, puede desactivar el "
+"módulo \"Migrate\""
+
+#: og.install:1104
+msgid "Updated column definition for {og_role_permission} table."
+msgstr ""
+"Actualizada la definición de columnas para la tabla "
+"{og_role_permission}."
+
+#: og.install:1154
+msgid "The following \"secondary\" fields were deleted, as they are no longer in use:"
+msgstr ""
+"Los siguientes campos \"secundarios\" han sido eliminados, ya que no "
+"estaban en uso:"
+
+#: og.install:1158
+msgid "All group-audience fields were updated"
+msgstr "Todos los campos de audiencia de grupo han sido actualizados."
+
+#: og.info:0
+msgid "API to allow associating content with groups."
+msgstr "API que permite asociar contenido con grupos."
+
+#: includes/og.admin.inc:31 og_context/og_context.admin.inc:130 og_ui/og_ui.admin.inc:1032
+msgid "Description"
+msgstr "Descripción"
+
+#: includes/og.admin.inc:34
+msgid "The human-readable description of this group membership type."
+msgstr ""
+"La descripción, legible por personas, de este tipo de suscripción a "
+"grupo."
+
+#: includes/og.admin.inc:46
+msgid "A unique machine-readable name for this group membership type. It must only contain lowercase letters, numbers, and underscores."
+msgstr ""
+"Un nombre único, legible por máquinas, para este tipo de "
+"suscripción a grupo. Debe contener sólo letras minúsculas, números "
+"y guiones bajos."
+
+#: includes/og.admin.inc:54
+msgid "Save og membership type"
+msgstr "Guardar tipo de suscripción"
+
+#: includes/og.admin.inc:61
+msgid "Delete og_membership type"
+msgstr "Eliminar tipo de suscripción"
+
+#: includes/og.field.inc:14
+msgid "OG reference"
+msgstr "OG Referencia"
+
+#: includes/og.field.inc:15
+msgid "Complex widget to reference groups."
+msgstr ""
+"Complejo elemento de interfaz de usuario para hacer referencia a "
+"grupos."
+
+#: includes/og.field.inc:35
+msgid "Field %label is a group-audience but its Entity selection mode is not defined as \"Organic groups\" in the field settings page."
+msgstr ""
+"El campo %label es de audiencia de grupo, pero su modo de selección "
+"de Entidad no está definido como \"Organic Groups\" en la página de "
+"parámetros de campo."
+
+#: includes/og.field.inc:86
+msgid "Your groups"
+msgstr "Sus grupos"
+
+#: includes/og.field.inc:88
+msgid "Associate this user with groups you belong to."
+msgstr ""
+
+#: includes/og.field.inc:91
+msgid "Associate this content with groups you belong to."
+msgstr "Asociar este contenido con grupos a los que usted pertenezca."
+
+#: includes/og.field.inc:95
+msgid "Other groups"
+msgstr "Otros grupos"
+
+#: includes/og.field.inc:97
+msgid "As groups administrator, associate this user with groups you do <em>not</em> belong to."
+msgstr ""
+
+#: includes/og.field.inc:100
+msgid "As groups administrator, associate this content with groups you do <em>not</em> belong to."
+msgstr ""
+"Como administrador de grupos, asociar este contenido con grupos a los "
+"que usted <em>no</em> pertenezca."
+
+#: includes/og.field.inc:308
+msgid "!name field is required."
+msgstr "El campo !name es obligatorio."
+
+#: includes/actions/membership_delete.action.inc:11
+msgid "Remove from group"
+msgstr "Eliminar del grupo"
+
+#: includes/actions/set_state.action.inc:11
+msgid "Modify membership status"
+msgstr "Modificar el estado de la suscripción"
+
+#: includes/actions/set_state.action.inc:19
+msgid "State"
+msgstr "Estado"
+
+#: includes/actions/set_state.action.inc:20
+msgid "Choose the state to set for the selected users in the group."
+msgstr ""
+"Elija el estado a establecer para los usuarios seleccionados en el "
+"grupo."
+
+#: includes/actions/user_roles.action.inc:6
+msgid "Modify OG user roles"
+msgstr ""
+
+#: includes/actions/user_roles.action.inc:42 og_ui/og_ui.module:1088
+msgid "Add roles"
+msgstr "Añadir roles"
+
+#: includes/actions/user_roles.action.inc:43
+msgid "Choose one or more roles you would like to assign to the selected users."
+msgstr "Elija uno o más roles para asignar a los usuarios seleccionados"
+
+#: includes/actions/user_roles.action.inc:50
+msgid "Remove roles"
+msgstr "Eliminar roles"
+
+#: includes/actions/user_roles.action.inc:51
+msgid "Choose one or more roles you would like to remove from the selected users."
+msgstr "Elija uno o más roles para quitar a los usuarios seleccionados"
+
+#: includes/actions/user_roles.action.inc:60
+msgid "You have not chosen any role to add or remove. Please select something to do."
+msgstr ""
+"No ha seleccionado ningún rol para añadir o quitar. Por favor, "
+"seleccione alguno antes de proceder."
+
+#: includes/migrate/7000/og_add_fields.inc:12
+msgid "Add OG related fields to group and group-content node-types."
+msgstr "Añadir campos OG a los tipos de nodo grupo y contenido de grupo."
+
+#: includes/migrate/7000/og_add_fields.inc:74
+msgid "Group description"
+msgstr "Descripción del grupo"
+
+#: includes/migrate/7000/og_add_fields.inc:75
+msgid "This is description of the group."
+msgstr "Esta es la descripción del grupo."
+
+#: includes/migrate/7000/og_content.inc:12
+msgid "Upgrade nodes that are group-content, by settings the correct field value."
+msgstr ""
+"Actualizar nodos que son contenido de grupo, estableciendo el valor "
+"correcto del campo."
+
+#: includes/migrate/7000/og_group.inc:20
+msgid "Upgrade nodes that are groups, by settings the correct field value."
+msgstr ""
+"Actualizar nodos que son grupos, estableciendo el valor correcto del "
+"campo."
+
+#: includes/migrate/7000/og_ogur.migrate.inc:16
+msgid "Migrate OGUR content from 6 to 7.x-2.x."
+msgstr ""
+
+#: includes/migrate/7000/og_ogur_roles.migrate.inc:15
+msgid "Create OG Roles for OGUR roles from system role table."
+msgstr ""
+
+#: includes/migrate/7000/og_user.inc:13
+msgid "Create user relation to group."
+msgstr "Crear una relación del usuario con el grupo."
+
+#: includes/migrate/7200/og_og_membership.migrate.inc:24
+msgid "Re-populate group ID and group entity, deprecating the OG group entity."
+msgstr ""
+"Recargar el ID de grupo y la entidad grupo, invalidando la entidad "
+"grupo OG."
+
+#: includes/migrate/7200/og_roles.migrate.inc:24
+msgid "Add per-bundle OG roles."
+msgstr "Añadir roles OG por paquete."
+
+#: includes/migrate/7200/og_user_roles.migrate.inc:38
+msgid "Update the group ID in user roles."
+msgstr "Actualizar el ID de grupo en los roles de usuario."
+
+#: includes/migrate/plugins/destinations/og_membership.inc:14
+msgid "og-membership"
+msgstr "og-suscripción"
+
+#: includes/views/og.views.inc:24
+msgid "Entity id"
+msgstr "id de entidad"
+
+#: includes/views/og.views.inc:25
+msgid "Og membership \"etid\" property."
+msgstr "Propiedad \"etid\" de la suscripción OG."
+
+#: includes/views/og.views.inc:43
+msgid "Group ID"
+msgstr "Group ID"
+
+#: includes/views/og.views.inc:44
+msgid "Og membership \"gid\" property."
+msgstr "Propiedad \"gid\" de la suscripción OG."
+
+#: includes/views/og.views.inc:47
+msgid "OG user roles in group"
+msgstr "Roles de usuario OG en el grupo"
+
+#: includes/views/og.views.inc:48
+msgid "Show all the roles a user belongs to in a group. Requires a relationship to users to be present."
+msgstr ""
+"Muestra todos los roles que tiene un usuario en un grupo. Requiere que "
+"exista una relación a usuarios."
+
+#: includes/views/og.views.inc:58
+msgid "OG Roles from membership"
+msgstr "Roles OG de afiliación"
+
+#: includes/views/og.views.inc:59
+msgid "The OG Roles associated with the OG membership"
+msgstr "Los roles OG asociados con la afiliación de OG"
+
+#: includes/views/og.views.inc:62
+msgid "OG Roles from OG membership"
+msgstr "Roles OG de la afiliación OG"
+
+#: includes/views/og.views.inc:71
+msgid "OG user roles"
+msgstr "OG roles de usuario"
+
+#: includes/views/og.views.inc:82
+msgid "Role Name"
+msgstr "Nombre del Rol"
+
+#: includes/views/og.views.inc:83
+msgid "The OG role name."
+msgstr "El nombre del rol OG."
+
+#: includes/views/og.views.inc:92
+msgid "Edit link"
+msgstr "Enlace de edición"
+
+#: includes/views/og.views.inc:93
+msgid "Provide a simple link to edit the membership."
+msgstr ""
+
+#: includes/views/og.views.inc:101
+msgid "Delete link"
+msgstr "Eliminar enlace"
+
+#: includes/views/og.views.inc:102
+msgid "Provide a simple link to delete the membership."
+msgstr ""
+
+#: includes/views/og.views.inc:126;132
+msgid "OG membership from @entity"
+msgstr "Suscripción OG de @entity"
+
+#: includes/views/og.views.inc:127
+msgid "The OG membership associated with the @entity entity."
+msgstr "La suscripción OG asociada con la entidad @entity."
+
+#: includes/views/og.views.inc:142;147
+msgid "OG membership from @entity group"
+msgstr "Suscripción OG del grupo @entity"
+
+#: includes/views/og.views.inc:143
+msgid "The OG membership associated with the @entity group"
+msgstr "La suscripción OG asociada al grupo @entity"
+
+#: includes/views/og.views.inc:157;162
+msgid "@entity from OG membership"
+msgstr "@entity de la suscripción OG"
+
+#: includes/views/og.views.inc:158
+msgid "The @entity entity that is associated with the OG membership."
+msgstr "La entidad @entity que está asociada con la suscripción OG."
+
+#: includes/views/og.views.inc:172;177
+msgid "Group @entity from OG membership"
+msgstr "Grupo @entity de la suscripción OG"
+
+#: includes/views/og.views.inc:173
+msgid "The @entity group that is associated with the OG membership."
+msgstr "El grupo @entity que está asociado con la suscripción OG."
+
+#: includes/views/og.views.inc:187
+msgid "Group user roles"
+msgstr "Roles de usuario del grupo"
+
+#: includes/views/og.views.inc:188
+msgid "Show all the roles a user belongs to in a group."
+msgstr "Muestra todos los roles que tiene un usuario en un grupo."
+
+#: includes/views/og.views.inc:199
+msgid "Group permissions"
+msgstr "Permisos de grupo"
+
+#: includes/views/og.views.inc:200
+msgid "Filter by group permissions."
+msgstr "Filtrar por permisos de grupo."
+
+#: includes/views/og.views.inc:224
+msgid "The OG groups of the logged in user"
+msgstr "Los grupos OG del usuario identificado"
+
+#: includes/views/og.views_default.inc:206
+msgid "Defaults"
+msgstr "Predefinidos"
+
+#: includes/views/og.views_default.inc:207
+msgid "more"
+msgstr "más"
+
+#: includes/views/og.views_default.inc:208
+msgid "Apply"
+msgstr "Aplicar"
+
+#: includes/views/og.views_default.inc:209
+msgid "Reset"
+msgstr "Reiniciar"
+
+#: includes/views/og.views_default.inc:210
+msgid "Sort by"
+msgstr "Ordenar por"
+
+#: includes/views/og.views_default.inc:211
+msgid "Asc"
+msgstr "Asc"
+
+#: includes/views/og.views_default.inc:212
+msgid "Desc"
+msgstr "Desc"
+
+#: includes/views/og.views_default.inc:213
+msgid "Items per page"
+msgstr "Elementos por página"
+
+#: includes/views/og.views_default.inc:214
+msgid "- All -"
+msgstr "- Todos -"
+
+#: includes/views/og.views_default.inc:215
+msgid "Offset"
+msgstr "Desplazamiento"
+
+#: includes/views/og.views_default.inc:216
+msgid "There is no content in this group."
+msgstr "No hay contenido en este grupo."
+
+#: includes/views/og.views_default.inc:217
+msgid "group membership"
+msgstr "suscripción"
+
+#: includes/views/og.views_default.inc:218
+msgid "All"
+msgstr "Todo(s)"
+
+#: includes/views/og.views_default.inc:219
+msgid "Content pane"
+msgstr "Panel de contenido"
+
+#: includes/views/og.views_default.inc:220
+msgid "OG nodes"
+msgstr "Nodos OG"
+
+#: includes/views/og.views_default.inc:221
+msgid "View panes"
+msgstr "Vista panel"
+
+#: includes/views/handlers/og_handler_field_og_membership_link_delete.inc:29 includes/views/handlers/og_handler_field_og_membership_link_edit.inc:29
+msgid "Text to display"
+msgstr "Texto que mostrar"
+
+#: includes/views/handlers/og_handler_field_og_membership_link_delete.inc:34 includes/views/handlers/og_handler_field_og_membership_link_edit.inc:34
+msgid "Use destination"
+msgstr "Usar destino"
+
+#: includes/views/handlers/og_handler_field_og_membership_link_delete.inc:35 includes/views/handlers/og_handler_field_og_membership_link_edit.inc:35
+msgid "Add destination to the link"
+msgstr "Agregar destino al enlace"
+
+#: includes/views/handlers/og_handler_field_og_membership_link_delete.inc:66
+msgid "remove"
+msgstr "eliminar"
+
+#: includes/views/handlers/og_handler_field_og_membership_link_edit.inc:64 og_ui/og_ui.admin.inc:453
+msgid "edit"
+msgstr "editar"
+
+#: includes/views/handlers/og_handler_field_user_roles.inc:75
+msgid "The name of the role."
+msgstr "El nombre del rol."
+
+#: includes/views/handlers/og_handler_field_user_roles.inc:76
+msgid "The role ID of the role."
+msgstr "El ID de rol del rol."
+
+#: includes/views/handlers/og_handler_filter_group_audience_state.inc:14
+msgid "Group content state"
+msgstr "Estado del contenido de grupo"
+
+#: includes/views/handlers/og_plugin_argument_default_user_groups.inc:32 includes/views/handlers/og_plugin_argument_validate_group.inc:29 og_context/includes/views/handlers/og_context_plugin_access_og_perm.inc:49 og_context/includes/views/handlers/og_context_plugin_argument_default_group_context.inc:31 og_ui/og_ui.admin.inc:445
+msgid "Group type"
+msgstr "Tipo de grupo"
+
+#: includes/views/handlers/og_plugin_argument_default_user_groups.inc:33 includes/views/handlers/og_plugin_argument_validate_group.inc:30
+msgid "Select the group type."
+msgstr "Selecciones el tipo de grupo."
+
+#: includes/views/handlers/og_plugin_argument_default_user_groups.inc:40
+msgid "Concatenator"
+msgstr "Concatenador"
+
+#: includes/views/handlers/og_plugin_argument_default_user_groups.inc:41
+msgid "Select the concatenator used to merge multiple group IDs. Remember to turn on the \"Allow multiple values\" option in the \"more\" settings for this contextual filter."
+msgstr ""
+"Seleccione el concatenador utilizado para unir múltiples IDs de "
+"grupo. Recuerde activar la opción \"Permitir valores múltiples\" en "
+"el apartado \"más\" de este filtro contextual."
+
+#: og_access/og_access.module:154
+msgid "Determine access to the group."
+msgstr ""
+
+#: og_access/og_access.module:165
+msgid "Group visibility"
+msgstr "Visibilidad del grupo"
+
+#: og_access/og_access.module:191
+msgid "Determine access to the group content, which may override the group settings."
+msgstr ""
+
+#: og_access/og_access.module:202
+msgid "Group content visibility"
+msgstr "Visibilidad del contenido de grupo"
+
+#: og_access/og_access.info:0
+msgid "Organic groups access control"
+msgstr "Control de acceso a Organic Groups"
+
+#: og_access/og_access.info:0
+msgid "Enable access control for private and public groups and group content."
+msgstr ""
+"Activar control de acceso para grupos privados y públicos, y para el "
+"contenido de grupo."
+
+#: og_context/og_context.admin.inc:24
+msgid "Save settings"
+msgstr "Guardar las opciones"
+
+#: og_context/og_context.admin.inc:37
+msgid "Group context detection"
+msgstr "Detección de contexto de grupo"
+
+#: og_context/og_context.admin.inc:39
+msgid "Order of Group context detection methods."
+msgstr "Orden de los métodos de detección de contexto de grupo."
+
+#: og_context/og_context.admin.inc:81
+msgid "Configure"
+msgstr "Configurar"
+
+#: og_context/og_context.admin.inc:129
+msgid "Detection method"
+msgstr "Método de detección"
+
+#: og_context/og_context.admin.inc:131
+msgid "Enabled"
+msgstr "Activado"
+
+#: og_context/og_context.admin.inc:132
+msgid "Weight"
+msgstr "Peso"
+
+#: og_context/og_context.admin.inc:137 og_ui/og_ui.admin.inc:445;627;1032
+msgid "Operations"
+msgstr "Operaciones"
+
+#: og_context/og_context.admin.inc:178
+msgid "Group context negotiation configuration saved."
+msgstr "Configuración de la negociación del contexto de grupo guardada."
+
+#: og_context/og_context.module:56
+msgid "Current OG group of @label entity type"
+msgstr "Grupo OG actual del tipo de entidad @label"
+
+#: og_context/og_context.module:57
+msgid "The @label that is an OG group from context, if exists."
+msgstr "El elemento @label que es un grupo OG desde el contexto, si existe."
+
+#: og_context/og_context.module:115
+msgid "URL (content create)"
+msgstr "URL (creación de contenido)"
+
+#: og_context/og_context.module:116
+msgid "Select groups if they were passed in the node create URL (e.g. node/add/post?og_group_ref=4,5,6). <em>Note: Depends on <a href=\"@url\">Entity reference prepopulate</a> module, and enabling \"Prepopulate\" in the field settings.</em>"
+msgstr ""
+"Seleccionar grupos si éstos han sido pasados en la URL de creación "
+"del nodo (ej. node/add/post?og_group_ref=4,5,6) <em>Nota: Depende del "
+"módulo <a href=\"@url\">Entity reference prepopulate</a> y de activar "
+"\"Prepopulate\" en los parámetros de campo.</em>"
+
+#: og_context/og_context.module:121 plugins/access/og_is_node_group.inc:14 plugins/access/og_is_node_group_content.inc:14 plugins/access/og_member.inc:21 plugins/access/og_perm.inc:22 plugins/content_types/node_create_links/node_create_links.inc:10 plugins/content_types/wall_node_create_links/wall_node_create_links.inc:10 plugins/relationships/og_membership_from_group_and_user.inc:18
+msgid "Node"
+msgstr "Nodo"
+
+#: og_context/og_context.module:122
+msgid "Determine context by checking if a node is a group or a group content."
+msgstr ""
+"Determina el contexto comprobando si un nodo es un grupo o un "
+"contenido de grupo."
+
+#: og_context/og_context.module:128
+msgid "User view"
+msgstr "Vista de usuario"
+
+#: og_context/og_context.module:129
+msgid "Determine context by checking if a user is a group or a group content on the 'user view' page."
+msgstr ""
+"Determina el contexto comprobando si un usuario es un grupo o un "
+"contenido de grupo en la página de \"Vista de usuario\"."
+
+#: og_context/og_context.module:135
+msgid "User edit"
+msgstr "Editar usuario"
+
+#: og_context/og_context.module:136
+msgid "Determine context by checking if a user is a group or a group content on the 'user edit' page."
+msgstr ""
+"Determina el contexto comprobando si un usuario es un grupo o un "
+"contenido de grupo en la página \"Editar usuario\"."
+
+#: og_context/og_context.module:142
+msgid "Comment"
+msgstr "Comentario"
+
+#: og_context/og_context.module:143
+msgid "Determine context by checking if the parent content of the comment belongs to a group"
+msgstr ""
+"Determinar contexto seleccionando si el contenido padre del comentario "
+"pertenece a un grupo"
+
+#: og_context/og_context.module:15
+msgid "OG context"
+msgstr "Contexto OG"
+
+#: og_context/og_context.module:16
+msgid "OG context detection and selection"
+msgstr "Detección y selección de contexto OG"
+
+#: og_context/og_context.info:0
+msgid "Organic groups context"
+msgstr "Contexto de Grupos Orgánicos (OG)"
+
+#: og_context/og_context.info:0
+msgid "Get a group from a viewed page."
+msgstr "Obtiene un grupo de la página que se está viendo actualmente."
+
+#: og_context/includes/views/og_context.views.inc:16
+msgid "Current OG group from context"
+msgstr "Grupo OG actual desde contexto"
+
+#: og_context/includes/views/og_context.views.inc:23 og_context/includes/views/handlers/og_context_plugin_access_og_perm.inc:42
+msgid "OG permission"
+msgstr "Permiso OG"
+
+#: og_context/includes/views/handlers/og_context_plugin_access_og_perm.inc:44
+msgid "Only users with the selected permission flag in a group retrieved from context will be able to access this display."
+msgstr ""
+"Sólo los usuarios con el permiso seleccionado en un grupo obtenido "
+"del contexto serán capaces de acceder a esta presentación de vista."
+
+#: og_context/includes/views/handlers/og_context_plugin_access_og_perm.inc:51 og_context/includes/views/handlers/og_context_plugin_argument_default_group_context.inc:33
+msgid "Determine what entity type that group should be of."
+msgstr "Determina de qué tipo de entidad debe ser ese grupo."
+
+#: og_context/includes/views/handlers/og_context_plugin_access_og_perm.inc:59
+msgid "Argument position for group ID"
+msgstr ""
+
+#: og_context/includes/views/handlers/og_context_plugin_access_og_perm.inc:61
+msgid "None"
+msgstr "Ninguno"
+
+#: og_context/includes/views/handlers/og_context_plugin_access_og_perm.inc:62
+msgid "Group ID argument position with arg() function. e.g. if your dynamic path is \"node/%/group/%/overview\" and you are using the second \"%\" for group IDs you have to choose \"3\" like \"arg(3)\"."
+msgstr ""
+
+#: og_context/includes/views/handlers/og_context_plugin_access_og_perm.inc:82
+msgid "@perm, getting the group ID from argument position @arg"
+msgstr ""
+
+#: og_example/og_example.features.field_instance.inc:287
+msgid "Body"
+msgstr "Cuerpo"
+
+#: og_example/og_example.features.field_instance.inc:291
+msgid "Node reference"
+msgstr "Referencia a nodo"
+
+#: og_example/og_example.features.inc:59
+msgid "The group that will have members and content associated with."
+msgstr "El grupo que tendrá usuarios y contenido asociado."
+
+#: og_example/og_example.features.inc:61;69
+msgid "Title"
+msgstr "Título"
+
+#: og_example/og_example.features.inc:65
+msgid "Post"
+msgstr "Artículo"
+
+#: og_example/og_example.features.inc:67
+msgid "Content that will belong to a single or multiple groups."
+msgstr "Contenido que pertenecerá a uno o varios grupos."
+
+#: og_example/og_example.info:0
+msgid "OG example"
+msgstr "Ejemplo OG"
+
+#: og_example/og_example.info:0
+msgid "Example module to show Organic groups configuration that can be used as building block."
+msgstr ""
+
+#: og_example/og_example.info:0
+msgid "Features"
+msgstr "Características"
+
+#: og_example/plugins/entityreference/selection/og_example.inc:4
+msgid "Organic groups example"
+msgstr ""
+
+#: og_field_access/og_field_access.module:72
+msgid "View @label field"
+msgstr "Ver campo @label"
+
+#: og_field_access/og_field_access.module:73
+msgid "View the %fieldname field for existing groups."
+msgstr "Ver %fieldname para los grupos existentes."
+
+#: og_field_access/og_field_access.module:85
+msgid "Edit @label field"
+msgstr "Editar campo @label"
+
+#: og_field_access/og_field_access.module:86
+msgid "Edit the %fieldname field for existing groups."
+msgstr "Editar %fieldname para los grupos existentes."
+
+#: og_field_access/og_field_access.info:0
+msgid "Organic groups field access"
+msgstr "Campos de acceso"
+
+#: og_field_access/og_field_access.info:0
+msgid "Provide field access based on group."
+msgstr "Proporciona control de acceso a campos basado en grupo."
+
+#: og_register/og_register.module:146
+msgid "Add Group register field group types."
+msgstr ""
+
+#: og_register/og_register.module:155
+msgid "Group register"
+msgstr ""
+
+#: og_register/og_register.info:0
+msgid "Organic groups register"
+msgstr "Registro de Organic Groups"
+
+#: og_register/og_register.info:0
+msgid "Allow subscribing to groups during the user registration."
+msgstr "Permite suscribirse a grupos durante el registro de usuario."
+
+#: og_ui/og_ui.admin.inc:16
+msgid "Group manager full permissions"
+msgstr "Administrador de grupo con todos los permisos"
+
+#: og_ui/og_ui.admin.inc:17
+msgid "When enabled the group manager will have all the permissions in the group."
+msgstr ""
+"Si está activado, el administrador del grupo tendrá todos los "
+"permisos en el grupo."
+
+#: og_ui/og_ui.admin.inc:23
+msgid "Strict node access permissions"
+msgstr "Permisos de acceso al nodo estrictos"
+
+#: og_ui/og_ui.admin.inc:24
+msgid "When enabled Organic groups will restrict permissions for creating, updating and deleting according to the  Organic groups access settings. Example: A content editor with the <em>Edit any page content</em> permission who is not a member of a group would be denied access to modifying page content in that group. (For restricting view access use the Organic groups access control module.)"
+msgstr ""
+"Si se activa, Organic Groups restringirá los permisos para crear, "
+"actualizar y borrar de acuerdo a los parámetros de acceso de Organic "
+"Groups. Ejemplo: A un editor de contenido con el permiso <em>Página "
+"básica: Editar cualquier contenido</em> que no es miembro de un grupo "
+"se le denegará el acceso a modificar contenido de tipo Página "
+"básica en ese grupo. (Para restringir acceso a visualización use el "
+"módulo de control de acceso Organic Groups.)"
+
+#: og_ui/og_ui.admin.inc:30
+msgid "Admin people View"
+msgstr "Vista \"Administrar personas\""
+
+#: og_ui/og_ui.admin.inc:31
+msgid "Select the View that should be used to show and control the people in the group."
+msgstr ""
+"Seleccione la vista que se utilizará para mostrar y controlar los "
+"miembros del grupo."
+
+#: og_ui/og_ui.admin.inc:39
+msgid "Group manager default roles"
+msgstr "Roles por defecto del administrador de grupo"
+
+#: og_ui/og_ui.admin.inc:40
+msgid "Select the role(s) a group manager will be granted upon creating a new group."
+msgstr ""
+"Seleccionar el(los) rol(es) que un administrador de grupo obtendrá al "
+"crear un nuevo grupo."
+
+#: og_ui/og_ui.admin.inc:59
+msgid "Roles in @entity-label - @bundle-label"
+msgstr "Roles en @entity-label - @bundle-label"
+
+#: og_ui/og_ui.admin.inc:70
+msgid "Prevent \"Features\" export piping"
+msgstr ""
+
+#: og_ui/og_ui.admin.inc:71
+msgid "When exporting using Features module a content-type, this will prevent from OG related fields to be exported."
+msgstr ""
+
+#: og_ui/og_ui.admin.inc:78
+msgid "Use queue"
+msgstr ""
+
+#: og_ui/og_ui.admin.inc:79
+msgid "Use the core's queue process to operations such as deleting memberships when groups are deleted."
+msgstr ""
+
+#: og_ui/og_ui.admin.inc:85
+msgid "Delete orphans"
+msgstr ""
+
+#: og_ui/og_ui.admin.inc:86
+msgid "Delete \"Orphan\" group-content (not including useres), when the group is deleted."
+msgstr ""
+
+#: og_ui/og_ui.admin.inc:142
+msgid "Add a group member to %group"
+msgstr "Añadir miembro al grupo %group"
+
+#: og_ui/og_ui.admin.inc:146;298
+msgid "User name"
+msgstr "Nombre de usuario"
+
+#: og_ui/og_ui.admin.inc:161;312;479 og_ui/og_ui.module:1157
+msgid "Roles"
+msgstr "Roles"
+
+#: og_ui/og_ui.admin.inc:171;974 og_ui/og_ui.module:784 plugins/content_types/node_create_links/node_create_links.inc:63 plugins/content_types/wall_node_create_links/wall_node_create_links.inc:75
+msgid "Field name"
+msgstr "Nombre del campo"
+
+#: og_ui/og_ui.admin.inc:174
+msgid "Select the field name, the group membership should be registered in."
+msgstr ""
+"Seleccione el nombre del campo en el que se debe registrar la "
+"suscripción OG."
+
+#: og_ui/og_ui.admin.inc:205
+msgid "Add users"
+msgstr "Agregar usuarios"
+
+#: og_ui/og_ui.admin.inc:230
+msgid "You have entered an invalid user name."
+msgstr "Ha introducido un nombre de usuario no válido."
+
+#: og_ui/og_ui.admin.inc:234
+msgid "User %name is already subscribed to group."
+msgstr "El usuario %name ya está suscrito al grupo."
+
+#: og_ui/og_ui.admin.inc:240
+msgid "%name has reached maximum values in field %field."
+msgstr "%name ha excedido el número máximo de valores en el campo %field."
+
+#: og_ui/og_ui.admin.inc:273
+msgid "%user has been added to the group %group-title."
+msgstr ""
+
+#: og_ui/og_ui.admin.inc:294
+msgid "Edit a group membership in %group"
+msgstr ""
+
+#: og_ui/og_ui.admin.inc:303
+msgid "Status"
+msgstr "Estado"
+
+#: og_ui/og_ui.admin.inc:304
+msgid "Change the current membership status."
+msgstr ""
+
+#: og_ui/og_ui.admin.inc:329
+msgid "Update membership"
+msgstr "Actualizar afiliación"
+
+#: og_ui/og_ui.admin.inc:335;403 og_ui/og_ui.pages.inc:239
+msgid "Remove"
+msgstr "Eliminar"
+
+#: og_ui/og_ui.admin.inc:378
+msgid "The membership has been updated."
+msgstr ""
+
+#: og_ui/og_ui.admin.inc:392
+msgid "You can't remove membership of the group manager"
+msgstr ""
+
+#: og_ui/og_ui.admin.inc:400
+msgid "Remove membership in group @group"
+msgstr ""
+
+#: og_ui/og_ui.admin.inc:402
+msgid "Are you sure you would like to remove the membership for the user @user"
+msgstr ""
+
+#: og_ui/og_ui.admin.inc:404;1131 og_ui/og_ui.pages.inc:157;239
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: og_ui/og_ui.admin.inc:416
+msgid "The membership was removed."
+msgstr ""
+
+#: og_ui/og_ui.admin.inc:463
+msgid "No group types available. Edit or <a href=\"@url\">add a new content type</a> and set it to behave as a group."
+msgstr ""
+"No hay tipos de grupo disponibles. Edite o <a href=\"@url\">añada un "
+"nuevo tipo de contenido</a> y canfigúrelo para que se comporte como "
+"un grupo."
+
+#: og_ui/og_ui.admin.inc:492
+msgid "Role name"
+msgstr "Nombre del rol"
+
+#: og_ui/og_ui.admin.inc:497
+msgid "The name for this role. Example: \"moderator\", \"editorial board\", \"site architect\"."
+msgstr ""
+"El nombre de este rol. Ejemplos: «moderador», «grupo editorial», "
+"«arquitecto del sitio»."
+
+#: og_ui/og_ui.admin.inc:506;596
+msgid "Save role"
+msgstr "Guardar rol"
+
+#: og_ui/og_ui.admin.inc:510;604
+msgid "Delete role"
+msgstr "Eliminar rol"
+
+#: og_ui/og_ui.admin.inc:524;627
+msgid "Name"
+msgstr "Nombre"
+
+#: og_ui/og_ui.admin.inc:531;600
+msgid "Add role"
+msgstr "Añadir rol"
+
+#: og_ui/og_ui.admin.inc:572
+msgid "The role name %name already exists. Please choose another role name."
+msgstr "Ya existe un rol llamado %name. Debe elegir otro nombre para el rol."
+
+#: og_ui/og_ui.admin.inc:576
+msgid "You must specify a valid role name."
+msgstr "Debe indicar un nombre de rol válido."
+
+#: og_ui/og_ui.admin.inc:598
+msgid "The role has been renamed."
+msgstr "Se ha cambiado el nombre del rol."
+
+#: og_ui/og_ui.admin.inc:602
+msgid "The role has been added."
+msgstr "Se ha añadido el rol."
+
+#: og_ui/og_ui.admin.inc:606
+msgid "The role has been deleted."
+msgstr "Se ha eliminado el rol."
+
+#: og_ui/og_ui.admin.inc:643
+msgid "edit permissions"
+msgstr "editar permisos"
+
+#: og_ui/og_ui.admin.inc:643
+msgid "view permissions"
+msgstr "Ver permisos"
+
+#: og_ui/og_ui.admin.inc:648
+msgid "edit role"
+msgstr "editar rol"
+
+#: og_ui/og_ui.admin.inc:651
+msgid "locked"
+msgstr "bloqueado"
+
+#: og_ui/og_ui.admin.inc:764
+msgid "Warning: Give to trusted roles only; this permission has security implications in the group context."
+msgstr ""
+"Advertencia: Asignar sólamente a roles de confianza; este permiso "
+"tiene implicaciones de seguridad en el contexto del grupo."
+
+#: og_ui/og_ui.admin.inc:804
+msgid "Save permissions"
+msgstr "Guardar permisos"
+
+#: og_ui/og_ui.admin.inc:869
+msgid "The changes have been saved."
+msgstr "Se han guardado los cambios."
+
+#: og_ui/og_ui.admin.inc:932
+msgid "Bundles"
+msgstr "Paquetes"
+
+#: og_ui/og_ui.admin.inc:956
+msgid "Fields"
+msgstr "Campos"
+
+#: og_ui/og_ui.admin.inc:975
+msgid "This field type supports adding multiple instances on the same bundle (i.e. the field name is not hardcoded)."
+msgstr ""
+
+#: og_ui/og_ui.admin.inc:1020
+msgid "@bundle - @entity entity"
+msgstr "Entidad @bundle - @entity"
+
+#: og_ui/og_ui.admin.inc:1028 og_ui/og_ui.module:75;272
+msgid "Delete"
+msgstr "Eliminar"
+
+#: og_ui/og_ui.admin.inc:1032
+msgid "Field"
+msgstr "Campo"
+
+#: og_ui/og_ui.admin.inc:1042
+msgid "There are no Group fields attached to any bundle yet."
+msgstr "No hay campos de grupo adjuntados a ningún paquete todavía."
+
+#: og_ui/og_ui.admin.inc:1049
+msgid "Add field"
+msgstr "Añadir un campo"
+
+#: og_ui/og_ui.admin.inc:1081
+msgid "Field %field already exists in %bundle."
+msgstr "El campo %field ya existe en %bundle"
+
+#: og_ui/og_ui.admin.inc:1091
+msgid "Field %field can only be attached to %entities entity bundles."
+msgstr ""
+"El campo %field cólo puede ser adjuntado a los paquetes de entidad "
+"%entities"
+
+#: og_ui/og_ui.admin.inc:1115
+msgid "Added field @field-type to @bundle."
+msgstr "Añadido campo @field-type a @bundle."
+
+#: og_ui/og_ui.admin.inc:1118
+msgid "Added field @field-type (@field-name) to @bundle."
+msgstr "Añadido campo @field-type (@field-name) a @bundle."
+
+#: og_ui/og_ui.pages.inc:60
+msgid "In order to join any group, you must <a href=\"!login\">login</a>. After you have successfully done so, you will need to request membership again."
+msgstr ""
+"Para suscribirse a cualquier grupo, primero debe <a "
+"href=\"!login\">identificarse</a>. Despues necesitará solicitar la "
+"suscripción de nuevo."
+
+#: og_ui/og_ui.pages.inc:63
+msgid "In order to join any group, you must <a href=\"!login\">login</a> or <a href=\"!register\">register</a> a new account. After you have successfully done so, you will need to request membership again."
+msgstr ""
+"Para suscribirse a cualquier grupo, primero debe <a "
+"href=\"!login\">identificarse</a> o <a href=\"!register\">solicitar "
+"una cuenta</a>. Despues necesitará solicitar la suscripción de "
+"nuevo."
+
+#: og_ui/og_ui.pages.inc:74;135 og_ui/og_ui.module:768
+msgid "Private group"
+msgstr "Grupo privado"
+
+#: og_ui/og_ui.pages.inc:83
+msgid "You already have a pending membership for the group @group."
+msgstr "Usted tiene ya una suscripción pendiente al grupo @group"
+
+#: og_ui/og_ui.pages.inc:83
+msgid "@user already has a pending membership for the  the group @group."
+msgstr "@user tiene ya una suscripción pendiente al grupo @group"
+
+#: og_ui/og_ui.pages.inc:89
+msgid "You are already a member of the group @group."
+msgstr "Usted ya es miembro del grupo @group"
+
+#: og_ui/og_ui.pages.inc:89
+msgid "@user is already a member of the group @group."
+msgstr "@user ya es miembro del grupo @group."
+
+#: og_ui/og_ui.pages.inc:104
+msgid "You cannot register to this group, as you have reached your maximum allowed subscriptions."
+msgstr ""
+"Usted no puede registrarse en este grupo, ya que ha alcanzado el "
+"máximo de suscripciones permitidas"
+
+#: og_ui/og_ui.pages.inc:157
+msgid "Are you sure you want to join the group %title?"
+msgstr "¿Está seguro que desea unirse al grupo %title?"
+
+#: og_ui/og_ui.pages.inc:157
+msgid "Join"
+msgstr "Unirse"
+
+#: og_ui/og_ui.pages.inc:190
+msgid "Your subscription request was sent."
+msgstr "Tu petición de suscripción ha sido enviada."
+
+#: og_ui/og_ui.pages.inc:223
+msgid "As the manager of %group, you can not leave the group."
+msgstr "Usted es el administrador del grupo %group, no puede dejar el grupo."
+
+#: og_ui/og_ui.pages.inc:239
+msgid "Are you sure you want to unsubscribe from the group %title?"
+msgstr "¿Está seguro que desea cancelar su suscripción al grupo %title?"
+
+#: og_ui/og_ui.module:499
+msgid "Global"
+msgstr "Global"
+
+#: og_ui/og_ui.module:560
+msgid "Hide"
+msgstr "Ocultar"
+
+#: og_ui/og_ui.module:561
+msgid "Hide group field, and apply default values."
+msgstr "Ocultar campo de grupo, y aplicar los valores por defecto."
+
+#: og_ui/og_ui.module:572
+msgid "OG subscribe link"
+msgstr "Enlace de suscripción OG"
+
+#: og_ui/og_ui.module:579
+msgid "OG audience list"
+msgstr "Lista de audiencia OG"
+
+#: og_ui/og_ui.module:605;606
+msgid "You are the group manager"
+msgstr "Usted es el administrador del grupo"
+
+#: og_ui/og_ui.module:615;1062 og_ui/plugins/content_types/membership_links/membership_links.inc:92
+msgid "Unsubscribe from group"
+msgstr "Darse de baja del grupo"
+
+#: og_ui/og_ui.module:663;1049 og_ui/plugins/content_types/membership_links/membership_links.inc:74
+msgid "Subscribe to group"
+msgstr "Suscribirse a grupo"
+
+#: og_ui/og_ui.module:674 og_ui/plugins/content_types/membership_links/membership_links.inc:71
+msgid "Request group membership"
+msgstr "Solicitar suscripción al grupo"
+
+#: og_ui/og_ui.module:688;689
+msgid "This is a closed group. Only a group administrator can add you."
+msgstr "Este es un grupo cerrado. Sólo un administrador puede suscribirle."
+
+#: og_ui/og_ui.module:785
+msgid "Select the field that should register the user subscription."
+msgstr "Seleccione el campo que debe registrar la suscripción del usuario."
+
+#: og_ui/og_ui.module:787
+msgid "Automatic (best matching)"
+msgstr "Automático (mejor coincidencia)"
+
+#: og_ui/og_ui.module:808
+msgid "Field %label"
+msgstr "Campo %label"
+
+#: og_ui/og_ui.module:811
+msgid "No field selected (best matching)"
+msgstr "Campo no seleccionado (mejor coincidencia)"
+
+#: og_ui/og_ui.module:897
+msgid "Specify how OG should treat content of this type. Content may behave as a group, as group content, or may not participate in OG at all."
+msgstr ""
+"Especifica cómo debe tratar OG el contenido de este tipo. El "
+"contenido puede comportarse como un grupo, como contenido de grupo, o "
+"puede no participar en OG en absoluto."
+
+#: og_ui/og_ui.module:901
+msgid "Manage fields"
+msgstr "Gestionar campos"
+
+#: og_ui/og_ui.module:904
+msgid "Set the content type to be a group, that content will be associated with, and will have group members."
+msgstr ""
+"Establecer el tipo de contenido para que sea un grupo al que pueda "
+"asociarse contenido y al que puedan suscribirse usuarios."
+
+#: og_ui/og_ui.module:906
+msgid "To unset the group definition you should delete the \"Group type\" field via !url."
+msgstr ""
+"Para eliminar la definición del grupo debería eliminar el \"Tipo de "
+"grupo\" a través de !url."
+
+#: og_ui/og_ui.module:921
+msgid "Set the content type to be a group content, that can be associated with groups."
+msgstr ""
+"Establecer el tipo de contenido para que sea contenido de grupo que "
+"pueda asociarse a grupos."
+
+#: og_ui/og_ui.module:923
+msgid "To unset the group content definition or change the settings you should delete the \"Groups audience\" field via !url."
+msgstr ""
+"Para eliminar la definición de contenido de grupo o cambiar los "
+"parámetros, debe eliminar el campo \"Audiencia de grupos\" a través "
+"de !url."
+
+#: og_ui/og_ui.module:927
+msgid "There are no group bundles defined."
+msgstr "No hay paquetes grupo definidos"
+
+#: og_ui/og_ui.module:943
+msgid "Target type"
+msgstr "Tipo de destino"
+
+#: og_ui/og_ui.module:946
+msgid "The entity type that can be referenced thru this field."
+msgstr "El tipo de entidad que puede ser referenciado a través de este campo."
+
+#: og_ui/og_ui.module:972 plugins/entityreference/selection/OgSelectionHandler.class.php:34;47
+msgid "Target bundles"
+msgstr "Agrupaciones de destinos"
+
+#: og_ui/og_ui.module:977
+msgid "The bundles of the entity type that can be referenced. Optional, leave empty for all bundles."
+msgstr ""
+"Las agrupaciones de tipos de entidades a los que se puede hacer "
+"referencia. Déjelo en blanco para todos los tipos de entidad."
+
+#: og_ui/og_ui.module:1050
+msgid "Allow non-members to request membership to a group (approval required)."
+msgstr ""
+"Permitir a usuarios no miembros solicitar suscripción a un grupo (se "
+"requerirá aprobación)."
+
+#: og_ui/og_ui.module:1056
+msgid "Subscribe to group (no approval required)"
+msgstr "Suscribirse a un grupo (no es necesaria aprobación)"
+
+#: og_ui/og_ui.module:1057
+msgid "Allow non-members to join a group without an approval from group administrators."
+msgstr ""
+"Permitir a usuarios no miembros suscribirse a un grupo sin la "
+"aprobación de los administradores de grupo."
+
+#: og_ui/og_ui.module:1063
+msgid "Allow members to unsubscribe themselves from a group, removing their membership."
+msgstr ""
+"Permitir a los miembros darse de baja ellos mismos de un grupo, "
+"eliminando su suscripción."
+
+#: og_ui/og_ui.module:1069
+msgid "Approve and deny subscription"
+msgstr "Aprobar y denegar suscripción"
+
+#: og_ui/og_ui.module:1070
+msgid "Users may allow or deny another user's subscription request."
+msgstr ""
+"Los usuarios pueden permitir o denegar la solicitud de suscripción de "
+"otro usuario."
+
+#: og_ui/og_ui.module:1075
+msgid "Add user"
+msgstr "Añadir usuario"
+
+#: og_ui/og_ui.module:1076
+msgid "Users may add other users to the group without approval."
+msgstr "Los usuarios pueden añadir a otros usuarios al grupo sin aprobación."
+
+#: og_ui/og_ui.module:1081
+msgid "Manage members"
+msgstr "Gestionar miembros"
+
+#: og_ui/og_ui.module:1082
+msgid "Users may remove group members and alter member status and roles."
+msgstr ""
+"Los usuarios pueden eliminar miembros del grupo y modificar los "
+"estados y los roles."
+
+#: og_ui/og_ui.module:1089
+msgid "Users may view group roles and add new roles if group default roles are overriden."
+msgstr ""
+"Los usuarios pueden ver los roles de grupo y añadir nuevos si los "
+"roles por defecto del grupo se han sobreescrito."
+
+#: og_ui/og_ui.module:1095
+msgid "Manage permissions"
+msgstr "Administrar permisos"
+
+#: og_ui/og_ui.module:1096
+msgid "Users may view the group permissions page and change permsissions if group default roles are overriden."
+msgstr ""
+"Los usuarios pueden ver la página de permisos del grupo y cambiar los "
+"permisos si los roles por defecto del grupo se han sobreescrito."
+
+#: og_ui/og_ui.module:1139
+msgid "Add people"
+msgstr "Añadir personas"
+
+#: og_ui/og_ui.module:1140
+msgid "Add group members."
+msgstr "Añadir miembros al grupo."
+
+#: og_ui/og_ui.module:1149
+msgid "People"
+msgstr "Usuarios"
+
+#: og_ui/og_ui.module:1150
+msgid "Manage the group members."
+msgstr "Administrar los miembros del grupo."
+
+#: og_ui/og_ui.module:1157
+msgid "Roles (read-only)"
+msgstr ""
+
+#: og_ui/og_ui.module:1158
+msgid "Manage the group roles."
+msgstr "Administrar los roles del grupo."
+
+#: og_ui/og_ui.module:1158
+msgid "View the group roles."
+msgstr "Ver los roles del grupo."
+
+#: og_ui/og_ui.module:1165
+msgid "Permissions"
+msgstr "Permisos"
+
+#: og_ui/og_ui.module:1165
+msgid "Permissions (read-only)"
+msgstr "Permisos (sólo lectura)"
+
+#: og_ui/og_ui.module:1166
+msgid "Manage the group permissions."
+msgstr "Administrar los permisos del grupo."
+
+#: og_ui/og_ui.module:1166
+msgid "View the group permissions."
+msgstr "Ver los permisos del grupo."
+
+#: og_ui/og_ui.module:651;652
+msgid "You are already registered to another group"
+msgid_plural "You are already registered to @count groups"
+msgstr[0] "Usted ya está registrado en otro grupo"
+msgstr[1] "Usted ya está registrado en @count grupos"
+
+#: og_ui/og_ui.module:24
+msgid "Join group"
+msgstr "Unirse al grupo"
+
+#: og_ui/og_ui.module:34
+msgid "Leave group"
+msgstr "Abandonar el grupo"
+
+#: og_ui/og_ui.module:39
+msgid "Add members"
+msgstr "Agregar miembros"
+
+#: og_ui/og_ui.module:52
+msgid "Find and manage group members."
+msgstr "Encontrar y administrar miembros del grupo."
+
+#: og_ui/og_ui.module:88;101
+msgid "List, edit, or add user roles."
+msgstr "Listar, editar o agregar roles de usuario."
+
+#: og_ui/og_ui.module:100
+msgid "Edit role"
+msgstr "Editar rol"
+
+#: og_ui/og_ui.module:116
+msgid "Determine access to features by selecting permissions for roles."
+msgstr ""
+"Determina el acceso a las características mediante selección de "
+"permisos para roles."
+
+#: og_ui/og_ui.module:128
+msgid "Edit role's permissions"
+msgstr "Editar permisos de roles"
+
+#: og_ui/og_ui.module:129
+msgid "Determine access to features by selecting permissions for role."
+msgstr ""
+"Determina el acceso a características seleccionando permisos para el "
+"rol."
+
+#: og_ui/og_ui.module:164
+msgid "Administer the suite of Organic groups modules."
+msgstr "Administrar el conjunto de módulos de Grupos Orgánicos."
+
+#: og_ui/og_ui.module:174
+msgid "OG settings"
+msgstr "Configuración de OG"
+
+#: og_ui/og_ui.module:175
+msgid "Administer OG settings."
+msgstr "Administrar los parámetros de OG"
+
+#: og_ui/og_ui.module:185
+msgid "OG permissions overview"
+msgstr "Vista general de permisos OG"
+
+#: og_ui/og_ui.module:187
+msgid "Overview of Organic groups permissions."
+msgstr "Vista general de los permisos de Organic Groups."
+
+#: og_ui/og_ui.module:203;216
+msgid "Configure Organic groups group type permissions."
+msgstr "Configura los permisos de grupo de Organic Groups"
+
+#: og_ui/og_ui.module:223
+msgid "OG roles overview"
+msgstr "Vista general de roles OG"
+
+#: og_ui/og_ui.module:225
+msgid "Overview of organic groups roles."
+msgstr "Vista general de roles de Organic Groups."
+
+#: og_ui/og_ui.module:241;254
+msgid "Configure Organic groups group type roles."
+msgstr "Configura los roles de grupo de Organic Groups"
+
+#: og_ui/og_ui.module:261
+msgid "OG field settings"
+msgstr "Parámetros de campo de OG"
+
+#: og_ui/og_ui.module:263
+msgid "Configure Organic groups fields in bundles."
+msgstr "Configurar los campos de Organic groups en los paquetes."
+
+#: og_ui/og_ui.module:274
+msgid "Delete an OG field from a bundle."
+msgstr "Eliminar un campo OG de un paquete"
+
+#: og_ui/og_ui.info:0
+msgid "Organic groups UI"
+msgstr "Interfaz de Usuario de Organic groups"
+
+#: og_ui/og_ui.info:0
+msgid "Organic groups UI."
+msgstr "Interfaz de Usuario de Organic Groups."
+
+#: og_ui/includes/migrate/7000/add_field.inc:12
+msgid "Add OG UI related fields to group node-types."
+msgstr ""
+"Añadir campos de la interfaz de usuario de OG a los nodos de tipo "
+"grupo"
+
+#: og_ui/includes/migrate/7000/populate_field.inc:20
+msgid "Upgrade group visibility (e.g. open, moderated, closed) from OG6."
+msgstr ""
+"Actualizar visibilidad de grupo (ej. abierto, moderado, cerrado) desde "
+"OG6."
+
+#: og_ui/includes/migrate/7000/set_roles.inc:17
+msgid "Set permissions on group to upgrade group visibility."
+msgstr ""
+"Establecer permisos en el grupo para actualizar la visibilidad de "
+"grupo."
+
+#: og_ui/includes/views/og_ui.views.inc:16
+msgid "Group membership overview"
+msgstr "Vista general de suscripciones"
+
+#: og_ui/includes/views/og_ui.views.inc:17
+msgid "Overview of the group memberships (e.g. group manager, total memebrs)."
+msgstr ""
+"Vista general de las suscripciones al rgupo (ej. administrador, "
+"número total de miembros)."
+
+#: og_ui/includes/views/handlers/og_ui_handler_area_og_membership_overview.inc:31
+msgid "Show group manager"
+msgstr "Mostrar el administrador del grupo"
+
+#: og_ui/includes/views/handlers/og_ui_handler_area_og_membership_overview.inc:38
+msgid "Show total @label members"
+msgstr "Mostrar total de miembros de @label"
+
+#: og_ui/includes/views/handlers/og_ui_handler_area_og_membership_overview.inc:45
+msgid "Show total members"
+msgstr "Mostrar número total de miembros"
+
+#: og_ui/includes/views/handlers/og_ui_handler_area_og_membership_overview.inc:51
+msgid "Show total content"
+msgstr "Ver el total del contenido"
+
+#: og_ui/includes/views/handlers/og_ui_handler_area_og_membership_overview.inc:87
+msgid "Group manager: !manager"
+msgstr "Manager del grupo: !manager"
+
+#: og_ui/includes/views/handlers/og_ui_handler_area_og_membership_overview.inc:111
+msgid "Total %label members: @count"
+msgstr "Total de miembros %label: @count"
+
+#: og_ui/includes/views/handlers/og_ui_handler_area_og_membership_overview.inc:121
+msgid "Total members: @count"
+msgstr "Total de miembros: @count"
+
+#: og_ui/includes/views/handlers/og_ui_handler_area_og_membership_overview.inc:131
+msgid "Total content: @count"
+msgstr "Total de contenido: @count"
+
+#: og_ui/includes/views/handlers/og_ui_handler_area_og_membership_overview.inc:134
+msgid "Group overview"
+msgstr "Vista general del grupo"
+
+#: og_ui/plugins/content_types/membership_links/membership_links.inc:7
+msgid "Membership links"
+msgstr "Enlaces de suscripción"
+
+#: og_ui/plugins/content_types/membership_links/membership_links.inc:8
+msgid "Show membership unsubscribe and subscribe link(s) to a given group."
+msgstr "Mostrar enlaces de suscripción y baja a un grupo dado."
+
+#: og_ui/plugins/content_types/membership_links/membership_links.inc:9
+msgid "OG Group"
+msgstr "Grupo OG"
+
+#: og_ui/plugins/content_types/membership_links/membership_links.inc:63
+msgid "Request \"@type\" membership to group"
+msgstr "Solicitar la suscripción \"@type\" al grupo"
+
+#: og_ui/plugins/content_types/membership_links/membership_links.inc:66
+msgid "Subscribe to group using \"@type\" membership"
+msgstr "Suscribirse al grupo usando la suscripción \"@type\""
+
+#: og_ui/plugins/content_types/membership_links/membership_links.inc:93
+msgid "Unsubscribe link"
+msgstr "Enlace de baja"
+
+#: og_ui/plugins/content_types/membership_links/membership_links.inc:115
+msgid "Membership types"
+msgstr "Tipos de suscripción"
+
+#: og_ui/plugins/content_types/membership_links/membership_links.inc:116
+msgid "Select the membership types. If none are selected, all the accessible will be presented."
+msgstr ""
+"Seleccionar los tipos de suscripción. Si no se selecciona ninguno, se "
+"mostrarán todos los disponibles."
+
+#: og_ui/plugins/content_types/membership_links/membership_links.inc:123
+msgid "Include membership type name on single membership type"
+msgstr "Incluir el nombre del tipo de suscripción en el tipo de suscripción"
+
+#: og_ui/plugins/content_types/membership_links/membership_links.inc:124
+msgid "When disabled and there is only a single membership type enabled, the membership type name will not be appended to the subscribe link."
+msgstr ""
+"Si está deshabilitado y hay sólo un tipo de suscripción activo, el "
+"nombre del tipo de suscripción no será añadido al enlace de "
+"suscripción."
+
+#: og_ui/plugins/content_types/membership_links/membership_links.inc:144
+msgid "Membership links for all accessible membership types"
+msgstr ""
+"Enlaces de suscripción para todos los tipos de suscripción "
+"disponibles"
+
+#: og_ui/plugins/content_types/membership_links/membership_links.inc:148
+msgid "Membership links for @types membership types"
+msgstr "Enlaces de suscripción para los tipos de suscripción @types"
+
+#: og_ui/plugins/content_types/membership_links/membership_links.inc:78
+msgid "Membership link"
+msgid_plural "Membership links"
+msgstr[0] "Enlace de suscripción"
+msgstr[1] "Enlaces de suscripción"
+
+#: plugins/access/og_is_node_group.inc:10
+msgid "OG: Node is an OG group"
+msgstr "OG: El nodo es un grupo OG"
+
+#: plugins/access/og_is_node_group.inc:11
+msgid "Control access by whether or not a node is of type \"Group\"."
+msgstr "Controla el acceso según un nodo sea o no del tipo \"Grupo\"."
+
+#: plugins/access/og_is_node_group.inc:34
+msgid "@identifier is an OG group"
+msgstr "@identifier es un grupo OG"
+
+#: plugins/access/og_is_node_group_content.inc:10
+msgid "OG: Node is an OG group content"
+msgstr "OG: El nodo es un contenido de grupo OG"
+
+#: plugins/access/og_is_node_group_content.inc:11
+msgid "Control access by whether or not a node is of type \"Group content\"."
+msgstr ""
+"Controla el acceso según un nodo sea o no del tipo \"Contenido de "
+"grupo\"."
+
+#: plugins/access/og_is_node_group_content.inc:34
+msgid "@identifier is an OG group content"
+msgstr "@identifier es un contenido de grupo OG"
+
+#: plugins/access/og_member.inc:13
+msgid "OG: user membership in group"
+msgstr "OG: suscripción del usuario en el grupo"
+
+#: plugins/access/og_member.inc:14
+msgid "Control access by group membership."
+msgstr "Control de acceso mediante suscripción a grupo"
+
+#: plugins/access/og_member.inc:32
+msgid "State in group"
+msgstr "Estado en el grupo"
+
+#: plugins/access/og_member.inc:35
+msgid "Only users with the specified state in group will be able to access this."
+msgstr ""
+"Sólo los usuarios con el estado especificado en el grupo podrán "
+"acceder a este elemento."
+
+#: plugins/access/og_member.inc:75
+msgid "@identifier has \"@state in @group group\""
+msgstr "@identifier tiene \"state en el grupo @group\""
+
+#: plugins/access/og_perm.inc:14
+msgid "OG: user permission in group"
+msgstr "OG: permiso de usuario en el grupo"
+
+#: plugins/access/og_perm.inc:15
+msgid "Control access by group permission string."
+msgstr "Controla el acceso mediante cadena de permiso en el grupo."
+
+#: plugins/access/og_perm.inc:41
+msgid "Group permission"
+msgstr "Permiso de grupo"
+
+#: plugins/access/og_perm.inc:43
+msgid "Only users with the selected permission flag, in the specified group, will be able to access this."
+msgstr ""
+"Sólo los usuarios con el permiso seleccionado, y en el grupo "
+"especificado, podrán acceder a este elemento."
+
+#: plugins/access/og_perm.inc:78
+msgid "@identifier has \"@perm in @group group\""
+msgstr "@identifier tiene \"@perm en el grupo @group\""
+
+#: plugins/content_types/node_create_links/node_create_links.inc:8;36
+msgid "Content create links"
+msgstr "Enlaces de creación de contenido"
+
+#: plugins/content_types/node_create_links/node_create_links.inc:9 plugins/content_types/wall_node_create_links/wall_node_create_links.inc:9
+msgid "Crafted links to create content (nodes) for a given group."
+msgstr ""
+
+#: plugins/content_types/node_create_links/node_create_links.inc:67 plugins/content_types/wall_node_create_links/wall_node_create_links.inc:79
+msgid "The group audience field to prepopulate."
+msgstr "El campo de audiencia de grupo a prerrellenar."
+
+#: plugins/content_types/node_create_links/node_create_links.inc:78 plugins/content_types/wall_node_create_links/wall_node_create_links.inc:91
+msgid "Restrict to content types"
+msgstr "Restringir a tipos de contenido"
+
+#: plugins/content_types/node_create_links/node_create_links.inc:82 plugins/content_types/wall_node_create_links/wall_node_create_links.inc:95
+msgid "If left empty, all possible content types are shown."
+msgstr "Si se deja en blanco, se mostrarán todos los tipos de contenido."
+
+#: plugins/content_types/wall_node_create_links/wall_node_create_links.inc:8
+msgid "Content creation links on the wall"
+msgstr "Enlaces de creación de contenidos en el muro"
+
+#: plugins/content_types/wall_node_create_links/wall_node_create_links.inc:100
+msgid "Label for @value"
+msgstr ""
+
+#: plugins/entityreference/behavior/OgBehaviorHandler.class.php:286
+msgid "The referenced group (@type: @id) is invalid."
+msgstr ""
+
+#: plugins/entityreference/behavior/OgWidgetHandler.class.php:30
+msgid "Default widget type"
+msgstr "Tipo de elemento de interfaz de usuario por defecto"
+
+#: plugins/entityreference/behavior/OgWidgetHandler.class.php:31
+msgid "The widget type of the field as it will appear to the user."
+msgstr ""
+"El tipo de elemento de interfaz de usuario tal y como lo verá el "
+"usuario."
+
+#: plugins/entityreference/behavior/OgWidgetHandler.class.php:34
+msgid "Administrator widget type"
+msgstr "Tipo de elemento de interfaz de usuario del administrador"
+
+#: plugins/entityreference/behavior/OgWidgetHandler.class.php:35
+msgid "The widget type of the field that will appear only to a user with \"Administer group\" permission."
+msgstr ""
+"El elemento de interfaz de usuario del campo que aparecerá sólo a un "
+"usuario con el permiso \"Administrar grupo\"."
+
+#: plugins/entityreference/behavior/OgWidgetHandler.class.php:56
+msgid "Allow entity access to control field access"
+msgstr ""
+
+#: plugins/entityreference/behavior/OgWidgetHandler.class.php:57
+msgid "By default, the <em>administer group</em> permission is required to directly edit this field. Selecting this option will allow access to anybody with access to edit the entity."
+msgstr ""
+
+#: plugins/entityreference/behavior/og_behavior.inc:4
+msgid "OG behavior"
+msgstr "Comportamiento OG"
+
+#: plugins/entityreference/behavior/og_widget.inc:4
+msgid "OG widget"
+msgstr "Elemento de interfaz de usuario de OG"
+
+#: plugins/entityreference/selection/OgSelectionHandler.class.php:35
+msgid "Error: The selected \"Target type\" %entity does not have bundles that are a group type"
+msgstr ""
+"Error: El \"Tipo de destino\" %entity seleccionado no tiene paquetes "
+"que sean un tipo de grupo"
+
+#: plugins/entityreference/selection/OgSelectionHandler.class.php:52
+msgid "The bundles of the entity type acting as group, that can be referenced. Optional, leave empty for all bundles."
+msgstr ""
+"Los paquetes del tipo de entidad que actúa como grupo que pueden ser "
+"referenciados. Dejar en blanco para todos los paquetes."
+
+#: plugins/entityreference/selection/OgSelectionHandler.class.php:62
+msgid "Select the membership type that will be used for a subscribing user."
+msgstr ""
+"Seleccione el tipo de suscripción que será utilizado para los "
+"suscriptores."
+
+#: plugins/relationships/og_membership_from_group_and_user.inc:14
+msgid "OG membership from a group node and user"
+msgstr "Suscripción OG del nodo grupo y el usuario"
+
+#: plugins/relationships/og_membership_from_group_and_user.inc:16
+msgid "Get the OG membership context from an a node that is a group and user."
+msgstr ""
+"Obtener el contexto de la suscripción OG de un nodo que es un grupo y "
+"de un usuario."
+

@@ -1,0 +1,469 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  template.php: n/a
+#  template.preprocess.sarnia-view.php: n/a
+#  templates/nodes/node--ode--listing.tpl.php: n/a
+#  theme-settings.php: n/a
+#  nexus.info: n/a
+#  js/custom.js: n/a
+#  plugins/layouts/ag-3-9/ag-3-9.inc: n/a
+#  plugins/layouts/ag-3up-6-3/ag-3up-6-3.inc: n/a
+#  plugins/layouts/ag-9-3/ag-9-3.inc: n/a
+#  plugins/styles/region_tabs/region_tabs.inc: n/a
+#  templates/ag-section-profile-users-mi-cuenta.tpl.php: n/a
+#  templates/maintenance-page.tpl.php: n/a
+#  templates/pages/page--node--66.tpl.php: n/a
+#  templates/pages/page--node--67.tpl.php: n/a
+#  templates/pages/page--ode-search.tpl.php: n/a
+#  templates/pages/page.tpl.php: n/a
+#  templates/comments/comment--node-debate.tpl.php: n/a
+#  templates/nodes/node--answer--full.tpl.php: n/a
+#  templates/comments/comment-wrapper--node-debate.tpl.php: n/a
+#  templates/comments/comment-wrapper.tpl.php: n/a
+#  templates/nodes/node--recurso-de-aprendizaje--full.tpl.php: n/a
+#  templates/nodes/node--answer.tpl.php: n/a
+#  templates/nodes/node--debate--full.tpl.php: n/a
+#  templates/nodes/node--debate--teaser.tpl.php: n/a
+#  templates/nodes/node--debate.tpl.php: n/a
+#  templates/nodes/node--post--full.tpl.php: n/a
+#  templates/nodes/node--question--full.tpl.php: n/a
+#  templates/nodes/node--question--teaser.tpl.php: n/a
+#  templates/nodes/node--question.tpl.php: n/a
+#  templates/nodes/node--debate--lasts.tpl.php: n/a
+#  templates/nodes/node--question--lasts.tpl.php: n/a
+#  templates/nodes/node--ode--teaser.tpl.php: n/a
+#  templates/nodes/node--post--teaser.tpl.php: n/a
+#  templates/nodes/node--recurso-de-aprendizaje--teaser.tpl.php: n/a
+#  templates/nodes/node.tpl.php: n/a
+#  templates/users/user-profile.tpl.php: n/a
+#  templates/views/views-view--ag2-og-members-list--panel-pane.tpl.php: n/a
+#  templates/views/views-view--ag2-og-polls-list--panel-pane.tpl.php: n/a
+#  templates/views/views-view--agrega2-debates.tpl.php: n/a
+#  templates/views/views-view--community-wall-faceted-search.tpl.php: n/a
+#  templates/views/views-view--ode-search--page.tpl.php: n/a
+#  templates/views/views-view--user-timeline--panel-pane.tpl.php: n/a
+#  templates/views/search/sarnia-view-community.tpl.php: n/a
+#  templates/views/search/sarnia-view-discussion.tpl.php: n/a
+#  templates/views/search/sarnia-view-event.tpl.php: n/a
+#  templates/views/search/sarnia-view-learning-resource.tpl.php: n/a
+#  templates/views/search/sarnia-view-ode.tpl.php: n/a
+#  templates/views/search/sarnia-view-poll.tpl.php: n/a
+#  templates/views/search/sarnia-view-post.tpl.php: n/a
+#  templates/views/search/sarnia-view-question.tpl.php: n/a
+#  templates/views/search/sarnia-view-response.tpl.php: n/a
+#  templates/views/search/sarnia-view-user.tpl.php: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2014-09-01 13:43+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: template.php:41
+msgid "You are here"
+msgstr ""
+
+#: template.php:161
+msgid "Main menu"
+msgstr ""
+
+#: template.php:177
+msgid "Secondary menu"
+msgstr ""
+
+#: template.php:278
+msgid "Primary tabs"
+msgstr ""
+
+#: template.php:284
+msgid "Secondary tabs"
+msgstr ""
+
+#: template.php:286;346
+msgid "My account"
+msgstr ""
+
+#: template.php:306
+msgid "!datetime"
+msgstr ""
+
+#: template.php:365
+msgid "@user_name's image"
+msgstr ""
+
+#: template.php:366
+msgid "@user_name"
+msgstr ""
+
+#: template.php:373
+msgid "Most used labels"
+msgstr ""
+
+#: template.php:453
+msgid "MY ORGANIZATION"
+msgstr ""
+
+#: template.php:518
+msgid "Welcome"
+msgstr ""
+
+#: template.preprocess.sarnia-view.php:166;238
+msgid "default image"
+msgstr ""
+
+#: template.preprocess.sarnia-view.php:248 templates/nodes/node--ode--listing.tpl.php:82
+msgid "Untitled"
+msgstr ""
+
+#: theme-settings.php:14
+msgid "Nexus Settings"
+msgstr ""
+
+#: theme-settings.php:20
+msgid "Show breadcrumbs in a page"
+msgstr ""
+
+#: theme-settings.php:22
+msgid "Check this option to show breadcrumbs in page. Uncheck to hide."
+msgstr ""
+
+#: theme-settings.php:26
+msgid "Show Developer button grid"
+msgstr ""
+
+#: theme-settings.php:28
+msgid "Check this option to show Button to Show Grid columns. Uncheck to hide."
+msgstr ""
+
+#: theme-settings.php:33
+msgid "Exclude CSS files"
+msgstr ""
+
+#: theme-settings.php:34
+msgid "Enter one file per line."
+msgstr ""
+
+#: nexus.info:0
+msgid "Nexus Theme"
+msgstr ""
+
+#: nexus.info:0
+msgid "Custom Nexus Theme - Drupal 7 theme. Developed by <a href=\"http://twitter.com/nesta_\">Nesta</a> & Keilovecraft for Procomun project."
+msgstr ""
+
+#: nexus.info:0
+msgid "User Bar"
+msgstr ""
+
+#: nexus.info:0
+msgid "Top Bar"
+msgstr ""
+
+#: nexus.info:0
+msgid "Info Bar"
+msgstr ""
+
+#: nexus.info:0
+msgid "Preface"
+msgstr ""
+
+#: nexus.info:0
+msgid "Header"
+msgstr ""
+
+#: nexus.info:0
+msgid "First Sidebar"
+msgstr ""
+
+#: nexus.info:0
+msgid "Second Sidebar"
+msgstr ""
+
+#: nexus.info:0
+msgid "Content Top"
+msgstr ""
+
+#: nexus.info:0
+msgid "Help"
+msgstr ""
+
+#: nexus.info:0
+msgid "Content"
+msgstr ""
+
+#: nexus.info:0
+msgid "Footer"
+msgstr ""
+
+#: nexus.info:0
+msgid "First Bottom"
+msgstr ""
+
+#: nexus.info:0
+msgid "Second Bottom"
+msgstr ""
+
+#: nexus.info:0
+msgid "Third Bottom"
+msgstr ""
+
+#: js/custom.js:0
+msgid "Search..."
+msgstr ""
+
+#: js/custom.js:0
+msgid "USER"
+msgstr ""
+
+#: js/custom.js:0
+msgid "PASSWORD"
+msgstr ""
+
+#: js/custom.js:0
+msgid "Show Summary"
+msgstr ""
+
+#: js/custom.js:0
+msgid "Hide Summary"
+msgstr ""
+
+#: js/custom.js:0
+msgid "Question"
+msgstr ""
+
+#: js/custom.js:0
+msgid "Debate"
+msgstr ""
+
+#: plugins/layouts/ag-3-9/ag-3-9.inc:3
+msgid "AG Custom 3-9"
+msgstr ""
+
+#: plugins/layouts/ag-3-9/ag-3-9.inc:4 plugins/layouts/ag-3up-6-3/ag-3up-6-3.inc:4 plugins/layouts/ag-9-3/ag-9-3.inc:4
+msgid "AG - Custom"
+msgstr ""
+
+#: plugins/layouts/ag-3-9/ag-3-9.inc:10 plugins/layouts/ag-3up-6-3/ag-3up-6-3.inc:10 plugins/layouts/ag-9-3/ag-9-3.inc:10
+msgid "Left side"
+msgstr ""
+
+#: plugins/layouts/ag-3-9/ag-3-9.inc:11 plugins/layouts/ag-3up-6-3/ag-3up-6-3.inc:12 plugins/layouts/ag-9-3/ag-9-3.inc:11
+msgid "Right side"
+msgstr ""
+
+#: plugins/layouts/ag-3up-6-3/ag-3up-6-3.inc:3
+msgid "AG - Custom 3up-6-3"
+msgstr ""
+
+#: plugins/layouts/ag-3up-6-3/ag-3up-6-3.inc:11
+msgid "Middle column"
+msgstr ""
+
+#: plugins/layouts/ag-9-3/ag-9-3.inc:3
+msgid "AG - Custom 9-3"
+msgstr ""
+
+#: plugins/styles/region_tabs/region_tabs.inc:7
+msgid "As tabs"
+msgstr ""
+
+#: plugins/styles/region_tabs/region_tabs.inc:8
+msgid "Renderiza una región como tabs"
+msgstr ""
+
+#: plugins/styles/region_tabs/region_tabs.inc:53
+msgid "Untitled tab"
+msgstr ""
+
+#: templates/ag-section-profile-users-mi-cuenta.tpl.php:16
+msgid "Email"
+msgstr ""
+
+#: templates/ag-section-profile-users-mi-cuenta.tpl.php:23
+msgid "Language"
+msgstr ""
+
+#: templates/maintenance-page.tpl.php:32;33;36 templates/pages/page--node--66.tpl.php:30 templates/pages/page--node--67.tpl.php:30 templates/pages/page--ode-search.tpl.php:30 templates/pages/page.tpl.php:30
+msgid "Home"
+msgstr ""
+
+#: templates/comments/comment--node-debate.tpl.php:67 templates/nodes/node--answer--full.tpl.php:84
+msgid "Answered by"
+msgstr ""
+
+#: templates/comments/comment-wrapper--node-debate.tpl.php:40 templates/comments/comment-wrapper.tpl.php:48
+msgid "Add new comment"
+msgstr ""
+
+#: templates/comments/comment-wrapper.tpl.php:41 templates/nodes/node--recurso-de-aprendizaje--full.tpl.php:108
+msgid "Comments"
+msgstr ""
+
+#: templates/nodes/node--answer--full.tpl.php:89 templates/nodes/node--answer.tpl.php:93 templates/nodes/node--debate--full.tpl.php:17 templates/nodes/node--debate--teaser.tpl.php:105 templates/nodes/node--debate.tpl.php:100 templates/nodes/node--post--full.tpl.php:22 templates/nodes/node--question--full.tpl.php:21 templates/nodes/node--question--teaser.tpl.php:103 templates/nodes/node--question.tpl.php:100
+msgid "@time_ago ago"
+msgstr ""
+
+#: templates/nodes/node--answer.tpl.php:88 templates/nodes/node--debate--full.tpl.php:12 templates/nodes/node--debate--teaser.tpl.php:100 templates/nodes/node--debate.tpl.php:95 templates/nodes/node--question--full.tpl.php:16 templates/nodes/node--question--teaser.tpl.php:98
+msgid "Asked by"
+msgstr ""
+
+#: templates/nodes/node--debate--full.tpl.php:22 templates/nodes/node--debate--teaser.tpl.php:110 templates/nodes/node--debate.tpl.php:106 templates/nodes/node--post--full.tpl.php:27 templates/nodes/node--question--full.tpl.php:26 templates/nodes/node--question--teaser.tpl.php:108 templates/nodes/node--question.tpl.php:105
+msgid "in"
+msgstr ""
+
+#: templates/nodes/node--debate--full.tpl.php:30 templates/nodes/node--post--full.tpl.php:35
+msgid "response"
+msgid_plural "responses"
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/nodes/node--debate--lasts.tpl.php:95 templates/nodes/node--question--lasts.tpl.php:94
+msgid "By"
+msgstr ""
+
+#: templates/nodes/node--debate--lasts.tpl.php:97 templates/nodes/node--ode--teaser.tpl.php:19 templates/nodes/node--post--teaser.tpl.php:25 templates/nodes/node--question--lasts.tpl.php:96 templates/nodes/node--recurso-de-aprendizaje--teaser.tpl.php:21
+msgid "@time ago"
+msgstr ""
+
+#: templates/nodes/node--ode--teaser.tpl.php:12 templates/nodes/node--post--teaser.tpl.php:18 templates/nodes/node--recurso-de-aprendizaje--teaser.tpl.php:13
+msgid "@type"
+msgstr ""
+
+#: templates/nodes/node--ode--teaser.tpl.php:13 templates/nodes/node--post--teaser.tpl.php:19 templates/nodes/node--recurso-de-aprendizaje--teaser.tpl.php:14
+msgid "published by:"
+msgstr ""
+
+#: templates/nodes/node--ode--teaser.tpl.php:18 templates/nodes/node--post--teaser.tpl.php:24 templates/nodes/node--recurso-de-aprendizaje--teaser.tpl.php:20
+msgid "Posted"
+msgstr ""
+
+#: templates/nodes/node--ode--teaser.tpl.php:23 templates/nodes/node--post--teaser.tpl.php:29 templates/nodes/node--recurso-de-aprendizaje--teaser.tpl.php:26
+msgid "In"
+msgstr ""
+
+#: templates/nodes/node--post--full.tpl.php:5
+msgid "Groups posted"
+msgstr ""
+
+#: templates/nodes/node--post--full.tpl.php:19
+msgid "Published by "
+msgstr ""
+
+#: templates/nodes/node--post--full.tpl.php:41 templates/nodes/node--post--teaser.tpl.php:12
+msgid "A original post from"
+msgstr ""
+
+#: templates/nodes/node--question.tpl.php:95
+msgid "by"
+msgstr ""
+
+#: templates/nodes/node--recurso-de-aprendizaje--full.tpl.php:94
+msgid "Shared by"
+msgstr ""
+
+#: templates/nodes/node--recurso-de-aprendizaje--full.tpl.php:101
+msgid "Page views"
+msgstr ""
+
+#: templates/nodes/node--recurso-de-aprendizaje--full.tpl.php:113
+msgid "Rating"
+msgstr ""
+
+#: templates/nodes/node.tpl.php:95
+msgid "Posted on:"
+msgstr ""
+
+#: templates/nodes/node.tpl.php:99
+msgid "By:"
+msgstr ""
+
+#: templates/pages/page--node--66.tpl.php:102
+msgid "Page not found"
+msgstr ""
+
+#: templates/pages/page--node--67.tpl.php:101
+msgid "Access Denied"
+msgstr ""
+
+#: templates/users/user-profile.tpl.php:54
+msgid "Curriculum Vitae"
+msgstr ""
+
+#: templates/views/views-view--ag2-og-members-list--panel-pane.tpl.php:33 templates/views/views-view--ag2-og-polls-list--panel-pane.tpl.php:33 templates/views/views-view--agrega2-debates.tpl.php:5 templates/views/views-view--community-wall-faceted-search.tpl.php:33 templates/views/views-view--ode-search--page.tpl.php:38 templates/views/views-view--user-timeline--panel-pane.tpl.php:33
+msgid "Filters applied"
+msgstr ""
+
+#: templates/views/views-view--ode-search--page.tpl.php:36
+msgid "Showing results !first_result_position to !last_result_position from a total of !total_items."
+msgstr ""
+
+#: templates/views/views-view--ode-search--page.tpl.php:40
+msgid "Clear all"
+msgstr ""
+
+#: templates/views/views-view--ode-search--page.tpl.php:74
+msgid "No results found."
+msgstr ""
+
+#: templates/views/search/sarnia-view-community.tpl.php:29
+msgid "Number Resources"
+msgstr ""
+
+#: templates/views/search/sarnia-view-community.tpl.php:38
+msgid "Number of Subscribers"
+msgstr ""
+
+#: templates/views/search/sarnia-view-community.tpl.php:47
+msgid "Community Type"
+msgstr ""
+
+#: templates/views/search/sarnia-view-community.tpl.php:57 templates/views/search/sarnia-view-discussion.tpl.php:30 templates/views/search/sarnia-view-event.tpl.php:30 templates/views/search/sarnia-view-learning-resource.tpl.php:57 templates/views/search/sarnia-view-ode.tpl.php:57 templates/views/search/sarnia-view-poll.tpl.php:30 templates/views/search/sarnia-view-post.tpl.php:30 templates/views/search/sarnia-view-question.tpl.php:30 templates/views/search/sarnia-view-response.tpl.php:30 templates/views/search/sarnia-view-user.tpl.php:30
+msgid "Tags"
+msgstr ""
+
+#: templates/views/search/sarnia-view-discussion.tpl.php:56 templates/views/search/sarnia-view-event.tpl.php:57 templates/views/search/sarnia-view-learning-resource.tpl.php:107 templates/views/search/sarnia-view-ode.tpl.php:114;116 templates/views/search/sarnia-view-poll.tpl.php:56 templates/views/search/sarnia-view-post.tpl.php:56 templates/views/search/sarnia-view-question.tpl.php:56 templates/views/search/sarnia-view-response.tpl.php:56
+msgid "Comment"
+msgstr ""
+
+#: templates/views/search/sarnia-view-learning-resource.tpl.php:29 templates/views/search/sarnia-view-ode.tpl.php:29
+msgid "Published by"
+msgstr ""
+
+#: templates/views/search/sarnia-view-learning-resource.tpl.php:39 templates/views/search/sarnia-view-ode.tpl.php:39
+msgid "on"
+msgstr ""
+
+#: templates/views/search/sarnia-view-learning-resource.tpl.php:75 templates/views/search/sarnia-view-ode.tpl.php:75
+msgid "RESOURCE TYPE"
+msgstr ""
+
+#: templates/views/search/sarnia-view-learning-resource.tpl.php:86 templates/views/search/sarnia-view-ode.tpl.php:86
+msgid "FORMAT"
+msgstr ""
+
+#: templates/views/search/sarnia-view-ode.tpl.php:106
+msgid "Like"
+msgstr ""
+
+#: templates/views/search/sarnia-view-ode.tpl.php:126
+msgid "Favorite"
+msgstr ""
+
+#: templates/views/search/sarnia-view-user.tpl.php:47
+msgid "Educative Centre"
+msgstr ""
+
+#: templates/views/search/sarnia-view-user.tpl.php:58
+msgid "Address"
+msgstr ""
+

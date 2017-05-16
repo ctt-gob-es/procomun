@@ -1,0 +1,48 @@
+.popover
+  display: inline-block !important
+  background: $white
+  position: absolute
+  width: 37%
+  +border-radius(5px)
+  h4 
+    margin-bottom: 12px
+  &::before
+    height: 0
+    border-left: 15px solid transparent
+    border-right: 15px solid transparent
+    border-bottom: 15px solid $white
+    content: ""
+    position: absolute
+    top: -15px
+    left: 50%
+  &.bottom
+    margin-top: 20px
+  &.tour-tour
+    padding: 21px 21px 6px 21px
+  .tour-next
+    +button($dark_green)
+    &:hover
+      background-color: $deep_green
+      color: $white
+  .popover-title
+    margin-bottom: 10px
+    display: inline
+    clear: none
+    margin-left: 8px
+  .popover-navigation
+    ul
+      margin-top: 10px
+    li
+      margin: 8px
+      +border-radius(50%)
+      background: $light_gray
+      padding: 7px 12px
+      margin: 5px
+      color: $white
+      &.tour-current-step
+        background: $dark_green
+      &:first-child
+        margin-left: 0
+  &[class*=tour-]
+    .popover-navigation
+      padding: 9px 0

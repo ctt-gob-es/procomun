@@ -1,0 +1,286 @@
+<?php
+
+/**
+ * @file Module for displaying bagdes from Mozilla openbadges
+ */
+
+/**
+ * Implements hook_menu()
+ */
+function ag_mozilla_openbadges_displayer_menu() {
+  $items = array();
+
+  $items['user/%/badges'] = array(
+    'title' => 'Configure your badges to display',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ag_badges_config_form', 1),
+    'access callback' => 'ag_mozilla_openbadges_displayer_access',
+    'access arguments' => array(1),
+    'file' => 'ag_mozilla_openbadges_displayer.forms.inc',
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function ag_mozilla_openbadges_displayer_theme() {
+  return array(
+    'user_mozilla_badges' => array(
+      'variables' => array(
+        'mozilla_badges' => NULL,
+      ),
+      'template' => 'templates/user-mozilla-badges',
+    ),
+  );
+}
+
+/**
+ * Implements hook_entity_view().
+ */
+function ag_mozilla_openbadges_displayer_entity_view($entity, $type, $view_mode, $langcode) {
+  global $user;
+
+  if (($type == 'user' && $view_mode == 'full') || ($type == 'profile2' && $view_mode == 'public')) {
+    if ($type == 'user') {
+      $user_account = $user;
+    }
+    else {
+      //Load minimal data for user account in public profile
+      $user_account = DrupalToolkit::getUserData($entity->uid, array('uid', 'mail'));
+    }
+    $mozilla_badges = ag_mozilla_openbadges_displayer_badges($user_account);
+    if (!empty($mozilla_badges)) {
+      $entity->content['mozilla_badges'] = array(
+        '#title' => t('Badges'),
+        '#markup' => theme('user_mozilla_badges', array('mozilla_badges' => $mozilla_badges)),
+        '#weight' => 30,
+      );
+    }
+
+    //Add link to configure badges. Check if user has access to link. Only in user page.
+    if ($type == 'user' && $entity->uid == $user->uid) {
+      $entity->content['mozilla_badges_conf'] = array(
+        '#theme' => 'link',
+        '#text' => t('Configure your badges'),
+        '#path' => 'user/' . $user->uid . '/badges',
+        '#options' => array('attributes' => array('title' => t('Configure your badges')), 'html' => FALSE),
+        '#weight' => 31,
+      );
+    }
+  }
+}
+
+
+/**
+ * Callback access function to configure badges groups to display
+ */
+function ag_mozilla_openbadges_displayer_access($uid) {
+  global $user;
+
+  if ($user->uid == $uid) {
+    return TRUE;
+  }
+  else {
+    return FALSE;
+  }
+}
+
+/**
+ * Retrieve an array of badges groups id to display
+ *
+ * @param $account
+ *   User account to get badges groups
+ * @return
+ *   An array with the bgid values.
+ */
+function ag_mozilla_openbadges_displayer_groups_display($account = NULL) {
+  global $user;
+
+  if (!isset($account)) {
+    $account = $user;
+  }
+
+  $query = db_select('mozilla_openbadges_groups', 'mog');
+  $query->fields('mog', array('bgid'));
+  $query->condition('mog.uid', $account->uid);
+
+  $result = $query->execute();
+
+  $bgids = array();
+  foreach ($result as $bgid) {
+    $bgids[$bgid->bgid] = $bgid->bgid;
+  }
+
+  return $bgids;
+}
+
+/**
+ * Retrieve an array of badges groups id to display
+ *
+ * @param $account
+ *   User account to get badges groups from Mozilla backpack
+ * @return
+ *   An array with the bgid keys and names values
+ */
+function ag_mozilla_openbadges_displayer_badges_groups($account = NULL) {
+  global $user;
+
+  if (!isset($account)) {
+    $account = $user;
+  }
+
+  $groups_data = array();
+
+  if ($account->uid > 0) {
+    $email = $account->mail;
+
+    //Check if badges groups is in cache
+    $user_cache = cache_get('user-mozilla-badges-groups:' . md5($email), 'cache');
+    if (is_object($user_cache)) {
+      return $user_cache->data;
+    }
+
+    //Otherwise get data from Mozilla and set in cache
+    //Build and send request
+    $body = ag_mozilla_openbadges_displayer_convert_email($email);
+
+    if (is_object($body) && $body->status !== 'missing') {
+      $groups_data = ag_mozilla_openbadges_displayer_groups_data($body->userId);
+    }
+    cache_set('user-mozilla-badges-groups:' . md5($email), $groups_data, 'cache', time() + 1800);
+  }
+  return $groups_data;
+}
+
+/**
+ * Retrieve an array of badges to display
+ *
+ * @param $account
+ *   User account to get badges from Mozilla backpack
+ * @return
+ *   An array with badges and its metadata information
+ */
+function ag_mozilla_openbadges_displayer_badges($account = NULL) {
+  global $user;
+
+  if (!isset($account)) {
+    $account = $user;
+  }
+
+  $backpack_data = array();
+
+  if ($account->uid > 0) {
+    $email = $account->mail;
+
+    //Check if user badges data is in cache
+    $user_cache = cache_get('user-mozilla-badges:' . md5($email), 'cache');
+    if (is_object($user_cache)) {
+      return $user_cache->data;
+    }
+
+    //Otherwise get data from Mozilla and set in cache
+    //Build and send request
+    $body = ag_mozilla_openbadges_displayer_convert_email($email);
+
+    if (is_object($body) && $body->status !== 'missing') {
+      //Get groups data
+      $groups_data = ag_mozilla_openbadges_displayer_groups_data($body->userId);
+
+      //Get user groups to display. If array is empty show all groups
+      $groups_display = ag_mozilla_openbadges_displayer_groups_display($account);
+
+      foreach ($groups_data->groups as $group) {
+        //Get badges data from group. Check if user has this group as visible.
+        if (in_array($group->groupId, $groups_display)) {
+          $badges_data = ag_mozilla_openbadges_displayer_badges_data($body->userId, $group->groupId);
+
+          $badges_in_group = array();
+          if (is_array($badges_data->badges)) {
+            foreach ($badges_data->badges as $badge) {
+              //Parse date
+              if (is_numeric($badge->assertion->issued_on)) {
+                $timestamp = $badge->assertion->issued_on;
+              }
+              else {
+                $timestamp = strtotime($badge->assertion->issued_on);
+              }
+              $badge_data = array(
+                'title' => array('label' => t('Name'), 'data' => $badge->assertion->badge->name),
+                'description' => array('label' => t('Description'), 'data' => $badge->assertion->badge->description),
+                'image' => $badge->imageUrl,
+                'criteria_url' => array('label' => t('Criteria'), 'data' => l($badge->assertion->badge->criteria, $badge->assertion->badge->criteria, array('external' => TRUE)), 'raw_data' => $badge->assertion->badge->criteria),
+                'issuer_name' => array('label' => t('Issuer Name'), 'data' => $badge->assertion->badge->issuer->name),
+                'issuer_url' => array('label' => t('Url'), 'data' => l($badge->assertion->badge->issuer->origin, $badge->assertion->badge->issuer->origin, array('external' => TRUE)), 'raw_data' => $badge->assertion->badge->issuer->origin),
+                'issued' => array('label' => t('Issued'), 'format' => date('d-m-Y', $timestamp), 'raw_data' => $badge->assertion->issued_on),
+              );
+              $badges_in_group[] = $badge_data;
+            }
+          }
+          $group_data = array(
+            'group_name' => $group->name,
+            'group_id' => $group->groupId,
+            'number_of_badges' => count($badges_in_group),
+            'badges' => $badges_in_group,
+          );
+          $backpack_data[] = $group_data;
+        }
+      }
+    }
+    cache_set('user-mozilla-badges:' . md5($email), $backpack_data, 'cache', time() + 1800);
+  }
+  return $backpack_data;
+}
+
+
+/**
+ * Function to make a request to convert email to Mozilla user id
+ */
+function ag_mozilla_openbadges_displayer_convert_email($email) {
+  $return = '';
+
+  if (!empty($email)) {
+    $data = 'email=' . $email;
+    $options = array(
+      'method' => 'POST',
+      'data' => $data,
+      'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
+    );
+    $result = drupal_http_request('https://backpack.openbadges.org/displayer/convert/email', $options);
+    $return = json_decode($result->data);
+  }
+
+  return $return;
+}
+
+/**
+ * Function to get badges groups data from json
+ */
+function ag_mozilla_openbadges_displayer_groups_data($muid) {
+  $groups_data = array();
+
+  if (!empty($muid)) {
+    $groups_url = "https://backpack.openbadges.org/displayer/" . $muid . "/groups.json";
+    $groups_json = file_get_contents($groups_url, 0, NULL, NULL);
+    $groups_data = json_decode($groups_json);
+  }
+
+  return $groups_data;
+}
+
+/**
+ * Function to get badges data from json
+ */
+function ag_mozilla_openbadges_displayer_badges_data($muid, $bgid) {
+  $badges_data = array();
+
+  if (!empty($muid) && !empty($bgid)) {
+    $badges_url = "https://backpack.openbadges.org/displayer/" . $muid . "/group/" . $bgid . ".json";
+    $badges_json = file_get_contents($badges_url, 0, NULL, NULL);
+    $badges_data = json_decode($badges_json);
+  }
+
+  return $badges_data;
+}

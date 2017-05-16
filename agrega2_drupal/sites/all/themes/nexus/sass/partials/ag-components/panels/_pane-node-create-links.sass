@@ -1,0 +1,32 @@
+.pane-ag-section-user-timeline-create-new-content-block,
+.pane-wall-node-create-links
+  border: 1px solid $white
+  padding: 10px 10px 0
+  background: lighten($main_blue, 40%)
+  +box-shadow(0px 2px 5px 0px $light_gray)
+  .pane-title
+    @extend .hide
+  form,  
+  ul
+    +clearfix()
+    margin-bottom: 3px
+    input,
+    li
+      float: left
+      margin: 0 .6em .6em 0
+      padding: 0
+      a
+        +button($orange)
+        display: block
+        padding: 0.75em
+        &:hover
+          background-color: $dark_orange
+.pane-node-create-links
+  @extend .hide
+
+
+#new-content-block-form
+  .timeline-node-create-links
+    input
+      padding: 8px
+      margin-right: 1em

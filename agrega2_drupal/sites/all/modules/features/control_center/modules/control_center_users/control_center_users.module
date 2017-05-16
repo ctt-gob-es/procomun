@@ -1,0 +1,23 @@
+<?php
+/**
+ * @file
+ * Code for the Control center users feature.
+ */
+
+include_once 'control_center_users.features.inc';
+
+/**
+ * Implements hook_permission().
+ */
+function control_center_users_permission() {
+  $permissions = array();
+
+  $permissions['access control center users'] = array(
+    'title' => t('Access to control center users'),
+  );
+  $permissions['access control center organizations'] = array(
+    'title' => t('Access to control center organizations'),
+  );
+
+  return $permissions;
+}

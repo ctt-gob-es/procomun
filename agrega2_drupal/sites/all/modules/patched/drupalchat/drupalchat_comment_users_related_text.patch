@@ -1,0 +1,22 @@
+diff --git a/sites/all/modules/patched/drupalchat/drupalchat.module b/sites/all/modules/patched/drupalchat/drupalchat.module
+index 9aa76ee..ce4bf69 100644
+--- a/sites/all/modules/patched/drupalchat/drupalchat.module
++++ b/sites/all/modules/patched/drupalchat/drupalchat.module
+@@ -202,7 +202,7 @@ function _drupalchat_chat() {
+           'class' => array('link'),
+         ))));
+   }
+-  $chat['text'] = t('Chat') . ' (<span class="online-count">' . count($items) . '</span>)';
++  $chat['text'] = t('Chat'); //. ' (<span class="online-count">' . count($items) . '</span>)';
+ 
+   $theme = variable_get('drupalchat_theme', 'light');
+   $chat['icon'] = theme('image', array('path' => drupal_get_path('module', 'drupalchat') . '/themes/' . $theme . '/images/loading.gif', 'width' => NULL, 'height' => NULL, 'alt' => t('chat'), 'attributes' => array('class' => 'icon')));
+@@ -503,7 +503,7 @@ function drupalchat_init() {
+       'images' => $base_url . '/' . drupal_get_path('module', 'drupalchat') . '/themes/' . $theme . '/images/',
+       'sound' => base_path() . drupal_get_path('module', 'drupalchat') . '/swf/sound.swf',
+       'soundFile' => base_path() . drupal_get_path('module', 'drupalchat') . '/wav/notification.mp3',
+-      'noUsers' => theme('item_list', array('items' => array(0 => array('data' => t('No users online'), 'class' => array('drupalchatnousers'),)),)),
++      'noUsers' => theme('item_list', array('items' => array(0 => array('data' => ''/*t('No users online')*/, 'class' => array('drupalchatnousers'),)),)),
+       'smileyURL' => base_path() . drupal_get_path('module', 'drupalchat') . '/smileys/very_emotional_emoticons-png/png-32x32/',
+       'addUrl' => url('drupalchat/channel/add', array('absolute' => TRUE)),
+ 	    'notificationSound' => variable_get('drupalchat_notification_sound', 1),

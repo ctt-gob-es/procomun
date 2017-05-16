@@ -1,0 +1,98 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function custom_cookies_menu() {
+  $items['admin/config/system/custom_cookies'] = array(
+    'title' => 'Custom Cookies',
+    'description' => 'Make your website compliant with the EU Directive on Privacy and Electronic Communications.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('custom_cookies_admin_form'),
+    'access arguments' => array('administer Custom Cookies popup'),
+    'file' => 'custom_cookies.admin.inc',
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_init().
+ */
+function custom_cookies_init() {
+  $popup_settings = custom_cookies_get_settings();
+
+  if (!empty($popup_settings['popup_enabled'])) {
+    global $language;
+
+    // color overrides
+    $position = $popup_settings['popup_position'] ? 'top' : 'bottom';
+    drupal_add_css(drupal_get_path('module', 'custom_cookies') . '/css/custom_cookies.css');
+    $popup_text_info = $popup_settings['popup_info'];
+    $buttonyes = isset($popup_settings['popup_buttonyes']) ? $popup_settings['popup_buttonyes'] : 'Yes';
+    $buttonno = isset($popup_settings['popup_buttonno']) ? $popup_settings['popup_buttonno'] : 'No';
+    $html_info = theme('custom_cookies_popup_info', array('message' => $popup_text_info,'buttonyes' => $buttonyes,'buttonno' => $buttonno));
+    $variables = array(
+      'popup_enabled' => $popup_settings['popup_enabled'],
+      'popup_html_info' => empty($html_info) ? FALSE : $html_info,
+      'popup_delay' => (int) ($popup_settings['popup_delay']),
+      'popup_link' => url($popup_settings['popup_link']),
+      'popup_position' => $popup_settings['popup_position'],
+      'popup_language' => $language->language,
+    );
+    drupal_add_js(array('custom_cookies' => $variables), array('type' => 'setting', 'scope' => 'footer'));
+    drupal_add_js(drupal_get_path('module', 'custom_cookies') . '/js/custom_cookies.js', array('type' => 'file', 'scope' => 'footer'));
+  }
+}
+
+/**
+ * Implements hook_permission().
+ */
+function custom_cookies_permission() {
+  return array(
+    'administer Custom Cookies popup' => array(
+      'title' => 'Administer Custom Cookies popup'
+    ),
+  );
+}
+
+/**
+ * Implements hook_theme().
+ */
+function custom_cookies_theme() {
+  $path = drupal_get_path('module', 'custom_cookies') . '/theme';
+  return array(
+    'custom_cookies_popup_info' => array(
+      'template' => 'custom_cookies_popup_info',
+      'variables' => array(
+        'message' => NULL,
+        'buttonyes' => NULL,
+        'buttonno' => NULL,
+      ),
+      'path' => $path,
+    )
+  );
+}
+
+/**
+ *
+ * Retrieves settings from the database for a current language.
+ *
+ * @global type $language
+ * @param type $setting
+ * @return type
+ */
+
+function custom_cookies_get_settings($setting = 'all') {
+  global $language;
+  $popup_settings = variable_get('custom_cookies_' . $language->language, array());
+
+  if ($setting == 'all') {
+    return $popup_settings;
+  }
+
+  if (isset($popup_settings[$setting])) {
+    return $popup_settings[$setting];
+  } else {
+    return NULL;
+  }
+}

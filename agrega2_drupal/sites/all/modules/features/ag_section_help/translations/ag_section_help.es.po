@@ -1,0 +1,480 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_section_help.features.field_instance.inc: n/a
+#  ag_section_help.features.inc: n/a
+#  ag_section_help.views_default.inc: n/a
+#  ag_section_help.views.inc: n/a
+#  ag_section_help.module: n/a
+#  ag_section_help.info: n/a
+#  plugins/content_types/faq_form.inc: n/a
+#  js/help_section.js: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2016-05-24 16:38+0200\n"
+"PO-Revision-Date: 2016-05-24 16:38+0200\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: ag_section_help.features.field_instance.inc:726
+msgid "Apartado"
+msgstr ""
+
+#: ag_section_help.features.field_instance.inc:727
+msgid "Body"
+msgstr "Cuerpo"
+
+#: ag_section_help.features.field_instance.inc:728
+msgid "Contenido"
+msgstr ""
+
+#: ag_section_help.features.field_instance.inc:729
+msgid "Question title"
+msgstr ""
+
+#: ag_section_help.features.field_instance.inc:730 ag_section_help.features.inc:147;155;163
+msgid "Título"
+msgstr ""
+
+#: ag_section_help.features.field_instance.inc:731
+msgid "message_status"
+msgstr "stado_message"
+
+#: ag_section_help.features.field_instance.inc:732
+msgid "target_users"
+msgstr ""
+
+#: ag_section_help.features.inc:143
+msgid "FAQ"
+msgstr ""
+
+#: ag_section_help.features.inc:151
+msgid "Funcionalidad"
+msgstr ""
+
+#: ag_section_help.features.inc:159 ag_section_help.views_default.inc:1189
+msgid "Manual"
+msgstr "Manual de uso"
+
+#: ag_section_help.features.inc:161
+msgid "Tipo de contenido para el manual de la sección de ayuda y faqs"
+msgstr ""
+
+#: ag_section_help.views.inc:33
+msgid "Custom"
+msgstr "Personalizado"
+
+#: ag_section_help.views.inc:41
+msgid "Vote widget custom field"
+msgstr ""
+
+#: ag_section_help.views.inc:42
+msgid "Provides a vote widget custom field."
+msgstr ""
+
+#: ag_section_help.views_default.inc:478;757;910;1188;1372;1517
+msgid "Master"
+msgstr "Maestro"
+
+#: ag_section_help.views_default.inc:479 ag_section_help.module:376
+msgid "Frecuently asked questions"
+msgstr "Preguntas frecuentes"
+
+#: ag_section_help.views_default.inc:480;1519
+msgid "más"
+msgstr ""
+
+#: ag_section_help.views_default.inc:481;760;912;1191;1375;1520
+msgid "Apply"
+msgstr "Aplicar"
+
+#: ag_section_help.views_default.inc:482;1521
+msgid "Reiniciar"
+msgstr ""
+
+#: ag_section_help.views_default.inc:483;1522
+msgid "Order by"
+msgstr ""
+
+#: ag_section_help.views_default.inc:484;763;915;1194;1378;1523
+msgid "Asc"
+msgstr "Asc"
+
+#: ag_section_help.views_default.inc:485;764;916;1195;1379;1524
+msgid "Desc"
+msgstr "Desc"
+
+#: ag_section_help.views_default.inc:486;1525
+msgid "Elementos por página"
+msgstr ""
+
+#: ag_section_help.views_default.inc:487;1526
+msgid "- Todos -"
+msgstr ""
+
+#: ag_section_help.views_default.inc:488;1527
+msgid "Desplazamiento"
+msgstr ""
+
+#: ag_section_help.views_default.inc:489;1528
+msgid "« primera"
+msgstr ""
+
+#: ag_section_help.views_default.inc:490;1529
+msgid "‹ anterior"
+msgstr ""
+
+#: ag_section_help.views_default.inc:491;1530
+msgid "siguiente ›"
+msgstr ""
+
+#: ag_section_help.views_default.inc:492;1531
+msgid "última »"
+msgstr ""
+
+#: ag_section_help.views_default.inc:493;770;1196;1532
+msgid "Vote results"
+msgstr "Resultados de votos"
+
+#: ag_section_help.views_default.inc:494;771;1200;1533
+msgid "."
+msgstr "."
+
+#: ag_section_help.views_default.inc:495;772;1201;1534
+msgid ","
+msgstr ","
+
+#: ag_section_help.views_default.inc:496
+msgid " Responses"
+msgstr " Respuestas"
+
+#: ag_section_help.views_default.inc:497
+msgid "<span>[title]</span><span>[comment_count]</span>"
+msgstr ""
+
+#: ag_section_help.views_default.inc:498;773;1535
+msgid "Most recent"
+msgstr "Más recientes"
+
+#: ag_section_help.views_default.inc:499;1536
+msgid "Best rated"
+msgstr ""
+
+#: ag_section_help.views_default.inc:500
+msgid "FAQ list"
+msgstr ""
+
+#: ag_section_help.views_default.inc:501;759;911;1190;1374;1539
+msgid "more"
+msgstr "más"
+
+#: ag_section_help.views_default.inc:502
+msgid "Most responded"
+msgstr ""
+
+#: ag_section_help.views_default.inc:503;1537
+msgid "Most visited"
+msgstr ""
+
+#: ag_section_help.views_default.inc:504;1540
+msgid "Vista panel"
+msgstr ""
+
+#: ag_section_help.views_default.inc:505
+msgid "Answers list"
+msgstr "Lista de respuestas"
+
+#: ag_section_help.views_default.inc:506
+msgid "Answers"
+msgstr "Respuestas"
+
+#: ag_section_help.views_default.inc:507
+msgid "Empty answers"
+msgstr ""
+
+#: ag_section_help.views_default.inc:508
+msgid "There are no answers to this question"
+msgstr "Todavía no hay respuestas para esta pregunta"
+
+#: ag_section_help.views_default.inc:509
+msgid "Comments"
+msgstr "Comentarios"
+
+#: ag_section_help.views_default.inc:510
+msgid "All"
+msgstr "Todo(s)"
+
+#: ag_section_help.views_default.inc:511;769;931;1203;1382
+msgid "View panes"
+msgstr "Vista panel"
+
+#: ag_section_help.views_default.inc:512
+msgid "Unpublished FAQ list"
+msgstr ""
+
+#: ag_section_help.views_default.inc:513
+msgid "New FAQ received"
+msgstr ""
+
+#: ag_section_help.views_default.inc:514
+msgid "No new pending FAQ to moderate"
+msgstr ""
+
+#: ag_section_help.views_default.inc:515
+msgid "author"
+msgstr "autor"
+
+#: ag_section_help.views_default.inc:516
+msgid "Content"
+msgstr "Contenido"
+
+#: ag_section_help.views_default.inc:517
+msgid "- Choose an operation -"
+msgstr "- Elegir una operación -"
+
+#: ag_section_help.views_default.inc:518
+msgid "User"
+msgstr "Usuario"
+
+#: ag_section_help.views_default.inc:519 ag_section_help.module:76
+msgid "Title"
+msgstr "Título"
+
+#: ag_section_help.views_default.inc:520
+msgid "Open content in a new tab"
+msgstr ""
+
+#: ag_section_help.views_default.inc:758
+msgid "Most rated"
+msgstr ""
+
+#: ag_section_help.views_default.inc:761;913;1192;1376
+msgid "Reset"
+msgstr "Reiniciar"
+
+#: ag_section_help.views_default.inc:762;914;1193;1377
+msgid "Sort by"
+msgstr "Ordenar por"
+
+#: ag_section_help.views_default.inc:765
+msgid "No results"
+msgstr "No hay resultados"
+
+#: ag_section_help.views_default.inc:766
+msgid "<span class=\"help-icon-[type]\"></span>"
+msgstr ""
+
+#: ag_section_help.views_default.inc:767
+msgid "Most viewed"
+msgstr ""
+
+#: ag_section_help.views_default.inc:768;927
+msgid "Clean type"
+msgstr ""
+
+#: ag_section_help.views_default.inc:917
+msgid "Items per page"
+msgstr "Elementos por página"
+
+#: ag_section_help.views_default.inc:918
+msgid "- All -"
+msgstr "- Todos -"
+
+#: ag_section_help.views_default.inc:919
+msgid "Offset"
+msgstr "Desplazamiento"
+
+#: ag_section_help.views_default.inc:920
+msgid "« first"
+msgstr "« primera"
+
+#: ag_section_help.views_default.inc:921
+msgid "‹ previous"
+msgstr "‹ anterior"
+
+#: ag_section_help.views_default.inc:922
+msgid "next ›"
+msgstr "siguiente ›"
+
+#: ag_section_help.views_default.inc:923
+msgid "last »"
+msgstr "última »"
+
+#: ag_section_help.views_default.inc:924
+msgid "Displaying results @start to @end of @total"
+msgstr "Mostrando resultados @start al @end de @total"
+
+#: ag_section_help.views_default.inc:925
+msgid "No results found"
+msgstr "No se han encontrado resultados"
+
+#: ag_section_help.views_default.inc:926
+msgid "<span class=\"help-icon-[type]\"></span>[title]"
+msgstr ""
+
+#: ag_section_help.views_default.inc:928
+msgid "More details"
+msgstr "Más detalles"
+
+#: ag_section_help.views_default.inc:929
+msgid "Search into help"
+msgstr "Buscar en la ayuda"
+
+#: ag_section_help.views_default.inc:930
+msgid "Search list"
+msgstr ""
+
+#: ag_section_help.views_default.inc:1197;1380
+msgid "término"
+msgstr ""
+
+#: ag_section_help.views_default.inc:1198
+msgid "[custom:manual_index][title]"
+msgstr ""
+
+#: ag_section_help.views_default.inc:1199
+msgid "Edit"
+msgstr "Editar"
+
+#: ag_section_help.views_default.inc:1202
+msgid "Manual content"
+msgstr ""
+
+#: ag_section_help.views_default.inc:1204
+msgid "Manual content PDF"
+msgstr ""
+
+#: ag_section_help.views_default.inc:1373
+msgid "Index"
+msgstr "Índice"
+
+#: ag_section_help.views_default.inc:1381
+msgid "Manual index"
+msgstr ""
+
+#: ag_section_help.views_default.inc:1518
+msgid "New functionalities"
+msgstr "Nuevas funcionalidades"
+
+#: ag_section_help.views_default.inc:1538
+msgid "New functionalities list"
+msgstr ""
+
+#: ag_section_help.module:72;390
+msgid "New question"
+msgstr "Nueva pregunta"
+
+#: ag_section_help.module:82
+msgid "Question"
+msgstr "Pregunta"
+
+#: ag_section_help.module:91
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: ag_section_help.module:96
+msgid "Send question"
+msgstr ""
+
+#: ag_section_help.module:118
+msgid "Question created successfully. It will be published when administrators validate the content"
+msgstr ""
+"La pregunta se ha creado correctamente. Se publicará cuando los "
+"administradores validen el contenido"
+
+#: ag_section_help.module:172
+msgid "Send answer"
+msgstr ""
+
+#: ag_section_help.module:281;316
+msgid "Custom contact link"
+msgstr ""
+
+#: ag_section_help.module:286
+msgid "Manual buttons for help section"
+msgstr ""
+
+#: ag_section_help.module:291;326
+msgid "Custom FAQ pane title"
+msgstr ""
+
+#: ag_section_help.module:296;331
+msgid "Custom create FAQ button"
+msgstr ""
+
+#: ag_section_help.module:301;336
+msgid "Custom create New functionality button"
+msgstr ""
+
+#: ag_section_help.module:321
+msgid "Manual buttons"
+msgstr ""
+
+#: ag_section_help.module:350
+msgid "You do not find what you are looking for?"
+msgstr "¿No encuentras lo que estás buscando?"
+
+#: ag_section_help.module:351
+msgid "Contact with us"
+msgstr "Contacta con nosotros"
+
+#: ag_section_help.module:362
+msgid "Add manual entry"
+msgstr "Añadir entrada del manual"
+
+#: ag_section_help.module:364
+msgid "Download as PDF"
+msgstr "Descargar en PDF"
+
+#: ag_section_help.module:407;412
+msgid "New functionality"
+msgstr "Nueva funcionalidad"
+
+#: ag_section_help.module:451
+msgid "Search results: @help_value"
+msgstr "Resultados de búsqueda: @help_value"
+
+#: ag_section_help.module:461;462
+msgid "Index content for manual"
+msgstr ""
+
+#: ag_section_help.module:14
+msgid "Download manual as PDF"
+msgstr ""
+
+#: ag_section_help.info:0
+msgid "ag_section_help"
+msgstr ""
+
+#: ag_section_help.info:0
+msgid "Feature with the help and faqs section configurations."
+msgstr ""
+
+#: ag_section_help.info:0 plugins/content_types/faq_form.inc:14
+msgid "Agrega2"
+msgstr "Agrega2"
+
+#: js/help_section.js:0
+msgid "The answer has been saved"
+msgstr "Se ha guardado la respuesta"
+
+#: js/help_section.js:0
+msgid "Error: the answer can not be empty"
+msgstr "Error: la respuesta no puede estar vacía"
+
+#: plugins/content_types/faq_form.inc:12
+msgid "Add FAQ form"
+msgstr ""
+
+#: plugins/content_types/faq_form.inc:13
+msgid "Custom form to create a FAQ"
+msgstr ""

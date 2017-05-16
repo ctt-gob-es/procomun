@@ -1,0 +1,17 @@
+name = Control Center Dashboard
+description = Dashboard for the control center
+core = 7.x
+package = Agrega2
+version = 7.x-1.0
+project = control_center_dashboard
+dependencies[] = ag_section_social_netwok
+dependencies[] = control_center
+dependencies[] = ctools
+dependencies[] = features
+dependencies[] = page_manager
+features[ctools][] = page_manager:pages_default:1
+features[features_api][] = api:2
+features[page_manager_pages][] = control_center_dashboard
+features[user_permission][] = administer communities
+mtime = 1456829410
+project path = sites/all/modules/features/control_center/modules

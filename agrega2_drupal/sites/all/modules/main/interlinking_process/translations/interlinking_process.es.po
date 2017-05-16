@@ -1,0 +1,52 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  interlinking_process.module: n/a
+#  interlinking_process.info: n/a
+#  templates/interlinking-process.tpl.php: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2015-01-05 13:11+0100\n"
+"PO-Revision-Date: 2015-01-05 13:11+0100\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: interlinking_process.module:31 interlinking_process.info:0
+msgid "Interlinking process block"
+msgstr "Bloque de proceso de entrenlazado"
+
+#: interlinking_process.module:46
+msgid "It may interest you"
+msgstr "Te puede interesar"
+
+#: interlinking_process.module:104
+msgid "See +"
+msgstr "Ver +"
+
+#: interlinking_process.module:116
+msgid "No links have been found for interlinking process"
+msgstr "No se han encontrado enlaces para el proceso de interconexión"
+
+#: interlinking_process.info:0;0
+msgid "Interlinking process"
+msgstr "Proceso de interconexión"
+
+#: templates/interlinking-process.tpl.php:9
+msgid "Show more"
+msgstr "Ver más"
+
+#: templates/interlinking-process.tpl.php:13
+msgid "This information belongs to third parties. INTEF not responsible\n                    for the accuracy of the information or the information contained."
+msgstr ""
+"Esta información pertenece a terceros. INTEF no se responsabiliza de "
+"la veracidad de los datos ni de la información contenida."
+

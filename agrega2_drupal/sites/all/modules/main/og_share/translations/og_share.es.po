@@ -1,0 +1,102 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  og_share.admin.inc: n/a
+#  og_share.forms.inc: n/a
+#  og_share.module: n/a
+#  og_share.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2014-09-01 11:56+0200\n"
+"PO-Revision-Date: 2014-09-01 11:56+0200\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: og_share.admin.inc:11
+msgid "Select the content types that will be allowed to be shared"
+msgstr "Selecciona los tipos de contenido que serán compartidos"
+
+#: og_share.admin.inc:25
+msgid "Select the view modes where the share link will be showed"
+msgstr "Selecciona los view modes donde se monstrará el enlace para compartir"
+
+#: og_share.forms.inc:13
+msgid "Select in which communities the content will be shared"
+msgstr "Selecciona en qué comunidades será compartido el contenido"
+
+#: og_share.forms.inc:28
+msgid "Share"
+msgstr "Comparte"
+
+#: og_share.forms.inc:36
+msgid "Sorry, this content is already shared in all your commnuties"
+msgstr ""
+"Lo sentimos pero este contenido ya ha sido compartido en todas tus "
+"comunidades"
+
+#: og_share.forms.inc:75
+msgid "@title has been shared"
+msgstr "Se ha compartido @title"
+
+#: og_share.module:38
+msgid "Configure OG share module"
+msgstr "Configura el módulo OG share"
+
+#: og_share.module:41
+msgid "Share og content"
+msgstr "Share og content"
+
+#: og_share.module:44
+msgid "Access to public og content"
+msgstr "Acceder a contenido de og publicado"
+
+#: og_share.module:131
+msgid "shared"
+msgstr "compartido"
+
+#: og_share.module:154
+msgid "Share in your communities"
+msgstr "Comparte en tus comunidades"
+
+#: og_share.module:158
+msgid "Share this content"
+msgstr "Comparte este contenido"
+
+#: og_share.module:14
+msgid "Share whith your communities"
+msgstr "Comparte con tus comunidades"
+
+#: og_share.module:15
+msgid "Allow share a content in your communities"
+msgstr "Permite a los usuarios compartir contenidos con tus comunidades"
+
+#: og_share.module:23
+msgid "OG share"
+msgstr "Og share"
+
+#: og_share.module:24
+msgid "Config Organic groups share settings"
+msgstr "Configura las opciones de Organic groups share"
+
+#: og_share.info:0
+msgid "Organic Groups Share content"
+msgstr "Grupos organicos contenido compartido"
+
+#: og_share.info:0
+msgid "Provides a action for sahre content in Og groups where a user is member."
+msgstr ""
+"Proporciona la posibilidad de compartir contenido con grupos OG donde "
+"el usuario es miembro"
+
+#: og_share.info:0
+msgid "Organic Groups"
+msgstr "Grupos organicos"

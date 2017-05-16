@@ -1,0 +1,121 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_section_user_timeline.views_default.inc: n/a
+#  ag_section_user_timeline.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2014-09-01 12:38+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: ag_section_user_timeline.views_default.inc:100
+msgid "Master"
+msgstr ""
+
+#: ag_section_user_timeline.views_default.inc:101
+msgid "Timeline"
+msgstr ""
+
+#: ag_section_user_timeline.views_default.inc:102
+msgid "más"
+msgstr ""
+
+#: ag_section_user_timeline.views_default.inc:103
+msgid "Aplicar"
+msgstr ""
+
+#: ag_section_user_timeline.views_default.inc:104
+msgid "Reiniciar"
+msgstr ""
+
+#: ag_section_user_timeline.views_default.inc:105
+msgid "Ordenar por"
+msgstr ""
+
+#: ag_section_user_timeline.views_default.inc:106
+msgid "Asc"
+msgstr ""
+
+#: ag_section_user_timeline.views_default.inc:107
+msgid "Desc"
+msgstr ""
+
+#: ag_section_user_timeline.views_default.inc:108
+msgid "Elementos por página"
+msgstr ""
+
+#: ag_section_user_timeline.views_default.inc:109
+msgid "- Todos -"
+msgstr ""
+
+#: ag_section_user_timeline.views_default.inc:110
+msgid "Desplazamiento"
+msgstr ""
+
+#: ag_section_user_timeline.views_default.inc:111
+msgid "« primera"
+msgstr ""
+
+#: ag_section_user_timeline.views_default.inc:112
+msgid "‹ anterior"
+msgstr ""
+
+#: ag_section_user_timeline.views_default.inc:113
+msgid "siguiente ›"
+msgstr ""
+
+#: ag_section_user_timeline.views_default.inc:114
+msgid "última »"
+msgstr ""
+
+#: ag_section_user_timeline.views_default.inc:115
+msgid "There isn't new content in your timeline"
+msgstr ""
+
+#: ag_section_user_timeline.views_default.inc:116
+msgid "ID del nodo"
+msgstr ""
+
+#: ag_section_user_timeline.views_default.inc:117
+msgid "."
+msgstr ""
+
+#: ag_section_user_timeline.views_default.inc:118
+msgid ","
+msgstr ""
+
+#: ag_section_user_timeline.views_default.inc:119
+msgid "Todo(s)"
+msgstr ""
+
+#: ag_section_user_timeline.views_default.inc:120
+msgid "Timeline content pane"
+msgstr ""
+
+#: ag_section_user_timeline.views_default.inc:121
+msgid "Vista panel"
+msgstr ""
+
+#: ag_section_user_timeline.info:0
+msgid "ag_section_user_timeline"
+msgstr ""
+
+#: ag_section_user_timeline.info:0
+msgid "Feature for section user timeline"
+msgstr ""
+
+#: ag_section_user_timeline.info:0
+msgid "Agrega2"
+msgstr ""
+

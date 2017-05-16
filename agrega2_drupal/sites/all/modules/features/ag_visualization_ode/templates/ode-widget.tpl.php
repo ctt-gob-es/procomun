@@ -1,0 +1,2 @@
+<div class="agrega2-ode-viewer" data-ode="<?php print $ode_id; ?>"></div>
+<script>!function(d,s,id){var js, fjs=d.getElementsByTagName(s)[0], p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'<?php print $ode_widget_js; ?>';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'ode-widget');</script>

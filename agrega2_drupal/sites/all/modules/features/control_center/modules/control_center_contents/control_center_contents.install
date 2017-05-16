@@ -1,0 +1,113 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the control center contents module.
+ */
+
+/**
+ * Implements hook_update_N().
+ * Update content published or not on Solr.
+ */
+function control_center_contents_update_7015(&$sandbox) {
+  // Prepare all variables in first iteration.
+  if (!isset($sandbox['total'])) {
+    // Prepare array from solr.
+    control_center_contents_prepare_batch_solr_content($sandbox);
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = control_center_contents_get_total($sandbox);
+  }
+
+  // Get batch, or number of entities to process each time.
+  $nodes_per_pass = 10;
+  $end = $sandbox['current'] + $nodes_per_pass;
+
+  while ($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    // Heavy operations.
+    $element = control_center_contents_get_element($sandbox);
+    control_center_contents_update_content($sandbox, $element);
+
+    // Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1, meaning we are done.
+  // Also, avoid division by zero.
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @records records. Finished.', array('@records' => $sandbox['total'])));
+  }
+}
+
+/**
+ * Function to get content on solr.
+ */
+function control_center_contents_prepare_batch_solr_content(&$sandbox) {
+  $orchestrator = new OS_orchestrator_selection();
+  $params = array(
+    'q' => '*:*',
+    'rows' => 100000,
+    'fields' => array('id', 'idDrupal', 'published'),
+    'fq' => 'type:POST or type:QUESTION or type:DISCUSSION',
+  );
+
+  $response = $orchestrator->multipleSelectionOdeFields($params);
+
+  if (!empty($response[1])) {
+    $sandbox['elements'] = $response[1];
+  }
+}
+
+/**
+ * Return number of operations that will be done.
+ */
+function control_center_contents_get_total($sandbox) {
+  return isset($sandbox['elements']) ? count($sandbox['elements']) : 0;
+}
+
+/**
+ * Gets element with sandbox data.
+ */
+function control_center_contents_get_element($sandbox) {
+  $position = isset($sandbox['current']) ? $sandbox['current'] : 0;
+  return !empty($sandbox['elements']) ? $sandbox['elements'][$position] : array();
+}
+
+/**
+ * Function for check current status on Drupal content and update solr according to it.
+ */
+function control_center_contents_update_content(&$sandbox, $element) {
+  if (!empty($element)) {
+    $operation = FALSE;
+
+    // Get current status based on drupal node.
+    $query = db_select('node', 'n')
+      ->fields('n', array('status'))
+      ->condition('n.nid', $element['idDrupal'], '=');
+
+    $result = $query->execute()->fetchAssoc();
+
+    if (!empty($result) && (isset($result['status']) && !empty($result['status']))) {
+      // Node is on Drupal, let's check for published status.
+      if ($result['status'] != $element['published']) {
+        $operation = ($result['status'] == NODE_PUBLISHED) ? 'PublishDocument' : 'UnpublishDocument';
+      }
+    }
+    else {
+      // Node is not on Drupal. So we need to Unpublish it on Solr.
+      $operation = 'UnpublishDocument';
+    }
+
+    if ($operation) {
+      $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+      $OS_orchestrator_inyection->$operation($element['id']);
+    }
+  }
+}

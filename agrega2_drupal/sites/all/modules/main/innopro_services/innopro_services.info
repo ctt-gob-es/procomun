@@ -1,0 +1,6 @@
+name = Innopro services
+description = Module for the implementation of external services 
+core = 7.x
+package = Agrega2
+dependencies[] = services
+dependencies[] = orchestrator_services

@@ -1,0 +1,70 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_comments.admin.inc: n/a
+#  ag_comments.module: n/a
+#  ag_comments.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2014-08-14 11:22+0200\n"
+"PO-Revision-Date: 2014-08-14 11:22+0200\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: ag_comments.admin.inc:10
+msgid "Select the content types that will be allowed to be commented with Agrega2 custom comments"
+msgstr ""
+
+#: ag_comments.admin.inc:24
+msgid "Select the view modes where the custom comment link will be showed"
+msgstr "Selecciona los view mode donde se mostrara el enlace customizado para los comentarios"
+
+#: ag_comments.module:104
+msgid "To comment"
+msgstr "Comentar"
+
+#: ag_comments.module:107
+msgid "Add a new comment to this page."
+msgstr "Añadir un comentario nuevo a esta página."
+
+#: ag_comments.module:169
+msgid "Clik for more"
+msgstr "Pulsa para ver más"
+
+#: ag_comments.module:186
+msgid "@time_ago ago"
+msgstr "hace @time_ago"
+
+#: ag_comments.module:11
+msgid "Add new comment"
+msgstr "Añadir nuevo comentario"
+
+#: ag_comments.module:18
+msgid "Ag comments"
+msgstr "Ag comentarios"
+
+#: ag_comments.module:19
+msgid "Config Agrega2 comments"
+msgstr "Configuración de los comentarios Agrega2"
+
+#: ag_comments.info:0
+msgid "Agrega2 comments"
+msgstr "Comentarios Agrega2"
+
+#: ag_comments.info:0
+msgid "Module for customize comments in Agrega2 project"
+msgstr "Módulo para personalizar los comentarios en el proyecto Agrega2"
+
+#: ag_comments.info:0
+msgid "Emergya"
+msgstr "Emergya"
+

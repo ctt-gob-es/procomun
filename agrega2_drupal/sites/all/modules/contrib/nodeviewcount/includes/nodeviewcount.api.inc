@@ -1,0 +1,82 @@
+<?php
+
+/**
+ * Insert node view.
+ *
+ * @param int $nid
+ *   The viewed node.
+ * @param int $uid
+ *   The user who viewed node.
+ *
+ * @return bool|int
+ *   Count written records or FALSE.
+ */
+function nodeviewcount_insert_node_view($nid, $uid) {
+  $node_view = nodeviewcount_db_insert_node_view($nid, $uid);
+  return $node_view;
+}
+
+/**
+ * Check node on content type for node view count.
+ *
+ * @param object $node
+ *   The node for checking.
+ *
+ * @return bool
+ *   TRUE if the node content type checked for count views, otherwise FALSE.
+ */
+function nodeviewcount_is_node_count($node) {
+  $node_types = variable_get('nodeviewcount_node_types');
+  foreach ($node_types as $value) {
+    if ($value === $node->type) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * Check user on user roles for node view count.
+ *
+ * @param object $user
+ *   The user for checking.
+ *
+ * @return bool
+ *   TRUE if the user role checked for count views, otherwise FALSE.
+ */
+function nodeviewcount_is_user_count($user) {
+  $nodeviewcount_user_roles = variable_get('nodeviewcount_user_roles');
+  $user_roles_ids = array_keys($user->roles);
+  foreach ($user_roles_ids as $role_id) {
+    if (!empty($nodeviewcount_user_roles[$role_id])) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * Count node views.
+ *
+ * @param object $node
+ *   Chosen node for counting.
+ * @param object|NULL $user
+ *   Chosen user for counting.
+ * @param bool $distinct_users
+ *   Distinct user or not.
+ *
+ * @return int
+ *   Count of node views.
+ */
+function nodeviewcountcount_count_node_views($node, $user = NULL, $distinct_users = FALSE) {
+  $is_node_count = nodeviewcount_is_node_count($node);
+  if (!$is_node_count) {
+    return FALSE;
+  }
+  $is_user_count = nodeviewcount_is_user_count($user);
+  if (!is_null($user) && !$is_user_count) {
+    return FALSE;
+  }
+  $node_view_count = nodeviewcount_db_count_node_views($node, $user, $distinct_users);
+  return $node_view_count;
+}

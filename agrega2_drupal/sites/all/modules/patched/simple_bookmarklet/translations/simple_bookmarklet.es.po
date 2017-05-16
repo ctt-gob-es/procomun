@@ -1,0 +1,113 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  simple_bookmarklet.module: n/a
+#  simple_bookmarklet.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2015-11-12 13:47+0100\n"
+"PO-Revision-Date: 2015-11-12 13:47+0100\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: simple_bookmarklet.module:62
+msgid "URL of the page"
+msgstr ""
+
+#: simple_bookmarklet.module:63
+msgid "Page title"
+msgstr ""
+
+#: simple_bookmarklet.module:64
+msgid "Text selected by the user"
+msgstr ""
+
+#: simple_bookmarklet.module:131;149
+msgid "Title"
+msgstr "Título"
+
+#: simple_bookmarklet.module:150
+msgid "Title will appear on the bookmarklet window."
+msgstr ""
+
+#: simple_bookmarklet.module:155
+msgid "Stylesheet"
+msgstr ""
+
+#: simple_bookmarklet.module:156
+msgid "An additional stylesheet file to be applied to the\n                         bookmarklet container. Relative paths will be\n                         translated into absolute ones based on this host."
+msgstr ""
+
+#: simple_bookmarklet.module:163
+msgid "JavaScript"
+msgstr ""
+
+#: simple_bookmarklet.module:164
+msgid "An additional JavaScript file to be applied to the\n                         bookmarklet container. Relative paths will be\n                         translated into absolute ones based on this host."
+msgstr ""
+
+#: simple_bookmarklet.module:171
+msgid "Content type"
+msgstr "Tipo de contenido"
+
+#: simple_bookmarklet.module:172
+msgid "Which content types can be created by this bookmarklet.\n                         Press <em>Submit</em> button after setting this field\n                         in order to update the options below."
+msgstr ""
+
+#: simple_bookmarklet.module:189
+msgid "Exclude fields"
+msgstr ""
+
+#: simple_bookmarklet.module:190
+msgid "Which fields from the chosen content type should\n                         <b>not</b> be displayed in the bookmarklet form."
+msgstr ""
+
+#: simple_bookmarklet.module:201
+msgid "Pre-populate %field with..."
+msgstr ""
+
+#: simple_bookmarklet.module:204
+msgid "None"
+msgstr "Ninguno"
+
+#: simple_bookmarklet.module:210
+msgid "Share on Procomun"
+msgstr "Compartir en Procomún"
+
+#: simple_bookmarklet.module:216
+msgid "Force HTTPS"
+msgstr ""
+
+#: simple_bookmarklet.module:218
+msgid "Check this option to always load bookmarklet as HTTPS.\n                         If not checked (the default), it will be loaded as\n                         HTTPS only if the visited page is under HTTPS."
+msgstr ""
+
+#: simple_bookmarklet.module:413
+msgid "<a href=\"!url\" target=\"_blank\">Content</a> created successfully."
+msgstr "<a href=\"!url\" target=\"_blank\">Contenido</a> creado correctamente."
+
+#: simple_bookmarklet.module:29;36
+msgid "Bookmarklet"
+msgstr ""
+
+#: simple_bookmarklet.module:30
+msgid "Administer bookmarklet settings."
+msgstr ""
+
+#: simple_bookmarklet.module:42 simple_bookmarklet.info:0;0
+msgid "Simple Bookmarklet"
+msgstr ""
+
+#: simple_bookmarklet.info:0
+msgid "A simple bookmarklet module."
+msgstr ""
+

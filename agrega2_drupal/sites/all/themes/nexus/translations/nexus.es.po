@@ -1,0 +1,727 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  template.php: n/a
+#  template.preprocess.sarnia-view.php: n/a
+#  templates/nodes/node--ode--listing.tpl.php: n/a
+#  theme-settings.php: n/a
+#  nexus.info: n/a
+#  js/custom.js: n/a
+#  templates/nodes/node--social-network--teaser.tpl.php: n/a
+#  js/chosen/chosen.jquery.min.js: n/a
+#  js/chosen/chosen.js: n/a
+#  plugins/layouts/ag-3-9/ag-3-9.inc: n/a
+#  plugins/layouts/ag-3up-6-3/ag-3up-6-3.inc: n/a
+#  plugins/layouts/ag-9-3/ag-9-3.inc: n/a
+#  plugins/styles/region_tabs/region_tabs.inc: n/a
+#  templates/ag-section-profile-users-mi-cuenta.tpl.php: n/a
+#  templates/htmlmail--simplenews.tpl.php: n/a
+#  templates/maintenance-page.tpl.php: n/a
+#  templates/pages/page--admin--control-center.tpl.php: n/a
+#  templates/pages/page--node--66.tpl.php: n/a
+#  templates/pages/page--node--67.tpl.php: n/a
+#  templates/pages/page--ode-search.tpl.php: n/a
+#  templates/pages/page.tpl.php: n/a
+#  templates/simplenews-newsletter-body.tpl.php: n/a
+#  templates/nodes/node--debate--newsletter.tpl.php: n/a
+#  templates/nodes/node--event--newsletter.tpl.php: n/a
+#  templates/nodes/node--external-content--newsletter.tpl.php: n/a
+#  templates/nodes/node--ode--newsletter.tpl.php: n/a
+#  templates/nodes/node--podcast--newsletter.tpl.php: n/a
+#  templates/nodes/node--poll--newsletter.tpl.php: n/a
+#  templates/nodes/node--post--newsletter.tpl.php: n/a
+#  templates/nodes/node--question--newsletter.tpl.php: n/a
+#  templates/nodes/node--recurso-de-aprendizaje--newsletter.tpl.php: n/a
+#  templates/nodes/node--webinar--newsletter.tpl.php: n/a
+#  templates/comments/comment-wrapper--node-debate.tpl.php: n/a
+#  templates/comments/comment-wrapper.tpl.php: n/a
+#  templates/nodes/node--recurso-de-aprendizaje--full.tpl.php: n/a
+#  templates/nodes/node--answer.tpl.php: n/a
+#  templates/nodes/node--debate--full.tpl.php: n/a
+#  templates/nodes/node--debate.tpl.php: n/a
+#  templates/nodes/node--question.tpl.php: n/a
+#  templates/nodes/node--debate--activities.tpl.php: n/a
+#  templates/nodes/node--event--activities.tpl.php: n/a
+#  templates/nodes/node--external-content--activities.tpl.php: n/a
+#  templates/nodes/node--ode--activities.tpl.php: n/a
+#  templates/nodes/node--podcast--full.tpl.php: n/a
+#  templates/nodes/node--poll--activities.tpl.php: n/a
+#  templates/nodes/node--post--activities.tpl.php: n/a
+#  templates/nodes/node--post--full.tpl.php: n/a
+#  templates/nodes/node--question--activities.tpl.php: n/a
+#  templates/nodes/node--question--full.tpl.php: n/a
+#  templates/nodes/node--webinar--full.tpl.php: n/a
+#  templates/views/search/sarnia-view-learning-resource.tpl.php: n/a
+#  templates/nodes/node--external-content--full.tpl.php: n/a
+#  templates/nodes/node--debate--lasts.tpl.php: n/a
+#  templates/nodes/node--question--lasts.tpl.php: n/a
+#  templates/nodes/node--debate--teaser.tpl.php: n/a
+#  templates/nodes/node--event--teaser.tpl.php: n/a
+#  templates/nodes/node--ode--teaser.tpl.php: n/a
+#  templates/nodes/node--podcast--teaser.tpl.php: n/a
+#  templates/nodes/node--post--teaser.tpl.php: n/a
+#  templates/nodes/node--webinar--teaser.tpl.php: n/a
+#  templates/nodes/node--event--full.tpl.php: n/a
+#  templates/nodes/node.tpl.php: n/a
+#  templates/nodes/node--itinerary--full.tpl.php: n/a
+#  templates/nodes/node--recurso-de-aprendizaje--activities.tpl.php: n/a
+#  templates/nodes/node--recurso-de-aprendizaje--teaser.tpl.php: n/a
+#  templates/views/views-view-accordion--faq.tpl.php: n/a
+#  templates/poll/poll-results.tpl.php: n/a
+#  templates/users/user-profile.tpl.php: n/a
+#  templates/views/views-view--ag2-og-members-list--panel-pane.tpl.php: n/a
+#  templates/views/views-view--ag2-og-polls-list--panel-pane.tpl.php: n/a
+#  templates/views/views-view--agrega2-events--panel-pane.tpl.php: n/a
+#  templates/views/views-view--community-wall-faceted-search.tpl.php: n/a
+#  templates/views/views-view--my-favourites--panel-pane.tpl.php: n/a
+#  templates/views/views-view--my-learning-paths--panel-pane.tpl.php: n/a
+#  templates/views/views-view--ode-search--page.tpl.php: n/a
+#  templates/views/views-view--user-timeline--panel-pane.tpl.php: n/a
+#  templates/views/search/sarnia-view-community.tpl.php: n/a
+#  templates/views/search/sarnia-view-discussion.tpl.php: n/a
+#  templates/views/search/sarnia-view-event.tpl.php: n/a
+#  templates/views/search/sarnia-view-ode.tpl.php: n/a
+#  templates/views/search/sarnia-view-podcast.tpl.php: n/a
+#  templates/views/search/sarnia-view-poll.tpl.php: n/a
+#  templates/views/search/sarnia-view-post.tpl.php: n/a
+#  templates/views/search/sarnia-view-webinar.tpl.php: n/a
+#  templates/views/search/sarnia-view-learning-path.tpl.php: n/a
+#  templates/views/search/sarnia-view-response.tpl.php: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2017-03-14 10:44+0100\n"
+"PO-Revision-Date: 2017-03-14 10:44+0100\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: template.php:41
+msgid "You are here"
+msgstr "Se encuentra usted aquí"
+
+#: template.php:161
+msgid "Main menu"
+msgstr "Menú principal"
+
+#: template.php:177
+msgid "Secondary menu"
+msgstr "Menú secundario"
+
+#: template.php:262;265
+msgid "Request a new community"
+msgstr "Solicitar alta de nueva comunidad"
+
+#: template.php:270;273
+msgid "Create learning resource"
+msgstr "Crear recurso de aprendizaje"
+
+#: template.php:278;281
+msgid "Create post"
+msgstr "Crear artículo"
+
+#: template.php:287;290
+msgid "Create question"
+msgstr "Crear pregunta"
+
+#: template.php:296;299;1511;1514
+msgid "Create learning path"
+msgstr "Crear itinerario de aprendizaje"
+
+#: template.php:305;308
+msgid "Create podcast"
+msgstr "Crear podcast"
+
+#: template.php:313;316
+msgid "Subscribe to RSS"
+msgstr "Suscribirse al RSS"
+
+#: template.php:323;326
+msgid "Create webinar"
+msgstr "Crear webinar"
+
+#: template.php:371
+msgid "Notifications"
+msgstr "Notificaciones"
+
+#: template.php:371
+msgid "new entries"
+msgstr "nuevas"
+
+#: template.php:375
+msgid "Blocked users"
+msgstr "Usuarios bloqueados"
+
+#: template.php:382
+msgid "Messages"
+msgstr "Mensajes"
+
+#: template.php:382
+msgid "new"
+msgstr "nuevo"
+
+#: template.php:392
+msgid "View"
+msgstr "Vista"
+
+#: template.php:394
+msgid "View profile"
+msgstr "Ver perfil"
+
+#: template.php:428
+msgid "Primary tabs"
+msgstr "Solapas principales"
+
+#: template.php:434
+msgid "Secondary tabs"
+msgstr "Solapas secundarias"
+
+#: template.php:436;730
+msgid "My account"
+msgstr "Mi cuenta"
+
+#: template.php:457
+msgid "(active tab)"
+msgstr "(solapa activa)"
+
+#: template.php:465
+msgid "!local-task-title!active"
+msgstr "!local-task-title!active"
+
+#: template.php:537
+msgid "!datetime"
+msgstr ""
+
+#: template.php:555
+msgid "Make a comment"
+msgstr "Comentar"
+
+#: template.php:575;581;858
+msgid "Edit"
+msgstr "Editar"
+
+#: template.php:592
+msgid "Clone"
+msgstr "Clonar"
+
+#: template.php:600
+msgid "Clone learning path"
+msgstr "Clonar itinerario de aprendizaje"
+
+#: template.php:750
+msgid "@user_name's image"
+msgstr "Imagen de @user_name"
+
+#: template.php:751
+msgid "@user_name"
+msgstr ""
+
+#: template.php:760
+msgid "@used_labels:"
+msgstr ""
+
+#: template.php:760
+msgid "Most used labels"
+msgstr "Etiquetas más usadas"
+
+#: template.php:767
+msgid "Follow me:"
+msgstr "Sígueme en:"
+
+#: template.php:847
+msgid "Organization"
+msgstr "Organización"
+
+#: template.php:847
+msgid "My organization"
+msgstr "Mi organización"
+
+#: template.php:860
+msgid "Edit profile"
+msgstr "Editar perfil"
+
+#: template.php:996;1000
+msgid "Welcome"
+msgstr "Bienvenidos"
+
+#: template.php:1058;1060;1071;1073
+msgid "View more"
+msgstr "Ver más"
+
+#: template.php:1352
+msgid "View user profile"
+msgstr ""
+
+#: template.php:1469
+msgid "!facetapi_deactivate_widget !facetapi_accessible_markup"
+msgstr ""
+
+#: template.php:1490
+msgid "Questions and discussions"
+msgstr "Preguntas y debates"
+
+#: template.preprocess.sarnia-view.php:212;294
+msgid "default image"
+msgstr "Imagen por defecto"
+
+#: template.preprocess.sarnia-view.php:222;222
+msgid "Quality accredited by INTEF"
+msgstr "Calidad acreditada por INTEF"
+
+#: template.preprocess.sarnia-view.php:304;422;459;512;567 templates/nodes/node--ode--listing.tpl.php:82
+msgid "Untitled"
+msgstr "Sin título"
+
+#: template.preprocess.sarnia-view.php:419;456;509;564
+msgid "Read more"
+msgstr "Leer más"
+
+#: theme-settings.php:14
+msgid "Nexus Settings"
+msgstr "Configuración Nexus"
+
+#: theme-settings.php:20
+msgid "Show breadcrumbs in a page"
+msgstr "Mostrar migas de pan en una página"
+
+#: theme-settings.php:22
+msgid "Check this option to show breadcrumbs in page. Uncheck to hide."
+msgstr ""
+"Marca esta opción para mostrar las migas de pan en una página. "
+"Desmarcar para ocultar"
+
+#: theme-settings.php:26
+msgid "Show Developer button grid"
+msgstr "Mostrar el botón panel de desarrollador"
+
+#: theme-settings.php:28
+msgid "Check this option to show Button to Show Grid columns. Uncheck to hide."
+msgstr ""
+"Marca esta opción para mostrar el botón de de mostrar el panel de "
+"columnas"
+
+#: theme-settings.php:33
+msgid "Exclude CSS files"
+msgstr "Excluye ficheros CSS"
+
+#: theme-settings.php:34
+msgid "Enter one file per line."
+msgstr "Introduce un fichero por línea"
+
+#: nexus.info:0
+msgid "Nexus Theme"
+msgstr ""
+
+#: nexus.info:0
+msgid "Custom Nexus Theme - Drupal 7 theme. Developed by Emergya."
+msgstr ""
+
+#: nexus.info:0
+msgid "User Bar"
+msgstr "Barra de usuario"
+
+#: nexus.info:0
+msgid "Top Bar"
+msgstr "Barra superior"
+
+#: nexus.info:0
+msgid "Info Bar"
+msgstr "Barra de información"
+
+#: nexus.info:0
+msgid "Nav"
+msgstr ""
+
+#: nexus.info:0
+msgid "Preface"
+msgstr "Prefacio"
+
+#: nexus.info:0
+msgid "Header"
+msgstr "Encabezado"
+
+#: nexus.info:0
+msgid "First Sidebar"
+msgstr "Primera barra lateral"
+
+#: nexus.info:0
+msgid "Second Sidebar"
+msgstr "Segunda barra lateral"
+
+#: nexus.info:0
+msgid "Content Top"
+msgstr "Contenido superior"
+
+#: nexus.info:0
+msgid "Help"
+msgstr "Ayuda"
+
+#: nexus.info:0
+msgid "Content"
+msgstr "Contenido"
+
+#: nexus.info:0
+msgid "Content Bottom"
+msgstr ""
+
+#: nexus.info:0
+msgid "Footer"
+msgstr "Pie de página"
+
+#: js/custom.js:0
+msgid "Search..."
+msgstr "Buscar..."
+
+#: js/custom.js:0
+msgid "USER"
+msgstr "USUARIO"
+
+#: js/custom.js:0
+msgid "PASSWORD"
+msgstr "CLAVE"
+
+#: js/custom.js:0
+msgid "Show Summary"
+msgstr "Mostrar resumen"
+
+#: js/custom.js:0
+msgid "Hide Summary"
+msgstr "Ocultar resumen"
+
+#: js/custom.js:0;0
+msgid "Question"
+msgstr "Pregunta"
+
+#: js/custom.js:0;0
+msgid "Debate"
+msgstr "Debate"
+
+#: js/custom.js:0
+msgid "Usuario"
+msgstr ""
+
+#: js/custom.js:0 templates/nodes/node--social-network--teaser.tpl.php:25
+msgid "Community"
+msgstr "Comunidad"
+
+#: js/custom.js:0
+msgid "Event"
+msgstr "Evento"
+
+#: js/custom.js:0
+msgid "ODE"
+msgstr ""
+
+#: js/custom.js:0
+msgid "Post"
+msgstr "Artículo"
+
+#: js/custom.js:0
+msgid "Respuesta"
+msgstr ""
+
+#: js/custom.js:0
+msgid "Delete Message"
+msgstr ""
+
+#: js/custom.js:0
+msgid "%"
+msgstr "%"
+
+#: js/custom.js:0
+msgid "Easy to find this resource"
+msgstr "Facilidad para encontrar este recurso"
+
+#: js/custom.js:0
+msgid "The progress bar completes as the fields are populated, thus increasing the chances of this resource appear in the search results"
+msgstr ""
+"La barra de progreso se completa a medida que los campos se van "
+"rellenando, aumentando así las posibilidades de que este recurso "
+"aparezca en los resultados de búsqueda"
+
+#: js/custom.js:0
+msgid "Save"
+msgstr "Guardar"
+
+#: js/custom.js:0
+msgid "Really you don't want to add content before creating the newsletter"
+msgstr "Realmente no quieres añadir contenido antes de crear el boletín"
+
+#: js/chosen/chosen.jquery.min.js:0 js/chosen/chosen.js:0
+msgid "Select Some Options"
+msgstr "Elija una opción"
+
+#: js/chosen/chosen.jquery.min.js:0 js/chosen/chosen.js:0
+msgid "Select an Option"
+msgstr ""
+
+#: js/chosen/chosen.jquery.min.js:0 js/chosen/chosen.js:0
+msgid "No results match"
+msgstr ""
+
+#: plugins/layouts/ag-3-9/ag-3-9.inc:3
+msgid "AG Custom 3-9"
+msgstr ""
+
+#: plugins/layouts/ag-3-9/ag-3-9.inc:4 plugins/layouts/ag-3up-6-3/ag-3up-6-3.inc:4 plugins/layouts/ag-9-3/ag-9-3.inc:4
+msgid "AG - Custom"
+msgstr ""
+
+#: plugins/layouts/ag-3-9/ag-3-9.inc:10 plugins/layouts/ag-3up-6-3/ag-3up-6-3.inc:10 plugins/layouts/ag-9-3/ag-9-3.inc:10
+msgid "Left side"
+msgstr "Lado izquierdo"
+
+#: plugins/layouts/ag-3-9/ag-3-9.inc:11 plugins/layouts/ag-3up-6-3/ag-3up-6-3.inc:12 plugins/layouts/ag-9-3/ag-9-3.inc:11
+msgid "Right side"
+msgstr "Lado derecho"
+
+#: plugins/layouts/ag-3up-6-3/ag-3up-6-3.inc:3
+msgid "AG - Custom 3up-6-3"
+msgstr ""
+
+#: plugins/layouts/ag-3up-6-3/ag-3up-6-3.inc:11
+msgid "Middle column"
+msgstr "Columna central"
+
+#: plugins/layouts/ag-9-3/ag-9-3.inc:3
+msgid "AG - Custom 9-3"
+msgstr ""
+
+#: plugins/styles/region_tabs/region_tabs.inc:7
+msgid "As tabs"
+msgstr ""
+
+#: plugins/styles/region_tabs/region_tabs.inc:8
+msgid "Renderiza una región como tabs"
+msgstr ""
+
+#: plugins/styles/region_tabs/region_tabs.inc:53
+msgid "Untitled tab"
+msgstr "Pestaña sin título"
+
+#: templates/ag-section-profile-users-mi-cuenta.tpl.php:2
+msgid "My profile"
+msgstr "Mi perfil"
+
+#: templates/htmlmail--simplenews.tpl.php:65
+msgid "Click here to view this message on the web."
+msgstr "Pulse aquí para ver este mensaje en el portal."
+
+#: templates/maintenance-page.tpl.php:54 templates/pages/page--admin--control-center.tpl.php:32 templates/pages/page--node--66.tpl.php:32 templates/pages/page--node--67.tpl.php:32 templates/pages/page--ode-search.tpl.php:32 templates/pages/page.tpl.php:33
+msgid "Home"
+msgstr "Inicio"
+
+#: templates/simplenews-newsletter-body.tpl.php:46 templates/nodes/node--debate--newsletter.tpl.php:92 templates/nodes/node--event--newsletter.tpl.php:92 templates/nodes/node--external-content--newsletter.tpl.php:13 templates/nodes/node--ode--newsletter.tpl.php:16 templates/nodes/node--podcast--newsletter.tpl.php:16 templates/nodes/node--poll--newsletter.tpl.php:92 templates/nodes/node--post--newsletter.tpl.php:16 templates/nodes/node--question--newsletter.tpl.php:92 templates/nodes/node--recurso-de-aprendizaje--newsletter.tpl.php:13 templates/nodes/node--webinar--newsletter.tpl.php:16
+msgid "@type"
+msgstr ""
+
+#: templates/comments/comment-wrapper--node-debate.tpl.php:41 templates/comments/comment-wrapper.tpl.php:41 templates/nodes/node--recurso-de-aprendizaje--full.tpl.php:108
+msgid "Comments"
+msgstr "Comentarios"
+
+#: templates/comments/comment-wrapper--node-debate.tpl.php:48 templates/comments/comment-wrapper.tpl.php:48
+msgid "Add new comment"
+msgstr "Añadir nuevo comentario"
+
+#: templates/nodes/node--answer.tpl.php:88 templates/nodes/node--debate--full.tpl.php:8 templates/nodes/node--debate.tpl.php:95
+msgid "Asked by"
+msgstr "Preguntado por"
+
+#: templates/nodes/node--answer.tpl.php:93 templates/nodes/node--debate--full.tpl.php:13 templates/nodes/node--debate.tpl.php:100 templates/nodes/node--question.tpl.php:100
+msgid "@time_ago ago"
+msgstr "Hace @time_ago"
+
+#: templates/nodes/node--debate--activities.tpl.php:21 templates/nodes/node--event--activities.tpl.php:20 templates/nodes/node--external-content--activities.tpl.php:21 templates/nodes/node--ode--activities.tpl.php:23 templates/nodes/node--podcast--full.tpl.php:10 templates/nodes/node--poll--activities.tpl.php:20 templates/nodes/node--post--activities.tpl.php:21 templates/nodes/node--post--full.tpl.php:10 templates/nodes/node--question--activities.tpl.php:21 templates/nodes/node--question--full.tpl.php:10 templates/nodes/node--webinar--full.tpl.php:10 templates/views/search/sarnia-view-learning-resource.tpl.php:23
+msgid "Published by"
+msgstr "Publicado por"
+
+#: templates/nodes/node--debate--activities.tpl.php:25 templates/nodes/node--event--activities.tpl.php:24 templates/nodes/node--external-content--activities.tpl.php:25 templates/nodes/node--ode--activities.tpl.php:27 templates/nodes/node--poll--activities.tpl.php:24 templates/nodes/node--post--activities.tpl.php:25 templates/nodes/node--question--activities.tpl.php:25
+msgid "In groups"
+msgstr "En los grupos"
+
+#: templates/nodes/node--debate--full.tpl.php:18 templates/nodes/node--debate.tpl.php:106 templates/nodes/node--external-content--full.tpl.php:16 templates/nodes/node--post--full.tpl.php:20 templates/nodes/node--question--full.tpl.php:20 templates/nodes/node--question.tpl.php:105
+msgid "in"
+msgstr "en"
+
+#: templates/nodes/node--debate--full.tpl.php:26 templates/nodes/node--podcast--full.tpl.php:27 templates/nodes/node--post--full.tpl.php:40 templates/nodes/node--webinar--full.tpl.php:27
+msgid "response"
+msgid_plural "responses"
+msgstr[0] "respuesta"
+msgstr[1] "respuestas"
+
+#: templates/nodes/node--debate--lasts.tpl.php:95 templates/nodes/node--question--lasts.tpl.php:94
+msgid "By !name | @created"
+msgstr "Por !name | @created"
+
+#: templates/nodes/node--debate--teaser.tpl.php:149 templates/nodes/node--event--teaser.tpl.php:53 templates/nodes/node--ode--teaser.tpl.php:86 templates/nodes/node--podcast--teaser.tpl.php:70 templates/nodes/node--post--teaser.tpl.php:70 templates/nodes/node--webinar--teaser.tpl.php:70
+msgid "See more comments"
+msgstr "Ver más comentarios"
+
+#: templates/nodes/node--event--full.tpl.php:95 templates/nodes/node.tpl.php:95
+msgid "Posted on:"
+msgstr "Publicado en"
+
+#: templates/nodes/node--event--full.tpl.php:99 templates/nodes/node.tpl.php:99
+msgid "By:"
+msgstr "Por:"
+
+#: templates/nodes/node--external-content--full.tpl.php:8
+msgid "Published by "
+msgstr "Publicado por "
+
+#: templates/nodes/node--external-content--full.tpl.php:23 templates/nodes/node--itinerary--full.tpl.php:34 templates/nodes/node--podcast--full.tpl.php:20 templates/nodes/node--post--full.tpl.php:27 templates/nodes/node--webinar--full.tpl.php:20
+msgid "In the groups"
+msgstr "En los grupos"
+
+#: templates/nodes/node--external-content--newsletter.tpl.php:13 templates/nodes/node--recurso-de-aprendizaje--activities.tpl.php:22 templates/nodes/node--recurso-de-aprendizaje--newsletter.tpl.php:13 templates/nodes/node--recurso-de-aprendizaje--teaser.tpl.php:22 templates/nodes/node--social-network--teaser.tpl.php:26
+msgid "@published by:"
+msgstr "@published por:"
+
+#: templates/nodes/node--external-content--newsletter.tpl.php:13 templates/nodes/node--recurso-de-aprendizaje--activities.tpl.php:22 templates/nodes/node--recurso-de-aprendizaje--newsletter.tpl.php:13 templates/nodes/node--recurso-de-aprendizaje--teaser.tpl.php:22
+msgid "published"
+msgstr "publicado"
+
+#: templates/nodes/node--external-content--newsletter.tpl.php:13 templates/nodes/node--recurso-de-aprendizaje--activities.tpl.php:28 templates/nodes/node--recurso-de-aprendizaje--newsletter.tpl.php:13 templates/nodes/node--recurso-de-aprendizaje--teaser.tpl.php:28
+msgid "@Posted"
+msgstr ""
+
+#: templates/nodes/node--external-content--newsletter.tpl.php:13 templates/nodes/node--recurso-de-aprendizaje--activities.tpl.php:28 templates/nodes/node--recurso-de-aprendizaje--newsletter.tpl.php:13 templates/nodes/node--recurso-de-aprendizaje--teaser.tpl.php:28
+msgid "Posted"
+msgstr "Publicado"
+
+#: templates/nodes/node--external-content--newsletter.tpl.php:13 templates/nodes/node--recurso-de-aprendizaje--activities.tpl.php:29 templates/nodes/node--recurso-de-aprendizaje--newsletter.tpl.php:13 templates/nodes/node--recurso-de-aprendizaje--teaser.tpl.php:29
+msgid "@time ago"
+msgstr "hace @time"
+
+#: templates/nodes/node--external-content--newsletter.tpl.php:14 templates/nodes/node--recurso-de-aprendizaje--activities.tpl.php:34 templates/nodes/node--recurso-de-aprendizaje--newsletter.tpl.php:14 templates/nodes/node--recurso-de-aprendizaje--teaser.tpl.php:34
+msgid "In"
+msgstr "En"
+
+#: templates/nodes/node--question.tpl.php:95 templates/views/views-view-accordion--faq.tpl.php:33
+msgid "by"
+msgstr "Por"
+
+#: templates/nodes/node--recurso-de-aprendizaje--full.tpl.php:94
+msgid "Shared by"
+msgstr "Compartido por"
+
+#: templates/nodes/node--recurso-de-aprendizaje--full.tpl.php:101
+msgid "Page views"
+msgstr "Visitas"
+
+#: templates/nodes/node--recurso-de-aprendizaje--full.tpl.php:113
+msgid "Rating"
+msgstr "Valoración"
+
+#: templates/nodes/node--social-network--teaser.tpl.php:26
+msgid "created"
+msgstr "creada"
+
+#: templates/pages/page--admin--control-center.tpl.php:188 templates/pages/page--node--66.tpl.php:199 templates/pages/page--node--67.tpl.php:204 templates/pages/page--ode-search.tpl.php:201 templates/pages/page.tpl.php:208
+msgid "Version !version"
+msgstr ""
+
+#: templates/pages/page--node--66.tpl.php:112
+msgid "Page not found"
+msgstr "Página no encontrada"
+
+#: templates/pages/page--node--67.tpl.php:114
+msgid "Access denied"
+msgstr "Acceso denegado"
+
+#: templates/pages/page--ode-search.tpl.php:120 templates/pages/page.tpl.php:127
+msgid "Filter by"
+msgstr "Filtrar por"
+
+#: templates/poll/poll-results.tpl.php:24
+msgid "Votes"
+msgstr "Votos"
+
+#: templates/users/user-profile.tpl.php:59
+msgid "Share public profile"
+msgstr "Compartir perfil público"
+
+#: templates/users/user-profile.tpl.php:70
+msgid "Curriculum Vitae"
+msgstr ""
+
+#: templates/views/views-view--ag2-og-members-list--panel-pane.tpl.php:33 templates/views/views-view--ag2-og-polls-list--panel-pane.tpl.php:33 templates/views/views-view--agrega2-events--panel-pane.tpl.php:33 templates/views/views-view--community-wall-faceted-search.tpl.php:33 templates/views/views-view--my-favourites--panel-pane.tpl.php:33 templates/views/views-view--my-learning-paths--panel-pane.tpl.php:33 templates/views/views-view--ode-search--page.tpl.php:39 templates/views/views-view--user-timeline--panel-pane.tpl.php:33
+msgid "Filters applied"
+msgstr "Filtros aplicados"
+
+#: templates/views/views-view--ode-search--page.tpl.php:36
+msgid "Showing results !first_result_position to !last_result_position from a total of !total_items."
+msgstr ""
+"Mostrando resultados del !first_result_position al "
+"!last_result_position de un total de !total_items."
+
+#: templates/views/views-view--ode-search--page.tpl.php:41
+msgid "Clear all"
+msgstr "Limpiar todo"
+
+#: templates/views/views-view--ode-search--page.tpl.php:75
+msgid "No results found."
+msgstr "No hay resultados."
+
+#: templates/views/views-view-accordion--faq.tpl.php:35;49
+msgid "Answers"
+msgstr "Respuestas"
+
+#: templates/views/views-view-accordion--faq.tpl.php:55
+msgid "Answer"
+msgstr "Respuesta"
+
+#: templates/views/search/sarnia-view-community.tpl.php:21
+msgid "Resources number"
+msgstr "Número de recursos"
+
+#: templates/views/search/sarnia-view-community.tpl.php:26
+msgid "Subscribers number"
+msgstr "Número de suscriptores"
+
+#: templates/views/search/sarnia-view-community.tpl.php:31
+msgid "Community type"
+msgstr "Tipo de comunidad"
+
+#: templates/views/search/sarnia-view-discussion.tpl.php:40 templates/views/search/sarnia-view-event.tpl.php:40 templates/views/search/sarnia-view-learning-resource.tpl.php:82 templates/views/search/sarnia-view-ode.tpl.php:118 templates/views/search/sarnia-view-podcast.tpl.php:70 templates/views/search/sarnia-view-poll.tpl.php:40 templates/views/search/sarnia-view-post.tpl.php:70 templates/views/search/sarnia-view-webinar.tpl.php:70
+msgid "Comment"
+msgstr "Comentario"
+
+#: templates/views/search/sarnia-view-learning-path.tpl.php:32 templates/views/search/sarnia-view-ode.tpl.php:70 templates/views/search/sarnia-view-podcast.tpl.php:36 templates/views/search/sarnia-view-post.tpl.php:36 templates/views/search/sarnia-view-webinar.tpl.php:36
+msgid "Knowledge area"
+msgstr "Área de conocimiento"
+
+#: templates/views/search/sarnia-view-learning-path.tpl.php:44 templates/views/search/sarnia-view-ode.tpl.php:82 templates/views/search/sarnia-view-podcast.tpl.php:48 templates/views/search/sarnia-view-post.tpl.php:48 templates/views/search/sarnia-view-webinar.tpl.php:48
+msgid "Learning context"
+msgstr "Contexto educativo"
+
+#: templates/views/search/sarnia-view-learning-resource.tpl.php:30
+msgid "on"
+msgstr "el"
+
+#: templates/views/search/sarnia-view-learning-resource.tpl.php:57
+msgid "RESOURCE TYPE"
+msgstr "TIPO DE RECURSO"
+
+#: templates/views/search/sarnia-view-learning-resource.tpl.php:64
+msgid "FORMAT"
+msgstr "FORMATO"
+
+#: templates/views/search/sarnia-view-ode.tpl.php:94
+msgid "Resource type"
+msgstr "Tipo de recurso"
+
+#: templates/views/search/sarnia-view-response.tpl.php:16
+msgid "Show response"
+msgstr "Mostrar respuesta"
+
+#: templates/views/search/sarnia-view-response.tpl.php:19
+msgid "Response"
+msgstr ""

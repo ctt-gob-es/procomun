@@ -1,0 +1,215 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  orchestrator_authoring.inc: n/a
+#  orchestrator_inyection.inc: n/a
+#  orchestrator_publisher.inc: n/a
+#  orchestrator_recommender.inc: n/a
+#  orchestrator_selection.inc: n/a
+#  orchestrator_transform.inc: n/a
+#  orchestrator_useradmin.inc: n/a
+#  orchestrator_services.processing.inc: n/a
+#  orchestrator_services.module: n/a
+#  orchestrator_services.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2016-11-10 14:42+0100\n"
+"PO-Revision-Date: 2016-11-10 14:42+0100\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: orchestrator_authoring.inc:39;81;136;156;209;250
+msgid "The parameters were not successfully received"
+msgstr ""
+
+#: orchestrator_authoring.inc:58
+msgid "GetOdeNode not available. Organization as author could not be obtained"
+msgstr ""
+
+#: orchestrator_authoring.inc:95
+msgid "getOdePublicator not available."
+msgstr ""
+
+#: orchestrator_authoring.inc:129
+msgid "Get external publisher not available."
+msgstr ""
+
+#: orchestrator_authoring.inc:169
+msgid "Download ODE formats not available."
+msgstr ""
+
+#: orchestrator_authoring.inc:202
+msgid "Delete ODE not available."
+msgstr ""
+
+#: orchestrator_authoring.inc:243
+msgid "Check delete ODE not available."
+msgstr ""
+
+#: orchestrator_authoring.inc:38;80;135;155;208;249 orchestrator_inyection.inc:1187 orchestrator_publisher.inc:379;384 orchestrator_recommender.inc:40;92 orchestrator_selection.inc:56;59;96;99;136;139;178;217
+msgid "orchestrator_services"
+msgstr ""
+
+#: orchestrator_authoring.inc:38;80;135;155;208;249 orchestrator_recommender.inc:41;93;40;92
+msgid "The parameters are not successfully received"
+msgstr "Los parámetros no se han recibido correctamente"
+
+#: orchestrator_inyection.inc:147;1127 orchestrator_transform.inc:116 orchestrator_useradmin.inc:63;238;361;479;563;617;667;717
+msgid "Fatal error"
+msgstr ""
+
+#: orchestrator_inyection.inc:807;816 orchestrator_services.processing.inc:752;768
+msgid "Untitled"
+msgstr "Sin título"
+
+#: orchestrator_inyection.inc:1192
+msgid "Encountered an error communicating with service. Fields for boosting not received."
+msgstr ""
+
+#: orchestrator_inyection.inc:1187
+msgid "Not found fields"
+msgstr ""
+
+#: orchestrator_publisher.inc:38;67;153;192;220;244;267;291
+msgid "Webservice url not properly configured."
+msgstr ""
+
+#: orchestrator_publisher.inc:329
+msgid "Wrong file format, or file not correctly uploaded."
+msgstr ""
+
+#: orchestrator_publisher.inc:379
+msgid "No mail from author in external ode creation"
+msgstr ""
+
+#: orchestrator_publisher.inc:384
+msgid "No ode parameters in external ode creation"
+msgstr ""
+
+#: orchestrator_recommender.inc:69;71;111;113
+msgid "Sorry, the service isn't available in this moment"
+msgstr "Lo sentimos, el servicio no está disponible en estos momentos"
+
+#: orchestrator_selection.inc:222
+msgid "Encountered an error communicating with service. Unpublished ODEs not received."
+msgstr ""
+
+#: orchestrator_selection.inc:56;136;178
+msgid "Not found ODES"
+msgstr "No se han encontrado ODES"
+
+#: orchestrator_selection.inc:59;99;139
+msgid "No ODE has received the object properly"
+msgstr "No se ha recibido el objeto del ODE correctamente"
+
+#: orchestrator_selection.inc:96
+msgid "Not found ODES by mecIdentifierStr"
+msgstr ""
+
+#: orchestrator_selection.inc:217
+msgid "Not found ODES with these criteria"
+msgstr ""
+
+#: orchestrator_services.processing.inc:46
+msgid "Multiple single files detected. Its @numfiles files will be extracted and added to this form."
+msgstr "Múltiples archivos detectados. Los @numfiles archivos serán extraídos y añadidos a este formulario."
+
+#: orchestrator_services.processing.inc:57
+msgid "Compressed file without catalog files detected. Its @numfiles root folder files will be extracted and added to this form."
+msgstr "Archivo comprimido sin catalogación detectado. Sus @numfiles archivos del directorio raíz han sido extraídos y adjuntados a este formulario."
+
+#: orchestrator_services.processing.inc:62
+msgid "Not compressed single file detected. It will be extracted and added to this form."
+msgstr "Detectado archivo simple no comprimido. Será extraído y añadido al formulario."
+
+#: orchestrator_services.processing.inc:92;417
+msgid "It did not add the file @filename. This file type is not allowed."
+msgstr "It did not add the file @filename. This file type is not allowed."
+
+#: orchestrator_services.processing.inc:167;171
+msgid "Invalid file"
+msgstr "Archivo no válido"
+
+#: orchestrator_services.processing.inc:578
+msgid "Catalog file detected. All its resource files will be extracted and sent once this form is submitted. Please complete all other catalog fields."
+msgstr ""
+"Detectado archivo comprimido con catalogación. Todos sus recursos "
+"serán extraídos y enviados junto a este formulario. Por favor, "
+"complete la información restante."
+
+#: orchestrator_services.processing.inc:1234
+msgid "Created date"
+msgstr "Fecha de creación"
+
+#: orchestrator_services.module:131;480;490;507
+msgid "The element is not register in server"
+msgstr ""
+
+#: orchestrator_services.module:135
+msgid "Error login user in Procomún. Cod-1"
+msgstr "Error al identificar al usuario en Procomún. Cod-1"
+
+#: orchestrator_services.module:139
+msgid "Error login user in Procomún. Cod-2"
+msgstr "Error al identificar al usuario en Procomún. Cod-2"
+
+#: orchestrator_services.module:143
+msgid "Error login user in Procomún web"
+msgstr "Error al identificar al usuario en el portal Procomún."
+
+#: orchestrator_services.module:148
+msgid "Error checking user credentials"
+msgstr "Error verificando las credenciales del usuario"
+
+#: orchestrator_services.module:153
+msgid "Error on login in Procomún"
+msgstr "Error al identificarse en Procomún"
+
+#: orchestrator_services.module:236
+msgid "ATTENTION! It is important to update your password. You can click !here to edit your user profile"
+msgstr ""
+"¡ATENCIÓN! Es importante que actualice su clave. Puede hacer click "
+"!here para editar su perfil de usuario"
+
+#: orchestrator_services.module:236
+msgid "here"
+msgstr "aquí"
+
+#: orchestrator_services.module:335
+msgid "User mail not found in Agrega. Please contact an administrator."
+msgstr ""
+"Email de usuario no encontrado en Agrega. Por favor contacte con un "
+"administrador."
+
+#: orchestrator_services.module:386
+msgid "Save"
+msgstr "Guardar"
+
+#: orchestrator_services.module:386
+msgid "Send"
+msgstr "Enviar"
+
+#: orchestrator_services.module:403
+msgid "Save as draft"
+msgstr "Guardar como borrador"
+
+#: orchestrator_services.info:0
+msgid "Orchestrator Services"
+msgstr "Servicios para el orquestador"
+
+#: orchestrator_services.info:0
+msgid "Module injection managed information in the orchestrator services defined by the module WSClient"
+msgstr ""
+
+#: orchestrator_services.info:0
+msgid "Agrega2"
+msgstr "Agrega2"

@@ -1,0 +1,59 @@
+.facet-filters-title
+  font-family: $font_narrow
+  color: $navy
+  font-size: 21px
+  font-weight: 700
+  text-transform: uppercase
+  border-bottom: 1px dashed $gray
+  display: block
+  padding-bottom: 15px
+  margin-bottom: 15px
+.block-facetapi,
+.page-user-favourites #main-content .views-exposed-widgets
+  @extend .facetapi-styles
+  margin-bottom: 20px
+  +clearfix()
+  h3,label
+    padding-right: 15px
+    min-height: 24px
+    margin-bottom: 0
+    position: relative
+    background-color: transparent
+    color: $navy
+    &:after
+      content: image-url('flecha_oscura.png')
+      min-height: 24px
+      position: absolute
+      right: 0
+      top:  -1px
+      +rotate(180deg)
+    &:hover
+      cursor: pointer
+    &.active
+      &:after
+        +rotate(0deg)
+  .content,
+  #views-exposed-form-agrega2-favourites-panel-pane-1 .views-widget
+    display: block
+
+#block-facetapi-fzcyxltz74duezlpbtkxyqm0mphgcilw
+  @extend .hide
+
+#facetapi-facet-search-apisarnia-ode-search-block-type
+  a
+    padding-left: 25px
+    line-height: 16px
+    display: block
+    @each $type in learning_resource, post, user, discussion, question, response, community, event, poll, url, podcast, learning_path, webinar
+      &.#{$type}
+        background: image-url('#{$type}.png') left -2px no-repeat
+    &:hover
+      background-position: left -22px
+
+
+.facetapi-facet-educationallearningresourcetypestr,
+.facetapi-facet-generallanguagestr,
+.facetapi-facet-educationalintendedenduserrolestr,
+.facetapi-facet-educationalcognitiveprocessstr
+  li::first-letter
+    text-transform: capitalize

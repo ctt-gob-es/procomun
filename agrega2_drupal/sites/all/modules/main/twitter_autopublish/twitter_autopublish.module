@@ -1,0 +1,128 @@
+<?php
+
+/**
+ * @File
+ * This file contains the implementation for the twitter_autopublish module.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function twitter_autopublish_menu() {
+  $items['admin/config/twitter_autopublish'] = array(
+    'title' => t('Configuration for twitter_autopublish module'),
+    'description' => t('Configuration for twitter_autopublish module.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('twitter_autopublish_settings'),
+    'access callback' => 'user_access',
+    'access arguments' => array('Administer twitter'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'twitter_autopublish.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function twitter_autopublish_permission() {
+  return array(
+    'Administer twitter' => array(
+        'title' => t('Administer twitter'),
+        'description' => t('This permission allow people to configure the module twitter_autopublish for sending tweets'),
+    ));
+}
+
+/**
+ * Implements hook_module_implements_alter()
+ * If this module executes node insert before pathauto module does, url function can't get alias URL.
+ * Reference: http://goo.gl/Ntdslm
+ */
+function twitter_autopublish_module_implements_alter(&$implementations, $hook) {
+  if ($hook == 'node_insert') {
+    $group = $implementations['twitter_autopublish'];
+    unset($implementations['twitter_autopublish']);
+    $implementations['twitter_autopublish'] = $group;
+  }
+}
+
+/**
+ * Implements hook_node_insert().
+ */
+function twitter_autopublish_node_insert($node) {
+  // Check if the node type is one one of the allowed types to generate a Tweet
+  $allowed = _check_allowed_type($node->type);
+
+  if ($allowed) {
+    // Get the groups where the content is published
+    $entity_groups = og_get_entity_groups('node', $node);
+    $hashtags = "";
+    foreach ($entity_groups as $group) {
+      foreach ($group as $group_nid) {
+        // For each group, get Twitter keys and hashtag
+        $settings = _getGroupTwitterData($group_nid);
+        if (!empty($settings)) {
+          $twitter_talker = new TwitterTalker($settings);
+          // #125835 - Generate ODEs URL like "/ode/view/[SolrID]" in Twitter message
+          if ($node->type === 'ode') {
+            $w_node = entity_metadata_wrapper('node', $node);
+            $ode_solrid = $w_node->field_solrid->value();
+            if (!empty($ode_solrid)) {
+              $status = $node->title . " - " . url('ode/view/' . $ode_solrid, array('absolute' => TRUE)) . " " . $settings['hashtag'];
+            }
+            else {
+              $status = $node->title . " - " . url('node/' . $node->nid, array('absolute' => TRUE)) . " " . $settings['hashtag'];
+            }
+          }
+          // Generate Twitter message
+          else {
+            $status = $node->title . " - " . url('node/' . $node->nid, array('absolute' => TRUE)) . " " . $settings['hashtag'];
+          }
+
+          // Finally, launch the tweet througt helper class
+          $twitter_talker->createTweet($status);
+        }
+      }
+    }
+  }
+}
+
+/**
+ * This function check if the type of a node is allowed to publish a tweet
+ */
+function _check_allowed_type($type) {
+  $allowed_types = array(
+    'post',
+    'event',
+    'ode',
+  );
+
+  return in_array($type, $allowed_types);
+}
+
+/**
+ * This function return the twitter data of a given organic group
+ */
+function _getGroupTwitterData($group_nid) {
+  $node = entity_load_single('node', $group_nid);
+  $w_node = entity_metadata_wrapper('node', $node);
+
+  $data['hashtag'] = '#' . $w_node->field_twitter_hashtag->value();
+  $data['consumer_key'] = $w_node->field_twitter_api_key->value();
+  $data['consumer_secret'] = $w_node->field_twitter_api_secret->value();
+  $data['access_token'] = $w_node->field_twitter_access_token->value();
+  $data['access_token_secret'] = $w_node->field_twitter_access_tokn_secret->value();
+  rtrim($data['hashtag'], " ");
+
+  // If community doesn't have Twitter App fields filled, we can't
+  // tweet with this account, so we return an empty array instead
+  if (empty($data['consumer_key']) ||
+      empty($data['consumer_secret']) ||
+      empty($data['access_token']) ||
+      empty($data['access_token_secret'])) {
+      $data = array();
+  }
+
+  return $data;
+}

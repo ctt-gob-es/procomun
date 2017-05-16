@@ -1,0 +1,487 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_section_newsletter.features.field_instance.inc: n/a
+#  ag_section_newsletter.module: n/a
+#  includes/ag_section_newsletter.pages.inc: n/a
+#  ag_section_newsletter.features.inc: n/a
+#  ag_section_newsletter.views_default.inc: n/a
+#  ag_section_newsletter.install: n/a
+#  ag_section_newsletter.info: n/a
+#  plugins/content_types/newsletter_form.inc: n/a
+#  includes/ag_section_newsletter.admin.inc: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2016-09-12 11:09+0200\n"
+"PO-Revision-Date: 2016-09-12 11:09+0200\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: ag_section_newsletter.features.field_instance.inc:912
+msgid "Comunidades en que se publicará"
+msgstr ""
+
+#: ag_section_newsletter.features.field_instance.inc:913
+msgid "Contenido relacionado"
+msgstr ""
+
+#: ag_section_newsletter.features.field_instance.inc:914
+msgid "Descripción"
+msgstr ""
+
+#: ag_section_newsletter.features.field_instance.inc:915
+msgid "Envío programado"
+msgstr ""
+
+#: ag_section_newsletter.features.field_instance.inc:916
+msgid "Estado"
+msgstr ""
+
+#: ag_section_newsletter.features.field_instance.inc:917
+msgid "Fecha de envío programado"
+msgstr ""
+
+#: ag_section_newsletter.features.field_instance.inc:918 ag_section_newsletter.module:385 includes/ag_section_newsletter.pages.inc:122
+msgid "Newsletter"
+msgstr "Boletín"
+
+#: ag_section_newsletter.features.field_instance.inc:919
+msgid "Recipient Handle Settings"
+msgstr "Configuracion del manejador de recipientes"
+
+#: ag_section_newsletter.features.field_instance.inc:920
+msgid "Recipient Handler"
+msgstr "Manejador de recipientes"
+
+#: ag_section_newsletter.features.field_instance.inc:921
+msgid "Sent subscriber count"
+msgstr "Contador de subscripciones enviadas"
+
+#: ag_section_newsletter.features.field_instance.inc:922 ag_section_newsletter.features.inc:99 ag_section_newsletter.views_default.inc:505
+msgid "Título"
+msgstr ""
+
+#: ag_section_newsletter.features.inc:95
+msgid "Boletín de noticias"
+msgstr ""
+
+#: ag_section_newsletter.features.inc:97
+msgid "Un boletín de noticias para ser enviado a la lista de suscritos"
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:485;650
+msgid "Defaults"
+msgstr "Predefinidos"
+
+#: ag_section_newsletter.views_default.inc:486
+msgid "Generar contenidos del boletín"
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:487;651;752
+msgid "más"
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:488;652;753
+msgid "Aplicar"
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:489;653;754
+msgid "Reiniciar"
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:490
+msgid "Order by"
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:491;655;756
+msgid "Asc"
+msgstr "Asc"
+
+#: ag_section_newsletter.views_default.inc:492;656;757
+msgid "Desc"
+msgstr "Desc"
+
+#: ag_section_newsletter.views_default.inc:493;657;758
+msgid "Elementos por página"
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:494;658;759
+msgid "- Todos -"
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:495;659;760
+msgid "Desplazamiento"
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:496
+msgid "«"
+msgstr "«"
+
+#: ag_section_newsletter.views_default.inc:497
+msgid "‹"
+msgstr "‹"
+
+#: ag_section_newsletter.views_default.inc:498
+msgid "›"
+msgstr "›"
+
+#: ag_section_newsletter.views_default.inc:499
+msgid "»"
+msgstr "»"
+
+#: ag_section_newsletter.views_default.inc:500
+msgid "No hay contenido con estos filtros"
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:501;665
+msgid "Suscripción de nodos de OG"
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:502
+msgid "flag"
+msgstr "marca"
+
+#: ag_section_newsletter.views_default.inc:503;666;768
+msgid "Todo(s)"
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:504
+msgid "Marcado"
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:506
+msgid "Tipo"
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:507
+msgid "newsletter_select_content"
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:508
+msgid "Add content to the newsletter"
+msgstr "Añadir contenido al boletín"
+
+#: ag_section_newsletter.views_default.inc:509;668;770
+msgid "more"
+msgstr "más"
+
+#: ag_section_newsletter.views_default.inc:510
+msgid "Search"
+msgstr "Buscar"
+
+#: ag_section_newsletter.views_default.inc:511;669
+msgid "Vista panel"
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:512
+msgid "Newsletter content selected"
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:513
+msgid "Content added to newsletter"
+msgstr "Contenido añadido al boletín"
+
+#: ag_section_newsletter.views_default.inc:514
+msgid "It has not yet added content"
+msgstr "Todavía no se ha añadido ningún contenido"
+
+#: ag_section_newsletter.views_default.inc:515
+msgid "Marcado para el boletín"
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:654;755
+msgid "Ordenar por"
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:660;761
+msgid "« primera"
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:661;762
+msgid "‹ anterior"
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:662;763
+msgid "siguiente ›"
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:663;764
+msgid "última »"
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:664
+msgid "No hay contenido en este grupo."
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:667
+msgid "Content pane"
+msgstr "Panel de contenido"
+
+#: ag_section_newsletter.views_default.inc:670;769
+msgid "Referencia a entidades"
+msgstr ""
+
+#: ag_section_newsletter.views_default.inc:751
+msgid "Master"
+msgstr "Maestro"
+
+#: ag_section_newsletter.views_default.inc:765
+msgid "Group node from OG membership"
+msgstr "Grupo de nodos desde la membrebesía de OG"
+
+#: ag_section_newsletter.views_default.inc:766
+msgid "."
+msgstr "."
+
+#: ag_section_newsletter.views_default.inc:767
+msgid ","
+msgstr ","
+
+#: ag_section_newsletter.module:103
+msgid "Access to OG simplenews settings"
+msgstr "Acceso a la configuración de OG simplenews"
+
+#: ag_section_newsletter.module:107
+msgid "Unsubscribe from the newsletter"
+msgstr "Darse de baja del boletín de noticias"
+
+#: ag_section_newsletter.module:119;135
+msgid "Generate new newsletter"
+msgstr "Generar un nuevo boletín de noticias"
+
+#: ag_section_newsletter.module:173
+msgid "@group_name newsletter"
+msgstr "Boletín de @group_name"
+
+#: ag_section_newsletter.module:225
+msgid "You must select a newsletter from ypur community"
+msgstr "Debes seleccionar una newsletter de tu comunidad"
+
+#: ag_section_newsletter.module:236
+msgid "Administer organic groups newsletter"
+msgstr "Administrar og newsletter"
+
+#: ag_section_newsletter.module:237
+msgid "Allow OG members to administer newsletters"
+msgstr "Permitir a los miembros de OG administrar newsletters"
+
+#: ag_section_newsletter.module:242
+msgid "Subscribe to organic groups newsletter"
+msgstr "Suscribirse a newsletter de OG"
+
+#: ag_section_newsletter.module:243
+msgid "Allow OG members to subscribe to OG newsletters"
+msgstr "Permitir a los miembros de un grupo suscribirse a los OG newsletters"
+
+#: ag_section_newsletter.module:248
+msgid "Unsubscribe to organic groups newsletter"
+msgstr "Darse de baja de un newsletter de OG"
+
+#: ag_section_newsletter.module:249
+msgid "Allow OG members to unsubscribe to OG newsletters"
+msgstr "Permitir darse de baja a los miembros de OG newsletters"
+
+#: ag_section_newsletter.module:353
+msgid "Subscribe to the newsleter"
+msgstr "Suscribirse al boletín de noticias"
+
+#: ag_section_newsletter.module:365
+msgid "Unsubscribe from the newsleter"
+msgstr "Darse de baja del boletín de noticias"
+
+#: ag_section_newsletter.module:463
+msgid "procomun-newsletter"
+msgstr ""
+
+#: ag_section_newsletter.module:464
+msgid "Tokens related to procomun"
+msgstr "Tokens relacionados con procomún"
+
+#: ag_section_newsletter.module:468;469
+msgid "Referenced organic groups"
+msgstr ""
+
+#: ag_section_newsletter.module:25
+msgid "OG Simplenews"
+msgstr "OG Simplenews"
+
+#: ag_section_newsletter.module:26
+msgid "Config Organic groups simplenews settings"
+msgstr "Configurar Organic groups simplenews"
+
+#: ag_section_newsletter.module:34
+msgid "Ag newsletter subscribe-unsubscribe"
+msgstr "Ag newsletter suscribirse-darse de baja"
+
+#: ag_section_newsletter.module:43
+msgid "Newsletters"
+msgstr "Boletines"
+
+#: ag_section_newsletter.module:44;60
+msgid "List newsletters and newsletter sent status."
+msgstr "Lista de newsletters y estado de envío"
+
+#: ag_section_newsletter.module:53
+msgid "Administer newsletters"
+msgstr "Administrar boletines de noticias"
+
+#: ag_section_newsletter.module:59
+msgid "Administer subscribers"
+msgstr "Administrar suscriptores"
+
+#: ag_section_newsletter.install:70
+msgid "Processed @users_processed users. Added @new_suscriptions new suscriptions."
+msgstr ""
+
+#: ag_section_newsletter.info:0
+msgid "ag_section_newsletter"
+msgstr ""
+
+#: ag_section_newsletter.info:0 plugins/content_types/newsletter_form.inc:14
+msgid "Agrega2"
+msgstr "Agrega2"
+
+#: includes/ag_section_newsletter.admin.inc:14
+msgid "Select the content types which will have a default newsletter when it is created"
+msgstr ""
+"Selecciona el tipo de contenidos que tendrán una newsletter por "
+"defecto cuando se creen."
+
+#: includes/ag_section_newsletter.pages.inc:11
+msgid "You have been subscribed successfully"
+msgstr "Te has suscrito correctamente"
+
+#: includes/ag_section_newsletter.pages.inc:15
+msgid "You have been unsubscribed successfully"
+msgstr "Te has dado de baja correctamente"
+
+#: includes/ag_section_newsletter.pages.inc:20
+msgid "Sorry but your action has failed, may be you are already\n      subscribed/unsubscribed for this newsletter"
+msgstr ""
+"Lo sentimos pero tu operación ha fallado probablemente ya estas "
+"inscrito o dado de baja de esta newsletter"
+
+#: includes/ag_section_newsletter.pages.inc:56
+msgid "Create a new newsletter"
+msgstr "Crear un nuevo boletín de noticias"
+
+#: includes/ag_section_newsletter.pages.inc:83;193
+msgid "Update options"
+msgstr "Actualizar opciones"
+
+#: includes/ag_section_newsletter.pages.inc:104
+msgid "Send selected newsletters"
+msgstr "Enviar boletines seleccionados"
+
+#: includes/ag_section_newsletter.pages.inc:117
+msgid "Title"
+msgstr "Título"
+
+#: includes/ag_section_newsletter.pages.inc:130
+msgid "Created"
+msgstr "Creado"
+
+#: includes/ag_section_newsletter.pages.inc:135
+msgid "Published"
+msgstr "Publicado"
+
+#: includes/ag_section_newsletter.pages.inc:136
+msgid "Sent"
+msgstr "Enviado"
+
+#: includes/ag_section_newsletter.pages.inc:137
+msgid "Subscribers"
+msgstr "Suscriptores"
+
+#: includes/ag_section_newsletter.pages.inc:138;219
+msgid "Operations"
+msgstr "Operaciones"
+
+#: includes/ag_section_newsletter.pages.inc:163
+msgid "- Unassigned -"
+msgstr "- No asignado -"
+
+#: includes/ag_section_newsletter.pages.inc:168
+msgid "edit"
+msgstr "editar"
+
+#: includes/ag_section_newsletter.pages.inc:176
+msgid "No newsletters available."
+msgstr "No existen boletines de noticias actualmente."
+
+#: includes/ag_section_newsletter.pages.inc:208
+msgid "Update"
+msgstr "Actualizar"
+
+#: includes/ag_section_newsletter.pages.inc:215
+msgid "Email"
+msgstr "Correo electrónico"
+
+#: includes/ag_section_newsletter.pages.inc:216
+msgid "Username"
+msgstr "Nombre de usuario"
+
+#: includes/ag_section_newsletter.pages.inc:217
+msgid "Status"
+msgstr "Estado"
+
+#: includes/ag_section_newsletter.pages.inc:218
+msgid "Language"
+msgstr "Idioma"
+
+#: includes/ag_section_newsletter.pages.inc:255
+msgid "No subscribers available."
+msgstr "No hay suscritos en estos momentos"
+
+#: includes/ag_section_newsletter.pages.inc:307
+msgid "Newsletter title"
+msgstr "Título del boletín"
+
+#: includes/ag_section_newsletter.pages.inc:315
+msgid "Newsletter body"
+msgstr "Cuerpo del boletín"
+
+#: includes/ag_section_newsletter.pages.inc:323;330
+msgid "Newsletter scheduled sending"
+msgstr "Envío programado del boletín"
+
+#: includes/ag_section_newsletter.pages.inc:377
+msgid "Save changes"
+msgstr "Guardar cambios"
+
+#: includes/ag_section_newsletter.pages.inc:395
+msgid "Newsletter scheduled date and time has already passed. Please, insert valid date and time values."
+msgstr ""
+"La fecha y hora del envío programado del boletín ha pasado. Por "
+"favor, introduzca fecha y hora válidas."
+
+#: includes/ag_section_newsletter.pages.inc:438
+msgid "Newsletter created succesfully"
+msgstr "Se ha creado correctamente la newsletter"
+
+#: includes/ag_section_newsletter.pages.inc:441
+msgid "Newsletter @title updated succesfully"
+msgstr "Boletín @title actualizado correctamente"
+
+#: includes/ag_section_newsletter.pages.inc:111
+msgid "Last batch: 1 mail sent at !time."
+msgid_plural "Last batch: !count mails sent at !time."
+msgstr[0] "Último procesamiento por lote: 1 correo enviado a las !time."
+msgstr[1] "Último procesamiento por lote: !count correos enviados a las !time."
+
+#: plugins/content_types/newsletter_form.inc:12
+msgid "Newsletter form"
+msgstr ""
+
+#: plugins/content_types/newsletter_form.inc:13
+msgid "Custom form to create and edit newsletter"
+msgstr ""

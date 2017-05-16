@@ -1,0 +1,1167 @@
+<?php
+/**
+ * @file
+ * Code for the ag_section_social_netwok feature.
+ */
+
+include_once 'ag_section_social_netwok.features.inc';
+include_once 'ag_section_social_netwok.widget.inc';
+
+define("FAQS", _getFaqNid());
+define("PROCOMUN", '21091');
+/**
+ * Implements hook_menu()
+ */
+function ag_section_social_netwok_menu() {
+  $items = array();
+
+  $items['admin/config/system/ag-section-social-netwok'] = array(
+    'title' => 'Procomun Social Network config',
+    'description' => 'Configure the settings of social network procomun',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('administer_procomun_settings_form'),
+    'access arguments' => array('bypass node access'),
+    'file' => 'ag_section_social_netwok.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  $items['node/%/invite'] = array(
+    'title' => t('Invite new users to your community'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ag_invite_users_form', 1),
+    'access callback' => 'og_user_access',
+    'access arguments' => array('node', 1, 'ag invite users'),
+    'file' => 'ag_section_social_netwok.forms.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  $items['users/invite/%/following'] = array(
+    'title' => 'Autocomplete path',
+    'page callback' => 'invite_following_autocomplete',
+    'access callback' => 'og_user_access',
+    'access arguments' => array('node', 2, 'ag invite users'),
+    'file' => 'ag_section_social_netwok.pages.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  $items['admin/control-center/communities/moderate/%node'] = array(
+    'title' => t('Moderate the creation of a community'),
+    'description' => t('Moderation page for communities'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ag_section_social_netwok_moderate_community_form', 4),
+    'file' => 'ag_section_social_netwok.forms.inc',
+    'access arguments' => array('administer communities'),
+  );
+
+  $items['comunidades/%/widget'] = array(
+    'page callback' => 'ag_section_social_netwok_widget_callback',
+    'page arguments' => array(1),
+    'access callback' => TRUE,
+    'delivery callback' => 'ag_section_social_netwok_widget_delivery_callback',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_modal_paths
+ */
+function ag_section_social_netwok_modal_paths() {
+  $paths = array();
+
+  $paths['node/%/invite'] = array(
+    'style' => 'modal-invite',
+    'reload' => TRUE,
+  );
+
+  $paths['admin/control-center/communities/moderate/%node'] = array(
+    'style' => 'modal-invite',
+    'reload' => TRUE,
+  );
+
+  return $paths;
+}
+
+/**
+ * Implements hook_modal_styles().
+ */
+function ag_section_social_netwok_modal_styles() {
+  $styles = array();
+
+  $styles['modal-invite'] = array(
+    'modalSize' => array(),
+    'modalClass' => 'modal-invite',
+  );
+  return $styles;
+}
+
+
+/**
+ * Implements hook_og_permission().
+ */
+function ag_section_social_netwok_og_permission() {
+  return array(
+    // Define the OG permission Invite other users
+    'ag invite users' => array(
+      'title' => t('Invite user to group'),
+      'description' => t('Allow invite users to this group'),
+      'roles' => array(OG_AUTHENTICATED_ROLE),
+      'default role' => array(OG_AUTHENTICATED_ROLE),
+    ),
+  );
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function ag_section_social_netwok_block_info() {
+  $blocks = array();
+
+  $blocks['facet_filter_title'] = array(
+    'info' => t('Facets filters title'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function ag_section_social_netwok_block_view($delta = '') {
+  $block = array();
+
+  switch($delta){
+    case 'facet_filter_title':
+      $block['subject'] = '';
+      $block['content'] = theme('facet_filter_title');
+      break;
+  }
+
+  return $block;
+}
+
+/**
+ * Function theme for facet_filter_title block
+ */
+function theme_facet_filter_title($vars) {
+  return array(
+    '#prefix' => '<span class="facet-filters-title">',
+    '#markup' => t('Filter by'),
+    '#suffix' => '</span>'
+  );
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function ag_section_social_netwok_form_social_network_node_form_alter(&$form, &$form_state, $form_id) {
+  $form['body']['und']['0']['#wysiwyg'] = user_access('administer ckeditor content type');
+
+  if (isset($form['group_access']) && isset($form['field_og_permissions_level'])) {
+    // Get Language.
+    $lang = $form['group_access']['#language'];
+    $fhsname = 'group_access[' . $lang . ']';
+    // Enable , Require and show field_og_permissions_level when group_access is public.
+    // This is conditional to group_access field, for this i use #states.
+    $form['field_og_permissions_level']['#states'] = array(
+      'visible' => array(
+        ':input[name="' . $fhsname . '"]' => array('value' => 0),
+      ),
+      'enabled' => array(
+        ':input[name="' . $fhsname . '"]' => array('value' => 0),
+      ),
+      'required' => array(
+        ':input[name="' . $fhsname . '"]' => array('value' => 0),
+      ),
+    );
+
+    // Unset N/D option from the options.
+    unset($form['field_og_permissions_level'][LANGUAGE_NONE]['#options']['_none']);
+    // Add a custom function for field_og_permissions_level.
+    $form['field_og_permissions_level']['#element_validate'][] = 'field_og_permissions_level_element_validate';
+  }
+
+  // Hide og_roles_permissions this field will be managed by field_og_permissions_level.
+  if (isset($form['og_roles_permissions'])) {
+    $form['og_roles_permissions'][LANGUAGE_NONE]['#type'] = 'hidden';
+  }
+
+  //The status field only will be acceded by administrators.
+  // TODO: Delete variable $user?
+  global $user;
+  $form['field_social_network_status']['#access'] = user_access('administer communities');
+
+  // Translate og fields ("group access" and "permission level")
+  if (isset($form['group_access'])) {
+    foreach ($form['group_access']['und']['#options'] as $key => $value) {
+      $form['group_access']['und']['#options'][$key] = t($value);
+    }
+  }
+
+  if (isset($form['field_og_permissions_level'])) {
+    foreach ($form['field_og_permissions_level']['und']['#options'] as $key => $value) {
+      $form['field_og_permissions_level']['und']['#options'][$key] = t($value);
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for node_delete_confirm_form().
+ */
+function ag_section_social_netwok_form_node_delete_confirm_alter(&$form, &$form_state, $form_id) {
+  if (isset($form['#node']) && $form['#node']->type == 'social_network') {
+    array_unshift($form['#submit'], '_ag_section_social_netwok_reassign_content');
+    $form['#submit'][] = '_ag_section_social_netwok_redirect_on_delete';
+  }
+}
+
+/**
+ * Reassign the content to Procomun (21091) community when it does not belong to
+ * any.
+ *
+ * Callback for ag_section_social_netwok_form_node_delete_confirm_alter().
+ *
+ * @param $form
+ *   An associative array containing the structure of the form.
+ * @param $form_state
+ *   An associative array containing the current state of the form.
+ */
+function _ag_section_social_netwok_reassign_content($form, &$form_state) {
+  if ($form_state['values']['op'] == t('Eliminar')) {
+    $content = OgDrupalToolKit::getContentsByGroup('node', $form['#node']->nid);
+    foreach ($content['node'] as $nid => $value) {
+      try {
+        $wrapper = entity_metadata_wrapper('node', $nid);
+        $og_group_ref = $wrapper->og_group_ref->raw();
+
+        if ((count($og_group_ref) <= 1) && !in_array('21091', $og_group_ref)) {
+          $og_group_ref[] = '21091';
+          $wrapper->og_group_ref->set($og_group_ref);
+          $wrapper->save();
+        }
+      }
+      catch (EntityMetadataWrapperException $e) {
+        drupal_set_message(t('Content could not be updated'), 'error');
+      }
+    }
+  }
+}
+
+/**
+ * Redirect form to custom path.
+ *
+ * Callback for ag_section_social_netwok_form_node_delete_confirm_alter().
+ *
+ * @param $form
+ *   An associative array containing the structure of the form.
+ */
+function _ag_section_social_netwok_redirect_on_delete($form) {
+  global $user;
+
+  $form_state['redirect'] = 'user/' . $user->uid . '/my-communities';
+}
+
+/**
+ * Implements hook_entity_presave().
+ */
+function ag_section_social_netwok_entity_presave($entity, $type) {
+  if ($type == 'node' && $entity->type == 'social_network') {
+    if (isset($entity->group_group) && $entity->group_group[LANGUAGE_NONE][0]['value'] == 1) {
+      // Get $group_access && $field_og_permissions_level
+      $group_access_value = $entity->group_access[LANGUAGE_NONE][0]['value'];
+      $field_og_permissions_level_value = $entity->field_og_permissions_level[LANGUAGE_NONE][0]['value'];
+
+      if ($group_access_value == 0 && $field_og_permissions_level_value == 0) {
+        // The Community restricted, we use the default permissions (Subscription must to moderated.)
+        $entity->og_roles_permissions[LANGUAGE_NONE][0]['value'] = 1;
+      }
+      else {
+        // The cumunity is restricted, we use the default permissions
+        $entity->og_roles_permissions[LANGUAGE_NONE][0]['value'] = 0;
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_og_role_insert().
+ */
+function ag_section_social_netwok_og_role_insert($role) {
+  if ($role->group_type == 'node' && $role->group_bundle == 'social_network') {
+    // Be sure to make sub
+    if ($role->name === OG_ANONYMOUS_ROLE) {
+      $permissions = array(
+        'subscribe without approval' => 1,
+      );
+      og_role_change_permissions($role->rid, $permissions);
+    }
+  }
+}
+
+/**
+ * Implements hook_og_membership_delete().
+ */
+function ag_section_social_netwok_og_membership_delete(OgMembership $og_membership) {
+  if ($og_membership->state == 2) {
+    // Remove pending notifications for this user:
+    ag_section_notifications_remove_pendig_notifications('new_member_pending',
+      $og_membership->etid,
+      $og_membership->gid
+    );
+  }
+
+  if ($og_membership->entity_type == 'user') {
+    search_api_track_item_change($og_membership->entity_type, array($og_membership->etid));
+  }
+
+}
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function ag_section_social_netwok_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'ctools' && $plugin == 'content_types') {
+    return 'plugins/' . $plugin;
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function ag_section_social_netwok_theme() {
+  $themes = array();
+
+  $themes['content_comunity_public_dashboard'] = array(
+    'variables' => array(
+      'vars' => array(),
+    ),
+    'template' => '/templates/content-comunity-public-dashboard',
+  );
+  // Render the html for subscribe/unsubscribre from community wall.
+  $themes['ag_subscribe_unsubscribe'] = array(
+    'variables' => array(
+      'nid' => NULL,
+    ),
+    'template' => '/templates/ag-subscribe-unsubscribe',
+  );
+
+  $themes['public_community_widget'] = array(
+    'template' => '/templates/public-community-widget',
+    'type' => 'theme',
+    'variables' => array(
+      'community_url' => '',
+    ),
+  );
+
+  $themes['public_community_viewer_iframe'] = array(
+    'template' => '/templates/public-community-viewer-iframe',
+    'type' => 'theme',
+    'variables' => array(
+      'public_community' => array(),
+    ),
+  );
+
+  $themes['public_community_widget_iframe'] = array(
+    'template' => '/templates/public-community-widget-iframe',
+    'render element' => 'page',
+  );
+
+  $themes['facet_filter_title'] = array(
+    'arguments' => array(
+      'element' => NULL,
+      'field' => NULL,
+    ),
+  );
+
+  return $themes;
+}
+
+/**
+ * Implements hook_preprocess_THEME().
+ */
+function ag_section_social_netwok_preprocess_ag_subscribe_unsubscribe(&$vars) {
+  /**
+   * Subscribe link: If the curren user is a member we show a message with unsubscribe link, if not we should use og subscribe link.
+   */
+  $nid = isset($vars['nid']) ? $vars['nid'] : NULL;
+  if (user_is_logged_in()) {
+    if (!og_is_member('node', $nid) && og_user_access('node', $nid, 'subscribe')) {
+      $vars['subscribe_link'] = l(t('Be a member and colaborate!'), "group/node/$nid/subscribe");
+    }
+    else {
+      $vars['subscribe_text'] = t('You are already a member of this community');
+      if (og_user_access('node', $nid, 'unsubscribe')) {
+        // Only show link to unsubscribe if the user has permission for it:
+        $vars['subscribe_link'] = l(t('Click for unsubscribe'), "group/node/$nid/unsubscribe");
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function ag_section_social_netwok_preprocess_node(&$vars) {
+  if (in_array($vars['view_mode'], array('teaser', 'activities', 'newsletter'), TRUE)) {
+    // #129178 - In timeline and favourites list, ODEs showed 'admin' as author.
+    // We request ODE information to orchestrator to show author name properly.
+    if ($vars['type'] === 'ode' && !empty($vars['field_solrid'][LANGUAGE_NONE][0]['value'])) {
+      $vars['properties'] = ag_visualization_ode_get_solr_ode($vars['field_solrid'][LANGUAGE_NONE][0]['value']);
+      //Get ode publisher from services
+      $username_text = ag_visualization_ode_get_author($vars['properties']);
+      $vars['name'] = $username_text;
+    }
+
+    $vars['theme_hook_suggestions'][] = 'node__' . $vars['type'] . '__teaser';
+    // Format time like time ago.
+    $vars['time_ago'] = format_interval(time() - $vars['node']->created, 1);
+    // Load the Human name of the content type:
+    $node_type_name = translate_node_type_name(node_type_get_name($vars['node']));
+    $vars['node_type_label'] = $node_type_name;
+    $vars['links']['readmore'] = FALSE;
+
+    // Add share information if the content has been shared
+    $og_context = og_context();
+    $session_og_context = isset($_SESSION['og_context']) ? $_SESSION['og_context'] : '';
+    $group = !empty($og_context) ? $og_context : $session_og_context;
+    if (($vars['type'] === 'post' || $vars['type'] === 'ode') && $vars['view_mode'] === 'teaser' && !empty($group)) {
+      $is_oganization = og_share_is_organization($vars['uid']);
+      if (!$is_oganization) {
+        // Son nodos, cargamos la informacion de sus compartidos, si la hubera.
+        // Pillamos si el contenido ha sido compartido en esta comunidad ($group)
+        $shared_info = og_share_get_shares_info($vars['nid'], $group['gid']);
+        if ($shared_info) {
+          $vars['shared_info'] = array(
+            'name' => l(ag_section_profile_users_get_name_surname_cached($shared_info[$group['gid']]->uid),
+                      'profile/' . $shared_info[$group['gid']]->uid . '/public', array(
+                        'absolute' => TRUE,
+                        'attributes' => array(
+                          'class' => 'username',
+                          'title' => t('View user profile'),
+                        ),
+                      )),
+            'shared' => format_interval(time() - $shared_info[$group['gid']]->timestamp, 1),
+          );
+        }
+      }
+    }
+
+    // Add social networks.
+    if (module_exists('service_links')) {
+      $render_service_links = array(
+        '#theme' => 'item_list',
+        '#items' => service_links_render(NULL),
+        '#attributes' => array(
+          'html' => TRUE,
+          'class' => array('services_link'),
+        ),
+      );
+
+      //$vars['properties']['service_links']['links'] = $render_service_links;
+      $vars['rrss'] = theme('rrss_dropdown_widget', array('links' => $render_service_links));
+    }
+  }
+
+  // Decode html entities in node titles
+  if (isset($vars['title']) && !empty($vars['title'])) {
+    $vars['title'] = decode_entities($vars['title']);
+  }
+
+  if (($vars['type'] === 'post' || $vars['type'] === 'podcast' ||
+       $vars['type'] === 'webinar') && $vars['view_mode'] === 'teaser') {
+    unset($vars['content']['links']['comment']['#links']['comment-add']);
+  }
+}
+
+/**
+ * Implements hook_entity_view().
+ */
+function ag_section_social_netwok_entity_view($entity, $type, $view_mode, $langcode) {
+  if ($type == 'node') {
+    // Solo mostramos los enlaces de services links si se ha marcado el campo:
+    // "Compartir en otras redes sociales" (field_question_share).
+    if (!empty($entity->field_question_share)) {
+      $w_entity = entity_metadata_wrapper('node', $entity);
+      if (!$w_entity->field_question_share->value() && isset($entity->content['service_links'])) {
+        unset($entity->content['service_links']);
+      }
+    }
+
+    // Customize the rendered node for community network:
+    if ($entity->type === 'social_network' && $view_mode === 'teaser') {
+      // Set the members count wegth
+      $memberFieldWeight = isset($entity->content['field_labels']) ?
+        $entity->content['field_labels']['#weight'] + 1 : 10;
+
+      // Add the users count info:
+      $entity->content['membersCount'] = array(
+        '#prefix' => '<span class="community-members-count" title="' . t('Community\'s members') . '">',
+        '#markup' => OgDrupalToolKit::countMemberships('user', $entity->nid),
+        '#suffix' => '</span>',
+        '#weight' => $memberFieldWeight,
+      );
+
+      // Add the community type info:
+      $communityType = _ag_section_social_work_get_comunity_type($entity);
+      $entity->content['communityType'] = array(
+        '#prefix' => '<span class="' . $communityType->class . '">',
+        '#markup' => $communityType->text,
+        '#suffix' => '</span>',
+        '#weight' => $memberFieldWeight + 1,
+      );
+
+      // Add the links for subscribe/unsubscribe
+      if (module_exists('ag_section_newsletter')) {
+        $newsletter_link = ag_section_newsletter_retrieve_subscribe_user_link($entity->nid);
+        if (!empty($newsletter_link)) {
+          $entity->content['newsletter-subscribe-link'] = $newsletter_link;
+        }
+      }
+
+      // Add the links for community:
+      _ag_section_social_netwok_get_community_links($entity, $view_mode);
+    }
+  }
+}
+
+/**
+ * Implements hook_user_insert().
+ */
+function ag_section_social_netwok_user_insert(&$edit, $account, $category) {
+  // A new user is inserted in BD, we should add it to global community procomun and FAQS community:
+  $global_procomun = variable_get('global_community_procomun', 0);
+
+  // Only no organization users have to be inserted in procomun community:
+  if (!empty($global_procomun) && (!array_key_exists(ORGANIZATION_ROLE, $account->roles))) {
+    // Subcribe teh current user:
+    og_group('node', $global_procomun, array('entity' => $account));
+  }
+
+
+  //Also, add this user to faqs community.
+  $global_faqs = variable_get('global_community_faqs', 0);
+  if (empty($global_faqs)) {
+    //If variable was not found, update.
+    variable_set('global_community_faqs', _getFaqNid());
+    $global_faqs = _getFaqNid();
+  }
+
+  //Finally, if community faqs was found, add user to ir.
+  if (!empty($global_faqs)) {
+    og_group('node', $global_faqs, array('entity' => $account));
+  }
+
+
+  //Also, automatically subscribe to these groups newsletters.
+  if (!empty($global_procomun)) {
+    ag_section_newsletter_subscribe_user($account, $global_procomun);
+  }
+  if (!empty($global_faqs)) {
+    ag_section_newsletter_subscribe_user($account, $global_faqs);
+  }
+}
+
+
+###########################
+##  FUNCIONES AUXILIARES ##
+###########################
+
+/**
+ * Custom #element validate for checkboxes to check them as required
+ */
+function field_og_permissions_level_element_validate($element, &$form_state, $form) {
+  // Get field_og_permissions_level field & og_roles_permissions values
+  $value = $element[LANGUAGE_NONE]['#value'];
+  $group_access_value = $form_state['values']['group_access'][LANGUAGE_NONE][0]['value'];
+  // Check that is filled if field_og_permissions_level is public (0)
+  if ($group_access_value == 0 && is_null($value)) {
+    form_set_error('field_og_permissions_level', t('%name is required', array('%name' => $element[LANGUAGE_NONE]['#title'])));
+  }
+}
+
+/**
+ * @brief Generate the main links of the Community wall.
+ * @details Generate the main links of the Community wall.
+ * @return Array of link items to be rendered.
+ */
+function _ag_section_social_work_generate_wall_links($nid) {
+  $links = array();
+  // Define the default links $options:
+  $links_options = array(
+    'attributes' => array(
+      'class' => array('comunity-wall-link')
+    ),
+  );
+  // Home link
+  $links['home'] = array(
+    'data' => l(t('Home'), 'node/' . $nid, $links_options),
+  );
+  // Community Questions link
+  $links['questions'] = array(
+    'data' => l(t('Questions/Discussions'), 'node/' . $nid . '/debates', $links_options),
+  );
+  // Community surveys link
+  $links['surveys'] = array(
+    'data' => l(t('Surveys'), 'node/' . $nid . '/polls', $links_options),
+  );
+  // Community Events link
+  $links['events'] = array(
+    'data' => l(t('Events'), 'node/' . $nid . '/events', $links_options),
+  );
+  // Community members link
+  $links['members'] = array(
+    'data' => l(t('Members'), 'node/' . $nid . '/members', $links_options),
+  );
+
+  // Add subscribe/unsubscribe links:
+  if (module_exists('ag_section_newsletter')) {
+    $newsletter_link = ag_section_newsletter_retrieve_subscribe_user_link($nid);
+    if (!empty($newsletter_link)) {
+      $links['newsletter'] = render($newsletter_link);
+    }
+  }
+
+  // Administer newsletters link
+  if (og_user_access('node', $nid, 'administer og newsletter')) {
+    $links['admin-newsletters'] = array(
+      'data' => l(t('Administer newsletters'), "ag_section_newsletter/$nid/simplenews", $links_options),
+    );
+  }
+
+  // Community invite link
+  // Check if use has access to invite
+  if (og_user_access('node', $nid, 'ag invite users')) {
+    $links['invite'] = array(
+      'data' => l(t('Invite friends'), 'node/' . $nid . '/invite', $links_options),
+    );
+  }
+  // Community About link
+  $links['about'] = array(
+    'data' => l(t('About this community'), 'node/' . $nid . '/about', $links_options),
+  );
+
+  return $links;
+}
+
+/**
+ * Return the community type text, class and value. If the text returned will be:
+ * - Private community : If OG group access is private; value = 1
+ * - Restricted community : If OG group is public but field_og_permissions_level
+ *   is restricted; value = 1
+ * - Public community: If OG group is public and field_og_permissions_level is not restricted; value = 0
+ */
+function _ag_section_social_work_get_comunity_type($entity) {
+  // Set private community as default:
+  $community = array(
+    'class' => 'private-community',
+    'text' => t('Private community'),
+    'value' => 1,
+  );
+  $wrapper = entity_metadata_wrapper('node', $entity);
+  $group_access = isset($wrapper->group_access) ? $wrapper->group_access->value() : FALSE;
+  $field_og_permissions_level = isset($wrapper->field_og_permissions_level) ? $wrapper->field_og_permissions_level->value() : 0;
+
+  if (!$group_access) {
+    if ($field_og_permissions_level == 0) {
+      $community = array(
+        'class' => 'public-community',
+        'text' => t('Public community'),
+        'value' => 0,
+      );
+    }
+    else {
+      $community = array(
+        'class' => 'restricted-community',
+        'text' => t('Restricted community'),
+        'value' => 1,
+      );
+    }
+  }
+
+  return (object) $community;
+}
+
+/**
+ * @brief Return a rendered list of administers of a OG group, in this case a community
+ * @details Return a rendered list of administers of a OG group, in this case a community
+ * @return Array with the rendered items of the admins.
+ */
+function _ag_section_social_work_get_administers_list($entity) {
+  $users = array();
+  $admins = array();
+
+  // Get admins:
+  $users = OgDrupalToolKit::getUsersByRoleName('node', $entity->type, $entity->nid, OG_ADMINISTRATOR_ROLE)->fetchAllKeyed(1,2);
+
+  // Load user info:
+  $accounts = user_load_multiple(array_keys($users));
+
+  // Get default picture:
+  $default_picture = variable_get('user_picture_default', '');
+
+  foreach ($accounts as $account) {
+    if(isset($account->uid)) {
+      $account->name = ag_section_profile_users_get_name_surname_cached($account->uid);
+    }
+    $render = array(
+      '#theme' => 'image_style',
+      '#style_name' => 'avatar',
+      '#path' => !empty($account->picture) ? $account->picture->uri : $default_picture,
+      '#alt' => $account->name,
+      '#title' => $account->name,
+    );
+    $admins[] = l(render($render), 'user/' . $account->uid, array('html' => TRUE));
+  }
+
+  return $admins;
+}
+
+/**
+ * Return all communities checked as global community (field_check_global_community = 1)
+ *
+ * @return [description]
+ */
+function ag_section_social_netwok_get_global_communities($initial_options = array()) {
+  // Get all communities checked as field_check_global_community = 1;
+  $query = db_select('node', 'n')
+    ->fields('n', array('nid', 'title'))
+    ->condition('status', 0, '>');
+  $query->join('field_data_field_check_global_community', 'cgc', 'cgc.entity_id=n.nid');
+  $query->condition('cgc.field_check_global_community_value', 1, '=');
+
+  $results = $query->execute()->fetchAllKeyed();
+  return $initial_options + $results;
+}
+
+/**
+ * Rewrite facet items via callback function
+ */
+function ag_section_social_netwok_facet_items_alter(&$build, &$settings) {
+  if ($settings->facet == "profile_datos_personales:field_province_personal_fc:field_province") {
+    foreach($build as $key => $item) {
+      $build[$key]["#markup"] = $item["#markup"];
+      if (empty($build[$key]["#markup"])) {
+        $build[$key]["#markup"] = t('Not defined');
+      }
+    }
+  }
+}
+
+/**
+ * Retrieve all neccesary links for communities:
+ */
+function _ag_section_social_netwok_get_community_links(&$entity, $view_mode) {
+  global $user;
+
+  if ($entity->type === 'social_network' && $view_mode === 'teaser') {
+    if (og_user_access('node', $entity->nid, 'update group')) {
+      // Add the edit link:
+      $entity->content['links']['node']['#links']['edit-link'] = array(
+        'title' => t('Edit'),
+        'href' => 'node/' . $entity->nid . '/edit',
+        'attributes' => array('class' => 'edit-link'),
+      );
+    }
+
+    if (og_user_access('node', $entity->nid, 'unsubscribe')) {
+      // Add the link for unsubscribe:
+      $entity->content['links']['node']['#links']['unsubscribe-link'] = array(
+        'title' => t('Unsubscribe'),
+        'href' => "group/node/$entity->nid/unsubscribe",
+        'attributes' => array('class' => 'unsubscribe-link'),
+        'query' => array(
+          'destination' => "user/$user->uid/my-communities/pending",
+        ),
+      );
+    }
+  }
+}
+
+/**
+ * Implements hook_node_insert()
+ */
+function ag_section_social_netwok_node_insert($node) {
+  if ($node->type == 'social_network') {
+    $uids = DrupalToolKit::getUidsByRole('administrator');
+    if (!empty($uids)){
+      $message = message_create('new_pending_community', array('uid' => $node->uid));
+      $wrapper = entity_metadata_wrapper('message', $message);
+      $wrapper->field_social_network_ref->set($node->nid);
+      $wrapper->field_target_users->set($uids);
+      $wrapper->field_message_status->set(0);
+      $wrapper->save();
+
+      //The sender of the notification is user 1. Stablished this value on the
+      //message creation
+      $message = message_create('requested_community_creation_pending', array('uid' => 1));
+      $wrapper = entity_metadata_wrapper('message', $message);
+      $wrapper->field_social_network_ref->set($node->nid);
+      $wrapper->field_target_users->set(array($node->uid));
+      $wrapper->field_message_status->set(0);
+      $wrapper->save();
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ * @param $variables
+ */
+function ag_section_social_netwok_preprocess_page(&$variables) {
+  // SORRY!!! Son las 14.43 no he comido y el pase a PRO es a las 16.00
+  $messages = drupal_get_messages('status', FALSE);
+  if (!empty($messages['status'])) {
+    $regex = '/^' . t('Community') . '/';
+    foreach($messages['status'] as $msg) {
+      if (preg_match($regex, $msg)) {
+        // Remove messages:
+        $messages = drupal_get_messages('status');
+        // Add our own message:
+        drupal_set_message(t('Your community requested has been successfully sent. You will be noticed when an admin accept or deny it.'));
+        break;
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_permission().
+ */
+function ag_section_social_netwok_permission() {
+  return array(
+    'administer communities' => array(
+    'title' => t('Administer communities creation'),
+    'description' => t('Allow people to accept or reject a community creation request'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_views_data().
+ */
+function ag_section_social_netwok_views_data() {
+  $data = array();
+  $data['node']['moderate'] = array(
+    'title' => t('Moderate handler'),
+    'help' => t('Handler for moderate links in moderating social networks'),
+    'field' => array(
+      'handler' => 'ag_section_social_netwok_handler_moderate',
+    ),
+  );
+  $data['node']['community_type'] = array(
+    'title' => t('Community type'),
+    'help' => t('Render the community type, public, private or restricted'),
+    'field' => array(
+      'handler' => 'ag_section_social_netwok_handler_community_type_field',
+    ),
+  );
+
+  return $data;
+}
+
+/**
+ * Implements hook_og_membership_presave().
+ */
+function ag_section_social_netwok_og_membership_presave(OgMembership $ogMembership) {
+  if ($ogMembership->entity_type == 'user') {
+    search_api_track_item_change($ogMembership->entity_type, array($ogMembership->etid));
+  }
+}
+
+/**
+ *  Implements hook_og_membership_insert().
+ */
+function ag_section_social_netwok_og_membership_insert(OgMembership $og_membership) {
+  global $user;
+  if ($og_membership->state == 1) {
+    if ($og_membership->entity_type == 'user' && $user->uid == $og_membership->etid) {
+      drupal_set_message(t('Congratulations now you are a member of this community'));
+    }
+  }
+}
+
+/**
+ *  Implements hook_node_validate().
+ */
+function ag_section_social_netwok_node_validate($node, $form, &$form_state) {
+  //Validate only if node has og_group_ref field.
+  if (isset($node->og_group_ref['und'])) {
+    $is_in_faq = _is_in_faq_group($node);
+    $groups_number = count(array_keys($node->og_group_ref['und']));
+
+    if ($is_in_faq && $groups_number > 1) {
+      form_set_error('faq_validation_groups', t('You can\'t publish a content in Help and FAQ in addition with other communities'));
+    }
+
+    if ($node->type != 'question' && $is_in_faq && $groups_number == 1 && !og_user_access('node', FAQS, 'administer group')) {
+      form_set_error('faq_validation_admin', t('Only administrators can publish on this community'));
+    }
+  }
+}
+
+function _is_in_faq_group($node) {
+  if (isset($node->og_group_ref['und'])) {
+    $keys = array_keys($node->og_group_ref['und']);
+    foreach($keys as $value) {
+      if (FAQS == $node->og_group_ref['und'][$value]['target_id']) {
+        return TRUE;
+      }
+    }
+  }
+
+  return FALSE;
+}
+
+/*
+ * Return the nid of the FAQs community
+ */
+function _getFaqNid() {
+  $node_url = drupal_lookup_path('source', 'comunidades/ayuda-y-faqs');
+  $args = explode('/', $node_url);
+  if ($args[0] == 'node') {
+    return $args[1];
+  }
+  else {
+    return 0;
+  }
+}
+
+/**
+ * Update Solr communityAdminSupr, to be able to facet by administrator names.
+ * @param int $gid Identifier of social_network node group.
+ * @return $status, 0 if failure, 1 if succeeded.
+ */
+function ag_section_social_netwok_update_community_administrators($gid) {
+  $memberships = OgDrupalToolKit::getUsersByRoleName('node', 'social_network', $gid, OG_ADMINISTRATOR_ROLE)->fetchAllKeyed(1,2);
+
+  $memberships = array_keys($memberships);
+  $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+
+  list($status, $result) = $OS_orchestrator_inyection->Update_communityAdminSups($gid, $memberships);
+  return $status;
+}
+
+/**
+* Implements hook_form_alter()
+* Remove "share in other networks" button if user is creating resource from FAQS community.
+* Warning: If user changes og_group_ref after prepopulation, button is already disabled.
+*/
+function ag_section_social_netwok_form_alter(&$form, &$form_state, $form_id) {
+  if (isset($form['#node_edit_form']) && $form['#node_edit_form'] == TRUE && isset($_GET['og_group_ref'])) {
+    //Get faqs community nid. By variable as the new system, but getFaqNid obtains it from node alias in case of failure.
+    $global_faqs = variable_get('global_community_faqs', _getFaqNid());
+
+    if (!empty($global_faqs) && $_GET['og_group_ref'] == $global_faqs) {
+      //Avoid user changing this field in FAQS.
+      if (isset($form['field_question_share'])) {
+        $form['field_question_share']['#access'] = FALSE;
+      }
+      //Same with debate.
+      if (isset($form['field_debate_share'])) {
+        $form['field_debate_share']['#access'] = FALSE;
+      }
+    }
+  }
+
+  //Anyway, we should control that, no matter where the form comes from, a content can not be enabled to be shared in FAQS network.
+  //In other words, field_question_share must be zero if node is going to be published or edited into FAQS. Add validation:
+  if (isset($form['#node_edit_form']) && $form['#node_edit_form'] == TRUE) {
+
+    //Add validation to both fields, be it field_question_share or field_debate_share.
+    if (isset($form['field_question_share'])) {
+      $form['field_question_share']['#element_validate'][] = 'ag_section_social_netwok_faqs_avoid_sharing';
+    }
+    if (isset($form['field_debate_share'])) {
+      $form['field_debate_share']['#element_validate'][] = 'ag_section_social_netwok_faqs_avoid_sharing';
+    }
+  }
+}
+
+/**
+* Element validate to avoid enabling "Allow others to share it" checkbox and at the same time creating the node on FAQS network.
+* No node in FAQS network may be shared.
+*/
+function ag_section_social_netwok_faqs_avoid_sharing($element, &$form_state) {
+  //Check if field_question_share or field_debate_share exist and has value.
+  if (isset($form_state['values']['field_question_share'][LANGUAGE_NONE][0]['value'])) {
+    $value = $form_state['values']['field_question_share'][LANGUAGE_NONE][0]['value'];
+  }
+  if (isset($form_state['values']['field_debate_share'][LANGUAGE_NONE][0]['value'])) {
+    $value = $form_state['values']['field_debate_share'][LANGUAGE_NONE][0]['value'];
+  }
+
+  //If that checkbox exist, get value and try validation if value is neither zero nor null.
+  if (!empty($value)) {
+    //Get FAQS network nid.
+    $global_faqs = variable_get('global_community_faqs', _getFaqNid());
+
+    //Get groups where the content will be posted.
+    $groups = array();
+    if (isset($form_state['values']['og_group_ref'][LANGUAGE_NONE][0]['target_id'])) {
+      foreach ($form_state['values']['og_group_ref'][LANGUAGE_NONE] as $group) {
+        $groups[] = $group['target_id'];
+      }
+    }
+    else if (isset($form_state['values']['og_group_ref'][LANGUAGE_NONE][0]['default'])) {
+      //In POST node, og_group_ref has other structure.
+      foreach ($form_state['values']['og_group_ref'][LANGUAGE_NONE] as $key => $group) {
+        if (is_numeric($key)) {
+          $groups[] = current($group['default']);
+        }
+      }
+    }
+
+    //If checkbox is enabled, and user is trying to post it on FAQS network => Failure.
+    if (in_array($global_faqs, $groups)) {
+      form_error($element, t('Content published in Help and faqs network can not be shared in other networks.
+       Please disable @title checkbox or assign it to other available networks.', array('@title' => $element[LANGUAGE_NONE]['#title'])));
+    }
+  }
+}
+
+/**
+ * Function node_type_get_name returns node type label,
+ * but we need it in English for translation.
+ */
+function translate_node_type_name($node_type_name) {
+  switch ($node_type_name) {
+    case 'Artículo': $ret = 'Post'; break;
+    case 'Comunidad': $ret = 'Community'; break;
+    case 'Debate': $ret = 'Debate'; break;
+    case 'Encuesta': $ret = 'Poll'; break;
+    case 'Evento': $ret = 'Event'; break;
+    case 'Pregunta': $ret = 'Question'; break;
+    case 'Recurso de aprendizaje': $ret = 'Learning resource'; break;
+    case 'Respuesta': $ret = 'Answer'; break;
+    default: $ret = $node_type_name; break;
+  }
+
+  return $ret;
+}
+
+/**
+ *  Returns public community info as service
+ *  @param $gid
+ */
+function _public_community_data($gid) {
+  $return['message'] = '';
+  $return['status'] = FALSE;
+  $return['data'] = array();
+
+  $check = og_is_group('node', $gid);
+  if ($check) {
+    $entity = entity_load_single('node', $gid);
+    if ($entity->group_access[LANGUAGE_NONE][0]['value'] == 0) {
+      $return['data']['name'] = $entity->title;
+      $return['data']['path'] = drupal_lookup_path('alias', 'node/' . $entity->nid);
+      $return['data']['num_contents'] = OgDrupalToolKit::countContentsByGroup('node', array('recurso_de_aprendizaje', 'ode', 'post'), $gid);
+      $return['data']['num_members'] = OgDrupalToolKit::countMemberships('user', $gid);
+      $return['data']['recent_activity'] = views_embed_view('community_content', 'panel_pane_widget_content_activity', $gid);
+      $return['status'] = TRUE;
+    }
+    else {
+      $return['message'] = t('This comunity is private. Contact with the administrator');
+    }
+  }
+  else {
+    $return['message'] = t('This is not a community');
+  }
+
+  return $return;
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function ag_section_social_netwok_preprocess_views_view_field(&$variables) {
+  // Rewrite wrong output destination for edit membership link
+  if ($variables['view']->name == 'og_members_admin' && $variables['field']->field == 'edit_membership') {
+    $text = t('edit');
+    $path = 'group/node/' . $variables['row']->og_membership_users_gid . '/admin/people/edit-membership/' . $variables['row']->og_membership_users_id;
+    $options = array(
+      'query' => drupal_get_destination(),
+    );
+    $variables['output'] = l($text, $path, $options);
+  }
+}
+
+/**
+ * Implements hook_search_api_views_query_alter().
+ */
+function ag_section_social_netwok_search_api_views_query_alter(view &$view, SearchApiViewsQuery &$query) {
+  global $user;
+  $changed = FALSE;
+
+  // Alter the query for the user's favourites.
+  if ($view->name == 'my_favourites') {
+    foreach ($query->where[1]['conditions'] as $key => $value) {
+      if ($value[0] == 'flag_favorite_user') {
+        $query->where[1]['conditions'][$key][1] = $user->uid;
+      }
+    }
+  }
+
+  // Alter the query for the user's learning paths.
+  if ($view->name == 'my_learning_paths') {
+    foreach ($query->where[1]['conditions'] as $key => $value) {
+      if ($value[0] == 'author') {
+        $query->where[1]['conditions'][$key][1] = $user->uid;
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_flag_flag()
+ */
+function ag_section_social_netwok_flag_flag($flag, $entity_id, $account, $flagging) {
+  if ($flagging->flag_name == 'favorite' && $flagging->entity_type == 'node') {
+    // Clear field cache for the node.
+    cache_clear_all('field:node:' . $entity_id, 'cache_field');
+
+    // Reindex the node.
+    search_api_track_item_change('node', array($entity_id));
+  }
+}
+
+/**
+ * Implements hook_flag_unflag()
+ */
+function ag_section_social_netwok_flag_unflag($flag, $entity_id, $account, $flagging) {
+  if ($flagging->flag_name == 'favorite' && $flagging->entity_type == 'node') {
+    // Clear field cache for the node.
+    cache_clear_all('field:node:' . $entity_id, 'cache_field');
+
+    // Reindex the node.
+    search_api_track_item_change('node', array($entity_id));
+  }
+}
+
+/**
+ * Function to check if community wall show facet filter.
+ */
+function ag_section_social_netwok_show_facet_filters() {
+  $show_filters = 'hidden';
+
+  // Get params from url.
+  $query_params = drupal_get_query_parameters();
+
+  if (!empty($query_params['f']) && count($query_params['f']) > 0) {
+    $show_filters = '';
+  }
+
+  return $show_filters;
+}
+
+/**
+ * Implements hook_views_pre_build()
+ */
+function ag_section_social_netwok_views_pre_build(&$view) {
+  if ($view->name == 'user_timeline' || $view->name == 'my_favourites') {
+    $items = arg(3);
+    if (isset($items)) {
+      $view->set_items_per_page($items);
+    }
+  }
+}

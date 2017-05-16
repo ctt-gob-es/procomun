@@ -1,0 +1,240 @@
+<?php
+
+/**
+ * Implements hook_services_resources().
+ */
+function innopro_services_services_resources() {
+  return array(
+    'favorites' => array(
+      'retrieve' => array(
+        'help' => 'Retrieve user favorites',
+        'callback' => '_innopro_services_user_favorites',
+        'access callback' => '_innopro_services_access',
+        'access callback file' => array(
+          'type' => 'inc',
+          'module' => 'innopro_services',
+          'name' => 'innopro_services',
+        ),
+        'args' => array(
+          array(
+            'name' => 'user_uid',
+            'type' => 'int',
+            'description' => 'user UID',
+            'source' => array(
+              'path' => '0'
+            ),
+            'optional' => FALSE,
+          ),
+        ),        
+      ),
+    ),
+    'profile_image' => array(
+      'retrieve' => array(
+        'help' => 'Retrieve profile image from user',
+        'callback' => '_innopro_services_user_image',
+        'access callback' => '_innopro_services_access',
+        'access callback file' => array(
+          'type' => 'inc',
+          'module' => 'innopro_services',
+          'name' => 'innopro_services',
+        ),
+        'args' => array(
+          array(
+            'name' => 'user_uid',
+            'type' => 'int',
+            'description' => 'user UID',
+            'source' => array(
+              'path' => '0'
+            ),
+            'optional' => FALSE,
+          ),
+        ),        
+      ),
+    ),    
+    'set_favorite' => array(
+      'retrieve' => array(
+        'help' => 'Create a favorite flag for ODE',
+        'callback' => '_innopro_services_user_set_favorite_ode',
+        'access callback' => '_innopro_services_access',
+        'access callback file' => array(
+          'type' => 'inc',
+          'module' => 'innopro_services',
+          'name' => 'innopro_services',
+        ),
+        'args' => array(
+          array(
+            'name' => 'ode_id',
+            'type' => 'int',
+            'description' => 'ODE SolrID',
+            'source' => array(
+              'path' => '0'
+            ),
+            'optional' => FALSE,
+          ),
+          array(
+            'name' => 'user_id',
+            'type' => 'int',
+            'description' => 'User SolrID',
+            'source' => array(
+              'path' => '1'
+            ),
+            'optional' => FALSE,
+          ),     
+          array(
+            'name' => 'action',
+            'type' => 'varchar',
+            'description' => 'Action',
+            'source' => array(
+              'path' => '2'
+            ),
+            'optional' => FALSE,
+          ),                 
+        ),
+      ), 
+    ),
+    'categories' => array(
+      'retrieve' => array(
+        'help' => 'Retrieve categoríes',
+        'callback' => '_innopro_services_categories',
+        'access callback' => '_innopro_services_access',
+        'access callback file' => array(
+          'type' => 'inc',
+          'module' => 'innopro_services',
+          'name' => 'innopro_services',
+        ),
+        'args' => array(
+          array(
+            'name' => 'user_uid',
+            'type' => 'int',
+            'description' => 'user UID',
+            'source' => array(
+              'path' => '0'
+            ),
+            'optional' => FALSE,
+          ),
+        ),        
+      ),
+    ), 
+    'highlighted_resources' => array(
+      'retrieve' => array(
+        'help' => 'Retrieve highlighted resources',
+        'callback' => '_innopro_services_highlighted_resources',
+        'access callback' => '_innopro_services_access',
+        'access callback file' => array(
+          'type' => 'inc',
+          'module' => 'innopro_services',
+          'name' => 'innopro_services',
+        ),
+        'args' => array(
+          array(
+            'name' => 'user_uid',
+            'type' => 'int',
+            'description' => 'user UID',
+            'source' => array(
+              'path' => '0'
+            ),
+            'optional' => TRUE,
+          ),
+        ),        
+      ),
+    ),
+    'events' => array(
+      'retrieve' => array(
+        'help' => 'Retrieve user events',
+        'callback' => '_innopro_services_user_events',
+        'access callback' => '_innopro_services_access',
+        'access callback file' => array(
+          'type' => 'inc',
+          'module' => 'innopro_services',
+          'name' => 'innopro_services',
+        ),
+        'args' => array(
+          array(
+            'name' => 'user_uid',
+            'type' => 'int',
+            'description' => 'user UID',
+            'source' => array(
+              'path' => '0'
+            ),
+            'optional' => FALSE,
+          ),
+        ),
+      ),
+    ),
+    'profile' => array(
+      'actions' => array(
+        'public' => array(
+          'help' => 'Retrieve user public profile',
+          'callback' => '_innopro_services_user_public_profile',
+          'access callback' => '_innopro_services_access',
+          'access callback file' => array(
+            'type' => 'inc',
+            'module' => 'innopro_services',
+            'name' => 'innopro_services',
+          ),
+          'args' => array(
+            array(
+              'name' => 'mail',
+              'type' => 'string',
+              'description' => 'A valid username mail',
+              'source' => array('data' => 'mail'),
+              'optional' => FALSE,
+            ),
+          ),
+        ),
+      ),
+    ),
+
+    'odes' => array(
+      'operations' => array(
+        'create' => array(
+          'help' => 'Create an ode',
+          'file' => array('type' => 'inc', 'module' => 'innopro_services', 'name' => 'innopro_services'),
+          'callback' => 'odes_soap_create',
+          'access callback' => '_innopro_services_access',
+          'args' => array(
+            array(
+              'name' => 'ode',
+              'type' => 'array',
+              'description' => 'The ode object',
+              'source' => 'data',
+              'optional' => FALSE,
+            ),
+          ),
+        ),
+      ),
+    ),
+
+    'sync' => array(
+      'retrieve' => array(
+        'help' => 'Synchronize new and updated odes',
+        'callback' => '_synchronize_odes',
+        'access callback' => '_innopro_services_access',
+        'access callback file' => array(
+          'type' => 'inc',
+          'module' => 'innopro_services',
+          'name' => 'innopro_services',
+        ),
+        'access arguments append' => TRUE,
+        'args' => array(
+          array(
+            'name' => 'timestamp',
+            'type' => 'int',
+            'description' => 'Dummy parameter for GET request',
+            'source' => array(
+              'path' => '0'
+            ),
+            'optional' => TRUE,
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+/**
+ * Access callback
+ */
+function _innopro_services_access() {
+  return TRUE;
+}

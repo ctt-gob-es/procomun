@@ -1,0 +1,304 @@
+<?php
+
+
+/**
+ * Implements hook_menu().
+ */
+function ag_comments_menu() {
+  $items = array();
+
+  $items['comment/new/%node'] = array(
+    'title' => 'Add new comment',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ag_comments_new_comment_form', 2),
+    'access arguments' => array('post comments'),
+  );
+
+  $items['comment/answer/%node/%'] = array(
+    'title' => 'Add new comment',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ag_comments_new_comment_form', 2, 3),
+    'access arguments' => array('post comments'),
+  );
+
+  $items['admin/config/content/ag_comments'] = array(
+    'title' => 'Ag comments',
+    'description' => 'Config Agrega2 comments',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ag_comments_admin_form'),
+    'access arguments' => array('config ag_comments'),
+    'file' => 'ag_comments.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * This is a "form Wrapper" to get the comment form. This is necessary because
+ * we need to customize our form_state to call the comment form and with ctools_automodal
+ * we can't do it.
+ */
+function ag_comments_new_comment_form($form, &$form_state) {
+  $object = $form_state['build_info']['args'][0];
+  $edit = array(
+    'nid' => isset($object->nid) ? $object->nid : $object,
+    'pid' => isset($form_state['build_info']['args'][1]) ? $form_state['build_info']['args'][1] : NULL,
+  );
+
+  $form_state['comment'] = (object)$edit;
+  $form_state['build_info']['args'][] = $edit;
+  // Get the comment form:
+  $form = drupal_build_form("comment_node_{$object->type}_form", $form_state);
+  // Customize our form_state
+  $form_state['re_render'] = FALSE;
+  $form_state['no_redirect'] = TRUE;
+
+  return $form;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function ag_comments_form_comment_form_alter(&$form, &$form_state, $form_id) {
+  global $is_https;
+
+  // BIG HACK: For the comment form the default #action param is comment/reply/%node
+  //, with it our modal will crash as never you have seen. For this reasson we need to
+  // to change #action and put our action path.
+  // I did this viewing modal_forms_form_comment_form_alter at http://cgit.drupalcode.org/modal_forms/tree/modal_forms.module
+  if (isset($form_state['ajax']) && $form_state['ajax']) {
+    //Check if we are over https or not for change form url action
+    if ($is_https) {
+      $options = array('https' => TRUE);
+    }
+    else {
+      $options = array('https' => FALSE);
+    }
+    $form['#action'] = url($_GET['q'] . '/nojs', $options);
+  }
+
+  $form['#pre_render'][] = 'callback_hide_text_format_modal_window';
+}
+
+/**
+ * Hide text format guidelines and filter selector when the comment form is in a modal window.
+ *
+ * @param $form
+ *   An associative array containing the structure of the form.
+ *
+ * @return mixed
+ *   Same form without access to text formats.
+ *
+ * @ingroup callbacks
+ */
+function callback_hide_text_format_modal_window(&$form) {
+  $form['comment_body'][LANGUAGE_NONE][0]['format']['#access'] = FALSE;
+
+  return $form;
+}
+
+/**
+ * Implements hook_modal_paths().
+ */
+function ag_comments_modal_paths() {
+  $paths = array();
+
+  $paths['comment/new/%node'] = array(
+    'style' => 'modal-comment',
+    'reload' => TRUE,
+  );
+  $paths['comment/answer/%node/%'] = array(
+    'style' => 'modal-comment',
+    'reload' => TRUE,
+  );
+  $paths['ode/comment/new/%ode_light_node'] = array(
+    'style' => 'modal-comment',
+    'reload' => TRUE,
+  );
+  return $paths;
+}
+
+/**
+ * Implements hook_modal_styles().
+ */
+function ag_comments_modal_styles() {
+  $styles = array();
+
+  $styles['modal-comment'] = array(
+    'modalSize' => array(),
+    'modalClass' => 'modal-comment',
+  );
+
+  return $styles;
+}
+
+/**
+ * Implements hook_entity_view().
+ */
+function ag_comments_entity_view($entity, $type, $view_mode, $langcode) {
+
+  // Replace the comments links :
+  if ($type === 'node') {
+    // Get the ag_comment settings:
+    $allowed_contents_default_values = variable_get('ag_comments_allowed_contents', array());
+    $allowed_view_modes = variable_get('ag_comments_allowed_view_modes', array());
+
+    // Check allowed content types
+    $is_allowed_content_type = !empty($allowed_contents_default_values) && in_array($entity->type, $allowed_contents_default_values, TRUE);
+    // Check allowed view modes
+    $is_allowed_view_mode = !empty($allowed_view_modes) && in_array($view_mode, $allowed_view_modes, TRUE);
+    if ($is_allowed_content_type && $is_allowed_view_mode) {
+      $links = array();
+      if ($entity->comment == COMMENT_NODE_OPEN && user_access('post comments')) {
+        $links['comment-new-comment'] = array(
+          'title' => t('To comment'),
+          'href' => "comment/new/$entity->nid",
+          'attributes' => array(
+            'title' => t('Add a new comment to this page.'),
+            'class' => array('comment-link'),
+          ),
+        );
+        $entity->content['links']['comment']['#links'] = $links;
+      }
+      elseif ($entity->comment == COMMENT_NODE_OPEN) {
+        // Comments are open but the user have not permission to comment:
+        unset($entity->content['links']['comment']['#links']);
+      }
+
+      if (user_access('access comments')) {
+        /* Add the comments if we are in teasers:
+         *   By default comments only are only show in full but we want show them in
+         *teasers. For more info @ see:
+         *  - https://api.drupal.org/api/drupal/modules%21comment%21comment.module/function/comment_node_view/7
+         *  - https://api.drupal.org/api/drupal/modules%21comment%21comment.module/function/comment_node_page_additions/7
+        */
+        $entity->content['comments'] = comment_node_page_additions($entity);
+        // Add the js required for toggle comments:
+        $entity->content['comments']['#attached']['js'][] =
+          drupal_get_path('module', 'ag_comments') . '/js/ag_comments.js';
+      }
+    }
+  }
+
+  if ($type == 'comment') {
+    //Add new reply button link, replacing drupal one with our custom form, style and modal.
+    if (isset($entity->content['links']['comment']['#links']['comment-reply'])) {
+      unset($entity->content['links']['comment']['#links']['comment-reply']);
+      if ($entity->pid == 0) {
+        $new_link = array(
+          'title' => t('reply'),
+          'href' => "comment/answer/$entity->nid/$entity->cid",
+          'attributes' => array(
+            'title' => t('Add a new comment to this page.'),
+          ),
+        );
+        $entity->content['links']['comment']['#links']['comment-reply'] = $new_link;
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_preproccess_THEME().
+ */
+function ag_comments_preprocess_comment(&$variables) {
+  // Override cretaed date as interval:
+  $variables['created'] = date('d/m/Y', $variables['comment']->created);
+  // Don't show title in comments if it is set:
+  $variables['show_title'] = FALSE;
+  // Don't show permalink in comments if it is set:
+  $variables['show_permalink'] = FALSE;
+
+  if (!empty($variables['content']['links'])) {
+    // We don't want the links to be inline, so we overwrite classes, just keeping links
+    $variables['content']['links']['#attributes']['class'] = array('links', 'social-links');
+  }
+}
+
+/**
+ * Implements hook_query_TAG_alter().
+ *
+ * Alter comments query to order by DESC as well as the default ASC.
+ *
+ * The default ASC ordering of threaded comments looks like this
+ * where 1 is older than 2.
+ *
+ * 1
+ * 1.1
+ * 1.1.1
+ * 1.2
+ * 2
+ * 2.1
+ * 2.1.1
+ * 2.1.2
+ * 2.2
+ *
+ * DESC ordering of threaded comments (newest to oldest) should look like this.
+ *
+ * 2
+ * 2.2
+ * 2.1
+ * 2.1.2
+ * 2.1.1
+ * 1
+ * 1.2
+ * 1.1
+ * 1.1.1
+ *
+ */
+function ag_comments_query_comment_filter_alter(QueryAlterableInterface $query) {
+  // We need to order comments DESC so drupal don't provide it by default. So we need some tweaks.
+  if (($node = $query->getMetaData('node')) && (get_class($query) == 'PagerDefault')) {
+    $orderby = &$query->getOrderBy();
+    $expressions = &$query->getExpressions();
+    // Sorting for threaded comments.
+    if (isset($orderby['torder'])) {
+      // Get rid of the expressions that prepare the threads for ASC ordering.
+      unset($expressions['torder']);
+      unset($orderby['torder']);
+      // Simply order by the thread field.
+      $orderby['c.thread'] = 'DESC';
+    }
+    // Sorting for flat comments.
+    else {
+      $direction = 'DESC';
+      if (isset($orderby['c.cid'])) {
+        unset($orderby['c.cid']);
+      }
+      $orderby['c.created'] = $direction;
+      $orderby['c.cid'] = $direction;
+    }
+  }
+}
+
+/**
+ * Implements hook_comment_view_alter().
+ */
+function ag_comments_comment_view_alter(&$build)
+{
+  // Alter comments to get rid of div.indented on comments with depth more than one.
+  // This means the comment is an answer to another answer or even more deeper.
+  // On older versions you could post this kind on recursive answers, but on new version you can't.
+  // So we still had this nested answers that need to be like only one answer (depth 1 max).
+  $prefix = '';
+  $comment = $build['#comment'];
+  $is_threaded = isset($comment->divs);
+
+  // Add only close divs as needed. With no .indented div.
+  if ($is_threaded && $comment->depth > 1) {
+    $prefix .= $comment->divs <= 0 ? str_repeat('</div>', abs($comment->divs)) : '';
+
+    // Add anchor for each comment like comment.module
+    $prefix .= "<a id=\"comment-$comment->cid\"></a>\n";
+    $build['#prefix'] = $prefix;
+
+    // Close all open divs.
+    if (!empty($comment->divs_final)) {
+      // By default $comment->divs_final comes with 2 closes divs. One is for the div.indented.
+      // Due to we have removed this div.indented on all the recursive iterations, we need to subtract one less than the current depth.
+      // So we keep a well formed HTML structure with all the divs open an closed properly.
+      $subtract = $comment->divs_final - 1;
+      $build['#suffix'] = str_repeat('</div>', $comment->divs_final - $subtract);
+    }
+  }
+}

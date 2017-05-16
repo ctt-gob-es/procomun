@@ -1,0 +1,113 @@
+<?php
+
+/**
+ * @file
+ */
+
+/**
+ * Implements hook_update_N().
+ */
+function ag_section_newsletter_update_7000() {
+  $spec = array(
+    'description'     => "The group's unique ID.",
+    'type'            => 'int',
+    'size'            => 'normal',
+  );
+
+  db_add_field( 'flagging', 'gid', $spec);
+}
+
+/**
+ * Implements hook_update_N().
+ * Subscribes all users to their respective groups newsletters.
+ */
+function ag_section_newsletter_update_7001(&$sandbox) {
+  //Prepare all variables in first iteration
+  if (!isset($sandbox['total'])) {
+
+    //Query all users, but not organizations.
+    $all_users = db_query("SELECT u.uid FROM users u INNER JOIN profile p ON p.uid=u.uid WHERE u.uid > 1 AND p.type = 'datos_personales'")->fetchCol();
+
+    $sandbox['elements'] = $all_users;
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = count($sandbox['elements']);
+
+    //Additional log details.
+    $sandbox['users_processed'] = 0;
+    $sandbox['new_suscriptions'] = 0;
+  }
+
+  //Get batch, or number of entities to process each time.
+  $elements_per_pass = 20;
+  $end = $sandbox['current'] + $elements_per_pass;
+
+  $preloaded_batch = user_load_multiple(array_slice($sandbox['elements'], $sandbox['current'], $elements_per_pass));
+
+  //Loop. Use db_query_range if any query needs to be split between batches.
+  while ($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    //Heavy operations
+    $number = $sandbox['current'];
+    $uid = $sandbox['elements'][$number];
+    $account = $preloaded_batch[$uid];
+
+    ag_section_newsletter_subscribe_all_groups($sandbox, $account);
+
+    //Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1, meaning we are done.
+  // Also, avoid division by zero
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @users_processed users. Added @new_suscriptions new suscriptions.',
+                       array('@users_processed' => $sandbox['users_processed'], '@new_suscriptions' => $sandbox['new_suscriptions'])));
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function ag_section_newsletter_uninstall() {
+  // Remove gid collumn:
+  db_drop_field( 'flagging', 'gid');
+}
+
+/**
+* Auxiliary function for update 7001. Subscribe a user to all its groups' newsletters.
+*/
+function ag_section_newsletter_subscribe_all_groups(&$sandbox, $account) {
+  //Get all communities from this user.
+  $groups = og_get_groups_by_user($account, 'node');
+
+  foreach ($groups as $key => $gid) {
+    // Get the newsletter for this group:
+    $newsletters = ag_section_newsletter_get_all_by_group($gid);
+
+    if (!empty($newsletters)) {
+      if (is_array($newsletters)) {
+        $newsletter = array_pop($newsletters);
+      }
+
+      if (isset($newsletter->newsletter_id)) {
+        //Check if the user is already a subscriber:
+        $is_subscriber = simplenews_user_is_subscribed($account->mail, $newsletter->newsletter_id);
+
+        //Subscribe only if it wasn't subscribed.
+        if (empty($is_subscriber)) {
+          simplenews_subscribe($account->mail, $newsletter->newsletter_id, FALSE, 'website', '');
+          $sandbox['new_suscriptions'] = $sandbox['new_suscriptions'] + 1;
+        }
+      }
+    }
+  }
+
+  $sandbox['users_processed'] = $sandbox['users_processed'] + 1;
+}

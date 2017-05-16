@@ -1,0 +1,1416 @@
+<?php
+/**
+ * @file
+ * Code for the ag_section_search_solr_sarnia feature.
+ */
+
+include_once 'ag_section_search_solr_sarnia.features.inc';
+
+/**
+ * Implements hook_menu().
+ */
+function ag_section_search_solr_sarnia_menu() {
+  //Home shared text for RRSS configuration
+  $items['admin/config/search/solr-autocomplete-fields'] = array(
+    'title' => 'SOLR autocomplete fields',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('admin_solr_autocomplete_fields_form'),
+    'access arguments' => array('administer solr autocomplete fields'),
+    'file' => 'ag_section_search_solr_sarnia.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function ag_section_search_solr_sarnia_permission() {
+  return array(
+    'administer solr autocomplete fields' => array(
+      'title' => t('Administer solr autocomplete fields'),
+      'description' => t('Administer solr autocomplete fields and types.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function ag_section_search_solr_sarnia_form_alter(&$form, &$form_state, $form_id) {
+  if (isset($form['#id'])) {
+    if ($form['#id'] == 'views-exposed-form-ode-search-page') {
+      $form['type']['#type'] = 'select';
+      $form['type']['#options'] = array(
+        '' => t('All contents'),
+        'LEARNING_RESOURCE' => t('Learning resources'),
+        'POST' => t('Posts'),
+        'USER' => t('Users'),
+        'COMMUNITY' => t('Communities'),
+        'QUESTION' => t('Questions'),
+        'DISCUSSION' => t('Discussions'),
+        'POLL' => t('Polls'),
+        'EVENT' => t('Events'),
+        'URL' => t('External content'),
+        'LEARNING_PATH' => t('Learning paths'),
+        'PODCAST' => t('Podcasts'),
+        'WEBINAR' => t('Webinars'),
+      );
+
+      $form['type']['#multiple'] = FALSE;
+      $form['type']['#size'] = 1;
+      $form['type']['#weight'] = -10;
+
+      $form['type']['#attributes']['id'] = 'edit-type';
+      $form['type']['#title'] = t('Select');
+      // Remove *.* from text field  because we need it empty when using facets and empty search.
+      $form['query']['#pre_render'] = array('ode_search_form_pre_render');
+      // Disable possibility of autocompletion on the search box textfield.
+      $form['query']['#attributes']['autocomplete'] = 'off';
+      // Add a new attribute for distinct this automplete.
+      $form['query']['#attributes']['data-solr-autocomplete'] = 'on';
+      // Limit the search to 255 characters. By default it's set to 128. For an unlimit value, set it to NULL
+      $form['query']['#maxlength'] = 255;
+      // Add a hidden field to verify if we're coming from an autocomplete.
+      $form['auto']['#type'] = 'hidden';
+    }
+  }
+}
+
+/**
+ * Implements hook_search_api_solr_query_alter().
+ * @param $query
+ */
+function ag_section_search_solr_sarnia_search_api_solr_query_alter(&$call_args, $query) {
+  $call_args['params']['qf'] = array();
+  // Just to debug the autocomplete with FirePHP.
+  /*$path = libraries_get_path('FirePHPCore');
+  if (file_exists($path . '/fb.php')) {
+    include_once $path . '/fb.php';
+    include_once $path . '/FirePHP.class.php';
+  }*/
+  // Detect if we are using the autocomplete while executing a query. By default we're using the autocomplete from views.
+  if ($query->getOption('search id') == 'search_api_autocomplete:search_api_views_ode_search') {
+    $fq_type = $query->getOption('search type');
+
+    if (isset($fq_type)) {
+      $call_args['params']['fq'] = ($fq_type == 'LEARNING_RESOURCE') ? array('type:(ODE OR LEARNING_RESOURCE)') : array('type:' . $fq_type);
+    }
+
+    switch ($fq_type) {
+      case 'USER':
+        $user_input = $call_args['params']['facet.prefix'];
+        // Sanitize final query to prevent errors with Solr.
+        $user_input = ag_section_search_solr_sarnia_clean_user_input($user_input);
+
+        // Using new auto field.
+        $call_args['query'] = '(userNameSurnameAuto:' . $user_input . ' OR labelsAuto:' . $user_input . ')';
+        $call_args['params']['facet.limit'] = 10;
+
+        break;
+      case 'LEARNING_RESOURCE':
+        $user_input = $call_args['params']['facet.prefix'];
+        // Sanitize final query to prevent errors with Solr.
+        $user_input = ag_section_search_solr_sarnia_clean_user_input($user_input);
+
+        $call_args['params']['fq'][] = '(generalTitleAuto:' . $user_input . ' OR generalKeywordAuto:' . $user_input . ')';
+        $call_args['query'] = '(generalTitleAuto:' . $user_input . ' OR generalKeywordAuto:' . $user_input . ')';
+        break;
+      case '':
+        // General search
+        $user_input = $call_args['params']['facet.prefix'];
+        // Sanitize final query to prevent errors with Solr.
+        $user_input = ag_section_search_solr_sarnia_clean_user_input($user_input);
+
+        $call_args['params']['fl'] = array('generalTitleStr', 'userNameSurnameStr');
+        $call_args['query'] = '(labelsAuto:' . $user_input . ' OR generalKeywordAuto:'  . $user_input . ' OR generalTitleAuto:'  . $user_input  . ' OR userNameSurnameAuto:'  . $user_input . ')';
+        break;
+      default:
+        // For the moment we don't need to request for other types. Request for Num Founds to '0'.
+        unset($call_args['params']['fq']);
+        $call_args['params']['facet.field'] = array();
+        $call_args['query'] = '.';
+    }
+    // Define num rows and unset facet search.
+    $call_args['params']['rows'] = 10;
+    unset($call_args['params']['facet.field']);
+    unset($call_args['params']['facet.limit']);
+    unset($call_args['params']['facet.mincount']);
+    // Remove from the query spellcheck.
+    unset($call_args['params']['spellcheck']);
+    unset($call_args['params']['spellcheck.count']);
+    unset($call_args['params']['qf']);
+    unset($call_args['params']['facet.prefix']);
+    $call_args['params']['fq'][] = 'published:1';
+  }
+  elseif ($query->getOption('search id') == 'search_api_views:ode_search:page') {
+    // Obtain the type from the form and inject it into the query.
+    if (!empty($_GET['type'])) {
+      $type = ($_GET['type'] == 'LEARNING_RESOURCE') ? '(LEARNING_RESOURCE OR ODE)' : check_plain($_GET['type']);
+      $call_args['params']['fq'][] = 'type:' . $type;
+    }
+    else {
+      $type = '';
+      $call_args['params']['fq'][] = 'type:(LEARNING_RESOURCE OR ODE OR POST OR USER OR QUESTION OR DISCUSSION OR POLL OR EVENT OR URL OR LEARNING_PATH OR PODCAST OR WEBINAR) AND published:1';
+    }
+    // IF COMING WITHOUT AUTOCOMPLETE
+    // We need to change "*.*" to '*:*' because solr does not recognise the double quoted string.
+    if (isset($_GET['auto'])) {
+      $auto = ($_GET['auto'] != '') ? check_plain($_GET['auto']) : 'none';
+    }
+    else {
+      $auto = 'none';
+    }
+    if ($auto == 'none') {
+      if (!empty($_GET['query']) && ($_GET['query'] != '*:*')) {
+        if ($_GET['type'] == 'USER') {
+          $call_args['query'] = 'userNameSurname:"' . htmlspecialchars($_GET['query'], ENT_NOQUOTES, 'UTF-8') . '"';
+        }
+        else {
+          $call_args['query'] = htmlspecialchars($_GET['query'], ENT_NOQUOTES, 'UTF-8');
+          // Sanitize final query to prevent errors with Solr.
+          $call_args['query'] = htmlspecialchars($_GET['query'], ENT_NOQUOTES, 'UTF-8');
+        }
+      }
+      else {
+        $call_args['query'] = '*:*';
+      }
+      $call_args['params']['fl'] .= agrega2_add_fields_query($type);
+      $call_args['params']['facet.field'] = agrega2_add_facet_field_query($type);
+    }
+    else {
+      // The autocomplete option is selected so let's add the filter and remove the query.
+      $call_args['params']['fq'][] =  $auto . ':"' . check_plain($_GET['query']) . '"';
+      $call_args['query'] = '*:*';
+      $call_args['params']['fl'] .= agrega2_add_fields_query($type);
+      $call_args['params']['facet.field'] = agrega2_add_facet_field_query($type);
+    }
+    // Sort Order.
+    if (!empty($_GET['sort'])) {
+      $get_parameters = drupal_get_query_parameters();
+      $sort_options = ag_section_search_solr_sarnia_sort_options($get_parameters);
+      $sorting = check_plain($_GET['sort']);
+      if (!empty($sort_options[$sorting])) {
+        $call_args['params']['sort'] = $sort_options[$sorting]['field'];
+      }
+    }
+
+    // Check novelty field filter.
+    if (isset($_GET['novelty'])) {
+      // Parse novelty value.
+      $novelty = !empty($_GET['novelty']) ? 1 : 0;
+      $call_args['params']['fq'][] = 'novelty:' . $novelty;
+    }
+
+    $call_args['params']['fq'][] = 'published:1';
+  }
+  elseif (drupal_is_front_page()) {
+    // Alter Values for the front page search api queries.
+    $call_args['params']['facet.field'] = array('educationalLearningResourceTypeStr', 'classificationEducationalLevel1', 'educationalIntendedEndUserRoleStr',
+                                                'knowledgeArea', 'learningContext', 'resourceType');
+    $call_args['params']['facet.limit'] = 50;
+    $call_args['params']['fq'][] = 'published:1';
+  }
+}
+
+/**
+ * Implements hook_facet_items_alter().
+ * Basically used to translate facets.
+ */
+function ag_section_search_solr_sarnia_facet_items_alter(&$build, &$settings) {
+
+  //Performance caution. This shouldn't get called if facet should not be shown as it has no results at all.
+  if (!empty($build)) {
+
+    switch ($settings->facet) {
+      // Redirect to the entity search type.
+      case 'type':
+          // Create an array of types. We don't need the machine names for these types.
+          $type = array(
+            'ODE' => 'Learning resources',
+            'USER' => 'Users',
+            'QUESTION' => 'Questions',
+            'POST' => 'Post',
+            'DISCUSSION' => 'Discussions',
+            'DEBATE' => 'Discussions',
+            'POLL' => 'Polls',
+            'EVENT' => 'Events',
+            'RESPONSE' => 'Answers',
+            'ANSWER' => 'Answers',
+            'LEARNING_RESOURCE' => 'Learning resources',
+            'COMMUNITY' => 'Communities',
+            'URL' => 'External content',
+            'LEARNING_PATH' => 'Learning paths',
+            'PODCAST' => 'Podcasts',
+            'WEBINAR' => 'Webinars',
+            'ode' => 'Learning resources',
+            'user' => 'Users',
+            'question' => 'Questions',
+            'post' => 'Post',
+            'discussion' => 'Discussions',
+            'debate' => 'Discussions',
+            'poll' => 'Polls',
+            'event' => 'Events',
+            'response' => 'Answers',
+            'answer' => 'Answers',
+            'learning_resource' => 'Learning resources',
+            'community' => 'Communities',
+            'url' => 'External content',
+            'learning_path' => 'Learning paths',
+            'podcast' => 'Podcasts',
+            'webinar' => 'Webinars',
+          );
+
+          // TODO: Remove the following line when the content type 'learning resource' is activated.
+          unset($build['LEARNING_RESOURCE']);
+          // Remove Response content type from facet filters
+          unset($build['RESPONSE']);
+
+          foreach ($build as $key => $value) {
+            if ($settings->name === 'search_api@sarnia_ode_search:block:type') {
+              $build[$key]['#query']['type'] = ($key == 'LEARNING_RESOURCE' || $key == 'ODE') ? 'LEARNING_RESOURCE' : $key;
+            }
+            // Avoid machine name values for markups.
+            if (array_key_exists($key, $type)) {
+              $build[$key]['#markup'] = $type[$key];
+            }
+            // Only type needed in this case. We want to filter by type as a normal facet filter but only for Resources(ODE or Learning Resources).
+            if (($key != 'ODE') && ($key != 'LEARNING_RESOURCE') && $settings->name === 'search_api@sarnia_ode_search:block:type') {
+              unset($build[$key]['#query']['f']);
+            }
+          }
+        break;
+
+      case 'classificationEducationalLevel1':
+        foreach ($build as $key => $value) {
+          $localized_term = i18n_taxonomy_localize_terms(taxonomy_term_load($key));
+          $build[$key]['#markup'] = $localized_term->name;
+        }
+        break;
+
+      case 'classificationDiscipline3':
+        foreach ($build as $key => $value) {
+          $build[$key]['#markup'] = db_query('SELECT description FROM {taxonomy_term_data} WHERE tid = :tid limit 1', array(':tid' => str_replace('"',  '', $build[$key]['#markup'])))->fetchField();
+        }
+        break;
+
+      case 'generalLanguageStr':
+        // Get languages availables on ISO 639-1.
+        $allowed_languages = json_decode(allowed_languages(), true);
+        foreach ($allowed_languages as $key => $value) {
+          if (isset($build[$key]) && $key == $build[$key]['#markup']) {
+            $build[$key]['#markup'] = (String) $value;
+          }
+        }
+
+        // This case is special because this language (Valenciá) is not in ISO 639-1.
+        if (isset($build['va']) && $build['va']['#markup'] == 'va') {
+          $build['va']['#markup'] = t('valencià');
+        }
+
+        // This case is special because this language (x-none) is not in ISO 639-1.
+        if (isset($build['x-none']) && $build['x-none']['#markup'] == 'x-none') {
+          $build['x-none']['#markup'] = t('Undefined');
+        }
+        break;
+
+      case 'communityAdminSupsStr':
+        //Change username for Firstname and Surname
+        //Get username list
+        $username_list = array_keys($build);
+
+        if (!empty($username_list)) {
+          //Execute query
+          $result = db_select('users', 'u')
+            ->fields('u', array('uid', 'name'))
+            ->condition('name', $username_list , 'IN')
+            ->execute();
+
+          //Make associative array with username and uid
+          $username_list_uid = array();
+          while ($record = $result->fetchAssoc()) {
+            $username_list_uid[$record['name']] = $record['uid'];
+          }
+
+          //Change username
+          foreach ($build as $key => $value) {
+            if (array_key_exists($key, $username_list_uid)) {
+              $build[$key]['#markup'] = ag_section_profile_users_get_name_surname_cached($username_list_uid[$key]);
+            }
+            else {
+              //Quit unnamed users
+              unset($build[$key]);
+            }
+          }
+        }
+        break;
+
+      case 'odeNode':
+        //Change regional path names
+        //$region_facets = array();
+        foreach ($build as $key => $value) {
+           $path = ag_visualization_ode_get_regional_name_from_url($key);
+           if (!empty($path)) {
+             $build[$key]['#markup'] = $path;
+           }
+           else {
+             //Non-regional or not requested by client will be removed.
+             unset($build[$key]);
+           }
+        }
+        break;
+
+      case 'learningContext':
+
+        //Get taxonomy to order items. All orders must be disabled in facet configuration.
+        //TODO: Try to find a better way to specify order by taxonomy weight.
+        //Using facets normal sort callback implies loading all taxonomies separately (tax a < tax b), causing loss of performance.
+        $vid = db_query('SELECT vid FROM {taxonomy_vocabulary} WHERE machine_name = :machine_name', array(':machine_name' => 'learningcontext'))->fetchField();
+
+        if (!empty($vid)) {
+          $taxonomy_tree = taxonomy_get_tree($vid, 0, 2, FALSE);
+          //Order items!
+          $ordered_build = array();
+          foreach ($taxonomy_tree as $taxonomy) {
+
+            if (isset($build[$taxonomy->name])) {
+              $name_key = $taxonomy->name;
+              //Temporary variable to avoid older PHP problems.
+              $tmp_taxonomy_parents = isset($taxonomy->parents) ? $taxonomy->parents : array();
+              if (!empty($tmp_taxonomy_parents[0])) {
+                //Modify name if it has parents. Nothing for now.
+                $name_key = ' - ' . $name_key;
+              }
+              $ordered_build[$name_key] = $build[$taxonomy->name];
+            }
+          }
+          $build = $ordered_build;
+        }
+
+        //Translate taxonomy
+        foreach ($build as $key => $value) {
+           $path = ag_visualization_ode_i18n_translate_term_cached($value['#indexed_value'], 'es', 'learningcontext');
+           if (!empty($path)) {
+             //If starts with indentation " - ", leave as it is.
+             $path = (strpos($key, ' - ') === 0) ? ' - ' . $path : $path;
+             $build[$key]['#markup'] = $path;
+           }
+        }
+
+        break;
+
+      case 'knowledgeArea':
+        //Translate taxonomy
+        foreach ($build as $key => $value) {
+           $path = ag_visualization_ode_i18n_translate_term_cached($key, 'es', 'knowledgearea');
+           if (!empty($path)) {
+             $build[$key]['#markup'] = $path;
+           }
+        }
+        break;
+
+      case 'resourceType':
+        //Translate taxonomy
+        foreach ($build as $key => $value) {
+          //Try to translate it with the three available taxonomies. Handle with care.
+           $path = ag_visualization_ode_i18n_translate_term_cached($key, 'es', 'tipo_de_recurso');
+           if ($path === $key) {
+             $path = ag_visualization_ode_i18n_translate_term_cached($key, 'es', 'recurso_educativo');
+           }
+           if ($path === $key) {
+             $path = ag_visualization_ode_i18n_translate_term_cached($key, 'es', 'recurso_de_aprendizaje');
+           }
+           if (!empty($path)) {
+             $build[$key]['#markup'] = $path;
+           }
+        }
+        break;
+    }
+
+    // Make facets translatable.
+    foreach ($build as $key => $value) {
+      $build[$key]['#markup'] = t($build[$key]['#markup']);
+    }
+  }
+}
+
+/**
+ * Languages availables on ISO 639-1.
+ *
+ * @return string Languages - ISO 639-1 - JSON
+ */
+function allowed_languages() {
+  return $language_json = '{
+    "aa":"afar",
+    "ab":"abjasio (o abjasiano)",
+    "ae":"avéstico",
+    "af":"afrikáans",
+    "ak":"akano",
+    "am":"amhárico",
+    "an":"aragonés",
+    "ar":"árabe",
+    "as":"asamés",
+    "av":"avar (o ávaro)",
+    "ay":"aimara",
+    "az":"azerí",
+    "ba":"baskir",
+    "be":"bielorruso",
+    "bg":"búlgaro",
+    "bh":"bhoyapurí",
+    "bi":"bislama",
+    "bm":"bambara",
+    "bn":"bengalí",
+    "bo":"tibetano",
+    "br":"bretón",
+    "bs":"bosnio",
+    "ca":"catalán",
+    "ce":"checheno",
+    "ch":"chamorro",
+    "co":"corso",
+    "cr":"cree",
+    "cs":"checo",
+    "cu":"eslavo eclesiástico antiguo",
+    "cv":"chuvasio",
+    "cy":"galés",
+    "da":"danés",
+    "de":"alemán",
+    "dv":"maldivo (o dhivehi)",
+    "dz":"dzongkha",
+    "ee":"ewé",
+    "el":"griego (moderno)",
+    "en":"inglés",
+    "eo":"esperanto",
+    "es":"español (o castellano)",
+    "et":"estonio",
+    "eu":"euskera",
+    "fa":"persa",
+    "ff":"fula",
+    "fi":"finés (o finlandés)",
+    "fj":"fiyiano (o fiyi)",
+    "fo":"feroés",
+    "fr":"francés",
+    "fy":"frisón (o frisio)",
+    "ga":"irlandés (o gaélico)",
+    "gd":"gaélico escocés",
+    "gl":"gallego",
+    "gn":"guaraní",
+    "gu":"guyaratí (o guyaratí)",
+    "gv":"manés (gaélico manés o de Isla de Man)",
+    "ha":"hausa",
+    "he":"hebreo",
+    "hi":"hindi (o hindú)",
+    "ho":"hiri motu",
+    "hr":"croata",
+    "ht":"haitiano",
+    "hu":"húngaro",
+    "hy":"armenio",
+    "hz":"herero",
+    "ia":"interlingua",
+    "id":"indonesio",
+    "ie":"occidental",
+    "ig":"igbo",
+    "ii":"yi de Sichuán",
+    "ik":"iñupiaq",
+    "io":"ido",
+    "is":"islandés",
+    "it":"italiano",
+    "iu":"inuktitut (o inuit)",
+    "ja":"japonés",
+    "jv":"javanés",
+    "ka":"georgiano",
+    "kg":"kongo (o kikongo)",
+    "ki":"kikuyu",
+    "kj":"kuanyama",
+    "kk":"kazajo (o kazajio)",
+    "kl":"groenlandés (o kalaallisut)",
+    "km":"camboyano (o jemer)",
+    "kn":"canarés",
+    "ko":"coreano",
+    "kr":"kanuri",
+    "ks":"cachemiro (o cachemir)",
+    "ku":"kurdo",
+    "kv":"komi",
+    "kw":"córnico",
+    "ky":"kirguís",
+    "la":"latín",
+    "lb":"luxemburgués",
+    "lg":"luganda",
+    "li":"limburgués",
+    "ln":"lingala",
+    "lo":"lao",
+    "lt":"lituano",
+    "lu":"luba-katanga (o chiluba)",
+    "lv":"letón",
+    "mg":"malgache (o malagasy)",
+    "mh":"marshalés",
+    "mi":"maorí",
+    "mk":"macedonio",
+    "ml":"malayalam",
+    "mn":"mongol",
+    "mr":"maratí",
+    "ms":"malayo",
+    "mt":"maltés",
+    "my":"birmano",
+    "na":"nauruano",
+    "nb":"noruego bokmål",
+    "nd":"ndebele del norte",
+    "ne":"nepalí",
+    "ng":"ndonga",
+    "nl":"neerlandés (u holandés)",
+    "nn":"nynorsk",
+    "no":"noruego",
+    "nr":"ndebele del sur",
+    "nv":"navajo",
+    "ny":"chichewa",
+    "oc":"occitano",
+    "oj":"ojibwa",
+    "om":"oromo",
+    "or":"oriya",
+    "os":"osético (u osetio, u oseta)",
+    "pa":"panyabí (o penyabi)",
+    "pi":"pali",
+    "pl":"polaco",
+    "ps":"pastú (o pastún, o pashto)",
+    "pt":"portugués",
+    "qu":"quechua",
+    "rm":"romanche",
+    "rn":"kirundi",
+    "ro":"rumano",
+    "ru":"ruso",
+    "rw":"ruandés (o kiñaruanda)",
+    "sa":"sánscrito",
+    "sc":"sardo",
+    "sd":"sindhi",
+    "se":"sami septentrional",
+    "sg":"sango",
+    "si":"cingalés",
+    "sk":"eslovaco",
+    "sl":"esloveno",
+    "sm":"samoano",
+    "sn":"shona",
+    "so":"somalí",
+    "sq":"albanés",
+    "sr":"serbio",
+    "ss":"suazi (o swati, o siSwati)",
+    "st":"sesotho",
+    "su":"sundanés (o sondanés)",
+    "sv":"sueco",
+    "sw":"suajili",
+    "ta":"tamil",
+    "te":"télugu",
+    "tg":"tayiko",
+    "th":"tailandés",
+    "ti":"tigriña",
+    "tk":"turcomano",
+    "tl":"tagalo",
+    "tn":"setsuana",
+    "to":"tongano",
+    "tr":"turco",
+    "ts":"tsonga",
+    "tt":"tártaro",
+    "tw":"twi",
+    "ty":"tahitiano",
+    "ug":"uigur",
+    "uk":"ucraniano",
+    "ur":"urdu",
+    "uz":"uzbeko",
+    "ve":"venda",
+    "vi":"vietnamita",
+    "vo":"volapük",
+    "wa":"valón",
+    "wo":"wolof",
+    "xh":"xhosa",
+    "yi":"yídish (o yidis, o yiddish)",
+    "yo":"yoruba",
+    "za":"chuan (o chuang, o zhuang)",
+    "zh":"chino",
+    "zu":"zulú"
+  }';
+}
+
+
+/**
+ * Add the correct fields per type selected from search form.
+ */
+function agrega2_add_fields_query($type) {
+  $fields = '';
+  switch ($type) {
+    case 'USER':
+      $fields .= ',userNameStr,userSurNameStr,userPicture,userEducativeCenterStr,userEducativeCenterUrl,userLocalityStr,userProvinceStr,userCountryStr,userLabelsStr,userPlaceStr,idDrupal,id,type,labelsStr';
+      break;
+
+    case '(LEARNING_RESOURCE OR ODE)':
+      $fields .= ',labelsStr,generalLanguageStr,preview,generalTitleStr,authorStr,publicatorStr,publicatorEmailStr,publicationDate,generalDescriptionStr,generalAggregationLevelStr,generalKeywordStr,educationalLearningResourceTypeStr,classificationEducationalLevel1,classificationEducationalLevel1Label'
+      . 'classificationEducationalLevel2,classificationEducationalLevel3,classificationEducationalLevel4,classificationEducationalLevel5,classificationEducationalLevel6,classificationDiscipline1,classificationDiscipline2,'
+      . 'classificationDiscipline3,classificationDiscipline4,classificationCompetency1,classificationCompetency2,rightsCopyrightAndOtherRestrictionsStr,technicalFormatStr,id,type,idDrupal,lifecycleContributeStr,technicalLocationStr,mecIdentifierStr,learningContext,knowledgeArea,resourceType,odeNode,certified';
+      break;
+
+    case 'COMMUNITY':
+      $fields .= ',titleStr,descriptionStr,communityDate,communityLabelsStr,communityAdminSupsStr,idDrupal,score,id,type';
+      break;
+
+    case 'QUESTION':
+      $fields .= ',titleStr,idDrupal,questionLabelsStr,questionState,id,type';
+      break;
+
+    case 'RESPONSE':
+      $fields .= ',titleStr,descriptionStr,idDrupal,id,type';
+      break;
+
+    case 'EVENT':
+      $fields .= ',titleStr,eventLabelsStr,idDrupal,id,type';
+      break;
+
+    case 'DISCUSSION':
+      $fields .= ',titleStr,discussionLabelsStr,idDrupal,id,type';
+      break;
+
+    case 'POLL':
+      $fields .= ',titleStr,idDrupal,id,type';
+      break;
+
+    case 'POST':
+      $fields .= ',preview,titleStr,postLabelsStr,descriptionStr,idDrupal,id,type,learningContext,knowledgeArea,generalLanguageStr,odeNode';
+      break;
+
+    case 'URL':
+      $fields .= ',titleStr,idDrupal,labelsStr,descriptionStr,url,id,type';
+      break;
+
+    case 'LEARNING_PATH':
+      $fields .= ',titleStr,idDrupal,labelsStr,descriptionStr,learningContext,knowledgeArea,baseItinerary,itineraryContent,interestContent,id,type';
+      break;
+
+    case 'PODCAST':
+      $fields .= ',preview,titleStr,idDrupal,labelsStr,descriptionStr,learningContext,knowledgeArea,generalLanguageStr,podcastUrl,id,type';
+      break;
+
+    case 'WEBINAR':
+      $fields .= ',preview,titleStr,idDrupal,labelsStr,descriptionStr,learningContext,knowledgeArea,generalLanguageStr,webinarUrl,id,type';
+      break;
+
+    default:
+      $fields .= ',labelsStr,preview,generalTitleStr,authorStr,publicationDate,generalDescriptionStr,generalKeywordStr,educationalLearningResourceTypeStr,classificationEducationalLevel1,'
+        . 'classificationEducationalLevel2,classificationEducationalLevel3,classificationEducationalLevel4,classificationEducationalLevel5,classificationEducationalLevel6,classificationDiscipline1,classificationDiscipline2,'
+        . 'classificationDiscipline3,classificationDiscipline4,classificationCompetency1,classificationCompetency2,rightsCopyrightAndOtherRestrictionsStr,technicalFormatStr,userNameStr,userSurNameStr,userPicture,userEducativeCenterStr'
+        . ',userEducativeCenterUrl,userLocalityStr,userProvinceStr,userCountryStr,userLabelsStr,userPlaceStr,titleStr,descriptionStr,communityDate,communityLabels,communityAdminSupsStr,postLabelsStr,questionLabelsStr,communityLabelsStr'
+        . ',discussionLabelsStr,eventLabelsStr,idDrupal,id,type,lifecycleContributeStr,technicalLocationStr,mecIdentifierStr,learningContext,knowledgeArea,resourceType,odeNode,generalLanguageStr,certified'
+        . ',publicatorStr,publicatorEmailStr';
+  }
+  return $fields;
+}
+
+/**
+ * Add facets per type..
+ */
+function agrega2_add_facet_field_query($type) {
+  $facet_field = array();
+  switch ($type) {
+    case 'USER':
+      $facet_field = array('userProvinceStr', 'userCountryStr', 'labelsStr');
+      break;
+
+    case '(LEARNING_RESOURCE OR ODE)':
+      $facet_field = array('rightsCopyrightAndOtherRestrictionsStr', 'educationalIntendedEndUserRoleStr', 'technicalFormatStr', 'classificationDiscipline3Label', 'classificationEducationalLevel1Label', 'generalLanguageStr', 'labelsStr', 'knowledgeArea', 'resourceType', 'learningContext' , 'odeNode');
+      break;
+
+    case 'COMMUNITY':
+      $facet_field = array('communityAdminSupsStr', 'communityLabelsStr');
+      break;
+
+    case 'QUESTION':
+      $facet_field = array('questionLabelsStr', 'questionState');
+      break;
+
+    case 'RESPONSE':
+      $facet_field = array('responseLabelsStr');
+      break;
+
+    case 'EVENT':
+      $facet_field = array('eventLabelsStr');
+      break;
+
+    case 'DISCUSSION':
+      $facet_field = array('discussionLabelsStr');
+      break;
+
+    case 'POLL':
+      $facet_field = array();
+      break;
+
+    case 'POST':
+      $facet_field = array('postLabelsStr', 'knowledgeArea', 'learningContext', 'generalLanguageStr');
+      break;
+
+    case 'URL':
+      $facet_field = array('labelsStr', 'generalLanguageStr');
+      break;
+
+    case 'LEARNING_PATH':
+      $facet_field = array('knowledgeArea', 'learningContext', 'labelsStr');
+      break;
+
+    case 'PODCAST':
+      $facet_field = array('knowledgeArea', 'learningContext', 'labelsStr', 'generalLanguageStr');
+      break;
+
+    case 'WEBINAR':
+      $facet_field = array('knowledgeArea', 'learningContext', 'labelsStr', 'generalLanguageStr');
+      break;
+
+    default:
+      $facet_field = array('type', 'knowledgeArea', 'learningContext', 'labelsStr');
+  }
+  return $facet_field;
+}
+
+/**
+ * Implements hook_facetapi_search_info().
+ */
+function ag_section_search_solr_sarnia_facetapi_searcher_info_alter(array &$searcher_info) {
+  foreach ($searcher_info as &$info) {
+    $info['url processor'] = 'ag_section_search_solr_sarnia';
+  }
+}
+
+/**
+ * Implements hook_facetapi_url_processors().
+ */
+function ag_section_search_solr_sarnia_facetapi_url_processors() {
+  return array(
+    'ag_section_search_solr_sarnia' => array(
+         'handler' => array(
+         'label' => t('Agrega2'),
+         'class' => 'FacetapiUrlProcessorAgrega2',
+       ),
+     ),
+   );
+ }
+
+
+/**
+* Implements hook_preprocess_HOOK()
+* Template related: sarnia-view-user.tpl.php
+*/
+function ag_section_search_solr_sarnia_preprocess_sarnia_view_user(&$variables) {
+  if (isset($variables['properties']['idDrupal']) && !isset($variables['properties']['userPicture'])) {
+    $user = user_load($variables['properties']['idDrupal']);
+    $image_path = !is_null($user->picture) ? $user->picture->uri : NULL;
+    //If user has no picture assigned, get default.
+    if (!isset($image_path)) {
+      $image_path = variable_get('user_picture_default', '');
+      $classes = "default-image";
+    } else {
+      $classes = "avatar";
+    }
+    //Assign new image only if user had it, or user_picture_default_is set. Template would use default one automatically.
+    $image_options = array('style_name' => 'thumbnail', 'path' =>$image_path, 'attributes' => array('class' => $classes),'width' => NULL, 'height' => NULL,);
+    $variables['properties']['userPicture'] = theme_image_style($image_options);
+  }
+
+  //Add follow user link variable
+  if (!empty($variables['properties']['idDrupal'])) {
+    $follow_link = flag_create_link('follow_user', $variables['properties']['idDrupal']);
+    if (!empty($follow_link)) {
+      $variables['properties']['followLink'] = $follow_link;
+    }
+  }
+}
+
+/**
+* Implements hook_preprocess_HOOK()
+* Template related: sarnia-view-community.tpl.php
+*/
+function ag_section_search_solr_sarnia_preprocess_sarnia_view_community(&$variables) {
+
+  if (isset($variables['properties']['idDrupal']) && !isset($variables['properties']['communityPicture'])) {
+      $idDrupal = $variables['properties']['idDrupal'];
+
+      //Get image and imagepath
+      $query = db_select('field_data_field_group_image_icon', 'fdf')
+         ->fields('fdf', array('field_group_image_icon_fid'))
+         ->condition('entity_id', $idDrupal, '=');
+
+      $result = $query->execute()->fetchAssoc();
+
+      //Add image to template if found
+      if (isset($result['field_group_image_icon_fid'])) {
+        $fid = $result['field_group_image_icon_fid'];
+
+        $image_path = file_load($fid)->uri;
+        $image_options = array('style_name' => 'thumbnail', 'path' => $image_path, 'attributes' => array('class' => 'avatar'),
+                            'width' => NULL, 'height' => NULL,);
+
+        $variables['properties']['communityPicture'] = theme_image_style($image_options);
+      }
+    // Add author data.
+    $variables['properties']['drupal_author'] = request_author_date_node($variables['properties']['idDrupal']);
+    $variables['properties']['number_resources'] = l(OgDrupalToolKit::countContentsByGroup('node', array('recurso_de_aprendizaje', 'ode', 'post'), $variables['properties']['idDrupal']), 'node/' . $variables['properties']['idDrupal']);
+    $variables['properties']['number_subscribers'] = l(OgDrupalToolKit::countMemberships('user', $variables['properties']['idDrupal']), 'node/' . $variables['properties']['idDrupal'] . '/members');
+    $variables['properties']['community_type'] = _ag_section_search_solr_sarnia_get_community_type($variables['properties']['idDrupal']);
+    }
+}
+
+/**
+ * Obtain uid, creation date and username for a node.
+ */
+function request_author_date_node($nid) {
+  $drupal_author = array();
+  $result = db_query('SELECT uid,created FROM {node} WHERE nid = :nid limit 1', array(':nid' => $nid));
+  foreach ($result as $record) {
+    $drupal_author['uid'] = $record->uid;
+    $drupal_author['created'] = $record->created;
+    $drupal_author['username'] = db_query('SELECT name FROM {users} WHERE uid = :uid limit 1', array(':uid' => $record->uid))->fetchField();
+  }
+
+   return $drupal_author;
+}
+
+/**
+ * Implements hook_views_pre_render().
+ * @param $view
+ */
+function ag_section_search_solr_sarnia_views_pre_render(&$view) {
+  if ($view->name == 'ode_search' && $view->current_display == 'page') {
+    // We want different titles per search.
+    switch ($_GET['type']) {
+      case 'USER':
+        $view->build_info['title'] = t('Users');
+        break;
+
+      case 'LEARNING_RESOURCE':
+        $view->build_info['title'] = t('Learning resources');
+        break;
+
+      case 'COMMUNITY':
+        $view->build_info['title'] = t('Communities');
+        break;
+
+      case 'QUESTION':
+        $view->build_info['title'] = t('Questions');
+        break;
+
+      case 'RESPONSE':
+        $view->build_info['title'] = t('Answers');
+        break;
+
+      case 'EVENT':
+        $view->build_info['title'] = t('Events');
+        break;
+
+      case 'DISCUSSION':
+        $view->build_info['title'] = t('Discussions');
+        break;
+
+      case 'POLL':
+        $view->build_info['title'] = t('Polls');
+        break;
+
+      case 'POST':
+        $view->build_info['title'] = t('Posts');
+        break;
+
+      case 'URL':
+        $view->build_info['title'] = t('External contents');
+        break;
+
+      case 'LEARNING_PATH':
+        $view->build_info['title'] = t('Learning paths');
+        break;
+
+      case 'PODCAST':
+        $view->build_info['title'] = t('Podcasts');
+        break;
+
+      case 'WEBINAR':
+        $view->build_info['title'] = t('Webinars');
+        break;
+
+      default:
+        $view->build_info['title'] = t('Procomún');
+    }
+  }
+}
+
+/**
+ * Return the community type text. If the text returned will be:
+ * - Private community : If OG group access is private:
+ * - Restricted community : If OG group is public but field_og_permissions_level
+ *   is restricted
+ * - Public community: If OG group is public and field_og_permissions_level is not restricted
+ */
+function _ag_section_search_solr_sarnia_get_community_type($nid) {
+  $type = '';
+  $group_access = db_query('SELECT group_access_value FROM {field_data_group_access} WHERE entity_id = :nid limit 1', array(':nid' => $nid))->fetchField();
+  $field_og_permissions_level = db_query('SELECT field_og_permissions_level_value FROM {field_data_field_og_permissions_level} WHERE entity_id = :nid limit 1', array(':nid' => $nid))->fetchField();
+
+  if ($group_access == 1) {
+    $type = t('Private community');
+  }
+  else {
+    if ($field_og_permissions_level == 0) {
+      $type = t('Public community');
+    }
+    else {
+      $type = t('Restricted community');
+    }
+  }
+
+  return $type;
+}
+
+/**
+ * Implementation of hook_block_info().
+ * Define Facet blocks for the home page.
+ */
+function ag_section_search_solr_sarnia_block_info() {
+  $blocks['facet-resource-type-home'] = array(
+    'info' => t('Facet Home (Resource Type).'),
+  );
+  $blocks['facet-educational-level-home'] = array(
+    'info' => t('Facet Home (Educational Level).'),
+  );
+  $blocks['facet-addressee-home'] = array(
+    'info' => t('Facet Home (Addressee).'),
+  );
+  $blocks['facet-learning-context-home'] = array(
+    'info' => t('Facet Home (Learning Context).'),
+  );
+  $blocks['facet-knowledge-area-home'] = array(
+    'info' => t('Facet Home (Knowledge Area).'),
+  );
+  $blocks['sort-ode-search'] = array(
+    'info' => t('Sort form for ode search.'),
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implementation of hook_block_view().
+ */
+function ag_section_search_solr_sarnia_block_view($delta='') {
+  drupal_add_js(drupal_get_path('module', 'ag_section_search_solr_sarnia') . '/js/ag_section_search_solr_sarnia_facet.js');
+  $block = array();
+
+  switch ($delta) {
+    case 'facet-resource-type-home':
+      // Create the Search Api query.
+      $query = search_api_query('sarnia_ode_search');
+      $query_filter = $query->createFilter();
+      $query_filter->condition('type', 'ODE OR LEARNING_RESOURCE');
+      $query->filter($query_filter);
+      $query->range(0, 0);
+      $result = $query->execute();
+
+      $block['content'] = theme('agrega2_facetapi_item_list', array('items' => $result['search_api_facets']['resourceType'], 'delta' => $delta));
+      break;
+
+    case 'facet-educational-level-home':
+      // Create the Search Api query.
+      $query = search_api_query('sarnia_ode_search');
+      $query_filter = $query->createFilter();
+      $query_filter->condition('type', 'ODE OR LEARNING_RESOURCE');
+      $query->filter($query_filter);
+      $query->range(0, 0);
+      $result = $query->execute();
+
+      $block['content'] = theme('agrega2_facetapi_item_list', array('items' => $result['search_api_facets']['classificationEducationalLevel1'], 'delta' => $delta));
+      break;
+
+    case 'facet-addressee-home':
+      // Create the Search Api query.
+      $query = search_api_query('sarnia_ode_search');
+      $query_filter = $query->createFilter();
+      $query_filter->condition('type', 'ODE OR LEARNING_RESOURCE');
+      $query->filter($query_filter);
+      $query->range(0, 0);
+      $result = $query->execute();
+
+      $block['content'] = theme('agrega2_facetapi_item_list', array('items' => $result['search_api_facets']['educationalIntendedEndUserRoleStr'], 'delta' => $delta));
+      break;
+
+    case 'facet-learning-context-home':
+      // Create the Search Api query.
+      $query = search_api_query('sarnia_ode_search');
+      $query_filter = $query->createFilter();
+      $query_filter->condition('type', 'ODE OR LEARNING_RESOURCE');
+      $query->filter($query_filter);
+      $query->range(0, 0);
+      $result = $query->execute();
+
+      $block['content'] = theme('agrega2_facetapi_item_list', array('items' => $result['search_api_facets']['learningContext'], 'delta' => $delta));
+      break;
+
+    case 'facet-knowledge-area-home':
+      // Create the Search Api query.
+      $query = search_api_query('sarnia_ode_search');
+      $query_filter = $query->createFilter();
+      $query_filter->condition('type', 'ODE OR LEARNING_RESOURCE');
+      $query->filter($query_filter);
+      $query->range(0, 0);
+      $result = $query->execute();
+
+      $block['content'] = theme('agrega2_facetapi_item_list', array('items' => $result['search_api_facets']['knowledgeArea'], 'delta' => $delta));
+      break;
+
+    case 'sort-ode-search':
+      //Create sort form
+      $block['content'] = drupal_get_form('solr_sarnia_sorting_form');
+      break;
+  }
+  return $block;
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function ag_section_search_solr_sarnia_theme() {
+  return array(
+    'agrega2_facetapi_item_list' => array(
+      'variables' => array('items' => array(), 'title' => NULL, 'type' => 'ul', 'attributes' => array(), 'delta' => NULL),
+    )
+  );
+}
+
+/**
+ * Returns HTML for a list or nested list of items.
+ *
+ * An almost exact copy of theme_item_list, except is uses renderable arrays properly.
+ *
+ * @param $variables
+ *   An associative array containing:
+ *   - items: An array of items to be displayed in the list.
+ *   - title: The title of the list.
+ *   - type: The type of list to return (e.g. "ul", "ol").
+ *   - attributes: The attributes applied to the list element.
+ *   - delta: delta value for the block.
+ */
+function theme_agrega2_facetapi_item_list($variables) {
+  $output = '<div class="item-list">';
+
+  switch ($variables['delta']) {
+    case 'facet-resource-type-home':
+      $output .= '<ul id="facet-home-resource-types" class="facet-home facetapi-facetapi-links facetapi-facet-labelsstr facetapi-processed">';
+      for ($i = 0; $i < 10; $i++) {
+        $query['f[0]'] = 'type:"ODE"';
+        $query['f[1]'] = 'resourceType:' . $variables['items'][$i]['filter'];
+        $query['type'] = 'LEARNING_RESOURCE';
+
+        //Translate taxonomy if possible. They are always in spanish, even in Solr.
+        $name = str_replace('"',  '', $variables['items'][$i]['filter']);
+
+        //Try to translate it with the three available taxonomies. Handle with care.
+        $translation = ag_visualization_ode_i18n_translate_term_cached($name, 'es', 'tipo_de_recurso');
+        if ($translation === $name) {
+          $translation = ag_visualization_ode_i18n_translate_term_cached($name, 'es', 'recurso_educativo');
+        }
+        if ($translation === $name) {
+          $translation = ag_visualization_ode_i18n_translate_term_cached($name, 'es', 'recurso_de_aprendizaje');
+        }
+        $name = isset($translation) ? $translation : $name;
+
+        $output .= '<li>' . l(truncate_utf8($name, 40, TRUE, TRUE), 'ode-search', array('query' => $query, 'attributes' => array('class' => 'tag'))) . '<span class="number">' . l('(' . $variables['items'][$i]['count'] . ')', 'ode-search', array('query' => $query, 'attributes' => array('class' => 'tag'))) . '</span></li>';
+      }
+      break;
+
+    case 'facet-educational-level-home':
+      $output .= '<ul id="facet-home-educational-level" class="facet-home facetapi-facetapi-links facetapi-processed">';
+      for ($i = 0; $i < 10; $i++) {
+        $query['f[0]'] = 'type:"ODE"';
+        $query['f[1]'] = 'classificationEducationalLevel1:' . $variables['items'][$i]['filter'];
+        $query['type'] = 'LEARNING_RESOURCE';
+        $localized_term = i18n_taxonomy_localize_terms(taxonomy_term_load(str_replace('"',  '', $variables['items'][$i]['filter'])));
+        $output .= '<li>' . truncate_utf8($localized_term->name, 40, TRUE, TRUE) . l('(' . $variables['items'][$i]['count'] . ')', 'ode-search', array('query' => $query, 'attributes' => array('class' => 'tag'))) . '</li>';
+      }
+      break;
+
+    case 'facet-addressee-home':
+      $output .= '<ul id="facet-home-addressee" class="facet-home facetapi-facetapi-links facetapi-processed">';
+      for ($i = 0; $i < 10; $i++) {
+        $query['f[0]'] = 'type:"ODE"';
+        $query['f[1]'] = 'educationalIntendedEndUserRoleStr:' . $variables['items'][$i]['filter'];
+        $query['type'] = 'LEARNING_RESOURCE';
+        $output .= '<li>' . t(str_replace('"',  '', $variables['items'][$i]['filter'])) . l('(' . $variables['items'][$i]['count'] . ')', 'ode-search', array('query' => $query, 'attributes' => array('class' => 'tag'))) . '</li>';
+      }
+      break;
+
+    case 'facet-learning-context-home':
+      $output .= '<ul id="facet-learning-context" class="facet-home facetapi-facetapi-links facetapi-processed">';
+      for ($i = 0; $i < 10; $i++) {
+        $query['f[0]'] = 'type:"ODE"';
+        $query['f[1]'] = 'learningContext:' . $variables['items'][$i]['filter'];
+        $query['type'] = 'LEARNING_RESOURCE';
+
+        //Translate taxonomy if possible. They are always in spanish, even in Solr.
+        $name = str_replace('"',  '', $variables['items'][$i]['filter']);
+        $name = ag_visualization_ode_i18n_translate_term_cached($name, 'es', 'learningcontext');
+
+        $output .= '<li>' . l(t($name), 'ode-search', array('query' => $query, 'attributes' => array('class' => 'tag'))) . '<span class="number">' . l('(' . $variables['items'][$i]['count'] . ')', 'ode-search', array('query' => $query, 'attributes' => array('class' => 'tag'))) . '<span></li>';
+      }
+      break;
+
+    case 'facet-knowledge-area-home':
+      $output .= '<ul id="facet-home-knowledge-area" class="facet-home facetapi-facetapi-links facetapi-processed">';
+      for ($i = 0; $i < 10; $i++) {
+        $query['f[0]'] = 'type:"ODE"';
+        $query['f[1]'] = 'knowledgeArea:' . $variables['items'][$i]['filter'];
+        $query['type'] = 'LEARNING_RESOURCE';
+
+        // Translate taxonomy if possible. They are always in spanish, even in Solr.
+        $name = str_replace('"',  '', $variables['items'][$i]['filter']);
+        $name = ag_visualization_ode_i18n_translate_term_cached($name, 'es', 'knowledgearea');
+        $output .= '<li>' . l(t($name), 'ode-search', array('query' => $query, 'attributes' => array('class' => 'tag'))) . '<span class="number">' . l('(' . $variables['items'][$i]['count'] . ')', 'ode-search', array('query' => $query, 'attributes' => array('class' => 'tag'))) . '</span></li>';
+      }
+      break;
+  }
+
+  $output .= '</ul>';
+  $output .= '</div>';
+  return $output;
+}
+
+/**
+ * Implements hook_search_api_autocomplete_suggestions_alter().
+ *
+ * @param $ret
+ * @param $alter_params
+ */
+function ag_section_search_solr_sarnia_search_api_autocomplete_suggestions_alter(&$ret, $alter_params) {
+  // For general search group by type.
+  if (empty($alter_params['type'])) {
+    $return = $ret;
+    $ret = array();
+
+    $types = ag_section_search_get_types();
+    foreach ($return as $type => $suggestions) {
+      // Parse group name.
+      $title_type = !empty($types[$type]) ? $types[$type] : $type;
+      $suggestions = array($type => array('parent'=> TRUE, 'term' => t($title_type))) + $suggestions;
+      $ret += $suggestions;
+    }
+  }
+  else {
+    $autocomplete_type = ($alter_params['type'] == 'LEARNING_RESOURCE') ? 'ODE' : $alter_params['type'];
+    $ret = !empty($ret[$autocomplete_type]) ? $ret[$autocomplete_type] : array();
+  }
+}
+
+/**
+ * Clean user input from characters that could affect solr queries
+ *
+ * @param $string user input
+ * @param $return clean user input
+ */
+function ag_section_search_solr_sarnia_clean_user_input($string) {
+  $special_chars = array(':','[',']');
+  return str_replace($special_chars, '', $string);
+}
+
+/**
+ * Function to get form with sorting methods
+ */
+function solr_sarnia_sorting_form($form, $form_state) {
+  $form = array();
+
+  //Get query parameters
+  $get_parameters = drupal_get_query_parameters();
+
+  //Only show form in search by specific type
+  if (!empty($get_parameters['type'])) {
+    //Force GET method for adding parameters to url
+    $form['#method'] = 'get';
+
+    //Sort options
+    $options = array('' => t('Relevance'));
+    $sort_options = ag_section_search_solr_sarnia_sort_options($get_parameters);
+
+    foreach ($sort_options as $key => $data) {
+      $options[$key] = $data['text'];
+    }
+
+    $form['sort'] = array(
+     '#type' => 'select',
+     '#title' => t('Sort by'),
+     '#options' => $options,
+     '#default_value' => !empty($get_parameters['sort']) ? check_plain($get_parameters['sort']) : '',
+    );
+
+    //Add query parameters as hidden fields. Except sorting field
+    if (isset($get_parameters['sort'])) {
+      unset($get_parameters['sort']);
+    }
+
+    foreach ($get_parameters as $param => $value) {
+      //Check array params
+      if (is_array($value)) {
+        foreach ($value as $key => $param_value) {
+          $form[$param . '[' .$key. ']'] = array(
+          '#type' => 'hidden',
+          '#value' => htmlspecialchars($param_value, ENT_NOQUOTES, 'UTF-8'),
+        );
+        }
+      }
+      else {
+        $form[$param] = array(
+          '#type' => 'hidden',
+          '#value' => check_plain($value),
+        );
+      }
+    }
+
+    $form['op'] = array (
+      '#type' => 'submit',
+      '#value' => t('Send'),
+    );
+  }
+
+  return $form;
+}
+
+/**
+ * Function to alter solr_sarnia_sorting_form
+ */
+function ag_section_search_solr_sarnia_form_solr_sarnia_sorting_form_alter(&$form, &$form_state) {
+  $form['form_build_id']['#access'] = FALSE;
+  $form['form_token']['#access'] = FALSE;
+  $form['form_id']['#access'] = FALSE;
+}
+
+/**
+ * Function to get sort search options
+ */
+function ag_section_search_solr_sarnia_sort_options($get_parameters) {
+  $options = array();
+
+  if (!empty($get_parameters['type'])) {
+    switch ($get_parameters['type']) {
+      case 'POST':
+      case 'POLL':
+      case 'DISCUSSION':
+      case 'URL':
+      case 'LEARNING_PATH':
+      case 'PODCAST':
+      case 'WEBINAR':
+      case 'QUESTION':
+        $options += ag_section_search_solr_sarnia_sort_title_options();
+        $options += ag_section_search_solr_sarnia_sort_publish_options();
+        break;
+      case 'EVENT':
+        $options += ag_section_search_solr_sarnia_sort_title_options();
+        $options += ag_section_search_solr_sarnia_sort_recent_options();
+        break;
+      case 'COMMUNITY':
+        $options += ag_section_search_solr_sarnia_sort_title_options();
+        $options += ag_section_search_solr_sarnia_sort_community_options();
+        break;
+      case 'USER':
+        $options += ag_section_search_solr_sarnia_sort_user_options();
+        $options += ag_section_search_solr_sarnia_sort_user_publish_options();
+        break;
+      case 'ODE':
+      case 'LEARNING_RESOURCE':
+        $options += ag_section_search_solr_sarnia_sort_ode_options();
+        $options += ag_section_search_solr_sarnia_sort_publish_options();
+        break;
+    }
+  }
+  else $options += ag_section_search_solr_sarnia_sort_publish_options();
+
+  return $options;
+}
+
+/**
+ * Function to get title sort search options
+ */
+function ag_section_search_solr_sarnia_sort_title_options() {
+  $options = array(
+    'titleStr-ASC' => array('text' => t('Title: From A to Z'), 'field' => 'titleStr ASC'),
+    'titleStr-DESC' => array('text' => t('Title: From Z to A'), 'field' => 'titleStr DESC'),
+  );
+  return $options;
+}
+
+/**
+ * Function to get community date sort search options
+ */
+function ag_section_search_solr_sarnia_sort_community_options() {
+  $options = array(
+    'communityDate-DESC' => array('text' => t('Creation date'), 'field' => 'communityDate DESC'),
+  );
+  return $options;
+}
+
+/**
+ * Function to get user name sort search options
+ */
+function ag_section_search_solr_sarnia_sort_user_options() {
+  $options = array(
+    'userNameStr-ASC' => array('text' => t('Title: From A to Z'), 'field' => 'userNameStr ASC'),
+    'userNameStr-DESC' => array('text' => t('Title: From Z to A'), 'field' => 'userNameStr DESC'),
+  );
+  return $options;
+}
+
+/**
+ * Function to get ode sort search options
+ */
+function ag_section_search_solr_sarnia_sort_ode_options() {
+  $options = array(
+    'titleOrder-ASC' => array('text' => t('Title: From A to Z'), 'field' => 'titleOrder ASC'),
+    'titleOrder-DESC' => array('text' => t('Title: From Z to A'), 'field' => 'titleOrder DESC'),
+  );
+  return $options;
+}
+
+/**
+ * Function to get publish date sort search options.
+ */
+function ag_section_search_solr_sarnia_sort_publish_options() {
+  $options = array(
+    'publicationDate-DESC' => array('text' => t('Publication date most recent'), 'field' => 'publicationDate DESC'),
+  );
+  return $options;
+}
+
+/**
+ * Function to get user publish date sort search options.
+ */
+function ag_section_search_solr_sarnia_sort_user_publish_options() {
+  $options = array(
+    'publicationDate-DESC' => array('text' => t('Register date in Procomun'), 'field' => 'publicationDate DESC'),
+  );
+  return $options;
+}
+
+/**
+ * Function to get recent events search options.
+ */
+function ag_section_search_solr_sarnia_sort_recent_options() {
+  $options = array(
+    'startDate-DESC' => array('text' => t('Most recent'), 'field' => 'startDate DESC'),
+  );
+  return $options;
+}
+
+/**
+ * Function to get autocomplete config types.
+ */
+function ag_section_search_get_types() {
+  $types = array(
+    'ODE' => 'Learning Resources',
+    'POST' => 'Posts',
+    'USER'=> 'Users',
+    'COMMUNITY' => 'Social Networks',
+    'QUESTION' => 'Questions',
+    'DISCUSSION' => 'Discussions',
+    'POLL' => 'Polls',
+    'EVENT' => 'Events',
+    'URL' => 'External contents',
+    'LEARNING_PATH' => 'Learning paths',
+    'PODCAST' => 'Podcasts',
+    'WEBINAR' => 'Webinars',
+  );
+  return $types;
+}

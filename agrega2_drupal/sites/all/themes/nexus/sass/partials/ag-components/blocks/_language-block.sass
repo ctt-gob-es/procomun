@@ -1,0 +1,54 @@
+.ag-lang-block
+  .contextual-links-wrapper
+    @extend .hide
+  .current-language
+    cursor: pointer
+    position: relative
+    display: block
+    color: $main_blue
+    padding-left: 0
+    font-size: 16px
+    font-family: $font_narrow
+    &.active
+      &:after
+        +rotate(180deg)
+    &:after
+      background: image-url('flecha_azul.png') center no-repeat
+      content: ''
+      width: 10px
+      height: 18px
+      position: absolute
+      right: 0
+  .content
+    display: inline-block
+    width: 115px
+    position: relative
+    border: 1px solid $light_gray
+    padding: 10px 15px
+    +border-radius(3px)
+    ul
+      position: absolute
+      background: $white
+      font-size: 14px
+      width: 110px
+      z-index: 9
+      margin-left: -10px
+      @extend .shadow
+      li
+        width: 100%
+        padding: 8px 10px
+        text-align: left
+        position: relative
+        z-index: 11
+        background: $white
+        &.first
+          padding-top: 20px
+        &.last
+          padding-bottom: 20px
+        a
+          display: block
+          width: 100%
+          color: $main_blue
+          &:hover
+            text-decoration: none
+            color: $deep_blue

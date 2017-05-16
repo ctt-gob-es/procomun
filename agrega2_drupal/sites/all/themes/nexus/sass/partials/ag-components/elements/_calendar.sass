@@ -1,0 +1,182 @@
+.calendar-calendar .month-view
+  padding-bottom: .5em
+  tbody, thead
+    font-size: 13px
+  tr, td, th
+    background: none
+    border: 0
+    text-align: center
+  th
+    color: $gray
+    padding: 0
+    line-height: 28px
+    font-size: 14px
+    font-weight: 400
+  .full
+    td.date-box.today
+      border: 0
+      .day
+        font-weight: normal
+        +border-radius(0)
+        width: 28px
+        display: inline-block
+    tr td.today
+      border: 0
+      .inner .day
+        span,
+        a
+          font-weight: 700
+          color: $charcoal
+          +border-radius(28px)
+          background: linear-gradient(lighten($green, 10%) 0%, $dark_green 100%)
+          z-index: 0
+          left: -1px
+          &:after
+            z-index: -1
+            +border-radius(16px)
+            position: absolute
+            top: 2px
+            bottom: 2px
+            left: 2px
+            right: 8px
+            background: $snow
+            content: ''
+            width: 24px
+            height: 24px
+    .single-day
+      @extend .hide
+
+.view-events-calendar
+  .ajax-progress
+    position: absolute
+    top: 5px
+  .view-header
+    position: relative
+    border-top: 1px solid $light_gray
+    border-bottom: 1px solid $light_gray
+    margin-top: 10px
+    .date-nav-wrapper
+      margin: 0
+      .date-nav
+        margin: 0
+        padding: 0
+        h3
+          font-size: 13px
+          color: $dark_blue
+          font-family: $font_pt_sans
+          text-transform: uppercase
+        .pager
+          margin: 0
+          padding: 0
+          .date-prev
+            left: 0
+            right: auto
+            a
+              background: transparent image-url("ico-flecha-izq.png") 50% 50% no-repeat
+          .date-next
+            a
+              background: transparent image-url("ico-flecha-der.png") 50% 50% no-repeat
+          .date-prev,
+          .date-next
+            background-color: transparent
+            padding: 0
+            margin: 0
+            top: 0
+            white-space: nowrap
+            a
+              width: 24px
+              height: 30px
+              margin: 0
+              padding: 0
+              border: none
+              +border-radius(0px)
+              text-align: left
+              text-indent: -9999px
+              outline: 0
+  .view-content
+    .calendar-calendar
+      table.full
+        tr
+          &.multi-day
+            display: none
+          td
+            height: auto
+            width: auto
+            max-height: none
+            padding: 0
+            vertical-align: middle
+            color: $cold_gray
+            &.empty
+              background: transparent
+              .day
+                color: $light_gray
+            .inner
+              > *
+                float: none
+                border: none
+                width: auto
+                padding: 0
+                > a
+                  display: block
+                  font-weight: 700
+                  color: $charcoal
+                  height: 28px
+                  line-height: 28px
+                > span,
+                > a
+                  display: block
+                  height: 28px
+                  width: 28px
+                  line-height: 28px
+                  left: 4px
+                  position: relative
+
+.pane-events-calendar
+  margin-bottom: 0
+  margin-top: -21px
+  @extend .shadow
+  padding: 0
+  background: $snow
+  &:before
+    content: none
+  .pane-title
+    color: $navy
+    font-size: 18px
+    text-transform: uppercase
+    padding: 15px
+    text-align: left
+    margin-bottom: 0
+  .pane-content
+    background: $snow
+    li
+      clear: both
+      width: 100%
+      .content
+        display: table
+      .field-type-datetime
+        width: 30px
+        margin-right: 15px
+        float: left
+        .field-items
+          width: 100%
+        .date-month,
+        .date-day
+          color: $navy
+          width: 100%
+          display: block
+          text-align: center
+        .date-month
+          text-transform: uppercase
+          font-size: 14px
+        .date-day
+          font-size: 23px
+          letter-spacing: -1px
+          line-height: 16px
+      .field-type-text
+        width: calc(100% - 45px)
+        display: table-cell
+        vertical-align: middle
+        overflow: hidden
+.panel-pane
+  &.pane-agrega2-polls-panel-pane-1
+    margin-top: 1em

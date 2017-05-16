@@ -1,0 +1,127 @@
+.page-node-ag-section-newsletter-edit,
+.page-node-ag-section-newsletter-new
+  .date-combo
+    .fieldset-legend
+      min-height: auto!important
+  .form-item:not(.form-item-newsletter-body-format):not(.form-type-checkbox)
+    overflow: hidden
+  .form-item:not(.form-item-newsletter-body-format):not(.form-type-checkbox):not(.form-type-date-popup):not(.form-item-newsletter-scheduled-sending-field-simplenews-scheduled-date-und-0-value-date):not(.form-item-newsletter-scheduled-sending-field-simplenews-scheduled-date-und-0-value-time),
+  .pane-newsletter-form,
+  #newsletter-select-content .views-exposed-form
+    margin-bottom: 1em
+    label
+      +special-label
+    .views-widget,
+    > input,
+    > fieldset,
+    > .form-textarea-wrapper
+      +special-input
+  .pane-newsletter-form
+    margin-top: 1em
+    margin-bottom: 0
+  .form-type-date-popup
+    label
+      font-weight: 600
+      margin-bottom: 5px
+    .date-padding
+      > .form-item
+        margin-right: 1em
+  a.ckeditor_links,
+  #edit-newsletter-body-format
+    width: 70%
+    float: right
+    display: none!important
+  #edit-newsletter-body-format
+    .fieldset-wrapper
+      > div
+        padding-left: 0
+  #edit-newsletter-scheduled-sending
+    clear: both
+  .pane-title
+  .views-exposed-form
+    .form-item
+      overflow: initial!important
+    .views-exposed-widget
+      clear: both
+      width: 100%
+      input:not(.form-submit)
+        width: 100%!important
+      .form-submit
+        margin-top: 0
+  .fieldset-wrapper
+    padding-top: 0!important
+  // Add content to the newsletter
+  #newsletter-select-content
+    .pane-title
+      cursor: pointer
+      background-image: image-url('triangulo.png')
+      background-position: 99% -27px
+      background-repeat: no-repeat
+      padding: 10px 0
+      padding-right: 15px
+      border-top: 1px dashed $gray
+      text-transform: uppercase
+      font-weight: 700
+      font-family: $font_narrow
+      font-size: 21px
+      color: $navy
+      margin-bottom: 0
+      &:hover
+        text-decoration: none
+      &.plus-ico
+        background-position: 99% 13px
+    .pane-content
+      .node-newsletter
+        padding: 15px 0
+        .miniatura-newsletter
+          float: left
+          margin-right: 15px
+          width: 100px
+          text-align: center
+        header
+          h4.title
+            margin-top: 0
+  // Panel Newsletter
+  .pane-views-panes
+    .view-content
+      margin-top: 2em
+      .views-row
+        clear: both
+        li.published
+          margin-left: 0
+          text-transform: uppercase
+          font-size: 12px
+        header
+          float: left
+        .content
+          float: right
+          clear: none
+          margin-top: 20px
+          a
+            +button($orange)
+            &:hover
+              background-color: $dark_orange
+    // Content added
+    .views-field-ops a,
+    #newsletter-submit-button
+      +button($orange)
+      display: inline-block
+      cursor: pointer
+      &:hover
+        background-color: $dark_orange
+    .views-field-ops
+      width: 220px
+      border-left: 0px
+      a
+        float: right
+    .views-field-title-field
+      border-right: 0px
+      a
+        height: auto
+        padding-right: 5px
+// Admin subscribers
+#ag-section-newsletter-admin-subscription
+  .form-item.form-type-select.form-item-operation
+    display: block
+    float: left
+    margin-top: 0

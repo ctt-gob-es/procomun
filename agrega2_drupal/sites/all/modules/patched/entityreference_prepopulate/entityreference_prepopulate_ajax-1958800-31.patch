@@ -1,0 +1,60 @@
+From 66eac4863b0bd7c4cc778698b480fa0b45ababec Mon Sep 17 00:00:00 2001
+From: heddn <lucashedding@1463982.no-reply.drupal.org>
+Date: Wed, 22 Oct 2014 14:22:14 -0600
+Subject: [PATCH] Issue #1958800 by Amitaibu, fago, heddn, jastraat: Fixed AJAX
+ causes entityreference_prepopulate_get_values_from_url to fail.
+
+---
+ entityreference_prepopulate.module | 22 +++++++++++++++-------
+ 1 file changed, 15 insertions(+), 7 deletions(-)
+
+diff --git a/entityreference_prepopulate.module b/entityreference_prepopulate.module
+index 9c06140..3612782 100644
+--- a/entityreference_prepopulate.module
++++ b/entityreference_prepopulate.module
+@@ -64,12 +64,6 @@ function entityreference_prepopulate_field_update_instance($instance, $prior_ins
+ function entityreference_prepopulate_field_attach_form($entity_type, $entity, &$form, &$form_state, $langcode) {
+   list($id,, $bundle) = entity_extract_ids($entity_type, $entity);
+ 
+-  if (!empty($form_state['triggering_element']['#ajax'])) {
+-    // We are inside AJAX, so values can't be taken from URL at the
+-    // moment, so we prevent applying any "fallback" behaviors such as redirect.
+-    return;
+-  }
+-
+   // Check if there is a field that needs to be prepopulated attached to the
+   // given entity.
+   $found = FALSE;
+@@ -264,7 +258,11 @@ function entityreference_prepopulate_get_values($field, $instance, $validate = T
+   $cache[$identifier] = $ids = array();
+ 
+   // Check if we have cached values.
+-  if (!$ids = entityreference_prepopulate_get_values_from_cache($field, $instance)) {
++  if (!$ids) {
++    if ($ids = entityreference_prepopulate_get_values_from_cache($field, $instance)) {
++      $cache[$identifier] = $ids;
++      return $ids;
++    }
+     // Get the providers.
+     $enabled_providers = !empty($instance['settings']['behaviors']['prepopulate']['providers']) ? array_filter($instance['settings']['behaviors']['prepopulate']['providers']) : array();
+ 
+@@ -362,6 +360,16 @@ function entityreference_prepopulate_get_values_from_url($field, $instance) {
+   if (!empty($_GET[$field_name]) && is_string($_GET[$field_name])) {
+     return explode(',', $_GET[$field_name]);
+   }
++  elseif(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
++    $available_languages = field_available_languages($instance['entity_type'], $field);
++    $languages = _field_language_suggestion($available_languages, NULL, $field_name);
++    $field_mode = $instance['field_mode'];
++    foreach ($languages as $langcode) {
++      if (isset($_POST[$field_name][$langcode][0][$field_mode])) {
++        return array($_POST[$field_name][$langcode][0][$field_mode]);
++      }
++    }
++  }
+ }
+ 
+ 
+-- 
+2.1.3
+

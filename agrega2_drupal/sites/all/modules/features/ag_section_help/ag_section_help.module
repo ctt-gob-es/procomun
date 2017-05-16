@@ -1,0 +1,645 @@
+<?php
+/**
+ * @file
+ * Code for the ag_section_help feature.
+ */
+
+include_once 'ag_section_help.features.inc';
+
+/**
+ * Implements hook_menu().
+ */
+function ag_section_help_menu() {
+  $items['help/manual/pdf'] = array(
+    'title' => 'Download manual as PDF',
+    'page callback' => 'download_manual_help_pdf',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['help/visit/%'] = array(
+    'page callback' => 'ag_section_help_count_visit',
+    'page arguments' => array(2),
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('access content'),
+  );
+
+  // Notifications via email where there are new questions to moderate.
+  $items['admin/config/notifications'] = array(
+    'title' => t('Notifications for questions moderation'),
+    'position' => 'left',
+    'weight' => -100,
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('administer site configuration'),
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system'),
+  );
+
+  $items['admin/config/notifications/questions_moderation'] = array(
+    'title' => t('Question moderation email configuration'),
+    'description' => t('Page to set values for question moderation email'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ag_section_help_moderation_email_configuration_settings_form'),
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'ag_section_help.admin.inc',
+    'file path' => drupal_get_path('module', 'ag_section_help'),
+  );
+
+  return $items;
+}
+
+/**
+ * Implementation of hook_ctools_plugin_directory().
+ */
+function ag_section_help_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'ctools' && $plugin == 'content_types') {
+    return 'plugins/' . $plugin;
+  }
+}
+
+function ag_section_help_count_visit($nid) {
+  global $user;
+
+  if (isset($nid) && !empty($nid) && is_numeric($nid) && module_exists('nodeviewcount')) {
+    nodeviewcount_insert_node_view($nid, $user->uid);
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function ag_section_help_form_views_exposed_form_alter(&$form, &$form_state, $form_id) {
+  // Set placeholder for search box.
+  if ($form['#id'] == 'views-exposed-form-help-search-panel-pane-1') {
+    $form['help_value']['#attributes'] = array('placeholder' => $form['#info']['filter-combine']['label']);
+    unset($form['#info']['filter-combine']['label']);
+  }
+
+  // Hide nid exposed field.
+  if ($form['#id'] == 'views-exposed-form-new-functionalities-panel-pane-new-functionalities-list'
+  || $form['#id'] == 'views-exposed-form-faq-panel-pane-faq-list') {
+    $form['help_nid']['#type'] = 'hidden';
+  }
+}
+
+/**
+ * Add FAQ form.
+ */
+function ag_section_help_add_faq_form($form, &$form_state) {
+  return array(
+    'new-question' => array(
+      '#type' => 'markup',
+      '#prefix' => '<h2>',
+      '#markup' => t('New question'),
+      '#suffix' => '</h2>'
+    ),
+    'title' => array(
+      '#title' => t('Title'),
+      '#type' => 'textfield',
+      '#default_value' => '',
+      '#required' => TRUE,
+    ),
+    'question' => array(
+      '#title' => t('Question'),
+      '#type' => 'text_format',
+      '#format' => 'newsletter',
+      '#after_build' => array('afterbuild_text_format'),
+      '#default_value' => '',
+    ),
+    'cancel-question' => array(
+      '#type' => 'markup',
+      '#prefix' => '<div class="submit-buttons"><span id="cancel-question-button" class="cancel-question-button">',
+      '#markup' => t('Cancel'),
+      '#suffix' => '</span>'
+    ),
+    'submit-question' => array(
+      '#type' => 'submit',
+      '#value' => t('Send question'),
+      '#submit' => array('ag_section_help_add_faq_form_submit'),
+      '#suffix' => '<div>'
+    ),
+  );
+}
+
+/**
+ * Hide text format into the FAQ form.
+ *
+ * Callback for ag_section_help_add_faq_form().
+ *
+ * @param $form
+ *   An associative array containing the structure of the form.
+ *
+ * @return mixed
+ *   Form without text format on the toolbar.
+ *
+ * @ingroup callbacks
+ */
+function afterbuild_text_format(&$form) {
+  unset($form['format']);
+
+  return $form;
+}
+
+/**
+ * Add FAQ form submit.
+ */
+function ag_section_help_add_faq_form_submit($form, &$form_state) {
+  global $user;
+  global $language;
+
+  $new = new stdClass();
+  $new->type = 'faq';
+  $new->title = check_plain($form_state['values']['title']);
+  $new->uid = $user->uid;
+  $new->status = 0;
+  $new->body[LANGUAGE_NONE][0]['value'] = $form_state['values']['question']['value'];
+  $new->body[LANGUAGE_NONE][0]['format'] = $form_state['values']['question']['format'];
+  node_object_prepare($new);
+  node_save($new);
+  drupal_set_message(t('Question created successfully. It will be published when administrators validate the content'));
+
+  // Send the notifications to users with "administrator" role:
+  $admin_members = DrupalToolKit::getUidsByRole('administrator');
+  if (!empty($admin_members)) {
+    $message = message_create('new_pending_faq', array('uid' => $user->uid));
+    $wrapper = entity_metadata_wrapper('message', $message);
+    $wrapper->field_target_users->set($admin_members);
+    $wrapper->field_message_status->set(0);
+    $wrapper->field_question_title->set($new->title);
+    $wrapper->save();
+
+    // Build subject and body email fields with token_replace. And use current node to replace values.
+    $subject = token_replace(t(variable_get('notification_email_subject')), array('node' => $new));
+    $body = token_replace(t(variable_get('notification_email_body', '')), array('node' => $new));
+
+    // Create subject and body as params for send email.
+    $params = array(
+      'subject' => $subject,
+      'body' => $body,
+    );
+
+    foreach ($admin_members as $admin) {
+      drupal_mail('ag_section_help', 'question_moderation_email', $admin->mail, $language, $params);
+    }
+  }
+}
+
+/**
+ * Implementation of hook_node_update().
+ */
+function ag_section_help_node_update($node) {
+  if ($node->type == 'faq') {
+    // Act on the publishing of an faq.
+    if ($node->original->status == 0 && $node->status == 1) {
+      global $user;
+
+      // Send the notification to user
+      $message = message_create('new_faq_accepted', array('uid' => $user->uid));
+      $wrapper = entity_metadata_wrapper('message', $message);
+      $wrapper->field_target_users->set(array($node->uid));
+      $wrapper->field_message_status->set(0);
+      $wrapper->field_question_title->set($node->title);
+      $wrapper->save();
+    }
+  }
+}
+
+/**
+ * Reply question form.
+ */
+function ag_section_help_reply_form($form, &$form_state, $nid, $type) {
+  return array(
+    'reply' => array(
+      '#type' => 'text_format',
+      '#format' => 'newsletter',
+      '#default_value' => '',
+    ),
+    'nid' => array(
+      '#type' => 'hidden',
+      '#value' => $nid,
+    ),
+    'type' => array(
+      '#type' => 'hidden',
+      '#value' => $type,
+    ),
+    'submit' => array(
+      '#type' => 'submit',
+      '#value' => t('Send answer'),
+      '#ajax' => array(
+        'callback' => 'ag_section_help_reply_form_ajax_submit',
+        'wrapper' => 'ag_section_help-reply-form',
+        'method' => 'replace',
+        'effect' => 'fade',
+      ),
+    ),
+    // Prevent cache form in Firefox when ajax submit success
+    '#attached' => array(
+      'drupal_add_http_header' => array(
+        array('Expires', 'Sat, 26 Jul 1997 05:00:00 GMT'), // Date in the past
+        array('Cache-Control', 'no-cache, no-store, must-revalidate', 'post-check=0, pre-check=0'),
+        array('Pragma', 'no-cache'),
+      ),
+    ),
+  );
+}
+
+/**
+ * Reply question submit form.
+ */
+function ag_section_help_reply_form_ajax_submit($form, $form_state) {
+  $reply_text = $form_state['input']['reply']['value'];
+  $nid = $form['nid']['#value'];
+  $type = $form['type']['#value'];
+
+  $status = _create_faq_reply($reply_text, $nid, $type);
+
+  $commands = array();
+  $commands[] = array(
+    // The command will be used in our JavaScript file (see next section)
+    'command' => 'afterAjaxSaveCommentCallback',
+    // We pass the values that the user selected in the select element to our JavaScript function:
+    'nid' => $nid,
+    'answers_result' => views_embed_view('faq', 'panel_pane_faq_answers_list', $nid),
+    'status' => $status,
+  );
+
+  // And finally, we will return all of our commands to the system to be executed:
+  return array('#type' => 'ajax', '#commands' => $commands);
+}
+
+/**
+ * @brief Create a new reply (comment) associated to a node
+ * @param $reply_text the text of the answer
+ * @param $nid the nid of the node
+ * @param $type the type of the node
+ *
+ * @return boolean $state
+ */
+function _create_faq_reply($reply_text, $nid, $type) {
+  $status = FALSE;
+
+  if (!empty($reply_text) && $type == 'faq') {
+    global $user;
+
+    $comment = new stdClass();
+    $comment->nid = $nid; // nid of a node you want to attach a comment to
+    $comment->cid = 0; // leave it as is
+    $comment->pid = 0; // parent comment id, 0 if none
+    $comment->uid = $user->uid; // user's id, who left the comment
+    $comment->name = ag_section_profile_users_get_name_surname_cached($user->uid); // If user is authenticated you can omit this field, it will be auto-populated, if the user is anonymous and you want to name him somehow, input his name here
+    $comment->created = time(); // OPTIONAL. You can set any time you want here. Useful for backdated comments creation.
+    $comment->is_anonymous = 0; // leave it as is
+    $comment->homepage = ''; // you can add homepage URL here
+    $comment->status = COMMENT_PUBLISHED; // We auto-publish this comment
+    $comment->language = LANGUAGE_NONE; // The same as for a node
+    $comment->subject = '';
+    $comment->comment_body[$comment->language][0]['value'] = $reply_text; // Everything here is pretty much like with a node
+    $comment->comment_body[$comment->language][0]['format'] = 'newsletter';
+
+    comment_submit($comment); // saving a comment
+    comment_save($comment);
+
+    $status = TRUE;
+  }
+
+  return $status;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function ag_section_help_theme() {
+  $themes = array(
+    'custom_contact_link' => array(
+      'arguments' => array(
+        'element' => NULL,
+        'field' => NULL,
+      ),
+    ),
+    'custom_help_manual_buttons' => array(
+      'arguments' => array(
+        'element' => NULL,
+      ),
+    ),
+    'custom_faq_pane_title' => array(
+      'arguments' => array(
+        'element' => NULL,
+        'field' => NULL,
+      ),
+    ),
+    'custom_create_faq_button' => array(
+      'arguments' => array(
+        'element' => NULL,
+        'field' => NULL,
+      ),
+    ),
+    'custom_new_functionality_button' => array(
+      'arguments' => array(
+        'element' => NULL,
+        'field' => NULL,
+      ),
+    ),
+  );
+
+  return $themes;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function ag_section_help_block_info() {
+  $blocks = array();
+
+  $blocks['custom_contact_link'] = array(
+    'info' => t('Custom contact link'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  $blocks['custom_help_manual_buttons'] = array(
+    'info' => t('Manual buttons for help section'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  $blocks['custom_faq_pane_title'] = array(
+    'info' => t('Custom FAQ pane title'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  $blocks['custom_create_faq_button'] = array(
+    'info' => t('Custom create FAQ button'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  $blocks['custom_new_functionality_button'] = array(
+    'info' => t('Custom create New functionality button'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function ag_section_help_block_view($delta = '') {
+  $block = array();
+
+  switch($delta){
+    case 'custom_contact_link':
+      $block['subject'] = t('Custom contact link');
+      $block['content'] = theme('custom_contact_link');
+      break;
+
+    case 'custom_help_manual_buttons':
+      $block['subject'] = t('Manual buttons');
+      $block['content'] = theme('custom_help_manual_buttons');
+      break;
+
+    case 'custom_faq_pane_title':
+      $block['subject'] = t('Custom FAQ pane title');
+      $block['content'] = theme('custom_faq_pane_title');
+      break;
+
+    case 'custom_create_faq_button':
+      $block['subject'] = t('Custom create FAQ button');
+      $block['content'] = theme('custom_create_faq_button');
+      break;
+
+    case 'custom_new_functionality_button':
+      $block['subject'] = t('Custom create New functionality button');
+      $block['content'] = theme('custom_new_functionality_button');
+      break;
+  }
+
+  return $block;
+}
+
+/**
+ * Function theme for custom_contact_link block
+ */
+function theme_custom_contact_link($vars) {
+  return array(
+    '#prefix' => '<span class="contact-link">',
+    '#markup' => '<span>' . t('You do not find what you are looking for?') . '</span>' .
+                 '<span class="help-contact-us">' . l(t('Contact with us'), 'mailto:' . str_rot13('meducacion@intef.educacion.es'), array(
+                   'attributes' => array(
+                     'title' => t('Contact'),
+                     'id' => 'contact-us',
+                   ),
+                 )) . '</span>',
+    '#suffix' => '</span>'
+  );
+}
+
+/**
+ * Function theme for custom_manual_buttons block
+ */
+function theme_custom_help_manual_buttons($vars) {
+  $output = '<div class="manual-help-buttons">';
+  if (user_access('create manual content')) {
+    $output .= '<span class="manual-help-add-button">' . l(t('Add manual entry'), 'node/add/manual', array('query' => drupal_get_destination())) . '</span>';
+  }
+  $output .= '<span class="manual-help-pdf-button">' . l(t('Download as PDF'), 'help/manual/pdf', array('attributes' => array('target' => '_blank'))) . '</span>';
+  $output .= '</div>';
+
+  return $output;
+}
+
+/**
+ * Function theme for custom_faq_pane_title block
+ */
+function theme_custom_faq_pane_title($vars) {
+  return array(
+    '#prefix' => '<h2 class="pane-title">',
+    '#markup' => t('Frecuently asked questions'),
+    '#suffix' => '</h2>'
+  );
+}
+
+/**
+ * Function theme for custom_create_faq_button block
+ */
+function theme_custom_create_faq_button($vars) {
+  $output = '';
+
+  if (user_access('create faq content')) {
+    $output = array(
+      '#prefix' => '<span id="create-question-button" class="create-question-button">',
+      '#markup' => t('New question'),
+      '#suffix' => '</span>'
+    );
+  }
+
+  return $output;
+}
+
+/**
+ * Function theme for custom_new_functionality_button block
+ */
+function theme_custom_new_functionality_button($vars) {
+  $output = '';
+
+  if (user_access('create functionality content')) {
+    $output = array(
+      '#prefix' => '<span id="create-functionality-button" class="create-functionality-button">',
+      '#markup' => l(t('New functionality'),
+        'node/add/functionality', array(
+          'absolute' => TRUE,
+          'attributes' => array(
+            'class' => 'new-functionality',
+            'title' => t('New functionality'),
+          ),
+          'query' => array(
+            'destination' => 'help/functionality',
+          ),
+        )),
+      '#suffix' => '</span>'
+    );
+  }
+
+  return $output;
+}
+
+/**
+ * Implements hook_views_query_alter().
+ */
+function ag_section_help_views_query_alter(&$view, &$query) {
+  // Add relationship conditon to sort by best rated content
+  if (($view->name == 'new_functionalities' && $view->current_display == 'panel_pane_new_functionalities_list')
+  || ($view->name == 'help_landing_rankings' && $view->current_display == 'panel_pane_2')) {
+    $relationship_condition = array(
+      'field' => 'function',
+      'value' => 'option-1',
+      'numeric' => false
+    );
+
+    $query->table_queue['votingapi_cache_node_option_vote']['join']->extra[] = $relationship_condition;
+  }
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function ag_section_help_views_pre_render(&$view) {
+  if ($view->name == 'help_search') {
+    // Add string searched to header view content.
+    $help_value = !empty($view->exposed_raw_input['help_value']) ? $view->exposed_raw_input['help_value'] : '';
+
+    if (!empty($help_value)) {
+      $view->header['result']->options['content'] = '<h3 class="search-help-value">' . t('Search results: @help_value', array('@help_value' => $help_value)) . '</h3>' . $view->header['result']->options['content'];
+    }
+  }
+}
+
+/**
+ * Implements hook_token_info().
+ */
+function ag_section_help_token_info() {
+  $info['tokens']['custom']['manual_index'] = array(
+    'name' => t('Index content for manual'),
+    'description' => t('Index content for manual'),
+  );
+  return $info;
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function ag_section_help_tokens($type, $tokens, array $data = array(), array $options = array()) {
+  $replacements = array();
+
+  if ($type == 'custom') {
+      foreach ($tokens as $name => $original) {
+        if (array_key_exists($name, $data)) {
+          $replacements[$original] = $data[$name];
+        }
+      }
+  }
+  return $replacements;
+}
+
+/**
+ * Custom function for downloading manual as pdf.
+ */
+function download_manual_help_pdf() {
+  // Get html manual content for pdf.
+  $html .= views_embed_view('manual_content', $display_id = 'panel_pane_2');
+  // Generate pdf.
+  pdf_using_mpdf_api($html);
+}
+
+/**
+ * Implements hook_js_alter().
+ */
+function ag_section_help_js_alter(&$javascript) {
+  if (module_exists('rate') && isset($javascript[drupal_get_path('module', 'rate') . '/rate.js'])) {
+    $javascript[drupal_get_path('module', 'rate') . '/rate.js']['data'] = drupal_get_path('module', 'ag_section_help') . '/js/help_rate.js';
+  }
+}
+
+/**
+ * Implements hook_rate_vote_alter().
+ */
+function ag_section_help_rate_vote_alter($vote, $context) {
+  // Update node votes with the sum of associated reply votes
+  if ($context['widget']->name == 'help_section_votes' && $vote['entity_type'] == 'comment' && $vote['value_type'] == 'option') {
+    global $user;
+    // Prepare vote array
+    _votingapi_prep_vote($vote);
+
+    // Change comment vote for associated node vote
+    $comment = comment_load($vote['entity_id']);
+    $comment_vote = $vote;
+    $vote['entity_type'] = 'node';
+    $vote['entity_id'] = $comment->nid;
+
+    $tmp_value = $vote['value'] == '1' ? -1 : 1;
+
+    // Delete negative vote when a positive vote is added
+    $comments = db_query('SELECT * FROM votingapi_vote WHERE entity_id = :entity_id AND uid = :uid AND value = :val LIMIT 1', array(':entity_id' => $comment_vote['entity_id'], ':uid' => $user->uid, ':val' => $tmp_value));
+    if ($comments->rowCount()) {
+      $result = db_query('DELETE FROM votingapi_vote WHERE entity_id = :nid AND uid = :uid AND value = :val LIMIT 1', array(':nid' => $vote['entity_id'], ':uid' => $user->uid, ':val' => $tmp_value));
+    }
+
+    // Add vote and recalculate votes when a positive vote is added
+    $voted = db_query('SELECT * FROM votingapi_vote WHERE entity_id = :entity_id AND uid = :uid AND value = :val LIMIT 1', array(':entity_id' => $comment_vote['entity_id'], ':uid' => $user->uid, ':val' => $comment_vote['value']));
+    if (!$voted->rowCount()) {
+      $node_vote = $vote;
+      votingapi_add_votes($vote);
+      votingapi_recalculate_results($node_vote['entity_type'], $node_vote['entity_id']);
+    }
+  }
+}
+
+/**
+ * Implements hook_rate_widget_alter().
+ */
+function ag_section_help_rate_widget_alter(&$widget, $context) {
+  if ($context['content_type'] == 'comment') {
+    $widget->description = '';
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function ag_section_help_mail($key, &$message, $params) {
+  switch ($key) {
+    case 'question_moderation_email':
+      $headers = array(
+        'MIME-Version' => '1.0',
+        'Content-Type' => 'text/html; charset=UTF-8; format=flowed',
+        'Content-Transfer-Encoding' => '8Bit',
+        'X-Mailer' => 'Drupal'
+      );
+
+      foreach ($headers as $key => $value) {
+        $message['headers'][$key] = $value;
+      }
+
+      $message['subject'] = t($params['subject']);
+      $message['body'][] = $params['body'];
+      break;
+  }
+}

@@ -1,0 +1,206 @@
+.ode-form-progressbar
+  +clearfix()
+  margin-bottom: 30px
+  position: fixed
+  top: 350px
+  padding: 1em
+  width: 300px
+  right: 15px
+  background-color: rgba(242, 242, 242, 0.8)
+  z-index: 1
+  max-width: 300px
+  +transition(all .8s ease-in-out)
+  &.progressbar-fixed
+    top: 50px
+    +transition(all .8s ease-in-out)
+  .arrow
+    width: 18px
+    height: 18px
+    background: image-url('ico-li-simple-1.png') 0 0 no-repeat
+    float: right
+    margin-bottom: 4px
+  label
+    width: 100%
+    margin-right: 2%
+    float: left
+    background-color: $lightest_gray
+    color: $navy
+    padding: 0px 10px 4px 10px
+    border: 1px solid $lightest_gray
+    font-size: 13px
+    font-weight: 400
+    line-height: 19px
+    text-align: left
+  .progressbar-title
+    padding: 1em 0 0.3em 0
+    font-size: 18px
+    color: $navy
+    border-bottom: 1px dotted $light_gray
+    text-transform: uppercase
+    width: 100%
+  #progressbar
+    .percentage
+      position: absolute
+      top: 6px
+      left: 0
+      right: 0
+      text-align: center
+    .background-progressbar
+      height: 100%
+      width: 100%
+      position: absolute
+      opacity: .1
+  .ui-widget-content,
+  .ui-widget-header
+    border: 0
+    background: none
+
+
+// CIRCLE.
+// Classes 2 extend.
+.rect-auto
+  clip: rect(auto, auto, auto, auto)
+
+.pie
+  position: absolute
+  border: $circle-width solid $primary-color
+  width: 1 - (2 * $circle-width)
+  height: 1 - (2 * $circle-width)
+  clip: rect(0em, 0.5em, 1em, 0em)
+  +border-radius(50%)
+.pie-fill
+  +rotate(180deg)
+// Main.
+.c100
+  *, *:before, *:after
+    +box-sizing(content-box)
+  position: relative
+  font-size: 120px
+  width: 1em
+  height: 1em
+  float: left
+  margin: 0.1em 0.1em 0 0.6em
+  background-color: $light_gray !important
+  +border-radius(50%)
+
+  // Center circle to its parent.
+  &.center
+    float: none
+    margin: 0 auto
+
+  // Bigger size.
+  &.big
+    font-size: 240px
+
+  // Smaller size.
+  &.small
+    font-size: 80px
+
+  // Centered value inside circle.
+  > span
+    position: absolute
+    width: 100%
+    z-index: 1
+    left: 0
+    top: 0
+    width: 5em
+    line-height: 5em
+    font-size: 0.2em
+    color: $light_gray
+    display: block
+    text-align: center
+    white-space: nowrap
+    +transition-property(all)
+    +transition-duration(0.2s)
+    +transition-timing-function(ease-out)
+
+  // Background inside the circle.
+  &:after
+    position: absolute
+    top: $circle-width
+    left: $circle-width
+    display: block
+    content: " "
+    +border-radius(50%)
+    background-color: $bg-color
+    width: 1 - (2 * $circle-width)
+    height: 1 - (2 * $circle-width)
+    +transition-property(all)
+    +transition-duration(0.5s)
+    +transition-timing-function(ease-in)
+
+  // Class '.bg-progressbar'.
+    background-image: image-url('boton.png')
+    width: 1em
+    height: 1em
+    background-size: 100%
+    background-repeat: no-repeat
+  // The slice (mask).
+  .slice
+    position: absolute
+    width: 1em
+    height: 1em
+    clip: rect(0em, 1em, 1em, 0.495em)
+
+  // Circle to show the status.
+  .bar
+    @extend .pie
+  +generate-elements(100, 50)
+  +generate-rotation(100, 1)
+  // Hover styles.
+  &:hover
+    cursor: default
+    > span
+      width: 3.33em
+      line-height: 3.33em
+      font-size: 0.3em
+      color: $primary-color
+    &:after
+      top: $circle-width-hover
+      left: $circle-width-hover
+      width: 1 - (2 * $circle-width-hover)
+      height: 1 - (2 * $circle-width-hover)
+
+  // Override colors for the dark skin.
+  &.dark
+    background-color: $sec-color-dark
+    .bar,
+    .fill
+      border-color: $color-dark !important
+      > span
+        color: $sec-color-dark
+      &:after
+        background-color: $bg-color-dark
+      &:hover
+        > span
+          color: $color-dark
+  // Green skin.
+  &.color-green
+    .bar,
+    .fill
+      border-color: $color-green !important
+    &:hover
+      > span
+        color: $color-green
+  &.color-red
+    .bar,
+    .fill
+      border-color: $color-red !important
+    &:hover
+      > span
+        color: $color-red
+  // Orange skin.
+  &.color-orange
+    .bar,
+    .fill
+      border-color: $color-orange !important
+    &:hover
+      > span
+        color: $color-orange
+  &.color-yellow
+    .bar,
+    .fill
+      border-color: $color-yellow !important
+    &:hover
+      > span
+        color: $color-yellow

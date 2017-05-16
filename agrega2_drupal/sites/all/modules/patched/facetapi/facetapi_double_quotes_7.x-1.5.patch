@@ -1,0 +1,37 @@
+diff --git a/sites/all/modules/patched/facetapi/plugins/facetapi/adapter.inc b/sites/all/modules/patched/facetapi/plugins/facetapi/adapter.inc
+index 3fa3ee0..e0d66f5 100644
+--- a/sites/all/modules/patched/facetapi/plugins/facetapi/adapter.inc
++++ b/sites/all/modules/patched/facetapi/plugins/facetapi/adapter.inc
+@@ -1493,7 +1493,7 @@ class FacetapiFacetProcessor {
+       $item_defaults = array(
+         '#markup' => $value,
+         '#indexed_value' => $value,
+-        '#active' => $adapter->itemActive($this->facet['name'], $value),
++        '#active' => $adapter->itemActive($this->facet['name'], '"' . $value . '"'),
+       );
+       $build[$value] = array_merge($defaults, $item_defaults, $build[$value]);
+     }
+diff --git a/sites/all/modules/patched/facetapi/plugins/facetapi/url_processor_standard.inc b/sites/all/modules/patched/facetapi/plugins/facetapi/url_processor_standard.inc
+index 7f29960..a3e5366 100644
+--- a/sites/all/modules/patched/facetapi/plugins/facetapi/url_processor_standard.inc
++++ b/sites/all/modules/patched/facetapi/plugins/facetapi/url_processor_standard.inc
+@@ -47,8 +47,8 @@ class FacetapiUrlProcessorStandard extends FacetapiUrlProcessor {
+ 
+     // Appends to qstring if inactive, removes if active.
+     foreach ($values as $value) {
+-      if ($active && isset($active_items[$value])) {
+-        unset($qstring[$this->filterKey][$active_items[$value]['pos']]);
++      if ($active && isset($active_items['"' . $value . '"'])) {
++        unset($qstring[$this->filterKey][$active_items['"' . $value . '"']['pos']]);
+       }
+       elseif (!$active) {
+         $field_alias = rawurlencode($facet['field alias']);
+@@ -63,7 +63,7 @@ class FacetapiUrlProcessorStandard extends FacetapiUrlProcessor {
+         }
+ 
+         // Adds the filter to the query string.
+-        $qstring[$this->filterKey][] = $field_alias . ':' . $value;
++        $qstring[$this->filterKey][] = $field_alias . ':"' . $value . '"';
+       }
+     }
+ 

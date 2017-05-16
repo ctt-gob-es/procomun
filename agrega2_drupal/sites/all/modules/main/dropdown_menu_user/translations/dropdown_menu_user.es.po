@@ -1,0 +1,102 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  dropdown_menu_user.module: n/a
+#  dropdown_menu_user.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2016-06-22 13:47+0200\n"
+"PO-Revision-Date: 2016-06-22 13:47+0200\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: dropdown_menu_user.module:36
+msgid "Administer dropdown menu user"
+msgstr "Administrar dropdown menu user"
+
+#: dropdown_menu_user.module:37;21
+msgid "Administer dropdown menu user settings."
+msgstr "Administrar las configuraciones de dropdowm menu user"
+
+#: dropdown_menu_user.module:48
+msgid "Settings User Profile"
+msgstr "Configuraciones del perfil de usuario"
+
+#: dropdown_menu_user.module:53
+msgid "Image style"
+msgstr "Estilo de imagen"
+
+#: dropdown_menu_user.module:56
+msgid "Select the image style for the user avatar."
+msgstr "Selecciona el estilo de la imagen para el avatar del usuario"
+
+#: dropdown_menu_user.module:61
+msgid "Check this box if you want to disable the dropdown menu when the user logs"
+msgstr ""
+"Marca esta casilla si quieres desactivar el menu dropdown cuando el "
+"usuario esté logado"
+
+#: dropdown_menu_user.module:63
+msgid "Disable dropdown menu user"
+msgstr "Desactivar el menu dropdown user"
+
+#: dropdown_menu_user.module:90 dropdown_menu_user.info:0;0
+msgid "Dropdown menu user"
+msgstr "Menu desplegable de usuario"
+
+#: dropdown_menu_user.module:170
+msgid "View user notifications and messages"
+msgstr "Ver notificaciones y mensajes del usuario"
+
+#: dropdown_menu_user.module:183
+msgid "Login"
+msgstr "Identificarse"
+
+#: dropdown_menu_user.module:184
+msgid "Access your account"
+msgstr "Accede a tu cuenta"
+
+#: dropdown_menu_user.module:190;192
+msgid "Login with Cl@ve"
+msgstr "Acceso con Cl@ve"
+
+#: dropdown_menu_user.module:197;201
+msgid "What is Cl@ve?"
+msgstr "¿Qué es Cl@ve?"
+
+#: dropdown_menu_user.module:212
+msgid "Even if you are not registered"
+msgstr "Si aún no estás registrado"
+
+#: dropdown_menu_user.module:213
+msgid "Create your account"
+msgstr "Crea tu cuenta"
+
+#: dropdown_menu_user.module:238
+msgid "My profile"
+msgstr "Mi perfil"
+
+#: dropdown_menu_user.module:264
+msgid "I forgot my password"
+msgstr "Olvidé mi contraseña"
+
+#: dropdown_menu_user.module:266
+msgid "Request new password via e-mail."
+msgstr "Solicitar nueva contraseña por correo electrónico."
+
+#: dropdown_menu_user.module:20
+msgid "Dropdown menu user settings"
+msgstr "Configuraciones del menu desplegable de usuario"
+
+#: dropdown_menu_user.info:0
+msgid "Module that provides a new user login into a block"
+msgstr "Módulo que provee un nuevo bloque de login para el usuario"

@@ -1,0 +1,17 @@
+com.emergya.agrega2.arranger.config
+com.emergya.agrega2.arranger.controller
+com.emergya.agrega2.arranger.controller.impl
+com.emergya.agrega2.arranger.controller.test
+com.emergya.agrega2.arranger.model.entity.aop
+com.emergya.agrega2.arranger.model.entity.enums
+com.emergya.agrega2.arranger.model.entity.json
+com.emergya.agrega2.arranger.model.entity.solr
+com.emergya.agrega2.arranger.solr
+com.emergya.agrega2.arranger.solr.test
+com.emergya.agrega2.arranger.util
+com.emergya.agrega2.odes.beans
+com.emergya.agrega2.odes.client.publicator
+com.emergya.agrega2.odes.client.validator
+com.emergya.agrega2.odes.service
+com.emergya.agrega2.odes.service.impl
+com.emergya.agrega2.odes.util

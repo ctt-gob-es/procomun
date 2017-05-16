@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:sec="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans     
+        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-4.0.xsd
+        http://www.springframework.org/schema/security
+        http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+        
+	<sec:http auto-config='true' use-expressions="true"
+		create-session="stateless" entry-point-ref="entryPoint">
+		<!-- REST -->
+		<sec:intercept-url pattern='/rest/ping' access="permitAll" />
+		<sec:intercept-url pattern='/rest/odeTreeData/**' access="permitAll" />
+		<sec:intercept-url pattern='/rest/hello/admin/**'
+			access="hasRole('ADMIN')" />
+		<sec:intercept-url pattern='/rest/hello/**'
+			access="hasAnyRole('USER,ADMIN')" />
+		<sec:intercept-url pattern='/rest/external/solr/**' access="${access_conditions_external}" />
+		<sec:intercept-url pattern='/rest/opendata/**' access="permitAll" />
+		<sec:intercept-url pattern='/rest/solr/**' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/solrAddOde' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/solrAddResponse' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/solrAddQuestion' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/solrAddCommunity' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/solrAddDiscussion' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/solrAddEvent' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/solrAddPoll' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/solrAddLearningResource' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/solrAddComment' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/solrAddPost' access="${access_conditions_drupal}" />
+ 		<sec:intercept-url pattern='/rest/solrAddPodcast' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/solrDelete' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/solrUpdateSolr' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/solrPublishDocument' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/solrUnpublishDocument' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/app/**' access="${access_conditions_drupal}" />
+<!-- 		<sec:intercept-url pattern='/rest/recommender/**' access="${access_conditions_drupal}" /> -->
+		<sec:intercept-url pattern='/rest/recommender/**' access="permitAll" />
+		<sec:intercept-url pattern='/rest/community/**' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/discussion/**' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/ode/**' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/post/**' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/question/**' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/user/**' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/adminUsers/**' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/generate/**' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/odeTreeData/**' access="permitAll" />
+		<sec:intercept-url pattern='/rest/odeTitle/**' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/getOdeNode/**' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/solrUpdatePreview' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/getPifTypes' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/transform/**' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/deleteOde' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/getInterlinkingContent' access="${access_conditions_drupal}" />
+		<sec:intercept-url pattern='/rest/getPublicator' access="${access_conditions_drupal}" />
+		<!-- SOAP -->
+<!-- 		<sec:intercept-url pattern='/odes/**' access="${access_conditions_soap}" /> -->
+		<sec:http-basic />
+
+	</sec:http>
+
+	<sec:global-method-security
+		secured-annotations="enabled" />
+
+	<sec:authentication-manager>
+		<sec:authentication-provider ref="restAuthenticationProvider" />
+	</sec:authentication-manager>
+
+	<bean id="restAuthenticationProvider"
+		class="com.emergya.agrega2.arranger.config.RestAuthenticationProvider" />
+
+	<bean id="entryPoint"
+		class="com.emergya.agrega2.arranger.config.RestAuthenticationEntryPoint" />
+		
+</beans>

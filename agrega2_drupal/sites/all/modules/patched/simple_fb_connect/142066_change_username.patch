@@ -1,0 +1,13 @@
+diff --git a/sites/all/modules/patched/simple_fb_connect/simple_fb_connect.module b/sites/all/modules/patched/simple_fb_connect/simple_fb_connect.module
+index a668a9b..5601a67 100644
+--- a/sites/all/modules/patched/simple_fb_connect/simple_fb_connect.module
++++ b/sites/all/modules/patched/simple_fb_connect/simple_fb_connect.module
+@@ -661,7 +661,7 @@ function simple_fb_connect_login_user($drupal_user) {
+       boost_set_cookie($drupal_user->uid);
+     }
+ 
+-    drupal_set_message(t('You are now logged in as %username', array('%username' => $drupal_user->name)));
++    drupal_set_message(t('You are now logged in as %username', array('%username' => ag_section_profile_users_get_name_surname_cached($drupal_user->uid))));
+     return TRUE;
+   }
+ 

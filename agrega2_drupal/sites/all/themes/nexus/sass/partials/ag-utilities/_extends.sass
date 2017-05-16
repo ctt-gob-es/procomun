@@ -1,0 +1,172 @@
+.license-link
+  @extend .clearfix
+  > a
+    float: left
+    padding-right: 10px
+  .license-link-text
+    display: block
+    float: left
+
+.hide-accessible
+  position: absolute
+  white-space: nowrap
+  left: -9999px
+
+.chosen-container.error
+  border: 2px solid $red
+  a
+    border: 2px solid $orange
+.form-checkbox.error
+  outline: 2px solid $red
+
+.box-shadow
+  background: $white
+  padding: 2em
+  +box-shadow(0px 2px 4px 1px lighten($cold_gray, 15%) )
+.shadow
+  +box-shadow(0px 0px 10px 1px $light_gray)
+  margin-top: 27px
+  &:before
+    content: ""
+    position: absolute
+    width: 10px
+    height: 10px
+    left: 86%
+    top: 0
+    background: $white
+    border-color: transparent transparent $white $white
+    transform-origin: 0 0
+    transform: rotate(135deg)
+    +box-shadow(-1px 0px 6px 0 $light_gray)
+
+.content-count
+  text-align: center
+  border-left: 1px solid $light_gray
+  padding: 0px 15px
+  width: 10%
+  text-transform: uppercase
+  font-weight: 700
+  font-size: 12px
+  color: $navy
+  span
+    display: block
+    margin-top: 5px
+    color: $dark_green
+    font-size: 18px
+  a
+    color: inherit
+
+// See this URL for explanation: http://zerosixthree.se/vertical-align-anything-with-just-3-lines-of-css/
+%vertical-align
+  position: relative
+  top: 50%
+  -webkit-transform: translateY(-50%)
+  -ms-transform: translateY(-50%)
+  transform: translateY(-50%)
+
+
+//Let's Have an extend for tables with some basic styles
+%table-style-1
+  table
+    border: 1px solid $light_gray
+    margin: 1em 0
+  tr.odd
+    background: $white
+  tr.even
+    background: $lightest_gray
+  th
+    text-transform: uppercase
+    font-weight: normal
+    color: $navy
+    background: $lightest_gray
+    border: 1px solid $light_gray
+    padding: .3em .5em
+  td
+    font-size: .9em
+    padding: 1em .5em
+    vertical-align: top
+
+%table-style-2
+  thead
+    //background-color: $lightest_gray
+    border-bottom: 1px solid $light_gray
+    tr>th
+      border-right: 1px solid $light_gray
+      line-height: 15px
+      font-size: 12px
+      height: 3em
+      text-transform: uppercase
+      &:last-child
+        border-right: none
+  tbody
+    tr
+      border-bottom: 1px solid $light_gray
+      &>td
+        border-right: 1px solid $light_gray
+        height: 3em
+        line-height: normal
+        &:last-child
+          border-right: none
+          text-align: center
+      &:last-child
+        border-bottom: none
+
+.facetapi-styles
+  border-bottom: 1px dashed $gray
+  h2,
+  h3
+    +title-grey()
+    padding-bottom: 20px
+    font-size: 18px
+    margin-top: 0
+    text-transform: uppercase
+    margin-bottom: 10px
+
+  .item-list ul li.leaf
+    margin: 0.25em 0
+    padding: 0.35em 0
+    list-style-image: none
+    list-style-type: none
+    color: $navy
+    font-size: 18px
+    font-weight: 700
+    font-family: $font_narrow
+    position: relative
+    a
+      font-weight: normal
+    &.selected
+      &:after
+        width: 5px
+        height: 32px
+        display: block
+        content: ''
+        right: -18px
+        top: 1px
+        position: absolute
+        background: $green
+
+  .item-list a.facetapi-limit-link
+    display: block
+    font-size: 15px
+    color: $main_blue
+    text-align: center
+    padding: 10px 0
+    border-top: 1px dashed $gray
+    &:hover
+      text-decoration: underline
+      color: $deep_blue
+
+  .views-exposed-form
+    .views-exposed-widget
+      float: none
+      padding: 0
+      margin-bottom: 1em
+    input
+      width: 100%
+    label
+      display: block
+      margin-bottom: .5em
+      padding-bottom: .3em
+      font-size: 16px
+      +title-grey()
+      +title-underline()

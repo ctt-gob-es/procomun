@@ -1,0 +1,85 @@
+<?php
+
+/**
+*
+*/
+class testOgDrupalToolKit extends DrupalWebTestCase {
+
+  public static function getInfo() {
+    return array(
+      'name' => 'Og Drupal tool kit test',
+      'description' => 'Test the static methods of OgDrupalToolKit class',
+      'group' => 'Emergya Drupal Toolkit',
+    );
+  }
+
+  public function setUp() {
+    // Ensure enable og module.
+    parent::setUp('og', 'em_drupal_toolkit');
+  }
+
+  public function testOgDrupalToolKitMethods() {
+    // Set Article Content Type as Group:
+    og_create_field(OG_GROUP_FIELD, 'node', 'article');
+    // Create a group content:
+    $group_settings = array(
+      'type' => 'article',
+      'title' => $this->randomName(32),
+      'body' => array(LANGUAGE_NONE => array(array($this->randomName(64)))),
+    );
+    $group_node = $this->drupalCreateNode($group_settings);
+    $group_wrapper = entity_metadata_wrapper('node', $group_node);
+    $group_wrapper->{OG_GROUP_FIELD}->set(1);
+    $group_wrapper->save();
+
+    // Set Page Content type as group content:
+    og_create_field(OG_AUDIENCE_FIELD, 'node', 'page');
+    // Generate content for the group node:
+    $content_settings = array(
+      'type' => 'page',
+      'title' => $this->randomName(32),
+      'body' => array(LANGUAGE_NONE => array(array($this->randomName(64)))),
+    );
+    $content_node = $this->drupalCreateNode($content_settings);
+    $content_wrapper = entity_metadata_wrapper('node', $content_node);
+    $content_wrapper->{OG_AUDIENCE_FIELD}->set(array($group_node->nid));
+    $content_wrapper->save();
+
+    // Test the method countContentsByGroup:
+    $contents_count = OgDrupalToolKit::countContentsByGroup('node', array('page'), $group_node->nid);
+    $this->assertEqual($contents_count, 1, 'countContentsByGroup method works as expected');
+
+    // Generate group members:
+    $member1 = $this->drupalCreateUser();
+    $member2 = $this->drupalCreateUser();
+    og_group('node', $group_node->nid, array('entity' => $member1->uid));
+    og_group('node', $group_node->nid, array('entity' => $member2->uid));
+
+    // Test countMemberships method:
+    // There sould be 3 members 1 user that creates the groups and the previous 2 members.
+    $members_count = OgDrupalToolKit::countMemberships('user', $group_node->nid);
+    $this->assertEqual($members_count, 3, 'countMemberships method works as expected');
+  }
+
+  public function testCountMembershipsMethod() {
+    // Set Article Content Type as Group:
+    og_create_field(OG_GROUP_FIELD, 'node', 'article');
+    // Create a group content:
+    $group_settings = array(
+      'type' => 'article',
+      'title' => $this->randomName(32),
+      'body' => array(LANGUAGE_NONE => array(array($this->randomName(64)))),
+    );
+    $group_node = $this->drupalCreateNode($group_settings);
+    $group_wrapper = entity_metadata_wrapper('node', $group_node);
+    $group_wrapper->{OG_GROUP_FIELD}->set(1);
+    $group_wrapper->save();
+
+    // Test getUsersByRoleName method:
+    $members = OgDrupalToolKit::getUsersByRoleName('node', 'article', $group_node->nid, OG_AUTHENTICATED_ROLE)->fetchAllKeyed(1,2);
+    debug($members);
+  }
+}
+
+
+

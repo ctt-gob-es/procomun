@@ -1,0 +1,32 @@
+TESAURO INTEF – NPROCOMUN,ÁRBOL CURRICULAR LOE,ETB LRE
+Educación Especial,1#Special Education,M60#60 Educational system##403#educational system##1227#special education
+Educación Infantil,2#Preschool Education,M60#60 Educational system##403#educational system##1017#pre-school education
+Educación Primaria,3#Primary Education,M60#60 Educational system##403#educational system##1024#primary education
+6 -7 años / Primer curso,3#Primary Education##3.1#First stage##3.1.1#First year,M60#60 Educational system##403#educational system##1024#primary education
+7 - 8 años / Segundo curso,3#Primary Education##3.1#First stage##3.1.2#Second year,M60#60 Educational system##403#educational system##1024#primary education
+8 - 9 años / Tercer curso,3#Primary Education##3.2#Second stage##3.2.1#Third year,M60#60 Educational system##403#educational system##1024#primary education
+9 - 10 años / Cuarto curso,3#Primary Education##3.2#Second stage##3.2.2#Fourth year,M60#60 Educational system##403#educational system##1024#primary education
+10 - 11 años / Quinto curso,3#Primary Education##3.3#Third stage##3.3.1#Fifth year,M60#60 Educational system##403#educational system##1024#primary education
+11 - 12 / Sexto curso,3#Primary Education##3.3#Third stage##3.3.2#Sixth year,M60#60 Educational system##403#educational system##1024#primary education
+Educación Secundaria Obligatoria,4#Compulsory Secondary Education (ESO),M60#60 Educational system##403#educational system##1158#secondary education
+12 - 13 años / Primer curso,4#Compulsory Secondary Education (ESO)##4.1#First year,M60#60 Educational system##403#educational system##1158#secondary education
+13 - 14 años / Segundo curso,4#Compulsory Secondary Education (ESO)##4.2#Second year,M60#60 Educational system##403#educational system##1158#secondary education
+14 - 15 años / Tercer curso,4#Compulsory Secondary Education (ESO)##4.3#Third year,M60#60 Educational system##403#educational system##1158#secondary education
+15 - 16 / Cuarto curso,4#Compulsory Secondary Education (ESO)##4.4#Fourth year,M60#60 Educational system##403#educational system##1158#secondary education
+Bachillerato,6#High Secondary Education (Bachillerato),M60#60 Educational system##403#educational system##1158#secondary education
+Formación Profesional,8#Vocational Training###7#Initial Professional Qualification Programmes,M60#60 Educational system##386#education##1369#vocational education
+Formación Profesional Básica (más de 15 años),7#Initial Professional Qualification Programmes,M60#60 Educational system##386#education##1369#vocational education##3110#initial professional training
+Ciclo formativo grado medio (más de 16 años),8#Vocational Training##8.1#Training course intermediate level,M60#60 Educational system##386#education##1369#vocational education##4659#specific professional training##3538#Middle-Grade Vocational Training
+Ciclo formativo grado superior (más de 18 años),8#Vocational Training##8.2#Training course high level,M60#60 Educational system##386#education##1369#vocational education##4659#specific professional training##2939#Higher-Grade Vocational Training
+Educación de Personas Adultas,9#Adults Education,M60#60 Educational system##386#education##28#adult education
+Enseñanza oficial de idiomas,10#Special-Pattern Education##10.1#Official Languages School,M60#60 Educational system##403#educational system##4782#teaching of official languages
+Nivel básico (A),10#Special-Pattern Education##10.1#Official Languages School##10.1.1#Basic level,M60#60 Educational system##403#educational system##4782#teaching of official languages
+Nivel intermedio (B),10#Special-Pattern Education##10.1#Official Languages School##10.1.2#Intermediate level,M60#60 Educational system##403#educational system##4782#teaching of official languages
+Nivel avanzado ( C ),10#Special-Pattern Education##10.1#Official Languages School##10.1.3#Advanced level,M60#60 Educational system##403#educational system##4782#teaching of official languages
+Enseñanzas de artes plásticas y diseño,10#Special-Pattern Education##10.2#Artistic education##10.2.1#Plastic arts and design education###10#Special-Pattern Education##10.2#Artistic education##10.2.2#High education of plastic arts and design education,M60#60 Educational system##403#educational system##1623#artistic teaching
+Enseñanzas de música,10#Special-Pattern Education##10.2#Artistic education##10.2.3#Music education,M60#60 Educational system##403#educational system##1623#artistic teaching
+Enseñanzas de danza,10#Special-Pattern Education##10.2#Artistic education##10.2.4#Dance education,M60#60 Educational system##403#educational system##1623#artistic teaching
+Enseñanzas de arte dramático,10#Special-Pattern Education##10.2#Artistic education##10.2.5#Dramatic arts education,M60#60 Educational system##403#educational system##1623#artistic teaching
+Enseñanzas deportivas,10#Special-Pattern Education##10.3#Sports education,M60#60 Educational system##403#educational system##4676#sports teaching
+Enseñanzas Universitarias,11#University education,M60#60 Educational system##403#educational system##587#higher education
+Formación del Profesorado,,M60#60 Educational system##386#education##1273#teacher education

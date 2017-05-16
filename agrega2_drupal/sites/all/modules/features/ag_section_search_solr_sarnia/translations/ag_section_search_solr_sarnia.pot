@@ -1,0 +1,183 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_section_search_solr_sarnia.views_default.inc: n/a
+#  ag_section_search_solr_sarnia.module: n/a
+#  ag_section_search_solr_sarnia.info: n/a
+#  js/ag_section_search_solr_sarnia_facet.js: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2014-09-01 12:18+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: ag_section_search_solr_sarnia.views_default.inc:71
+msgid "Master"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.views_default.inc:72
+msgid "ODE  Search"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.views_default.inc:73
+msgid "más"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.views_default.inc:74
+msgid "Aplicar"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.views_default.inc:75
+msgid "Reiniciar"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.views_default.inc:76
+msgid "Ordenar por"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.views_default.inc:77
+msgid "Asc"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.views_default.inc:78
+msgid "Desc"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.views_default.inc:79
+msgid "Elementos por página"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.views_default.inc:80
+msgid "- Todos -"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.views_default.inc:81
+msgid "Desplazamiento"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.views_default.inc:82
+msgid "« primera"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.views_default.inc:83
+msgid "‹ anterior"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.views_default.inc:84
+msgid "siguiente ›"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.views_default.inc:85
+msgid "última »"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.views_default.inc:86
+msgid "Id"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.views_default.inc:87
+msgid "Búsqueda por texto completo"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.views_default.inc:88
+msgid "Page"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.module:17
+msgid "Search"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.module:18;417
+msgid "People"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.module:19
+msgid "Learning Resources"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.module:20;425
+msgid "Communities"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.module:21;429
+msgid "Questions"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.module:22;433
+msgid "Answers"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.module:23;437
+msgid "Events"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.module:24;441
+msgid "Discussions"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.module:25;445
+msgid "Polls"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.module:326 ag_section_search_solr_sarnia.info:0
+msgid "Agrega2"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.module:421
+msgid "Learning Resources & ODEs"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.module:453
+msgid "Procomún"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.module:471
+msgid "Private comunity"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.module:475
+msgid "Public comunity"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.module:478
+msgid "Restricted comunity"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.module:491
+msgid "Facet Home (Resource Type)."
+msgstr ""
+
+#: ag_section_search_solr_sarnia.module:494
+msgid "Facet Home (Educational Level)."
+msgstr ""
+
+#: ag_section_search_solr_sarnia.module:497
+msgid "Facet Home (Discipline 3)."
+msgstr ""
+
+#: ag_section_search_solr_sarnia.info:0
+msgid "ag_section_search_solr_sarnia"
+msgstr ""
+
+#: ag_section_search_solr_sarnia.info:0
+msgid "Solr views search + custom modifications forms."
+msgstr ""
+
+#: js/ag_section_search_solr_sarnia_facet.js:0;0
+msgid "See +"
+msgstr ""
+
+#: js/ag_section_search_solr_sarnia_facet.js:0
+msgid "See -"
+msgstr ""
+

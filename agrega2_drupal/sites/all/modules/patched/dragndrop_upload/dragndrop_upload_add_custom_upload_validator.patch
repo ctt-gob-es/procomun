@@ -1,0 +1,80 @@
+diff --git a/sites/all/modules/patched/dragndrop_upload/dragndrop_upload.module b/sites/all/modules/patched/dragndrop_upload/dragndrop_upload.module
+index 2f1ac3b..a47247f 100644
+--- a/sites/all/modules/patched/dragndrop_upload/dragndrop_upload.module
++++ b/sites/all/modules/patched/dragndrop_upload/dragndrop_upload.module
+@@ -197,6 +197,8 @@ function dragndrop_upload_errors_info() {
+       'The selected file @filename cannot be uploaded. Maximum allowed number (@allowed) of files is exceeded.'),
+     'fileExt' => t(
+       'The selected file @filename cannot be uploaded. Only files with the following extensions are allowed: @allowed.'),
++    'fileZip' => t(
++      'The selected file @filename cannot be uploaded. Compressed files can only be uploaded individually'),
+     'unknown' => t('Unknown error type'),
+   );
+ 
+diff --git a/sites/all/modules/patched/dragndrop_upload/js/dragndrop-upload.dnd.js b/sites/all/modules/patched/dragndrop_upload/js/dragndrop-upload.dnd.js
+index d0967d0..30b1db7 100644
+--- a/sites/all/modules/patched/dragndrop_upload/js/dragndrop-upload.dnd.js
++++ b/sites/all/modules/patched/dragndrop_upload/js/dragndrop-upload.dnd.js
+@@ -59,6 +59,10 @@ function DnD(droppable, settings) {
+ }
+ 
+ (function ($) {
++  // Custom vars for custom upload validator: multiupload_file_validate_zip.
++  var num_files = 0;
++  var has_zip = false;
++
+   DnD.prototype = {
+     $droppables: null,
+     $activeDroppable: null,
+@@ -214,6 +218,36 @@ function DnD(droppable, settings) {
+         }
+       },
+ 
++      // Custom upload validator.
++      'multiupload_file_validate_zip': function (event, dndFile) {
++        if (dndFile.error == null) {
++          var ext = dndFile.file.name.split('.').pop().toLowerCase();
++          var isValid = true;
++
++          if (ext == 'zip' && (has_zip || num_files >= 1)) {
++            isValid = false;
++          }
++          else if (ext == 'zip') {
++            has_zip = true
++          }
++          else if (ext !== 'zip' && has_zip) {
++            isValid = false;
++          }
++
++          num_files++;
++
++          if (!isValid) {
++            num_files--;
++            dndFile.error = {
++              type: 'fileZip',
++              args: {
++                '@filename': dndFile.file.name
++              }
++            };
++          }
++        }
++      },
++
+       filesNum: function (event, dndFile, filesList) {
+         var settings = this.settings;
+ 
+@@ -401,6 +435,14 @@ function DnD(droppable, settings) {
+         if (dndFile == eachFile) {
+           droppedFiles.splice(i, 1);
+           me.removePreview(dndFile);
++
++          // Custom logic.
++          var ext = dndFile.file.name.split('.').pop().toLowerCase();
++          if (ext == 'zip') {
++            has_zip = false;
++          }
++          num_files--;
++
+           return false;
+         }
+         return true;

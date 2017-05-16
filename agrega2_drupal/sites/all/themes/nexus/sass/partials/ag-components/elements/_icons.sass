@@ -1,0 +1,54 @@
+// Provide a general way of getting/using the project icons
+.gecko a
+  outline: 0
+
+.ico
+  display: inline-block
+  @mixin ico($img, $display: inline-block)
+    @include bg-build($img)
+    display: $display
+  &.ico-descargar
+    @include ico('ico-descargar.png')
+  &.ico-favorito
+    @include ico('ico-favorito.png')
+  &.ico-comentar
+    @include ico('ico-comentar.png')
+  &.ico-mas
+    @include ico('triangulo.png')
+    height: 12px
+  &.ico-maximize
+    @include ico('ico-maximize.png')
+  &.ico-menos
+    @include ico('ico-menos.png')
+  &.ico-minimize
+    @include ico('ico-minimize.png')
+  &.ico-fullscreen
+    @include ico('ico-fullscreen.png')
+  &.ico-navegacion
+    @include ico('ico-navegacion.png')
+  &.ico-insertar
+    @include ico('ico-insertar.png')
+  &.ico-x
+    @include ico('ico-x.png')
+  &.ico-x-green
+    @include ico('ico-x-green.png')
+  &.ico-likes
+    @include ico('ico-likes.png')
+.ico-true
+  @include bg-build('ico-true.png')
+  text-indent: -666em
+  overflow: hidden
+  text-align: center
+  background-position: center
+  margin: 0 auto
+.ico-false
+  @include bg-build('ico-false.png')
+  text-indent: -666em
+  overflow: hidden
+  text-align: center
+  background-position: center
+  margin: 0 auto
+.delete-message
+  +icon-aware('ico_eliminar.png', 2px)
+.mark-read-message
+  +icon-aware('ico_marcar_leido.png', 2px)

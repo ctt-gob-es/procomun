@@ -1,0 +1,38 @@
+.view-user-notifications
+  .body-message
+  .user-name
+    text-transform: capitalize
+  .header-message
+    border-bottom: 1px solid $light_gray
+    padding: 0.4em 0
+    margin-top: 1.5em
+    margin-bottom: 0.5em
+  .message-processed
+    background-color: rgba($snow, .5)
+    padding: 0 1em
+    width: calc(100% + 2em)
+    margin-left: -1em
+  ul.social
+    margin: 0
+    border-bottom: 1px dashed $gray
+    .message-links
+      > *
+        margin-right: 3em
+        &:last-child
+          margin-right: 0
+      .accept, .deny
+        padding-left: 30px
+        margin-right: 30px
+        display: inline-block
+        padding-top: 5px
+        padding-bottom: 5px
+      .deny
+        background: image-url("ico-x-green.png") 0 3px no-repeat
+      .accept
+        background: image-url("ico-v-ok.png") 0 3px no-repeat
+  .pager-load-more
+    border: 0
+  .views-row
+    margin-bottom: 3em
+  .views-row-last
+    margin-bottom: 0

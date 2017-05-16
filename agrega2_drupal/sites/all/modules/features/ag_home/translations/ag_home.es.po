@@ -1,0 +1,143 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_home.context.inc: n/a
+#  ag_home.info: n/a
+#  ag_home.features.field_instance.inc: n/a
+#  ag_home.views_default.inc: n/a
+#  ag_home.module: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2016-06-09 13:24+0200\n"
+"PO-Revision-Date: 2016-06-09 13:24+0200\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: ag_home.context.inc:42
+msgid "Context for homepage"
+msgstr ""
+
+#: ag_home.context.inc:43;92;148 ag_home.info:0
+msgid "Home"
+msgstr "Inicio"
+
+#: ag_home.context.inc:93
+msgid "Not logged"
+msgstr ""
+
+#: ag_home.context.inc:149
+msgid "Logged"
+msgstr ""
+
+#: ag_home.features.field_instance.inc:445
+msgid "Banner description"
+msgstr ""
+
+#: ag_home.features.field_instance.inc:446
+msgid "Banner extra"
+msgstr ""
+
+#: ag_home.features.field_instance.inc:447
+msgid "Banner image"
+msgstr ""
+
+#: ag_home.features.field_instance.inc:448
+msgid "Descripción"
+msgstr ""
+
+#: ag_home.features.field_instance.inc:449
+msgid "Enlace"
+msgstr ""
+
+#: ag_home.features.field_instance.inc:450
+msgid "Imagen"
+msgstr ""
+
+#: ag_home.features.field_instance.inc:451
+msgid "Título"
+msgstr ""
+
+#: ag_home.views_default.inc:76;155;223
+msgid "Master"
+msgstr "Maestro"
+
+#: ag_home.views_default.inc:77
+msgid "The last"
+msgstr "Lo último"
+
+#: ag_home.views_default.inc:78;156;225
+msgid "View more"
+msgstr "Ver más"
+
+#: ag_home.views_default.inc:79;157;226
+msgid "Apply"
+msgstr "Aplicar"
+
+#: ag_home.views_default.inc:80;158;227
+msgid "Reset"
+msgstr "Reiniciar"
+
+#: ag_home.views_default.inc:81;159;228
+msgid "Sort by"
+msgstr "Ordenar por"
+
+#: ag_home.views_default.inc:82;160;229
+msgid "Asc"
+msgstr "Asc"
+
+#: ag_home.views_default.inc:83;161;230
+msgid "Desc"
+msgstr "Desc"
+
+#: ag_home.views_default.inc:84
+msgid "Home more recent"
+msgstr ""
+
+#: ag_home.views_default.inc:85;163;232
+msgid "more"
+msgstr "más"
+
+#: ag_home.views_default.inc:86;164;233
+msgid "View panes"
+msgstr "Vista panel"
+
+#: ag_home.views_default.inc:162
+msgid "Home most visited"
+msgstr ""
+
+#: ag_home.views_default.inc:224
+msgid "New communities"
+msgstr "Nuevas comunidades"
+
+#: ag_home.views_default.inc:231
+msgid "Home new communities"
+msgstr ""
+
+#: ag_home.module:32;47
+msgid "Custom register link"
+msgstr ""
+
+#: ag_home.module:61
+msgid "All this and more in Procomun. Sign up now."
+msgstr "Todo esto y más en Procomún. Regístrate ahora."
+
+#: ag_home.module:61
+msgid "Sign up"
+msgstr "Registrarse"
+
+#: ag_home.info:0
+msgid "Feature para la home de Agrega2"
+msgstr ""
+
+#: ag_home.info:0
+msgid "Agrega2"
+msgstr "Agrega2"

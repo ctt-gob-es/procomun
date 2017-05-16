@@ -1,0 +1,7 @@
+name = Recommendations
+description = Module for service implementation recommendations
+core = 7.x
+package = Agrega2
+files[] = includes/recommendations.views.inc
+dependencies[] = services
+dependencies[] = orchestrator_services

@@ -1,0 +1,65 @@
+.pane-bean-banner-home
+  padding: 0
+  height: 235px
+  .content
+    img
+      width: 100%
+    .field-type-text
+      height: 80px
+      font-family: $font_narrow
+      font-size: 24px
+      color: $white
+      text-align: center
+      display: table
+      width: 55%
+      margin: 0 auto
+      position: relative
+      padding: 1.5em 0 1em
+      .field-items
+        display: table-cell
+        vertical-align: middle
+      &:before
+        width: 46px
+        height: 46px
+        padding: 10px
+        +border-radius(60px)
+        position: absolute
+        top: -20px
+        left: calc(50% - 23px)
+  &-localiza-contenido
+    background: lighten($main_blue, 20%)
+    .field-type-text:before
+      background: $main_blue
+      content: image-url('ico_brujula.png')
+  &-encuentra-personas
+    background: lighten($cold_gray, 10%)
+    .field-type-text:before
+      background: $dark_blue
+      content: image-url('ico_personas.png')
+  &-mantente-actualiza
+    background: $green
+    .field-type-text:before
+      background: $dark_green
+      content: image-url('ico_admiracion.png')
+
+// Block for register
+.pane-ag-home-custom-register-link
+  clear: both
+  border: 1px dashed $gray
+  border-left-width: 0
+  border-right-width: 0
+  margin: 0 5px
+  padding: 1em
+  text-align: center
+  color: $cold_gray
+  font-size: 28px
+  font-weight: 700
+  a
+    +button($orange)
+    font-size: 22px
+    margin-left: 1.5em
+    padding: 15px 40px
+    &:hover
+      background: $dark_orange
+      text-decoration: none
+      color: $white

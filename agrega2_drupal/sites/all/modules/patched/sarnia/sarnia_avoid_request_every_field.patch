@@ -1,0 +1,14 @@
+diff --git a/sites/all/modules/patched/sarnia/service.inc b/sites/all/modules/patched/sarnia/service.inc
+index e5b6419..22e0e60 100644
+--- a/sites/all/modules/patched/sarnia/service.inc
++++ b/sites/all/modules/patched/sarnia/service.inc
+@@ -93,7 +93,8 @@ class SarniaSolrService extends SearchApiSolrService {
+     $call_args['params']['fq'] = array_diff($call_args['params']['fq'], array($index_id_filter));
+ 
+     // Make sure that all fields, plus the score, are returned in Solr results.
+-    $call_args['params']['fl'] = array('*,score');
++    // We only need a few fields per type. Take a look at ag_section_search_solr_sarnia_search_api_solr_query_alter().
++    //$call_args['params']['fl'] = array('*,score');
+ 
+     // Explicitly specify the default query type, since the Solr core's
+     // config.xml might specify any default.

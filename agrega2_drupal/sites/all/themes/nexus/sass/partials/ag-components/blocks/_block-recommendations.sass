@@ -1,0 +1,25 @@
+.block-recommendations
+  +pane-grey-bg()
+  h2
+    +title-bg
+    margin-top: 0
+  .content
+    padding: 1em
+    li
+      +clearfix()
+      position: relative
+      padding: .5em 0
+      border-bottom: 1px dotted $light_gray
+      margin: 0
+      &.last
+        border: none
+        padding-bottom: 0
+      a
+        position: relative
+        display: block
+        color: $cold_gray
+        text-decoration: none
+        &:hover
+          color: $main_blue
+          text-decoration: none
+

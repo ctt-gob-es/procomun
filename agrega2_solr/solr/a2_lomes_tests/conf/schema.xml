@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<schema name="example" version="1.5">
+	<fields>
+		<!-- Unique ID -->
+		<field name="id" type="string" indexed="true" stored="true"/>
+		<field name="lastIndexDate" type="tdate" indexed="true" stored="true" multiValued="false" default="NOW" />
+		
+		<!-- Document TYPE -->
+		<field name="type" type="string" indexed="true" stored="true"/>
+		
+		<!-- Common fields -->
+		<field name="title" type="text_general" indexed="true" stored="true"/>
+		<field name="description" type="text_general" indexed="true" stored="true"/>
+		
+		<!-- ODE DOCUMENT -->
+		<field name="author" type="text_general" indexed="true" stored="true" required="false" multiValued="false" /> 
+		<field name="publicationDate" type="tdate" indexed="true" stored="true" required="false" multiValued="false" /> 
+		  
+		<field name="generalIdentifier" type="text_general" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="generalTitle" type="text_general" indexed="true" stored="true" required="false" multiValued="false" />
+		<field name="generalKeyword" type="text_keyword" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="generalDescription" type="text_general" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="generalLanguage" type="text_general" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="generalAggregationLevel" type="text_general" indexed="true" stored="true" required="false" multiValued="false" />
+		
+		<field name="lifecycleContribute" type="text_general" indexed="true" stored="true" required="false" multiValued="true" />
+		
+		<field name="educationalLearningResourceType" type="text_general" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="educationalIntendedEndUserRole" type="text_general" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="educationalContext" type="text_general" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="educationalDescription" type="text_general" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="educationalLanguage" type="text_general" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="educationalCognitiveProcess" type="text_general" indexed="true" stored="true" required="false" multiValued="true" />
+
+		<field name="rightsCopyrightAndOtherRestrictions" type="text_general" indexed="true" stored="true" required="false" multiValued="false" />
+		<field name="rightsAccess" type="text_general" indexed="true" stored="true" required="false" multiValued="false" />
+		<field name="rightsAccessDescription" type="text_general" indexed="true" stored="true" required="false" multiValued="false" />
+
+		<field name="classificationEducationalLevel1" type="text_general" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationEducationalLevel2" type="text_general" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationEducationalLevel3" type="text_general" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationEducationalLevel4" type="text_general" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationEducationalLevel5" type="text_general" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationEducationalLevel6" type="text_general" indexed="true" stored="true" required="false" multiValued="true" />
+
+		<field name="classificationDiscipline1" type="text_general" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationDiscipline2" type="text_general" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationDiscipline3" type="text_general" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationDiscipline4" type="text_general" indexed="true" stored="true" required="false" multiValued="true" />
+
+		<field name="classificationCompetency1" type="text_general" indexed="true" stored="true" required="false" multiValued="true" />
+		<field name="classificationCompetency2" type="text_general" indexed="true" stored="true" required="false" multiValued="true" />
+
+		<field name="titleLinks" type="text_general" indexed="true" stored="true" required="false" multiValued="true" />
+
+		<!-- USER DOCUMENT -->
+		<field name="userName" type="text_general" indexed="true" stored="true" multiValued="false"/>
+		<field name="userSurName" type="text_general" indexed="true" stored="true" multiValued="false"/>
+		<field name="userBirthDate" type="tdate" indexed="true" stored="true" multiValued="false"/>
+		<field name="userCountry" type="text_general" indexed="true" stored="false" multiValued="false"/>
+		<field name="userCountryStr" type="string" indexed="true" stored="true" multiValued="false"/>
+		<field name="userDni" type="text_general" indexed="true" stored="true" multiValued="false"/>
+		<field name="userProvince" type="text_general" indexed="true" stored="false" multiValued="false"/>
+		<field name="userProvinceStr" type="string" indexed="true" stored="true" multiValued="false"/>
+		<field name="userLocality" type="text_general" indexed="true" stored="false" multiValued="false"/>
+		<field name="userLocalityStr" type="string" indexed="true" stored="true" multiValued="false"/>
+		<field name="userEducativeCenter" type="text_general" indexed="true" stored="true" multiValued="false"/>
+		<field name="userEducativeCenterUrl" type="text_general" indexed="true" stored="true" multiValued="false"/>
+		<field name="userLabels" type="text_general" indexed="true" stored="false" multiValued="true"/>
+		<field name="userLabelsStr" type="string" indexed="true" stored="true" multiValued="true"/>
+		
+		<!-- RESPONSE DOCUMENT -->
+		<field name="responseLabels" type="text_general" indexed="true" stored="false" multiValued="true"/>
+		<field name="responseLabelsStr" type="string" indexed="true" stored="true" multiValued="true"/>
+		<field name="responseState" type="text_general" indexed="true" stored="false" multiValued="false"/>
+		<field name="responseStateStr" type="string" indexed="true" stored="true" multiValued="false"/>
+		
+		
+		<!-- QUESTION DOCUMENT -->
+		<field name="questionLabels" type="text_general" indexed="true" stored="false" multiValued="true"/>
+		<field name="questionLabelsStr" type="string" indexed="true" stored="true" multiValued="true"/>
+		<field name="questionState" type="text_general" indexed="true" stored="false" multiValued="false"/>
+		<field name="questionStateStr" type="string" indexed="true" stored="true" multiValued="false"/>
+		
+		
+		<!-- Field to full search -->
+		<field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>
+	
+	 <!-- End Agrega2 Schema -->
+	</fields>
+ 
+	<!-- Copy Fields -->
+	<copyField source="*" dest="text"/>
+	
+	<!-- user -->
+	<copyField source="userCountry" dest="userCountryStr"/>
+	<copyField source="userProvince" dest="userProvinceStr"/>
+	<copyField source="userLocality" dest="userLocalityStr"/>
+	<copyField source="userLabels" dest="userLabelsStr"/>
+	
+	<!-- response -->
+	<copyField source="responseLabels" dest="userLocalityStr"/>
+	<copyField source="responseState" dest="userLocalityStr"/>
+	
+	<!-- question -->
+	<copyField source="questionLabels" dest="userLocalityStr"/>
+	<copyField source="questionState" dest="userLocalityStr"/>
+	
+	<!-- KEY -->
+	<uniqueKey>id</uniqueKey>
+	 
+	<!-- TYPES -->
+	<types>
+		<fieldType name="string" class="solr.StrField" sortMissingLast="true" />
+		<fieldType name="int" class="solr.TrieIntField" precisionStep="0" positionIncrementGap="0"/>
+		<fieldType name="float" class="solr.TrieFloatField" precisionStep="0" positionIncrementGap="0"/>
+		<fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
+		<fieldType name="double" class="solr.TrieDoubleField" precisionStep="0" positionIncrementGap="0"/>
+		<fieldType name="text_normal" class="solr.TextField" positionIncrementGap="100"/>
+		
+		<fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
+			<analyzer type="index">
+				<tokenizer class="solr.StandardTokenizerFactory"/>
+				<filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" />
+				<filter class="solr.LowerCaseFilterFactory"/>
+			</analyzer>
+			<analyzer type="query">
+				<tokenizer class="solr.StandardTokenizerFactory"/>
+				<filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" />
+				<filter class="solr.LowerCaseFilterFactory"/>
+			</analyzer>
+		</fieldType>
+		
+		<fieldType name="text_keyword" class="solr.TextField" positionIncrementGap="100">
+			<analyzer type="index">
+				<tokenizer class="solr.KeywordTokenizerFactory"/>
+				<filter class="solr.LowerCaseFilterFactory"/>
+			</analyzer>
+			<analyzer type="query">
+				<tokenizer class="solr.KeywordTokenizerFactory"/>
+				<filter class="solr.LowerCaseFilterFactory"/>
+			</analyzer>
+		</fieldType>
+		
+		<fieldType name="date" class="solr.TrieDateField" precisionStep="0" positionIncrementGap="0"/>
+		
+		<!-- A Trie based date field for faster date range queries and date faceting. -->
+		<fieldType name="tdate" class="solr.TrieDateField" precisionStep="6" positionIncrementGap="0"/>
+		
+		<fieldtype name="ignored" class="solr.StrField" />
+	</types>
+</schema>

@@ -1,0 +1,94 @@
+@import url(http://fonts.googleapis.com/css?family=PT+Sans:400,700);
+/*------------------ Variables Agrega2 ------------------ */
+/* Fonts */
+/* PT Sans */
+/* It prepares an element to display an image based on its attributes */
+/* line 9, ../sass/_ode-icons.scss */
+.ico { display: inline-block; }
+/* line 18, ../sass/_ode-icons.scss */
+.ico.ico-descargar { background: url('../images/ico-descargar.png?1465545336') no-repeat scroll 0 0 transparent; width: 20px; height: 18px; display: inline-block; }
+/* line 21, ../sass/_ode-icons.scss */
+.ico.ico-mas { background: url('../images/ico-mas.png?1465545336') no-repeat scroll 0 0 transparent; width: 27px; height: 27px; display: inline-block; }
+/* line 24, ../sass/_ode-icons.scss */
+.ico.ico-maximize { background: url('../images/ico-maximize.png?1465545336') no-repeat scroll 0 0 transparent; width: 16px; height: 16px; display: inline-block; }
+/* line 27, ../sass/_ode-icons.scss */
+.ico.ico-menos { background: url('../images/ico-menos.png?1465545336') no-repeat scroll 0 0 transparent; width: 27px; height: 27px; display: inline-block; }
+/* line 30, ../sass/_ode-icons.scss */
+.ico.ico-minimize { background: url('../images/ico-minimize.png?1465545336') no-repeat scroll 0 0 transparent; width: 16px; height: 16px; display: inline-block; }
+/* line 33, ../sass/_ode-icons.scss */
+.ico.ico-fullscreen { background: url('../images/ico-fullscreen.png?1465545336') no-repeat scroll 0 0 transparent; width: 18px; height: 18px; display: inline-block; }
+/* line 36, ../sass/_ode-icons.scss */
+.ico.ico-navegacion { background: url('../images/ico-navegacion.png?1456828260') no-repeat scroll 0 0 transparent; width: 24px; height: 18px; display: inline-block; }
+/* line 39, ../sass/_ode-icons.scss */
+.ico.ico-insertar { background: url('../images/ico-insertar.png?1465545336') no-repeat scroll 0 0 transparent; width: 24px; height: 18px; display: inline-block; }
+/* line 42, ../sass/_ode-icons.scss */
+.ico.ico-x-green { background: url('../images/ico-x-green.png?1465545336') no-repeat scroll 0 0 transparent; width: 17px; height: 16px; display: inline-block; }
+
+/* line 4, ../sass/ode-widget.sass */
+* { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
+
+/* line 7, ../sass/ode-widget.sass */
+body { margin: 0; padding-bottom: 5px; padding-right: 5px; background: #edf1f1; color: #3A7BB5; font-family: "PT Sans", sans-serif; font-size: 14px; }
+/* line 16, ../sass/ode-widget.sass */
+body.fullscreen { width: 90%; height: 90%; }
+
+/* line 20, ../sass/ode-widget.sass */
+textarea { font-family: "PT Sans", sans-serif; }
+
+/* line 33, ../sass/ode-widget.sass */
+.inline-elements > * { display: inline-block; }
+
+/* line 36, ../sass/ode-widget.sass */
+.valign-middle > * { vertical-align: middle; }
+
+/* line 39, ../sass/ode-widget.sass */
+.do-inline, #ag-visualization-ode-get-ode-formats .form-item-format-ode-download { overflow: hidden; *zoom: 1; margin: 0; padding: 0; }
+/* line 43, ../sass/ode-widget.sass */
+.do-inline > *, #ag-visualization-ode-get-ode-formats .form-item-format-ode-download > * { vertical-align: middle; margin: 0 5px 0 0; padding: 0; display: inline-block; }
+/* line 49, ../sass/ode-widget.sass */
+.do-inline > *:last-child, #ag-visualization-ode-get-ode-formats .form-item-format-ode-download > *:last-child { margin-right: 0; }
+
+/* line 55, ../sass/ode-widget.sass */
+#ag-visualization-ode-get-ode-formats .form-submit { display: none; }
+
+/* line 59, ../sass/ode-widget.sass */
+.space-inline-elements > *, .space-m-inline-elements > *, .space-l-inline-elements > * { margin-right: 10px; }
+/* line 61, ../sass/ode-widget.sass */
+.space-inline-elements > *:last-child, .space-m-inline-elements > *:last-child, .space-l-inline-elements > *:last-child { margin-right: 0; }
+
+/* line 66, ../sass/ode-widget.sass */
+.space-m-inline-elements > * { margin-right: 15px; }
+
+/* line 71, ../sass/ode-widget.sass */
+.space-l-inline-elements > * { margin-right: 20px; }
+
+/* line 74, ../sass/ode-widget.sass */
+.pull-left { float: left; }
+
+/* line 77, ../sass/ode-widget.sass */
+.pull-right { float: right; }
+
+/* line 81, ../sass/ode-widget.sass */
+.screenViewer { background: #edf1f1; color: #3A7BB5; }
+/* line 84, ../sass/ode-widget.sass */
+.screenViewer div.value, .screenViewer a { color: #3A7BB5; text-decoration: none; }
+/* line 88, ../sass/ode-widget.sass */
+.screenViewer div.value:hover, .screenViewer a:hover { color: #2e618e; text-decoration: underline; }
+/* line 92, ../sass/ode-widget.sass */
+.screenViewer iframe { border: 0; border-top: 1px solid #d2d2d2; width: 100%; }
+/* line 97, ../sass/ode-widget.sass */
+.screenViewer .header { padding: 10px; }
+/* line 101, ../sass/ode-widget.sass */
+.screenViewer .header .iframe-actions > * { cursor: pointer; }
+/* line 105, ../sass/ode-widget.sass */
+.screenViewer .header .iframe-actions .navigate.open .open-menu, .screenViewer .header .iframe-actions .navigate.closed .close-menu { display: none; }
+/* line 110, ../sass/ode-widget.sass */
+.screenViewer .header .iframe-actions .state.minimized .minimize, .screenViewer .header .iframe-actions .state.maximized .maximize { display: none; }
+/* line 115, ../sass/ode-widget.sass */
+.screenViewer .header .normal-actions > * { cursor: pointer; }
+/* line 117, ../sass/ode-widget.sass */
+.screenViewer .header .normal-actions a { text-decoration: none; }
+/* line 121, ../sass/ode-widget.sass */
+.screenViewer .content .normal-actions-holder { display: none; padding: 5px; }
+/* line 124, ../sass/ode-widget.sass */
+.screenViewer .content .normal-actions-holder textarea { white-space: nowrap; resize: none; overflow: hidden; cursor: pointer; font-size: 12px; width: 100%; padding: 0.5%; border: 1px solid #d2d2d2; }

@@ -1,0 +1,20 @@
+body.page-user-draft
+  table
+    @extend %table-style-2
+    margin-top: 2em
+  .view-user-draft
+    .views-field-nothing
+      a
+        color: transparent
+        font-size: 0
+        line-height: 0
+        height: 25px
+        width: 25px
+        display: inline-block
+        margin-left: 15px
+        &:first-child
+          background: image-url('bt-aprobar.png') no-repeat scroll 0 0
+        &:nth-child(2)
+          background: image-url('bt-editar.png') no-repeat scroll 0 0
+        &:last-child
+          background: image-url('bt-eliminar.png') no-repeat scroll 0 0

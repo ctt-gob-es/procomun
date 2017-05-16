@@ -1,0 +1,2599 @@
+<?php
+/**
+ * @file
+ * Code for the ag_migration feature.
+ */
+
+include_once 'ag_migration.features.inc';
+
+/**
+ * Implements hook_feeds_presave().
+ *
+ * @param FeedsSource $source
+ * @param $entity
+ * @param $item
+ */
+function feeds_profile2_feeds_presave(FeedsSource $source, $entity, $item) {
+  // USER
+  if ($entity->feeds_item->entity_type == 'user' && $entity->feeds_item->id == 'agrega2_organizations') {
+
+    // @TODO TBD. Add username to the user profile.
+    // Dont fear the accents http://php.net/manual/en/function.iconv.php
+    $entity->name = ag_migration_clean_username_if_needed($item['xpathparser:0']);
+  }
+  elseif ($entity->feeds_item->entity_type == 'user' && $entity->feeds_item->id == 'agrega2_users') {
+
+    //Check if user is duplicated with "persona" identifier. If so, try to update its profile and do not create a new user.
+    if (isset($item['xpathparser:17']) && !empty($item['xpathparser:17']) && isset($item['xpathparser:13']) && !empty($item['xpathparser:13'])) {
+      //Both fields must be correctly parsed.
+      $persona_proid = $item['xpathparser:17'];
+      $profile_proid = $item['xpathparser:13'];
+      //Query for first profile of this "persona". If it already exists, do not create it again.
+      $existing_profile_proid = db_query('SELECT profileid FROM {temp_map_user_persona} WHERE personaid = :personaid', array(':personaid' => $persona_proid))->fetchField();
+
+      //Get uid from drupal.
+      if (!empty($existing_profile_proid)) {
+        $uid = db_query('SELECT prouid FROM {temp_map_user_id} WHERE proid = :proid ORDER BY prouid DESC LIMIT 1', array(':proid' => $existing_profile_proid))->fetchField();
+      }
+
+      //SKIP IF USER EXISTS. NEW TEMP MIGRATION.
+      if (!empty($uid)) {
+        //Update temp_tables?
+        ag_migration_update_user_temp_tables_if_exists($item, $uid);
+        $entity->feeds_item->skip = 1;
+        return FALSE;
+      }
+
+      //If we have uid, it means user already exists on the platform. Feeds should know it is not new.
+      if (!empty($uid)) {
+         $entity->uid = $uid;
+         $entity->feeds_item->entity_id = $uid;
+         $entity->feeds_item->is_new = FALSE;
+
+        //Has profile already? Then we should have solr_id loaded to avoid sending the user again!
+        $profile_loaded = profile2_load_by_user($entity->uid, 'datos_personales');
+        $existing_solr_id = isset($profile_loaded->field_solrid[LANGUAGE_NONE][0]['value']) ? $profile_loaded->field_solrid[LANGUAGE_NONE][0]['value'] : '';
+      }
+      else {
+        //User is new, insert into persona table
+        db_insert('temp_map_user_persona')
+          ->fields(array(
+            'personaid' => $persona_proid,
+            'profileid' => $profile_proid,
+            ))->execute();
+      }
+    }
+
+
+    $existing_solr_id = isset($existing_solr_id) ? $existing_solr_id : '';
+
+    // The first step is to add the user to the SOLR. If the user is injected as expected then add this user to Drupal.
+    // @see feeds_profile2_feeds_after_save().
+    // Prepare $profile
+
+    $profile = array();
+    $profile['field_name_surname']['und'][0]['field_profile_name']['und'][0]['value'] = $entity->{'profile2:datos_personales:field_name_surname'}[0];
+
+    $profile['field_name_surname']['und'][0]['field_profile_surname']['und'][0]['value'] = $entity->{'profile2:datos_personales:field_name_surname'}[1];
+
+    $entity->{'profile2:datos_personales:field_date_birth_personal_fc'} = str_replace('/', '-', $entity->{'profile2:datos_personales:field_date_birth_personal_fc'});
+    $entity->{'profile2:datos_personales:field_date_birth_personal_fc'} = date("Y-m-d", strtotime($entity->{'profile2:datos_personales:field_date_birth_personal_fc'}));
+
+    $profile['field_date_birth_personal_fc']['und'][0]['field_date_birth']['und'][0]['value'] = $entity->{'profile2:datos_personales:field_date_birth_personal_fc'};
+
+    //Countries
+    $countries_field = field_info_field('field_countries');
+    $countries = list_allowed_values($countries_field);
+
+    $profile['field_country_personal_fc']['und'][0]['field_countries']['und'][0]['value'] = array_search($entity->{'profile2:datos_personales:field_locality_personal_fc'}[0], $countries);
+
+    // DNI - We only need DNI for Spanish people.
+    if ($profile['field_country_personal_fc']['und'][0]['field_countries']['und'][0]['value'] == 'Spain') {
+      for ($i = 0; $i < 9; $i++) {
+        $num[$i] = substr(strtoupper($entity->{'profile2:datos_personales:field_dni'}), $i, 1);
+      }
+      if ($num[8] == substr('TRWAGMYFPDXBNJZSQVHLCKE', substr($entity->{'profile2:datos_personales:field_dni'}, 0, 8) % 23, 1)) {
+        $last_letter = $num[8];
+        array_pop($num);
+        $profile['field_dni']['und'][0]['nif'] = implode('', $num)  . $last_letter;
+      }
+    }
+
+    if (isset($entity->{'profile2:datos_personales:field_locality_personal_fc'}[0]) &&
+        $country = array_search($entity->{'profile2:datos_personales:field_locality_personal_fc'}[0], $countries)) {
+      if ($country != 'Spain') {
+        $profile['field_place_fc']['und'][0]['field_place']['und'][0]['value'] = $entity->{'profile2:datos_personales:field_locality_personal_fc'}[1] . ',' . $entity->{'profile2:datos_personales:field_province_personal_fc'}[1];
+        $entity->{'profile2:datos_personales:field_place_fc'} = $entity->{'profile2:datos_personales:field_locality_personal_fc'}[1] . ',' . $entity->{'profile2:datos_personales:field_province_personal_fc'}[1];
+      }
+      else {
+        $profile['field_province_personal_fc']['und'][0]['field_province']['und'][0]['value'] = $entity->{'profile2:datos_personales:field_province_personal_fc'}[1];
+        $profile['field_locality_personal_fc']['und'][0]['field_locality']['und'][0]['value'] = $entity->{'profile2:datos_personales:field_locality_personal_fc'}[1];
+      }
+    }
+    $profile['field_edu_center_personal_fc']['und'][0]['field_educative_center']['und'][0]['value'] = $entity->{'profile2:datos_personales:field_edu_center_personal_fc'};
+
+
+    if (module_exists('orchestrator_services')) {
+      $OS_orchestrator_useradmin = new OS_orchestrator_useradmin();
+      list($status, $result) = $OS_orchestrator_useradmin->AddUser_noLDAP($entity->mail, '', $profile, $existing_solr_id);
+
+      if ($status != 1) {
+        // No SOLR ID.
+        watchdog("ERROR WHEN INJECTING USER", '<pre>' . print_r( $result, true) . '</pre>');
+        drupal_goto('admin/reports/dblog');
+      }
+      else {
+        // Go ahead and add the solr id.
+        //watchdog("OK", '<pre>' . print_r( $result, true) . '</pre>');
+        $entity->{'profile2:datos_personales:field_solrid'} = $result->documentId;
+      }
+    }
+
+    $entity->name = ag_migration_clean_username_if_needed($entity->{'profile2:datos_personales:field_name_surname'}[0]);
+  }
+
+  $entity->type = isset($entity->type) ? $entity->type : '';
+
+  switch ($entity->type) {
+    // SOCIAL NETWORK (COMMUNITY).
+    case 'social_network':
+
+      // NEW TEMP MIGRATION: IF EXISTS, DO NOT CREATE AGAIN
+      if (isset($item['xpathparser:4'])) {
+        $community_exists = db_query('SELECT procid FROM {temp_map_community_id} WHERE procid = :procid', array(':procid' => $item['xpathparser:4']))->fetchField();
+
+        if (!empty($community_exists)) {
+          $entity->feeds_item->skip = 1;
+          return FALSE;
+        }
+      }
+
+      // Inject to the orq as a first step.
+      $community = array();
+      #title
+      $community['title_field']['und'][0]['value'] = $entity->title;;
+
+      #Imported social networks are already accepted. 0|Pendiente, 1|Rechazado, 2|Aceptado
+      $entity->field_social_network_status['und'][0]['value'] = variable_get('ag_social_network_default_status', 2);
+
+      #Remove wrong accents and html from body.
+      if (isset($entity->body['und'][0]['value'])) {
+        //Remove link tags but keep its href and content.
+        $original_text = ag_migration_clean_not_all_tags($entity->body['und'][0]['value']);
+        $entity->body['und'][0]['value'] = html_entity_decode($original_text,ENT_COMPAT,"UTF-8");
+      }
+
+      #Remove wrong accents and html from body.
+      if (isset($entity->body['es'][0]['value'])) {
+        $original_text = ag_migration_clean_not_all_tags($entity->body['und'][0]['value']);
+        $entity->body['es'][0]['value'] = html_entity_decode($original_text,ENT_COMPAT,"UTF-8");
+      }
+
+      #description
+      $community['body']['und'][0]['value'] = $entity->body['und'][0]['value'];
+
+      #labels
+      $community['field_labels']['und'] = $entity->field_labels['und'];
+
+      if (module_exists('orchestrator_services')) {
+        $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+        list($status, $result) = $OS_orchestrator_inyection->AddCommunity($community);
+        if ($status != 1) {
+          // No SOLR ID.
+          watchdog("ERROR WHEN INJECTING COMMUNITY", '<pre>' . print_r( $result, true) . '</pre>');
+          drupal_goto('admin/reports/dblog');
+        }
+        else {
+          // Go ahead and add the solr id.
+          //watchdog("OK", '<pre>' . print_r( $result, true) . '</pre>');
+          $entity->field_solrid['und'][0]['value'] = $result->documentId;
+        }
+      }
+
+      // Check if the term exists and then create it.
+      // Insert into an array while separating by comma and if the string is not into quotes.
+      preg_match_all('`(?:[^,\']|\'((?<=\\\\)\'|[^\'])*\')*`x' , $item['xpathparser:2'], $result);
+
+      $terms = array_filter($result[0]);
+
+      foreach ($terms as $key => $term) {
+        // Aviod to add a term with a white space in the first as first char.
+        $term = trim($term);
+        _process_taxonomy_terms($term, 1);
+        // Add the tid if exists
+        $tid = _get_taxonomy_term_id_by_name($term, 1);
+        if ($tid) {
+          $entity->field_labels['und'][]['tid'] = $tid;
+        }
+      }
+      // Add community creator.
+      $entity->uid = db_query('SELECT uid FROM {temp_map_user_community} WHERE cid = :cid AND urole = \'Administrador\'', array(':cid' => $entity->field_procomun_community_id['und'][0]['value']))->fetchField();
+
+      // Add community as published.
+      $entity->status = 1;
+      // By default Spanish language.
+      $entity->language = 'es';
+
+      // Add the group access (Public or private)
+      if ($item['xpathparser:5'] == 'Pública') {
+        // Public.
+        $entity->group_access['und'][0]['value'] = 0;
+        $entity->field_og_permissions_level['und'][0]['value'] = 0;
+        //Og_roles_permissions must be 1 when public, 0 elsewhere
+        $entity->og_roles_permissions['und'][0]['value'] = 1;
+      }
+      elseif ($item['xpathparser:5'] == 'Restringida') {
+        //Restringida
+        $entity->group_access['und'][0]['value'] = 0;
+        $entity->field_og_permissions_level['und'][0]['value'] = 1;
+        //Og_roles_permissions must be 1 when public, 0 elsewhere
+        $entity->og_roles_permissions['und'][0]['value'] = 0;
+      }
+      else {
+        // Private.
+        $entity->group_access['und'][0]['value'] = 1;
+        //Og_roles_permissions must be 1 when public, 0 elsewhere
+        $entity->og_roles_permissions['und'][0]['value'] = 0;
+      }
+      // Map und Description field to Spanish lang by default.
+      $entity->body['es'][0]['value'] = $entity->body['und'][0]['value'];
+
+      break;
+
+    // POLL.
+    case 'poll':
+
+      // NEW TEMP MIGRATION: IF EXISTS, DO NOT CREATE AGAIN
+      $content_exists = ag_migration_check_content_exists($item['xpathparser:5']);
+      if (!empty($content_exists)) {
+        $entity->feeds_item->skip = 1;
+        return FALSE;
+      }
+
+      // Inject into Orchestrator.
+      #title
+      $poll['title_field']['und'][0]['value'] = $entity->title;
+
+      #published
+      $poll['status'] = 1;
+
+      if (module_exists('orchestrator_services')) {
+        $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+        list($status, $result) = $OS_orchestrator_inyection->AddPoll($poll);
+        if ($status != 1) {
+          // No SOLR ID.
+          watchdog("ERROR WHEN INJECTING POLL", '<pre>' . print_r( $result, true) . '</pre>');
+          drupal_goto('admin/reports/dblog');
+        }
+        else {
+          // Go ahead and add the solr id.
+          //watchdog("OK", '<pre>' . print_r( $result, true) . '</pre>');
+          $entity->field_solrid['und'][0]['value'] = $result->documentId;
+        }
+      }
+
+      $entity->language = 'es';
+
+      break;
+
+    // QUESTION.
+    case 'question':
+
+      // NEW TEMP MIGRATION: IF EXISTS, DO NOT CREATE AGAIN
+      $content_exists = ag_migration_check_content_exists($item['xpathparser:5']);
+      if (!empty($content_exists)) {
+        $entity->feeds_item->skip = 1;
+        return FALSE;
+      }
+
+      // Inject to the orq as a first step.
+      $question = array();
+
+      #TITLE
+      $question['title_field']['und'][0]['value'] = $entity->title;
+
+      #BODY @TODO Missing for the moment.
+      $string = ag_migration_clean_not_all_tags($entity->body['es'][0]['value']);
+      $question['body']['es'][0]['value'] = html_entity_decode($string,ENT_COMPAT,"UTF-8");
+      $question['body']['und'][0]['value'] = $question['body']['es'][0]['value'];
+
+      #LABELS
+      $question['field_labels']['und'] = $entity->field_labels['und'];
+
+      if (module_exists('orchestrator_services')) {
+        $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+        list($status, $result) = $OS_orchestrator_inyection->AddQuestion($question);
+
+        if ($status != 1) {
+          // No SOLR ID.
+          watchdog("ERROR WHEN INJECTING A QUESTION", '<pre>' . print_r( $result, true) . '</pre>');
+          drupal_goto('admin/reports/dblog');
+        }
+        else {
+          // Go ahead and add the solr id.
+          $entity->field_solrid['und'][0]['value'] = $result->documentId;
+        }
+      }
+
+      // Let's add active a default state if question_state was not deleted.
+      if (isset($entity->field_question_state['und'][0]['value'])) {
+        $entity->field_question_state['und'][0]['value'] = 1;
+      }
+      //Spanish language by default.
+      $entity->language = 'es';
+      // Add Filtered HTML as format by default.
+      $entity->body['es'][0]['format'] = 'filtered_html';
+
+      break;
+
+    // POST.
+    case 'post':
+
+      // NEW TEMP MIGRATION: IF EXISTS, DO NOT CREATE AGAIN
+      $content_exists = ag_migration_check_content_exists($item['xpathparser:8']);
+      if (!empty($content_exists)) {
+        $entity->feeds_item->skip = 1;
+        return FALSE;
+      }
+
+      $post = array();
+
+      #title
+      $post['title_field']['und'][0]['value'] = truncate_utf8($entity->title, 255, TRUE, TRUE);
+
+      #description
+      $post['body']['und'][0]['value'] = $entity->body['es'][0]['value'];
+
+      //TODO: Save on a field? May not be needed. First in body.
+      // REMOVED FOR NEW MIGRATION. OLD PROCOMUN NOT ACCESSIBLE.
+      /*
+      $image_link = trim($item['xpathparser:9']);
+      if (isset($image_link) && !empty($image_link)) {
+        $file = system_retrieve_file($image_link, 'public://migration_post_preview/', TRUE, FILE_EXISTS_RENAME);
+
+        if (isset($file)) {
+          $entity->field_imagen_miniatura[LANGUAGE_NONE][0] = (array)$file;
+        }
+        else {
+          $entity->body['es'][0]['value'] = "<p><img src=" . $image_link . "></img></p>\n" . $entity->body['es'][0]['value'];
+        }
+      }
+      */
+
+      //TODO: Save on a field? May not be needed. Appended to body.
+      $resource_link = trim($item['xpathparser:11']);
+      if (isset($resource_link) && !empty($resource_link)) {
+        $entity->body['es'][0]['value'] .= "\n<p>" . $resource_link . "</p>";
+      }
+
+      #published
+      $post['status'] = 1;
+
+      #labels
+      $post['field_labels']['und'] = $entity->field_labels['und'];
+
+      if (module_exists('orchestrator_services')) {
+        $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+        list($status, $result) = $OS_orchestrator_inyection->AddPost($post);
+
+        if ($status != 1) {
+          // No SOLR ID.
+          watchdog("ERROR WHEN INJECTING POST", '<pre>' . print_r( $result, true) . '</pre>');
+          drupal_goto('admin/reports/dblog');
+        }
+        else {
+          // Go ahead and add the solr id.
+          //watchdog("OK", '<pre>' . print_r( $result, true) . '</pre>');
+          $entity->field_solrid['und'][0]['value'] = $result->documentId;
+        }
+      }
+      $entity->language = 'es';
+
+      break;
+
+    // DISCUSSION.
+    case 'debate':
+
+      // NEW TEMP MIGRATION: IF EXISTS, DO NOT CREATE AGAIN
+      $content_exists = ag_migration_check_content_exists($item['xpathparser:6']);
+      if (!empty($content_exists)) {
+        $entity->feeds_item->skip = 1;
+        return FALSE;
+      }
+
+      $debate = array();
+      #title
+      $debate['title_field']['und'][0]['value'] = $entity->title_field['und'][0]['value'];
+      #Truncate to comply with database standard
+      if (isset($entity->title_field['es'])) {
+        $entity->title_field['es'][0]['value'] = truncate_utf8($entity->title_field['es'][0]['value'], 255, TRUE, TRUE);
+      }
+      elseif (isset($entity->title_field['und'])) {
+        $entity->title_field['und'][0]['value'] = truncate_utf8($entity->title_field['und'][0]['value'], 255, TRUE, TRUE);
+      }
+
+      #description
+      $debate['body']['und'][0]['value'] = isset($entity->body['es'][0]['value']) ? $entity->body['es'][0]['value']: $entity->body['und'][0]['value'];
+      $debate['body']['es'][0]['value'] = $debate['body']['und'][0]['value'];
+
+      #published
+      $debate['status'] = 1;
+
+      #labels
+      $debate['field_labels']['und'] = $entity->field_labels['und'];
+
+      if (module_exists('orchestrator_services')) {
+        $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+        list($status, $result) = $OS_orchestrator_inyection->AddDiscussion($debate);
+
+        if ($status != 1) {
+          // No SOLR ID.
+          watchdog("ERROR WHEN INJECTING DISCUSSION", '<pre>' . print_r( $result, true) . '</pre>');
+          drupal_goto('admin/reports/dblog');
+        }
+        else {
+          // Go ahead and add the solr id.
+          //watchdog("OK", '<pre>' . print_r( $result, true) . '</pre>');
+          $entity->field_solrid['und'][0]['value'] = $result->documentId;
+        }
+      }
+
+      $entity->language = 'es';
+
+      break;
+  }
+
+  // COMMENT. Add the cid into a temp table.
+  if ($entity->feeds_item->entity_type == 'comment') {
+
+    //Clean body from tags, but keeping user links. Both cases: response and comment.
+    $string = ag_migration_clean_not_all_tags($entity->comment_body['und'][0]['value']);
+    $string = html_entity_decode($string, ENT_COMPAT, "UTF-8");
+    //Remove special chars not valid on standard utf-8 database
+    $string = remove_emoji($string);
+    $entity->comment_body['und'][0]['value'] = $string;
+
+    #Language
+    $entity->language = 'es';
+
+    if (isset($entity->feeds_item->question) && $entity->feeds_item->question) {
+      // Inject into Solr as first step.
+      $answer =  array();
+
+      #description
+      $answer['body']['und'][0]['value'] = $entity->comment_body['und'][0]['value'];
+
+      #published
+      $entity->status = 1;
+      $answer['status'] = 1;
+
+      if (module_exists('orchestrator_services')) {
+        $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+        list($status, $result) = $OS_orchestrator_inyection->AddResponse($answer);
+
+        if ($status != 1) {
+          // No SOLR ID.
+          watchdog("ERROR WHEN INJECTING RESPONSE", '<pre>' . print_r( $result, true) . '</pre>');
+          drupal_goto('admin/reports/dblog');
+        }
+        else {
+          // Go ahead and add the solr id.
+          $answer['field_solrid']['und'][0]['value'] = $result->documentId;
+        }
+      }
+
+      // CREATE THE ANSWER.
+      $node = new stdClass();
+      $node->body['es'][0]['value'] = $entity->comment_body['und'][0]['value'];
+      $node->title = truncate_utf8($entity->comment_body['und'][0]['value'], 255, TRUE, TRUE);
+      $node->type = 'answer';
+      $node->field_question_ref['und'][0]['target_id'] = $entity->nid;
+      node_object_prepare($node); // Sets some defaults. Invokes hook_prepare() and hook_node_prepare().
+      $node->language = 'es'; // Or e.g. 'en' if locale is enabled
+      $node->uid = $entity->uid;
+      $node->og_group_ref['und'][0]['target_id']  = $entity->feeds_item->og_group_ref;
+      $node->status = 1;
+      $node->promote = 0;
+      $node->comment = 0;
+      $node = node_submit($node);
+      node_save($node);
+
+      db_insert('temp_map_content_id')
+        ->fields(array(
+          'cid' => $entity->nid,
+          'proid' => $item['xpathparser:1'],
+          'type' => 'answer',
+        ))
+        ->execute();
+
+      // Edit the doc and add the idDrupal to it.
+      $answer['nid'] = $node->nid;
+
+      if (module_exists('orchestrator_services')) {
+        $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+
+        list($status, $result) = $OS_orchestrator_inyection->AddResponse($answer);
+
+        if ($status != 1) {
+          // No SOLR ID.
+          watchdog("ERROR WHEN UPDATING RESPONSE", '<pre>' . print_r( $result, true) . '</pre>');
+          drupal_goto('admin/reports/dblog');
+        }
+      }
+    }
+    else {
+      $entity->status = COMMENT_PUBLISHED;
+      comment_save($entity);
+    }
+  }
+}
+
+/**
+ * Implements hook_feeds_after_save() from Feeds.
+ */
+function ag_migration_feeds_after_save(FeedsSource $source, $entity, $item, $entity_id) {
+  $entity->type = isset($entity->type) ? $entity->type : '';
+  switch ($entity->type) {
+    // COMMUNITIES.
+    case 'social_network':
+      // Add SOLRID + labels + administrator.
+      $community['field_solrid']['und'][0]['value'] = $entity->field_solrid['und'][0]['value'];
+      $community['field_labels']['und'] = $entity->field_labels['und'];
+      $community['uid'] = $entity->uid;
+      $community['created'] = $entity->created;
+
+      if (module_exists('orchestrator_services')) {
+        $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+        list($status, $result) = $OS_orchestrator_inyection->AddCommunity($community);
+        if ($status != 1) {
+          // No SOLR ID.
+          watchdog("ERROR WHEN UPDATING COMMUNITY ID", '<pre>' . print_r( $result, true) . '</pre>');
+          drupal_goto('admin/reports/dblog');
+        }
+      }
+
+      // Subscribe users to the community.
+      $uids = db_query('SELECT uid FROM {temp_map_user_community} WHERE cid = :cid AND urole = \'Usuario\'', array(':cid' => $entity->field_procomun_community_id['und'][0]['value']));
+
+      foreach ($uids as $uid) {
+        $account = user_load($uid->uid);
+        og_group('node', $entity->nid, array(
+          'entity type' => 'user',
+          'entity' => $account,
+          'membership type' => OG_MEMBERSHIP_TYPE_DEFAULT,
+          'state' => OG_STATE_ACTIVE,
+        ));
+      }
+      // Subscribe users to the community.
+      $uids_admin = db_query('SELECT DISTINCT(uid) FROM {temp_map_user_community} WHERE cid = :cid AND urole = \'Administrador\'', array(':cid' => $entity->field_procomun_community_id['und'][0]['value']))->fetchAllKeyed();
+
+      //Set user as admin.
+      $roles = og_roles('node', $entity->type, $entity->nid);
+
+      foreach ($roles as $key => $value) {
+        if ($value == 'administrator member') {
+          $admin_role = $key;
+        }
+      }
+
+      $uids_admin = array_unique(array_keys($uids_admin));
+      foreach ($uids_admin as $uid_admin) {
+
+        $account = user_load($uid_admin);
+        og_group('node', $entity->nid, array(
+          'entity type' => 'user',
+          'entity' => $account,
+          'membership type' => OG_MEMBERSHIP_TYPE_DEFAULT,
+          'state' => OG_STATE_ACTIVE,
+        ));
+
+        if ($admin_role) {
+          og_role_grant('node', $entity->nid, $uid_admin, $admin_role);
+        }
+      }
+
+      // INSERT Community ids into temp table.
+      db_insert('temp_map_community_id')
+        ->fields(array(
+          'cid' => $entity->nid,
+          'procid' => $item['xpathparser:8'],
+        ))
+        ->execute();
+
+      break;
+
+    case 'poll':
+      $poll['nid'] = $entity->nid;
+      #title
+      $poll['title_field']['und'][0]['value'] = $entity->title;
+
+      #published
+      $poll['status'] = 1;
+      // We've got the solr id, so let's iject the nid to the Solr.
+      $poll['field_solrid']['und'][0]['value'] = $entity->field_solrid['und'][0]['value'];
+
+      if (module_exists('orchestrator_services')) {
+        $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+        list($status, $result) = $OS_orchestrator_inyection->AddPoll($poll);
+        if ($status != 1) {
+          // No SOLR ID.
+          watchdog("ERROR WHEN UPDATING POLL ID", '<pre>' . print_r( $result, true) . '</pre>');
+          drupal_goto('admin/reports/dblog');
+        }
+      }
+
+      // ADD Votes! Must be unique. No single user can vote two options, nor an answer can be repeated.
+      $all_votes = $item['xpathparser:2'];
+      $all_votes = array_unique($all_votes);
+
+      foreach ($all_votes as $key => $option) {
+        //In order to find option, it must be less than 128 characters, just like it was inserted on the DB.
+
+        $original_option = $option;
+        $option = truncate_utf8($option, 128, TRUE, TRUE);
+
+        if (array_search($original_option, $item['xpathparser:1']) !==  FALSE) {
+          $chid = db_query('SELECT chid FROM {poll_choice} WHERE chtext = :chtext', array(':chtext' => $option))->fetchField();
+        }
+        elseif ($vote_uid = db_query('SELECT prouid FROM {temp_map_user_id} WHERE proid = :proid', array(':proid' => $option))->fetchField()) {
+          // ADD VOTES.
+
+          db_insert('poll_vote')
+            ->fields(array(
+              'nid' => $entity->nid,
+              'chid' => $chid,
+              'uid' => $vote_uid,
+              'hostname' => ip_address(),
+              'timestamp' => REQUEST_TIME,
+            ))
+            ->execute();
+
+          // INCREMENT NUMBER OF VOTES.
+          db_update('poll_choice')
+            ->expression('chvotes', 'chvotes + 1')
+            ->condition('chid', $chid)
+            ->execute();
+        }
+      }
+      // Add the POLL id into a temp table (mainly for comment search).
+      db_insert('temp_map_content_id')
+        ->fields(array(
+          'cid' => $entity->nid,
+          'proid' => $item['xpathparser:5'],
+          'type' => 'poll',
+        ))
+        ->execute();
+
+      //----LIKES----
+      //Check poll votes tag as likes. +1 or -1, we ignore the latter, only +1 will be processed.
+      if (isset($item['xpathparser:7']) && $entity->nid) {
+        ag_migration_flag_content_type_with_user_array('flag', 'like', $item['xpathparser:7'], $entity->nid);
+      }
+
+      break;
+
+    case 'question':
+      $question['nid'] = $entity->nid;
+      #TITLE
+      $question['title_field']['und'][0]['value'] = $entity->title;
+
+      #PUBLISHED
+      $question['status'] = 1;
+
+      // We've got the solr id, so let's iject the nid to the Solr.
+      $question['field_solrid']['und'][0]['value'] = $entity->field_solrid['und'][0]['value'];
+
+      if (module_exists('orchestrator_services')) {
+        $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+        list($status, $result) = $OS_orchestrator_inyection->AddQuestion($question);
+
+        if ($status != 1) {
+          // No SOLR ID.
+          watchdog("ERROR WHEN UPDATING QUESTION ID", '<pre>' . print_r( $result, true) . '</pre>');
+          drupal_goto('admin/reports/dblog');
+        }
+      }
+
+      // Add the QUESTION id into a temp table (mainly for comment search).
+      db_insert('temp_map_content_id')
+        ->fields(array(
+          'cid' => $entity->nid,
+          'proid' => $item['xpathparser:5'],
+          'type' => 'question',
+        ))
+        ->execute();
+
+      //LIKES
+      //Check poll votes tag as likes. +1 or -1, we ignore the latter, only +1 will be processed.
+      if (isset($item['xpathparser:8']) && $entity->nid) {
+        ag_migration_flag_content_type_with_user_array('flag', 'like', $item['xpathparser:8'], $entity->nid);
+      }
+
+      break;
+
+    case 'post':
+
+      $post['nid'] = $entity->nid;
+      #TITLE
+      $post['title_field']['und'][0]['value'] = $entity->title;
+
+      #PUBLISHED
+      $post['status'] = 1;
+
+      // We've got the solr id, so let's iject the nid to the Solr.
+      $post['field_solrid']['und'][0]['value'] = $entity->field_solrid['und'][0]['value'];
+
+      if (module_exists('orchestrator_services')) {
+        $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+        list($status, $result) = $OS_orchestrator_inyection->AddPost($post);
+
+        if ($status != 1) {
+          // No SOLR ID.
+          watchdog("ERROR WHEN UPDATING POST ID", '<pre>' . print_r( $result, true) . '</pre>');
+          drupal_goto('admin/reports/dblog');
+        }
+      }
+
+      //Add all recommendations/sharing of an user to this node in other networks. Ignore publishing done on presave.
+      $publications_raw = $item['xpathparser:5'];
+      $publications = array_chunk($publications_raw, 4);
+      foreach ($publications as $key => $publication) {
+        //Get elements
+        $procid = $publication[0];
+        $prouid = $publication[1];
+        $publication_type = $publication[2];
+        $date_string = $publication[3];
+
+        //Community id
+        $cid = db_query('SELECT cid FROM {temp_map_community_id} WHERE procid = :procid', array(':procid' => $procid))->fetchField();
+        if (!$cid) {
+          continue;
+        }
+
+        //Parse date
+        $date_string = str_replace('/', '-', $date_string);
+        $timestamp = strtotime($date_string);
+        if (!$timestamp) {
+          $timestamp = time();
+        }
+
+        //User
+        $author_uid = db_query('SELECT prouid FROM {temp_map_user_id} WHERE proid = :proid', array(':proid' => $prouid))->fetchField();
+
+        if ($publication_type == 'Publicado' && !empty($author_uid)) {
+          $entity->uid = $author_uid;
+        }
+
+        //Now, on aftersave, with nid of the entity, update reommendations table.
+        if ($publication_type == 'Compartido' && !empty($author_uid)) {
+
+          db_insert('recommendations_shared_content') // Table name no longer needs {}
+            ->fields(array(
+              'uid' => $author_uid,
+              'nid' => $entity->nid,
+              'timestamp' => $timestamp,
+              'gid' => $cid,
+            ))
+            ->execute();
+
+          //If entity is created by admin or by nobody, fill with temp author.
+          if (!isset($entity->uid) || $entity->uid == 1) {
+            $entity->uid = $author_uid;
+          }
+        }
+      }
+
+
+      // Favorite user flag.
+      $uidFavorites = db_query('SELECT uid FROM {temp_map_user_favorites} WHERE favorites = :favorites', array(':favorites' => $item['xpathparser:8']))->fetchAllKeyed();
+      $uidFavorites = array_keys($uidFavorites);
+
+      foreach ($uidFavorites as $uidFavorite) {
+        $account = user_load($uidFavorite);
+        $result = flag('flag', 'favorite', $entity->nid, $account);
+      }
+
+      // Assign file if exists
+      if ($item['xpathparser:8']) {
+        // RAR Path where user file must be.
+        $filepath = 'private://posts/' . $item['xpathparser:8'] . '.rar';
+
+        //Absolute path, check if a file i there.
+        $file_absolute_path = drupal_realpath($filepath);
+
+        //Second try, if it is not a rar. FOLDER.
+        if (!file_exists($file_absolute_path)) {
+          $filepath = 'private://posts/' . $item['xpathparser:8'];
+          $real_filepath = drupal_realpath($filepath);
+          //Check all files within, but we only take one.
+          $files_glob = glob($real_filepath . '/*.*', GLOB_BRACE);
+
+          //We only need the first one. Folder is supposed to have a single file.
+          foreach($files_glob as $file_glob) {
+            $file_absolute_path = drupal_realpath($file_glob);
+            $filename = basename($file_absolute_path);
+            $filepath = $filepath . '/' . $filename;
+            break;
+          }
+        }
+        else {
+          $filename = $item['xpathparser:8'] . '.rar';
+        }
+
+
+        //Finally, with first or second try. Folder or rar should have been found.
+        if (file_exists($file_absolute_path)) {
+
+          // Check if it exists already on the database, caused by multiple imports.
+          $files = file_load_multiple(array(), array('uri' => $filepath));
+          if ($files) {
+            $file = array_pop($files);
+          }
+
+          //If file is not found on database, create a new entry.
+          if (empty($file)) {
+            $file = (object) array(
+              'uid' => 1,
+              'uri' => $filepath,
+              'filemime' => file_get_mimetype($filepath),
+              'status' => 1,
+              'filename' => $filename,
+            );
+            file_save($file);
+          }
+
+          //Save to node data if file was correctly saved.
+          if (isset($file->fid) && !empty($file->fid)) {
+            $entity->field_private_file['und'][0] = (array)$file;
+            $entity->field_private_file['und'][0]['display'] = 1;
+            $entity->field_private_file['und'][0]['description'] = '';
+            $entity->field_private_file['und'][0]['filename'] = $item['xpathparser:8'] . '.rar';
+
+            entity_save('node', $entity);
+          }
+        }
+      }
+
+
+      // Add the POST id into a temp table (mainly for comment search).
+      db_insert('temp_map_content_id')
+        ->fields(array(
+          'cid' => $entity->nid,
+          'proid' => $item['xpathparser:8'],
+          'type' => 'post',
+        ))
+        ->execute();
+
+      //LIKES
+      //Check poll votes tag as likes. +1 or -1, we ignore the latter, only +1 will be processed.
+      if (isset($item['xpathparser:12']) && $entity->nid) {
+        ag_migration_flag_content_type_with_user_array('flag', 'like', $item['xpathparser:12'], $entity->nid);
+      }
+
+      break;
+
+    case 'debate':
+      $debate['nid'] = $entity->nid;
+      #TITLE
+      $debate['title_field']['und'][0]['value'] = $entity->title;
+
+      #PUBLISHED
+      $debate['status'] = 1;
+
+      // We've got the solr id, so let's iject the nid to the Solr.
+      $debate['field_solrid']['und'][0]['value'] = $entity->field_solrid['und'][0]['value'];
+
+      if (module_exists('orchestrator_services')) {
+        $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+        list($status, $result) = $OS_orchestrator_inyection->AddDiscussion($debate);
+
+        if ($status != 1) {
+          // No SOLR ID.
+          watchdog("ERROR WHEN UPDATING DEBATE ID", '<pre>' . print_r( $result, true) . '</pre>');
+          drupal_goto('admin/reports/dblog');
+        }
+      }
+
+      // Add the DEBATE id into a temp table (mainly for comment search).
+      db_insert('temp_map_content_id')
+        ->fields(array(
+          'cid' => $entity->nid,
+          'proid' => $item['xpathparser:6'],
+          'type' => 'debate',
+        ))
+        ->execute();
+
+      //LIKES
+      //Check poll votes tag as likes. +1 or -1, we ignore the latter, only +1 will be processed.
+      if (isset($item['xpathparser:9']) && $entity->nid) {
+        ag_migration_flag_content_type_with_user_array('flag', 'like', $item['xpathparser:9'], $entity->nid);
+      }
+
+      break;
+
+    case 'ode':
+
+      $ode['nid'] = $entity->nid;
+
+      // We've got the solr id, so let's iject the nid to the Solr.
+      $ode['field_solrid']['und'][0]['value'] = $entity->field_solrid['und'][0]['value'];
+
+      if (module_exists('orchestrator_services')) {
+        $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+        list($status, $result) = $OS_orchestrator_inyection->AddOde($ode);
+
+        if ($status != 1) {
+          // No SOLR ID.
+          watchdog("ERROR WHEN UPDATING ODE ID", '<pre>' . print_r( $result, true) . '</pre>');
+          drupal_goto('admin/reports/dblog');
+        }
+      }
+
+      // Favorite user flag.
+      $uidFavorites = db_query('SELECT uid FROM {temp_map_user_favorites} WHERE favorites = :favorites', array(':favorites' => $item['xpathparser:0'][0]));
+      foreach ($uidFavorites as $uidFavorite) {
+        $account = user_load($uidFavorite->uid);
+        flag('flag', 'favorite', $entity->nid, $account);
+      }
+
+
+      //Add all recommendations/sharing of an user to this node in other networks. Ignore publishing done on presave.
+      $publications_raw = $item['xpathparser:1'];
+      $publications = array_chunk($publications_raw, 4);
+      foreach ($publications as $key => $publication) {
+
+        //Get elements
+        $procid = $publication[0];
+        $prouid = $publication[1];
+        $publication_type = $publication[2];
+        $date_string = $publication[3];
+
+        //Community id
+        $cid = db_query('SELECT cid FROM {temp_map_community_id} WHERE procid = :procid', array(':procid' => $procid))->fetchField();
+        if (!$cid) {
+          continue;
+        }
+
+        //Parse date
+        $date_string = str_replace('/', '-', $date_string);
+        $timestamp = strtotime($date_string);
+        if (!$timestamp) {
+          $timestamp = time();
+        }
+
+        //Now, on aftersave, with nid of the entity, update reommendations table.
+        if ($publication_type == 'Compartido') {
+          db_insert('recommendations_shared_content') // Table name no longer needs {}
+            ->fields(array(
+              'uid' => $entity->uid,
+              'nid' => $entity->nid,
+              'timestamp' => $timestamp,
+              'gid' => $cid,
+            ))
+            ->execute();
+        }
+      }
+
+
+      // Add the ODE id into a temp table (mainly for comment search).
+      db_insert('temp_map_content_id')
+        ->fields(array(
+          'cid' => $entity->nid,
+          'proid' => $item['xpathparser:0'][0],
+          'type' => 'ODE',
+        ))
+        ->execute();
+
+      break;
+  }
+  // COMMENT. Add the cid to a temp table.
+  if ($entity->feeds_item->entity_type == 'comment') {
+    db_insert('temp_map_comment_id')
+      ->fields(array(
+        'cid' => $entity->cid,
+        'proid' => $item['xpathparser:3'],
+      ))
+      ->execute();
+  }
+}
+
+/**
+ * Check if taxonomy term exists and save the term if it doesn't.
+ *
+ * @param string $termname
+ * @param integer $vid
+ */
+function _process_taxonomy_terms($termname, $vid) {
+  // Build in extra checks if needed.
+  if(_get_taxonomy_term_id_by_name($termname, $vid) == false) {
+    taxonomy_term_save(
+      (object) array(
+        'name' => $termname,
+        'vid' => $vid,
+      )
+    );
+  }
+}
+
+/**
+ * Get taxonomy term ID by term name.
+ *
+ * @param string $termname
+ * @param integer $vid
+ */
+function _get_taxonomy_term_id_by_name($termname, $vid) {
+  return db_select('taxonomy_term_data', 't')
+    ->fields('t', array('tid'))
+    ->condition('t.name', $termname)
+    ->condition('t.vid', $vid)
+    ->execute()
+    ->fetchField();
+}
+
+/**
+ * Implements hook_feeds_after_import().
+ *
+ * @param FeedsSource $source
+ */
+function ag_migration_feeds_after_import(FeedsSource $source) {
+  $config = $source->getConfig();
+
+  // Users Added and Now let's add Flags and ODEs.
+
+  // The last step is to add the follow_user flag. For the moment we are using the context.
+  if ($config['FeedsXPathParserXML']['context'] == '//Perfiles/Perfil' || $source->id == 'agrega2_users') {
+
+    // Subscribe users to the community.
+    $followers = db_query('SELECT temp_map_user_followers.uid,temp_map_user_id.prouid FROM {temp_map_user_followers} INNER JOIN {temp_map_user_id} ON temp_map_user_followers.following=temp_map_user_id.proid');
+    foreach ($followers as $follower) {
+      $account = user_load($follower->uid);
+      flag('flag', 'follow_user', $follower->prouid, $account);
+    }
+  }
+}
+
+/**
+ *
+ * Implements hook_feeds_processor_targets_alter().
+ *
+ * @param $targets
+ * @param $entity_type
+ * @param $bundle_name
+ */
+function ag_migration_feeds_processor_targets_alter(&$targets, $entity_type, $bundle_name) {
+  if ($entity_type == 'node' && $bundle_name == 'poll') {
+    // POLL IDENTIFIER..
+    $targets['poll_id'] = array(
+      'name' => t('Agrega2 Poll id'),
+      'description' => t('Agrega2 Poll id.'),
+      'callback' => 'process_agrega2_poll_id',
+    );
+    // CHOICES.
+    $targets['choices'] = array(
+      'name' => t('Agrega2 Choices'),
+      'description' => t('Agrega2 Choices.'),
+      'callback' => 'process_agrega2_choices',
+    );
+    // VOTES.
+    $targets['votes'] = array(
+      'name' => t('Agrega2 Votes'),
+      'description' => t('Agrega2 Votes.'),
+      'callback' => 'process_agrega2_votes',
+    );
+    // POLL CREATOR.
+    $targets['poll_creator'] = array(
+      'name' => t('Agrega2 Poll Creator'),
+      'description' => t('Agrega2 Poll Creator.'),
+      'callback' => 'process_agrega2_poll_creator',
+    );
+
+    // POLL DATE.
+    $targets['poll_date'] = array(
+      'name' => t('Agrega2 Poll Date'),
+      'description' => t('Agrega2 Poll Date.'),
+      'callback' => 'process_agrega2_poll_date',
+    );
+    // POLL COMMUNITY ID.
+    $targets['poll_community_id'] = array(
+      'name' => t('Agrega2 Poll Community ID'),
+      'description' => t('Agrega2 Poll Community id.'),
+      'callback' => 'process_agrega2_poll_community_id',
+    );
+    //LIKES
+    $targets['poll_likes'] = array(
+      'name' => t('Agrega2 Poll likes'),
+      'description' => t('Agrega2 Poll likes'),
+      'callback' => 'process_agrega2_votes_as_likes',
+    );
+  }
+  // QUESTIONS.
+  elseif ($entity_type == 'node' && $bundle_name == 'question') {
+    // QUESTION ID.
+    $targets['question_id'] = array(
+      'name' => t('Agrega2 Question id'),
+      'description' => t('Agrega2 Question id.'),
+      'callback' => 'process_agrega2_question_id',
+    );
+    // QUESTION CREATED FIELD..
+    $targets['question_date'] = array(
+      'name' => t('Agrega2 Question Date'),
+      'description' => t('Agrega2 Question Date.'),
+      'callback' => 'process_agrega2_question_date',
+    );
+
+    // QUESTION LABELS..
+    $targets['question_labels'] = array(
+      'name' => t('Agrega2 Question Labels'),
+      'description' => t('Agrega2 Question Labels.'),
+      'callback' => 'process_agrega2_question_labels',
+    );
+
+    // QUESTIONS COMMUNITY ID..
+    $targets['question_community_id'] = array(
+      'name' => t('Agrega2 Question Community Id'),
+      'description' => t('Agrega2 Question Community_id.'),
+      'callback' => 'process_agrega2_question_community_id',
+    );
+
+    // QUESTIONS USER ID..
+    $targets['question_user_id'] = array(
+      'name' => t('Agrega2 Question User Id'),
+      'description' => t('Agrega2 Question User_id.'),
+      'callback' => 'process_agrega2_question_user_id',
+    );
+
+    // QUESTIONS DESCRIPTION
+    $targets['question_description'] = array(
+      'name' => t('Agrega2 Question description'),
+      'description' => t('Agrega2 Question description.'),
+      'callback' => 'process_agrega2_question_description',
+    );
+
+    // QUESTIONS TAGS AS LABELS
+    $targets['question_tags'] = array(
+      'name' => t('Agrega2 Question tags'),
+      'description' => t('Agrega2 Question tags.'),
+      'callback' => 'process_agrega2_question_tags',
+    );
+    //LIKES
+    $targets['question_likes'] = array(
+      'name' => t('Agrega2 question likes'),
+      'description' => t('Agrega2 question likes'),
+      'callback' => 'process_agrega2_votes_as_likes',
+    );
+  }
+  // COMMUNITIES.
+  elseif ($entity_type == 'node' && $bundle_name == 'social_network') {
+    // COMMUNITY ID..
+    $targets['community_id'] = array(
+      'name' => t('Agrega2 Community Id'),
+      'description' => t('Agrega2 Community_id.'),
+      'callback' => 'process_agrega2_community_id',
+    );
+    // QUESTION CREATED FIELD..
+    $targets['community_date'] = array(
+      'name' => t('Agrega2 community Date'),
+      'description' => t('Agrega2 community Date.'),
+      'callback' => 'process_agrega2_community_date',
+    );
+  }
+
+  // POSTS.
+  elseif ($entity_type == 'node' && $bundle_name == 'post') {
+
+    // POST ID.
+    $targets['post_id'] = array(
+      'name' => t('Agrega2 Post id'),
+      'description' => t('Agrega2 Post id.'),
+      'callback' => 'process_agrega2_post_id',
+    );
+
+    // POSTS LABELS.
+    $targets['post_labels'] = array(
+      'name' => t('Agrega2 Post Labels'),
+      'description' => t('Agrega2 Post Labels.'),
+      'callback' => 'process_agrega2_post_labels',
+    );
+
+    // COMMUNITY ID.
+    $targets['post_community_id'] = array(
+      'name' => t('Agrega2 Post Community id'),
+      'description' => t('Agrega2 Post Community id.'),
+      'callback' => 'process_agrega2_post_community_id',
+    );
+
+    // THE AUTHOR.
+    $targets['post_author'] = array(
+      'name' => t('Agrega2 Post Author.'),
+      'description' => t('Agrega2 Post Author.'),
+      'callback' => 'process_agrega2_post_author',
+    );
+
+    // AUTHORS.
+    $targets['post_authors'] = array(
+      'name' => t('Agrega2 Post Authors.'),
+      'description' => t('Agrega2 Post Authors.'),
+      'callback' => 'process_agrega2_post_authors',
+    );
+
+    // SHARE.
+    $targets['post_share'] = array(
+      'name' => t('Agrega2 Post Share.'),
+      'description' => t('Agrega2 Post Share.'),
+      'callback' => 'process_agrega2_post_share',
+    );
+
+    // DESCRIPTION..
+    $targets['post_description'] = array(
+      'name' => t('Agrega2 Post Description.'),
+      'description' => t('Agrega2 Post Description.'),
+      'callback' => 'process_agrega2_post_description',
+    );
+
+    // IMAGE as LINK
+    $targets['post_image'] = array(
+      'name' => t('Agrega2 Post Image.'),
+      'description' => t('Agrega2 Post Image.'),
+      'callback' => 'process_agrega2_post_image',
+    );
+
+    // TAGS AS LABELS
+    $targets['post_tags'] = array(
+      'name' => t('Agrega2 post tags'),
+      'description' => t('Agrega2 post tags.'),
+      'callback' => 'process_agrega2_post_tags',
+    );
+
+    // Link
+    $targets['post_link'] = array(
+      'name' => t('Agrega2 post link'),
+      'description' => t('Agrega2 post link.'),
+      'callback' => 'process_agrega2_post_link',
+    );
+    //LIKES
+    $targets['post_likes'] = array(
+      'name' => t('Agrega2 post likes'),
+      'description' => t('Agrega2 post likes'),
+      'callback' => 'process_agrega2_votes_as_likes',
+    );
+  }
+
+  // DEBATE..
+  elseif ($entity_type == 'node' && $bundle_name == 'debate') {
+    // DEBATE IDENTIFIER..
+    $targets['debate_id'] = array(
+      'name' => t('Agrega2 Debate id'),
+      'description' => t('Agrega2 Debate id.'),
+      'callback' => 'process_agrega2_debate_id',
+    );
+
+    // DESCRIPTION..
+    $targets['debate_description'] = array(
+      'name' => t('Agrega2 Debate Description.'),
+      'description' => t('Agrega2 Debate Description.'),
+      'callback' => 'process_agrega2_debate_description',
+    );
+
+    // COMMUNITY ID.
+    $targets['debate_community_id'] = array(
+      'name' => t('Agrega2 Debate Community id'),
+      'description' => t('Agrega2 Debate Community id.'),
+      'callback' => 'process_agrega2_debate_community_id',
+    );
+
+    // DEBATE USER ID..
+    $targets['debate_user_id'] = array(
+      'name' => t('Agrega2 Debate User Id'),
+      'description' => t('Agrega2 Debate User_id.'),
+      'callback' => 'process_agrega2_debate_user_id',
+    );
+
+    // DEBATE CREATED FIELD..
+    $targets['debate_date'] = array(
+      'name' => t('Agrega2 Debate Date'),
+      'description' => t('Agrega2 Debate Date.'),
+      'callback' => 'process_agrega2_debate_date',
+    );
+
+    // DEBATE LABELS.
+    $targets['debate_labels'] = array(
+      'name' => t('Agrega2 Debate Labels'),
+      'description' => t('Agrega2 Debate Labels.'),
+      'callback' => 'process_agrega2_debate_labels',
+    );
+    // DEBATE LABELS.
+    $targets['debate_state'] = array(
+      'name' => t('Agrega2 Debate state'),
+      'description' => t('Agrega2 Debate state.'),
+      'callback' => 'process_agrega2_debate_state',
+    );
+
+    // QUESTIONS TAGS AS LABELS
+    $targets['debate_tags'] = array(
+      'name' => t('Agrega2 debate tags'),
+      'description' => t('Agrega2 debate tags.'),
+      'callback' => 'process_agrega2_debate_tags',
+    );
+    //LIKES
+    $targets['debate_likes'] = array(
+      'name' => t('Agrega2 debate likes'),
+      'description' => t('Agrega2 debate likes'),
+      'callback' => 'process_agrega2_votes_as_likes',
+    );
+  }
+  elseif ($entity_type == 'node' && $bundle_name == 'ode') {
+    // ODE IDENTIFIER..
+    $targets['ode_id'] = array(
+      'name' => t('Agrega2 ODE id'),
+      'description' => t('Agrega2 ODE id.'),
+      'callback' => 'process_agrega2_ode_id',
+    );
+    $targets['ode_sharing'] = array(
+      'name' => t('Agrega2 ODE community sharing'),
+      'description' => t('Agrega2 ODE community sharing.'),
+      'callback' => 'process_agrega2_ode_sharing',
+    );
+  }
+  // USERS.
+  if ($entity_type == 'user') {
+    // USER FAVORITES
+    $targets['user_favorites'] = array(
+      'name' => t('Agrega2 User Favorites'),
+      'description' => t('Agrega2 User Favorites.'),
+      'callback' => 'process_agrega2_user_favorites',
+    );
+    $targets['organization_id'] = array(
+      'name' => t('Agrega2 Organization_Id'),
+      'description' => t('Agrega2 organization Id.'),
+      'callback' => 'process_agrega2_organization_id',
+    );
+    $targets['user_organization_id'] = array(
+      'name' => t('Agrega2 User Organization_Id'),
+      'description' => t('Agrega2 User organization Id.'),
+      'callback' => 'process_agrega2_user_organization_id',
+    );
+    $targets['user_persona_id'] = array(
+      'name' => t('Agrega2 User Persona Id'),
+      'description' => t('Agrega2 User Persona Id.'),
+      'callback' => 'process_agrega2_user_persona_id',
+      'optional_unique' => TRUE,
+    );
+  }
+
+  // COMMENTS.
+  if ($entity_type == 'comment') {
+    // NID.
+    $targets['agrega2_comment_nid'] = array(
+      'name' => t('Agrega2 Comment NID'),
+      'description' => t('Agrega2 Comment NID.'),
+      'callback' => 'process_agrega2_comment_nid',
+    );
+    // UID.
+    $targets['agrega2_comment_uid'] = array(
+      'name' => t('Agrega2 Comment UID'),
+      'description' => t('Agrega2 Comment UID.'),
+      'callback' => 'process_agrega2_comment_uid',
+    );
+    // PID.
+    $targets['agrega2_comment_pid'] = array(
+      'name' => t('Agrega2 Comment PID'),
+      'description' => t('Agrega2 Comment PID.'),
+      'callback' => 'process_agrega2_comment_pid',
+    );
+    // ID.
+    $targets['agrega2_comment_id'] = array(
+      'name' => t('Agrega2 Comment ID'),
+      'description' => t('Agrega2 Comment ID.'),
+      'callback' => 'process_agrega2_comment_id',
+    );
+    // DATE.
+    $targets['agrega2_comment_date'] = array(
+      'name' => t('Agrega2 Comment DATE'),
+      'description' => t('Agrega2 Comment DATE.'),
+      'callback' => 'process_agrega2_comment_date',
+    );
+    // COMMUNITY ID.
+    $targets['agrega2_comment_community_id'] = array(
+      'name' => t('Agrega2 Comment Community ID'),
+      'description' => t('Agrega2 Comment Community ID.'),
+      'callback' => 'process_agrega2_comment_community_id',
+    );
+  }
+
+}
+
+##################################################################
+#  -POLLS                                                        #
+##################################################################
+
+/**
+ * Callback to prepare choices(Poll import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_choices($source, $entity, $target, $value, $mapping) {
+  // Add runtime and set as active.
+  $entity->runtime = 0;
+  $entity->active = 1;
+
+  //$choices = array_chunk($value, 2);
+
+  // Seat as Active by default.
+  $entity->field_poll_status['und'][0]['value'] = 1;
+  // Add choices!
+  foreach ($value as $key => $choice) {
+    //Choice must not be greater than 150 characters or database might complain.
+    //Will be upgraded for drupal 8, but dismissed for drupal 7: https://www.drupal.org/node/804706
+    $choice_truncated = truncate_utf8($choice, 128, TRUE, TRUE);
+    // chvotes is 0 and should increment while adding votes.
+    $entity->choice[] = array('chtext' => $choice_truncated, 'chvotes' => 0, 'weight'=> 1);
+  }
+}
+
+/**
+ * Callback to prepare votes(Poll import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_votes($source, $entity, $target, $value, $mapping) {
+  // Nothing to process for the moment. @see ag_migration_feeds_after_save().
+}
+
+/**
+ * Callback to prepare poll creator(Poll import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_poll_creator($source, $entity, $target, $value, $mapping) {
+  // Search for the uid from temp_map_user_id.
+  $entity->uid = db_query('SELECT prouid FROM {temp_map_user_id} WHERE proid = :proid', array(':proid' => $value))->fetchField();
+}
+
+/**
+ * Callback to prepare choices(Poll import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_poll_date($source, $entity, $target, $value, $mapping) {
+  // Add runtime and set as active.
+  $date = str_replace('/', '-', $value);
+  $entity->created = strtotime($date);
+}
+
+/**
+ * Callback to prepare poll community id(Poll import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_poll_community_id($source, $entity, $target, $value, $mapping) {
+  $entity->og_group_ref['und'][0]['target_id'] = db_query('SELECT cid FROM {temp_map_community_id} WHERE procid = :procid', array(':procid' => $value))->fetchField();
+}
+##################################################################
+#  -QUESTIONS                                                    #
+##################################################################
+
+/**
+ * Callback to prepare the created field(Question import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_question_date($source, $entity, $target, $value, $mapping) {
+  $date = str_replace('/', '-', $value);
+  $entity->created = strtotime($date);
+}
+
+/**
+ * Callback to prepare Tags(Question import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_question_labels($source, $entity, $target, $value, $mapping) {
+  // Check if the term exists and then create it.
+  // Insert into an array while separating by comma and if the string is not into quotes.
+  preg_match_all('`(?:[^,\']|\'((?<=\\\\)\'|[^\'])*\')*`x' , $value, $result);
+
+  $terms = array_filter($result[0]);
+
+  foreach ($terms as $key => $term) {
+    // Aviod to add a term with a white space in the first as first char.
+    $term = trim($term);
+    _process_taxonomy_terms($term, 1);
+    // Add the tid.
+    $entity->field_labels['und'][]['tid'] = _get_taxonomy_term_id_by_name($term, 1);
+  }
+}
+
+/**
+ * Callback to add the og reference(Question import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_question_community_id($source, $entity, $target, $value, $mapping) {
+  // Search for the nid to make a reference to this community.
+  $cid = db_query('SELECT cid FROM {temp_map_community_id} WHERE procid = :procid', array(':procid' => $value))->fetchField();
+  if (!empty($cid)) {
+    $entity->og_group_ref['und'][]['target_id'] = $cid;
+  }
+  else {
+    drupal_set_message(t('Importing error. Content with community id not found: @community', array('@community' => $value)), 'error');
+  }
+}
+
+/**
+ * Callback to Obtain the user id(Question import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_question_user_id($source, $entity, $target, $value, $mapping) {
+  // Search for the uid to add the owner.
+  $entity->uid = db_query('SELECT prouid FROM {temp_map_user_id} WHERE proid = :proid', array(':proid' => $value))->fetchField();
+}
+
+/**
+ * Callback to prepare Description :-) (Question import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_question_description($source, $entity, $target, $value, $mapping) {
+  //Remove link tags but keep its href and content.
+  $string = ag_migration_clean_not_all_tags($value);
+
+  $entity->body['es'][0]['value'] = html_entity_decode($string,ENT_COMPAT,"UTF-8");
+  $entity->body['es'][0]['format'] = 'filtered_html';
+}
+
+/**
+ * Callback to prepare tags as labels (Question import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_question_tags($source, $entity, $target, $value, $mapping) {
+  if (is_array($value)) {
+    foreach ($value as $term) {
+      // Aviod to add a term with a white space in the first as first char.
+      $term = trim($term);
+      _process_taxonomy_terms($term, 1);
+      // Add the tid.
+      $entity->field_labels['und'][]['tid'] = _get_taxonomy_term_id_by_name($term, 1);
+    }
+  }
+  else {
+    $term = trim($value);
+    _process_taxonomy_terms($term, 1);
+    // Add the tid.
+    $entity->field_labels['und'][]['tid'] = _get_taxonomy_term_id_by_name($term, 1);
+  }
+}
+
+##################################################################
+#  -COMMUNITIES                                                  #
+##################################################################
+
+/**
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_community_id($source, $entity, $target, $value, $mapping) {
+  // Nothing to process for the moment. @see ag_migration_feeds_after_save().
+}
+
+/**
+ * Callback to prepare the created field(Question import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_community_date($source, $entity, $target, $value, $mapping) {
+  //Set to european format.
+  $date = str_replace('/', '-', $value);
+  $entity->created = strtotime($date);
+}
+
+
+##################################################################
+#  -POSTS                                                        #
+##################################################################
+
+/**
+ *
+ * Add the id to a temp table.
+ * @see ag_migration_feeds_after_save().
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_post_id($source, $entity, $target, $value, $mapping) {
+
+}
+
+/**
+ * Callback to prepare Tags(Posts import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_post_labels($source, $entity, $target, $value, $mapping) {
+  // Check if the term exists and then create it.
+  // Insert into an array while separating by comma and if the string is not into quotes.
+  preg_match_all('`(?:[^,\']|\'((?<=\\\\)\'|[^\'])*\')*`x' , $value, $result);
+
+  $terms = array_filter($result[0]);
+
+  foreach ($terms as $key => $term) {
+    // Avoid to add a term with a white space in the first as first char.
+    $term = trim($term);
+    _process_taxonomy_terms($term, 1);
+    // Add the tid.
+    $entity->field_labels['und'][]['tid'] = _get_taxonomy_term_id_by_name($term, 1);
+  }
+}
+
+/**
+ * Callback to prepare Community id(Posts import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_post_community_id($source, $entity, $target, $value, $mapping) {
+  //Divide this field by groups of three: Publishing {community_id, user_id, and publication type.}
+  $publications = array_chunk($value, 4);
+  foreach ($publications as $key => $publication) {
+
+    //Get elements
+    $procid = $publication[0];
+    $prouid = $publication[1];
+    $publication_type = $publication[2];
+    $date_string = $publication[3];
+
+    //Community id
+    $cid =  db_query('SELECT cid FROM {temp_map_community_id} WHERE procid = :procid', array(':procid' => $procid))->fetchField();
+    if (!$cid) {
+      continue;
+    }
+
+    //Parse date
+    $date_string = str_replace('/', '-',$date_string);
+    $timestamp = strtotime($date_string);
+    if (!$timestamp) {
+      $timestamp = time();
+    }
+
+    //User
+    $author_uid = db_query('SELECT prouid FROM {temp_map_user_id} WHERE proid = :proid', array(':proid' => $prouid))->fetchField();
+
+    if (!$author_uid) {
+      $author_uid = 1;
+    }
+
+    if ($publication_type == 'Publicado') {
+      $entity->uid = $author_uid;
+      $entity->created = $timestamp;
+    }
+    elseif ($publication_type == 'Compartido' && (!isset($entity->uid) || $entity->uid == 1)) {
+      //Set a sharer user as creator only if no publisher shows up, better than admin.
+      $entity->uid = $author_uid;
+      $entity->created = $timestamp;
+    }
+
+
+    $entity->og_group_ref['und'][]['target_id'] = $cid;
+
+  }
+
+}
+
+/**
+ * Callback to prepare Authors from xml file(Posts import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_post_authors($source, $entity, $target, $value, $mapping) {
+  // Insert into an array while separating by comma.
+  preg_match_all('`(?:[^,\']|\'((?<=\\\\)\'|[^\'])*\')*`x' , $value, $result);
+
+  $authors = array_filter($result[0]);
+
+  foreach ($authors as $key => $author) {
+    if ($author) {
+      $entity->field_author_others['und'][]['value'] = truncate_utf8($author, 60, TRUE, TRUE);
+    }
+  }
+}
+
+/**
+ * Callback to prepare Post Author(Posts import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_post_author($source, $entity, $target, $value, $mapping) {
+  // Insert into an array while separating by comma.
+  preg_match_all('`(?:[^,\']|\'((?<=\\\\)\'|[^\'])*\')*`x' , $value, $result);
+
+  $authors = array_filter($result[0]);
+
+  foreach ($authors as $key => $author) {
+    if ($author) {
+      // Search for this author to understand if exists.
+      $author_uid = db_query('SELECT prouid FROM {temp_map_user_id} WHERE proid = :proid', array(':proid' => $author))->fetchField();
+      if (!empty($author_uid) && $author_uid != 1) {
+        $entity->uid = $author_uid;
+        $entity->field_author_ref['und'][]['target_id'] = $author_uid;
+      }
+    }
+  }
+}
+
+/**
+ * Callback to prepare if we should share this Post :-) (Posts import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_post_share($source, $entity, $target, $value, $mapping) {
+  if ($value == 'True') {
+    $entity->field_question_share['und'][0]['value'] = 1;
+  }
+}
+
+/**
+ * Callback to prepare Description :-) (Posts import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_post_description($source, $entity, $target, $value, $mapping) {
+    $entity->body['es'][0]['value'] = $value;
+    $entity->body['es'][0]['format'] = 'filtered_html';
+}
+
+/**
+ * Callback to prepare image link (Posts import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_post_image($source, $entity, $target, $value, $mapping) {
+}
+
+
+/**
+ * Callback to prepare tags (Posts import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_post_tags($source, $entity, $target, $value, $mapping) {
+  if (is_array($value)) {
+    foreach ($value as $term) {
+      // Aviod to add a term with a white space in the first as first char.
+      $term = trim($term);
+      _process_taxonomy_terms($term, 1);
+      // Add the tid.
+      $entity->field_labels['und'][]['tid'] = _get_taxonomy_term_id_by_name($term, 1);
+    }
+  }
+  else {
+    $term = trim($value);
+    _process_taxonomy_terms($term, 1);
+    // Add the tid.
+    $entity->field_labels['und'][]['tid'] = _get_taxonomy_term_id_by_name($term, 1);
+  }
+}
+
+/**
+ * Callback to prepare link to body process (Posts import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_post_link($source, $entity, $target, $value, $mapping) {
+
+}
+
+##################################################################
+#  -DEBATE                                                       #
+##################################################################
+
+/**
+ * Callback to prepare ID(Debate id).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_debate_id($source, $entity, $target, $value, $mapping) {
+}
+
+/**
+ * Callback to prepare Description :-) (Debate import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_debate_description($source, $entity, $target, $value, $mapping) {
+  //Remove link tags but keep its href and content.
+  $string = ag_migration_clean_not_all_tags($value);
+
+  $string = html_entity_decode($string,ENT_COMPAT,"UTF-8");
+  $entity->body['es'][]['value'] = $string;
+  $entity->body['es'][]['format'] = 'filtered_html';
+}
+
+/**
+ * Callback to prepare Debate id :-) (Debate import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_debate_community_id($source, $entity, $target, $value, $mapping) {
+  // Search for the nid to make a reference to this community.
+  if (!is_array($value)) {
+    $cids = array($value);
+  }
+  else {
+    $cids = $value;
+  }
+
+  //Add all community ids.
+  foreach ($cids as $key => $cid) {
+    $cid = db_query('SELECT cid FROM {temp_map_community_id} WHERE procid = :procid', array(':procid' => $value))->fetchField();
+    if (!empty($cid)) {
+      $entity->og_group_ref['und'][]['target_id'] = $cid;
+    }
+    else {
+      drupal_set_message(t('Importing error. Content with community id not found: @community', array('@community' => $value)), 'error');
+    }
+  }
+}
+
+/**
+ * Callback to Obtain the user id(Debate import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_debate_user_id($source, $entity, $target, $value, $mapping) {
+  // Search for the uid to add the owner.
+  $entity->uid = db_query('SELECT prouid FROM {temp_map_user_id} WHERE proid = :proid', array(':proid' => $value))->fetchField();
+}
+
+/**
+ * Callback to prepare Date(Debate import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_debate_date($source, $entity, $target, $value, $mapping) {
+  $date = str_replace('/', '-',$value);
+  $entity->created = strtotime($date);
+}
+
+/**
+ * Callback to prepare Tags(Debate import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_debate_labels($source, $entity, $target, $value, $mapping) {
+  // Check if the term exists and then create it.
+  // Insert into an array while separating by comma and if the string is not into quotes.
+  preg_match_all('`(?:[^,\']|\'((?<=\\\\)\'|[^\'])*\')*`x' , $value, $result);
+
+  $terms = array_filter($result[0]);
+
+  foreach ($terms as $key => $term) {
+    // Avoid to add a term with a white space in the first as first char.
+    $term = trim($term);
+    _process_taxonomy_terms($term, 1);
+    // Add the tid.
+    $entity->field_labels['und'][]['tid'] = _get_taxonomy_term_id_by_name($term, 1);
+  }
+}
+
+/**
+ * Callback to prepare state(Debate import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_debate_state($source, $entity, $target, $value, $mapping) {
+  if ($value == 'Cerrado') {
+    //Cerrado = Non active
+    $entity->field_debate_state['und'][0]['value'] = 0;
+  }
+  else {
+    //Abierto = Active
+    $entity->field_debate_state['und'][0]['value'] = 1;
+  }
+}
+
+/**
+ * Callback to prepare tags as labels (Debate import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_debate_tags($source, $entity, $target, $value, $mapping) {
+  if (is_array($value)) {
+    foreach ($value as $term) {
+      // Aviod to add a term with a white space in the first as first char.
+      $term = trim($term);
+      _process_taxonomy_terms($term, 1);
+      // Add the tid.
+      $entity->field_labels['und'][]['tid'] = _get_taxonomy_term_id_by_name($term, 1);
+    }
+  }
+  else {
+    $term = trim($value);
+    _process_taxonomy_terms($term, 1);
+    // Add the tid.
+    $entity->field_labels['und'][]['tid'] = _get_taxonomy_term_id_by_name($term, 1);
+  }
+}
+
+##################################################################
+#  -USERS                                                        #
+##################################################################
+
+/**
+ * Callback to prepare Favotites(User import).
+ *
+ * Only Favorite Resources should be inserted to Drupal.
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_user_favorites($source, $entity, $target, $value, $mapping) {
+}
+
+
+/**
+ * Callback to prepare Organization(User import).
+ *
+ * Only Favorite Resources should be inserted to Drupal.
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_organization_id($source, $entity, $target, $value, $mapping) {
+}
+
+/**
+ * Callback to prepare user field indicating his/her Organization(User import).
+ *
+ * Only Favorite Resources should be inserted to Drupal.
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_user_organization_id($source, $entity, $target, $value, $mapping) {
+  $oid = db_query('SELECT prouid FROM {temp_map_organization_id} WHERE proid = :proid', array(':proid' => $value))->fetchField();
+  if ($oid) {
+    $entity->field_organization_reference['und'][]['target_id'] = $oid;
+    $entity->field_organization_reference['und'][]['target_type'] = "user";
+  }
+}
+
+
+/**
+ * Callback to prepare user persona field, to detect duplicates.
+ *
+ * Only Favorite Resources should be inserted to Drupal.
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_user_persona_id($source, $entity, $target, $value, $mapping) {
+  //No functional use for now. Feeds should detect if duplicate with "optional_unique" attribute. But it doesnt.
+}
+
+##################################################################
+#  -ODE                                                          #
+##################################################################
+
+/**
+ * Callback to understand if the ODE is favorite(ODE import).
+ *
+ * Only Favorite Resources should be inserted to Drupal.
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_ode_id($source, $entity, $target, $value, $mapping) {
+  // Is it a favorite ODE????
+  if ($favorites = db_query('SELECT uid FROM {temp_map_user_favorites} WHERE favorites = :favorites', array(':favorites' => $value[0]))->fetchField()) {
+
+    // Request Solr for the ODE. @Todo add Pre endpoint.
+    $endpoint = db_query('SELECT url from wsclient_service WHERE name = :name', array(':name' => 'orchestrator_selection'))->fetchField();
+
+    $jsonUrl = $endpoint . 'select?q=*:*&fq=type:ODE&wt=json&fq=generalIdentifier:"' . $value[1]
+      . '"&fl=generalTitleStr,descriptionStr,generalKeywordStr,id';
+
+    $json = file_get_contents($jsonUrl);
+
+    $response = json_decode($json);
+    // @TODO Do different stuffs depending on the number of results from Solr.
+    //Add the needed fields to the entity. For the moment we cannot add flags because we need the nid so let's do it
+    // in the after_save hook.
+    if ($response->response->numFound > 0) {
+      $ode = $response->response->docs[0];
+      // Title
+      $entity->title = $ode->generalTitleStr;
+      // Description.
+      $entity->field_descripci_n['es'][0]['value'] = $ode->descriptionStr;
+      // Tags.
+      $terms = $ode->generalKeywordStr;
+      foreach ($terms as $key => $term) {
+        // Avoid to add a term with a white space in the first as first char.
+        $term = ltrim($term);
+        _process_taxonomy_terms($term, 1);
+        // Add the tid.
+        $entity->field_labels['und'][]['tid'] = _get_taxonomy_term_id_by_name($term, 1);
+      }
+      // SOLRID.
+      $entity->field_solrid['und'][0]['value'] = $ode->id;
+      // Spanish for the moment.
+      $entity->language = 'es';
+      return;
+    }
+  }
+  // This isn't a favorite or there's no data into Solr about the current ODE so... Skip the process!
+  $entity->feeds_item->skip = 1;
+}
+
+
+/**
+ * Callback to understand if the ODE is favorite(ODE import).
+ *
+ * Only Favorite Resources should be inserted to Drupal.
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_ode_sharing($source, $entity, $target, $value, $mapping) {
+  //Divide this field by groups of three: Publishing {community_id, user_id, and publication type.}
+  $publications = array_chunk($value, 4);
+  foreach ($publications as $key => $publication) {
+
+    //Get elements
+    $procid = $publication[0];
+    $prouid = $publication[1];
+    $publication_type = $publication[2];
+    $date_string = $publication[3];
+
+    //Community id
+    $cid =  db_query('SELECT cid FROM {temp_map_community_id} WHERE procid = :procid', array(':procid' => $procid))->fetchField();
+    if (!$cid) {
+      continue;
+    }
+
+    //Parse date
+    $date_string = str_replace('/', '-',$date_string);
+    $timestamp = strtotime($date_string);
+    if (!$timestamp) {
+      $timestamp = time();
+    }
+
+    //User
+    $author_uid = db_query('SELECT prouid FROM {temp_map_user_id} WHERE proid = :proid', array(':proid' => $prouid))->fetchField();
+    if (!$author_uid) {
+      $author_uid = 1;
+    }
+
+    if ($publication_type == 'Publicado') {
+      $entity->uid = $author_uid;
+      $entity->created = $timestamp;
+    }
+
+
+    $entity->og_group_ref['und'][]['target_id'] = $cid;
+  }
+
+}
+
+/**
+ * Callback to prepare votes for a content type(all import but users, communities and comments).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_votes_as_likes($source, $entity, $target, $value, $mapping) {
+  //No special parsing needs to be done here. We need to wait until after_save to have available nids.
+}
+
+
+##################################################################
+#  -COMMENT                                                      #
+##################################################################
+
+/**
+ * Callback to add the og reference(Comment import).
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_comment_community_id($source, $entity, $target, $value, $mapping) {
+  // Search for the nid to make a reference to this community.
+  $entity->feeds_item->og_group_ref = db_query('SELECT cid FROM {temp_map_community_id} WHERE procid = :procid', array(':procid' => $value))->fetchField();
+}
+
+/**
+ *
+ * Add the nid from temp tables.
+ *
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_comment_nid($source, $entity, $target, $value, $mapping) {
+  $nodes = db_query('SELECT cid,type FROM {temp_map_content_id} WHERE proid = :proid', array(':proid' => $value))->fetchAll();
+  if (empty($nodes)){
+    watchdog("ERROR WHEN IMPORTING COMMENT", 'Resource ID not available: ' . $value);
+  }
+
+  // Search for the nid to add the owner.
+  foreach ($nodes as $node) {
+
+    // Answers are comments so let's avoid the comment creation and then let's create save a node.
+    if ($node->type == 'question') {
+      // Skip the comment and create an answer.
+      $entity->feeds_item->skip = 1;
+      $entity->feeds_item->question = 1;
+      // Avoid Exception when a comments hasn't a nid.
+      $entity->nid = $node->cid;
+    }
+    else {
+      $entity->nid = $node->cid;
+    }
+  }
+  unset($entity->cid);
+
+}
+
+/**
+ *
+ * Add the uid from temp tables.
+ *
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_comment_uid($source, $entity, $target, $value, $mapping) {
+  // UID.
+  // Search for the uid to add the owner.
+  $entity->uid = db_query('SELECT prouid FROM {temp_map_user_id} WHERE proid = :proid', array(':proid' => $value))->fetchField();
+}
+
+
+/**
+ *
+ * Add the pid from temp tables.
+ *
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_comment_pid($source, $entity, $target, $value, $mapping) {
+  // PID.
+  // Search for the pid to add parent to this comment if exists.
+  if(!empty($value)) {
+    $entity->pid = db_query('SELECT cid FROM {temp_map_comment_id} WHERE proid = :proid', array(':proid' => $value))->fetchField();
+  }
+}
+
+/**
+ *
+ * Add the id from temp tables.
+ *
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_comment_id($source, $entity, $target, $value, $mapping) {
+
+}
+
+/**
+ *
+ * Add the date from temp tables.
+ *
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param $value
+ * @param $mapping
+ */
+function process_agrega2_comment_date($source, $entity, $target, $value, $mapping) {
+  $date = str_replace('/', '-',$value);
+  $entity->created = strtotime($date);
+}
+
+/**
+* Cleans string from all html tags but leaving iframe and anchor links urls and contents.
+*/
+function ag_migration_clean_not_all_tags($value) {
+  $string = preg_replace('/<iframe .*src=\"(.*?)\"\s*.*>(.*)<\/iframe>/i', "\n$1 ", $value);
+  $string = preg_replace('/<a .*href=\"(.*?)\".*>(.*)<\/a>/i', "\n$1 ", $string);
+  return strip_tags($string);
+}
+
+/**
+* Cleans string from special characters as icons in utf-8 +3bytes format.
+*/
+function remove_emoji($text){
+  return preg_replace('/([0-9|#][\x{20E3}])|[\x{00ae}|\x{00a9}|\x{203C}|\x{2047}|\x{2048}|\x{2049}|\x{3030}|\x{303D}|\x{2139}|\x{2122}|\x{3297}|\x{3299}][\x{FE00}-\x{FEFF}]?|[\x{2190}-\x{21FF}][\x{FE00}-\x{FEFF}]?|[\x{2300}-\x{23FF}][\x{FE00}-\x{FEFF}]?|[\x{2460}-\x{24FF}][\x{FE00}-\x{FEFF}]?|[\x{25A0}-\x{25FF}][\x{FE00}-\x{FEFF}]?|[\x{2600}-\x{27BF}][\x{FE00}-\x{FEFF}]?|[\x{2900}-\x{297F}][\x{FE00}-\x{FEFF}]?|[\x{2B00}-\x{2BF0}][\x{FE00}-\x{FEFF}]?|[\x{1F000}-\x{1F6FF}][\x{FE00}-\x{FEFF}]?/u', '', $text);
+}
+
+
+/**
+* Processes array of votes parsed as {prouid1, vote_value1, prouid2, vote_value2, etc...}
+* Each two values will be gathered in a group, as a single element in a new array.
+* Then, it's time to flag or unflag the node with this array of users,
+* preprocessing every user identifier to find its drupal uid.
+*/
+function ag_migration_flag_content_type_with_user_array($action, $flag_type, $array_of_votes, $nid) {
+  //Distribute in groups of 2: Voter, and value.
+  $array_of_votes = array_chunk($array_of_votes, 2);
+
+  foreach ($array_of_votes as $like) {
+    if (isset($like[1]) && $like[1] == 1) {
+      //Get voter uid.
+      $user_prouid = $like[0];
+      //Flag function with proid/uid converter.
+      ag_migration_flag_content_type($action, $flag_type, $user_prouid, $nid);
+    }
+  }
+}
+
+/**
+* Simply flags a node using agrega users old id. Translates it with temp_map_user_id table
+* from user migration process and applies flag with real uid.
+*/
+function ag_migration_flag_content_type($action, $flag_type, $user_prouid, $nid) {
+  //Get voter uid.
+  $like_uid = db_query('SELECT prouid FROM {temp_map_user_id} WHERE proid = :proid', array(':proid' => $user_prouid))->fetchField();
+
+  if (!empty($like_uid)) {
+    //Flag needs user account fully loaded.
+    $user = user_load($like_uid);
+
+    //Mark content as flagged by this user.
+    $flag_result = flag($action, $flag_type, $nid, $user);
+
+    //Notify watchdog if a problem ocurred.
+    if (empty($flag_result)) {
+      watchdog("Migration", 'Error when flagging. Tried:' . $action . ' of type ' . $flag_type . ' of node:' . $nid . ' by user:' . $user->uid);
+    }
+  }
+}
+
+/**
+* Cleans username if drupal returns errors with it. Check if exists too in database.
+*/
+function ag_migration_clean_username_if_needed($username) {
+  // @TODO TBD. Add username to the user profile.
+  // Dont fear the accents option http://php.net/manual/en/function.iconv.php
+  // Use this line to test username: $test = user_validate_name($name);
+  $errors = user_validate_name($username);
+  if (!empty($errors)) {
+    //Remove accents and other characters in drupal username, just in case.
+    setlocale(LC_CTYPE, 'es_ES.utf8');
+    $input = iconv('UTF-8', 'ASCII//TRANSLIT', $username);
+    $input = preg_replace('/[^a-zA-Z0-9]/', '_', $input);
+    $input = str_replace(' ' , '', $input);
+  }
+  else{
+    $input = $username;
+  }
+
+  //Check if user exists in database
+  $i = 0;
+  while ($result = db_query('SELECT uid FROM {users} WHERE name = :name', array(':name' => $input))->fetchField()) {
+    $i++;
+    $name = explode('-', $input);
+    if (isset($name[1])) {
+      $input = $name[0] . '-' . $i;
+    }
+    else {
+      $input = $input . '-' . $i;
+    }
+  }
+
+  return $input;
+}
+
+/**
+* Update user temp_tables if user import needs to ignore node because it already exists.
+*/
+function ag_migration_update_user_temp_tables_if_exists($item, $uid) {
+  // FOLLOWERS.
+  // Add favorites to a custom temp table.
+  ag_migration_update_user_followers($item, $uid);
+
+  // FAVORITES
+  // Add favorites to a custom temp table.
+  ag_migration_update_user_favorites($item, $uid);
+
+  // UPDATE USER ID
+  ag_migration_update_user_id($item, $uid);
+
+  // Update user subscription. Add those that do not exist.
+  ag_migration_update_user_to_community($item, $uid);
+}
+
+/**
+* Updates temp_map_user_followers table if needed (new rows).
+*/
+function ag_migration_update_user_followers($item, $uid) {
+  //Array mode.
+  if (isset($item['xpathparser:12']) && !empty($item['xpathparser:12'])) {
+    if (is_array($item['xpathparser:12'])) {
+      foreach ($item['xpathparser:12'] as $key => $following) {
+
+       //Check if exists, then create row.
+        $existing_row = db_query('SELECT uid FROM {temp_map_user_followers} WHERE uid = :uid and following = :following',
+                                  array(':uid' => $uid, ':following' => $following))->fetchField();
+        if (empty($existing_row)) {
+          db_insert('temp_map_user_followers') // Table name no longer needs {}
+            ->fields(array(
+              'uid' => $uid,
+              'following' => $following
+            ))
+            ->execute();
+        }
+      }
+    }
+    else {
+      //Not array.
+
+      //Check if exists, then create row.
+      $existing_row = db_query('SELECT uid FROM {temp_map_user_followers} WHERE uid = :uid and following = :following',
+                                  array(':uid' => $uid, ':following' => $item['xpathparser:12']))->fetchField();
+
+      if (empty($existing_row)) {
+        db_insert('temp_map_user_followers') // Table name no longer needs {}
+          ->fields(array(
+            'uid' => $uid,
+            'following' => $item['xpathparser:12']
+          ))
+          ->execute();
+      }
+    }
+  }
+}
+
+/**
+* Updates temp_map_user_favorites table if needed (new rows).
+*/
+function ag_migration_update_user_favorites($item, $uid) {
+  if (isset($item['xpathparser:14']) && !empty($item['xpathparser:14'])) {
+    if (is_array($item['xpathparser:14'])) {
+      foreach ($item['xpathparser:14'] as $key => $favorite) {
+
+        //Check if exists, then create row.
+        $existing_row = db_query('SELECT uid FROM {temp_map_user_favorites} WHERE uid = :uid and favorites = :favorites',
+                                  array(':uid' => $uid, ':favorites' => $favorite))->fetchField();
+
+        if (empty($existing_row)) {
+          db_insert('temp_map_user_favorites') // Table name no longer needs {}
+            ->fields(array(
+              'uid' => $uid,
+              'favorites' => $favorite
+            ))
+            ->execute();
+        }
+      }
+    }
+    else {
+
+      //Check if exists, then create row.
+      $existing_row = db_query('SELECT uid FROM {temp_map_user_favorites} WHERE uid = :uid and favorites = :favorites',
+                                array(':uid' => $uid, ':favorites' => $item['xpathparser:14']))->fetchField();
+
+      if (empty($existing_row)) {
+        db_insert('temp_map_user_favorites') // Table name no longer needs {}
+          ->fields(array(
+            'uid' => $uid,
+            'favorites' => $item['xpathparser:14']
+          ))
+          ->execute();
+      }
+    }
+  }
+}
+
+/**
+* Updates temp_map_user_id table if needed (new rows).
+*/
+function ag_migration_update_user_id($item, $uid) {
+
+  $uid_already_exists = db_query('SELECT prouid FROM {temp_map_user_id} WHERE proid = :proid', array(':proid' => $item['xpathparser:13']))->fetchField();
+  if(empty($uid_already_exists)) {
+    // When adding new users we need the community id to understand who is the administrator of a community.
+    db_insert('temp_map_user_id') // Table name no longer needs {}
+      ->fields(array(
+        'prouid' => $uid,
+        'proid' => $item['xpathparser:13'],
+        'name_surname' => DrupalToolkit::getUserData($uid, array('name'))->name,
+      ))
+      ->execute();
+  }
+}
+
+/**
+* Updates temp_map_user_community table if needed (new rows).
+*/
+function ag_migration_update_user_to_community($item, $uid) {
+
+  // When adding new users we need the community id to understand who is the administrator of a community.
+  // Insert all roles from an user in a community.
+  if (isset($item['xpathparser:11']) && !empty($item['xpathparser:11'])) {
+    if (is_array($item['xpathparser:11'])) {
+      for($i = 0; $i < count($item['xpathparser:11']); $i += 2) {
+
+        //Check if exists, then create row.
+        $existing_row = db_query('SELECT uid FROM {temp_map_user_community} WHERE uid = :uid AND cid = :cid AND urole = :urole',
+                                array(':uid' => $uid, ':cid' => $item['xpathparser:11'][$i], ':urole' => $item['xpathparser:11'][$i+1]))->fetchField();
+
+        if (empty($existing_row)) {
+          db_insert('temp_map_user_community') // Table name no longer needs {}
+            ->fields(array(
+              'uid' => $uid,
+              'cid' => $item['xpathparser:11'][$i],
+              'urole' => $item['xpathparser:11'][$i+1]
+            ))
+            ->execute();
+        }
+      }
+    }
+  }
+}
+
+/**
+* Checks temp_map_content_id table to get nid of content if exists. Else, return empty value.
+*/
+function ag_migration_check_content_exists($id_agrega) {
+  return db_query('SELECT cid FROM {temp_map_content_id} WHERE proid = :proid', array(':proid' => $id_agrega))->fetchField();
+}

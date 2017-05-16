@@ -1,0 +1,183 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_section_notifications.features.field_instance.inc: n/a
+#  ag_section_notifications.views_default.inc: n/a
+#  ag_section_notifications.module: n/a
+#  ag_section_notifications.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2014-09-01 11:36+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: ag_section_notifications.features.field_instance.inc:720
+msgid "message_status"
+msgstr ""
+
+#: ag_section_notifications.features.field_instance.inc:721
+msgid "social_network_ref"
+msgstr ""
+
+#: ag_section_notifications.features.field_instance.inc:722
+msgid "target_users"
+msgstr ""
+
+#: ag_section_notifications.views_default.inc:99
+msgid "Defaults"
+msgstr ""
+
+#: ag_section_notifications.views_default.inc:100
+msgid "Mis notificaciones"
+msgstr ""
+
+#: ag_section_notifications.views_default.inc:101
+msgid "más"
+msgstr ""
+
+#: ag_section_notifications.views_default.inc:102
+msgid "Aplicar"
+msgstr ""
+
+#: ag_section_notifications.views_default.inc:103
+msgid "Reiniciar"
+msgstr ""
+
+#: ag_section_notifications.views_default.inc:104
+msgid "Ordenar por"
+msgstr ""
+
+#: ag_section_notifications.views_default.inc:105
+msgid "Asc"
+msgstr ""
+
+#: ag_section_notifications.views_default.inc:106
+msgid "Desc"
+msgstr ""
+
+#: ag_section_notifications.views_default.inc:107
+msgid "Elementos por página"
+msgstr ""
+
+#: ag_section_notifications.views_default.inc:108
+msgid "- Todos -"
+msgstr ""
+
+#: ag_section_notifications.views_default.inc:109
+msgid "Desplazamiento"
+msgstr ""
+
+#: ag_section_notifications.views_default.inc:110
+msgid "« primera"
+msgstr ""
+
+#: ag_section_notifications.views_default.inc:111
+msgid "‹ anterior"
+msgstr ""
+
+#: ag_section_notifications.views_default.inc:112
+msgid "siguiente ›"
+msgstr ""
+
+#: ag_section_notifications.views_default.inc:113
+msgid "última »"
+msgstr ""
+
+#: ag_section_notifications.views_default.inc:114
+msgid "No messages created yet."
+msgstr ""
+
+#: ag_section_notifications.views_default.inc:115
+msgid "Sello temporal"
+msgstr ""
+
+#: ag_section_notifications.views_default.inc:116
+msgid "Texto"
+msgstr ""
+
+#: ag_section_notifications.views_default.inc:117
+msgid "Todo(s)"
+msgstr ""
+
+#: ag_section_notifications.views_default.inc:118
+msgid "Panel de contenido"
+msgstr ""
+
+#: ag_section_notifications.views_default.inc:119
+msgid "Vista panel"
+msgstr ""
+
+#: ag_section_notifications.module:44
+msgid "The member request has been accepted"
+msgstr ""
+
+#: ag_section_notifications.module:49
+msgid "The member request has been deleted"
+msgstr ""
+
+#: ag_section_notifications.module:206
+msgid "User notifications block"
+msgstr ""
+
+#: ag_section_notifications.module:211
+msgid "User notifications types block"
+msgstr ""
+
+#: ag_section_notifications.module:232
+msgid "user notifications"
+msgstr ""
+
+#: ag_section_notifications.module:246
+msgid "Invitations"
+msgstr ""
+
+#: ag_section_notifications.module:276
+msgid "He wish to be a member of !community_link"
+msgstr ""
+
+#: ag_section_notifications.module:279
+msgid "Your request to !community_link has been sent"
+msgstr ""
+
+#: ag_section_notifications.module:283
+msgid "He invites you to !community_link"
+msgstr ""
+
+#: ag_section_notifications.module:287
+msgid "He has acepted the invitato to !community_link"
+msgstr ""
+
+#: ag_section_notifications.module:291
+msgid "He has deny the invitato to !community_link"
+msgstr ""
+
+#: ag_section_notifications.module:315;329
+msgid "Accept"
+msgstr ""
+
+#: ag_section_notifications.module:319;333
+msgid "Deny"
+msgstr ""
+
+#: ag_section_notifications.module:16
+msgid "Subscribe-unsubcribe notification"
+msgstr ""
+
+#: ag_section_notifications.info:0
+msgid "Ag section notifications"
+msgstr ""
+
+#: ag_section_notifications.info:0
+msgid "Agrega2"
+msgstr ""
+

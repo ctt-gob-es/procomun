@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest xmlns:lomes="http://ltsc.ieee.org/xsd/LOM"
+    xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_v1p3"
+    xmlns:imsss="http://www.imsglobal.org/xsd/imsss"
+    xmlns:adlseq="http://www.adlnet.org/xsd/adlseq_v1p3"
+    xmlns:adlnav="http://www.adlnet.org/xsd/adlnav_v1p3"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.imsglobal.org/xsd/imscp_v1p1"
+    xsi:schemaLocation="http://www.imsglobal.org/xsd/imscp_v1p1 imscp_v1p1.xsd http://ltsc.ieee.org/xsd/LOM lomCustom.xsd http://www.adlnet.org/xsd/adlcp_v1p3 adlcp_v1p3.xsd http://www.imsglobal.org/xsd/imsss imsss_v1p0.xsd http://www.adlnet.org/xsd/adlseq_v1p3 adlseq_v1p3.xsd http://www.adlnet.org/xsd/adlnav_v1p3 adlnav_v1p3.xsd" identifier="">
+    <metadata>
+        <schema>ADL SCORM</schema>
+        <schemaversion>2004 3rd Edition</schemaversion>
+        <lomes:lom>
+            <lomes:general uniqueElementName="general">
+                <lomes:identifier>
+			<lomes:catalog uniqueElementName="catalog">Procomún</lomes:catalog>
+			<lomes:entry uniqueElementName="entry"></lomes:entry>
+		</lomes:identifier>
+		<lomes:title uniqueElementName="title">
+                    <lomes:string language=""></lomes:string>
+                </lomes:title>
+		<lomes:language></lomes:language>
+		<lomes:description>
+		    <lomes:string language=""></lomes:string>
+		</lomes:description>
+                <lomes:aggregationLevel uniqueElementName="aggregationLevel">
+                    <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+                    <lomes:value uniqueElementName="value"></lomes:value>
+                </lomes:aggregationLevel>
+            </lomes:general>
+            <lomes:lifeCycle uniqueElementName="lifeCycle">
+                <lomes:contribute>
+					<lomes:role uniqueElementName="role">
+						<lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+				        	<lomes:value uniqueElementName="value"></lomes:value>
+					</lomes:role>
+					<lomes:entity></lomes:entity>
+					<lomes:date uniqueElementName="date">
+				        	<lomes:dateTime uniqueElementName="dateTime"></lomes:dateTime>
+			                <lomes:description>
+								<lomes:string></lomes:string>
+			                </lomes:description>
+					</lomes:date>
+				</lomes:contribute>
+            </lomes:lifeCycle>
+            <lomes:metaMetadata uniqueElementName="metaMetadata">
+                <lomes:metadataSchema>LOM-ESv1.0</lomes:metadataSchema>
+                <lomes:language></lomes:language>
+            </lomes:metaMetadata>
+            <lomes:technical uniqueElementName="technical">
+                <lomes:location></lomes:location>
+            </lomes:technical>
+            <lomes:educational>
+				<lomes:learningResourceType>
+					<lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+					<lomes:value uniqueElementName="value"></lomes:value>
+				</lomes:learningResourceType>
+				<lomes:intendedEndUserRole>
+					<lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+					<lomes:value uniqueElementName="value"></lomes:value>
+				</lomes:intendedEndUserRole>
+				<lomes:context>
+					<lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+					<lomes:value uniqueElementName="value"></lomes:value>
+				</lomes:context>
+				<lomes:cognitiveProcess>
+					<lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+					<lomes:value uniqueElementName="value"></lomes:value>
+				</lomes:cognitiveProcess>
+				<lomes:description>
+					<lomes:string language=""></lomes:string>
+				</lomes:description>
+				<lomes:language></lomes:language>
+            </lomes:educational>
+            <lomes:rights uniqueElementName="rights">
+                <lomes:copyrightAndOtherRestrictions uniqueElementName="copyrightAndOtherRestrictions">
+                    <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+                    <lomes:value uniqueElementName="value"></lomes:value>
+                </lomes:copyrightAndOtherRestrictions>
+                <lomes:access uniqueElementName="access">
+                    <lomes:accessType uniqueElementName="accessType">
+                        <lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+                        <lomes:value uniqueElementName="value"></lomes:value>
+                    </lomes:accessType>
+                    <lomes:description>
+                        <lomes:string></lomes:string>
+                    </lomes:description>
+                </lomes:access>
+            </lomes:rights>
+            <lomes:classification>
+			<lomes:purpose uniqueElementName="purpose">
+				<lomes:source uniqueElementName="source">LOM-ESv1.0</lomes:source>
+				<lomes:value uniqueElementName="value"></lomes:value>
+			</lomes:purpose>
+			<lomes:taxonPath>
+				<lomes:source uniqueElementName="source">
+					<lomes:string></lomes:string>
+				</lomes:source>
+				<lomes:taxon>
+					<lomes:id uniqueElementName="id"></lomes:id>
+					<lomes:entry>
+						<lomes:string></lomes:string>
+					</lomes:entry>
+				</lomes:taxon>
+			</lomes:taxonPath>
+		</lomes:classification>
+        </lomes:lom>
+    </metadata>
+    <organizations default="DEFAULT">
+        <organization
+            identifier="DEFAULT" structure="hierarchical">
+            <title>Tabla de contenido</title>
+            <item identifier="" identifierref="">
+                <title></title>
+            </item>
+        </organization>
+    </organizations>
+    <resources>
+        <resource identifier=""
+            type="webcontent" adlcp:scormType="asset" href="">
+            <file href=""/>
+        </resource>
+    </resources>
+</manifest>

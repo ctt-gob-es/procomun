@@ -1,0 +1,43 @@
+.item-list
+  .pager
+    margin-top: 20px
+    overflow: visible
+    li
+      display: inline-block
+      margin: 5px 15px
+      padding: 0
+    a
+      font-size: 14px
+      background: transparent
+      border: 0
+      padding: 0
+      &:hover
+        background: none
+        text-decoration: underline
+      &:focus
+        background: transparent
+    .pager-next,
+    .pager-last,
+    .pager-first,
+    .pager-previous
+      a
+        font-size: 25px
+        position: relative
+        top: 3px
+    .pager-current
+      color: $navy
+      border-bottom: 3px solid $green
+      padding: 0 5px 5px
+// Load more
+.item-list .pager-load-more
+  border-top: 1px dashed $gray
+  margin: 0
+  li.pager-next.first.last
+    margin: 0
+    padding: 0
+    a
+      background: transparent
+      display: block
+      font-size: 14px
+      top: 0
+      padding: 1em 1em

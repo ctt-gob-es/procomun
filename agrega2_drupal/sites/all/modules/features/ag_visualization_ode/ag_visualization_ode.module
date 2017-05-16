@@ -1,0 +1,2996 @@
+<?php
+/**
+ * @file
+ * Code for the ag_visualization_ode feature.
+ * Implements any hooks needed by ode content type.
+ */
+
+include_once 'ag_visualization_ode.features.inc';
+include_once 'ag_visualization_ode.widget.inc';
+include_once 'ag_visualization_ode.forms.inc';
+
+// The email's constant of the templates 'ode-detail.tpl.php' for error reports.
+define('EMAIL_ERROR_CONTACT', "meducacion@intef.educacion.es");
+
+/**
+ * Implements hook_menu().
+ */
+function ag_visualization_ode_menu() {
+  $items['ode/view/%ode'] = array(
+    'page callback' => 'ag_visualization_ode_detail_page_loaded_callback',
+    'page arguments' => array(2),
+    'access callback' => TRUE,
+  );
+
+  $items['ode/view/%ode/widget'] = array(
+    'page callback' => 'ag_visualization_ode_detail_widget_callback',
+    'page arguments' => array(2),
+    'access callback' => TRUE,
+    'delivery callback' => 'ag_visualization_ode_widget_delivery_callback',
+  );
+
+  $items['ode/flag/%/%/%ode_light_ids/%'] = array(
+    'title' => 'Flag',
+    'page callback' => 'ag_visualization_ode_flag_page',
+    'page arguments' => array(2, 3, 4, 5),
+    'access callback' => 'ode_user_flag_access',
+    'access arguments' => array(2, 3),
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['ode/og_share/share/%ode_light_node'] = array(
+    'title' => 'Share with your communities',
+    'description' => 'Allow share a content in your communities',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('og_share_share_form', 3, 'ode'),
+    'access arguments' => array('share og content'),
+    'file path' => drupal_get_path('module', 'og_share'),
+    'file' => 'og_share.forms.inc',
+  );
+
+  $items['ode/delete/%ode'] = array(
+    'title' => 'Delete resource confirmation',
+    'description' => 'Delete resource confirmation',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ode_delete_form', 2),
+    'access callback' => 'ag_visualization_ode_delete_access',
+    'access arguments' => array(2),
+    'file' => 'ag_visualization_ode.forms.inc',
+  );
+
+  $items['ode/comment/new/%ode_light_node'] = array(
+    'title' => 'Add new comment',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ag_comments_new_comment_form', 3),
+    'access arguments' => array('post comments'),
+  );
+
+  $items['ode/add'] = array(
+    'title' => 'Publish learning resource',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('publish_new_ode_form'),
+    'access arguments' => array('create ode content'),
+  );
+
+  $items['ode/certificate/%node/%'] = array(
+    'title' => 'Manage certificate ode',
+    'page callback' => 'ag_visualization_ode_manage_certificate',
+    'page arguments' => array(2, 3),
+    'access callback' => 'ag_visualization_ode_certificate_link_access',
+    'file' => 'includes/ag_visualization_ode.pages.inc',
+  );
+
+  $items['admin/config/ode'] = array(
+    'title' => 'Manage ode configuration',
+    'description' => 'General ode configuration.',
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('access administration pages'),
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system'),
+  );
+
+  $items['admin/config/ode/rating'] = array(
+    'title' => 'Manage ode rating notifications',
+    'description' => 'Manage ode rating values for notifications',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('notify_values_ode_form'),
+    'access arguments' => array('config ode rating'),
+    'file' => 'includes/ag_visualization_ode.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  // Custom callback for node author fullname autocomplete search.
+  $items['author/autocomplete/fullname'] = array(
+    'title' => 'Autocomplete user by name',
+    'page callback' => 'ag_visualization_ode_autocomplete_fullname',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'file' => 'includes/ag_visualization_ode.pages.inc',
+  );
+
+  // Custom callback for node author email autocomplete search.
+  $items['author/autocomplete/email'] = array(
+    'title' => 'Autocomplete user by email',
+    'page callback' => 'ag_visualization_ode_autocomplete_email',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'file' => 'includes/ag_visualization_ode.pages.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_og_permission().
+ */
+function ag_visualization_ode_permission() {
+  return array(
+    'ode certification' => array(
+      'title' => t('Ode certification'),
+      'description' => t('Allow ode certification'),
+    ),
+    'config ode rating' => array(
+      'title' => t('Config ode rating'),
+      'description' => t('Allow config ode rating notifications'),
+    ),
+  );
+}
+
+/*
+ * Custom access callback for chec access to flags
+ * @see  ode/flag/%/%/%ode_light_nid/% menu item:
+ */
+function ode_user_flag_access($action, $flag_name) {
+  $flag = flag_get_flag($flag_name);
+  return !empty($flag) ? $flag->user_access($action) : FALSE;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function ag_visualization_ode_theme($existing, $type, $theme, $path) {
+
+  return array(
+    'ode_detail' => array(
+      'template' => 'ode-detail',
+      'path' => $path . '/templates/',
+      'type' => 'theme',
+      'variables' => array(
+        'properties' => array(),
+        'node' => NULL,
+        'novelty_link' => NULL,
+      ),
+    ),
+    'ode_viewer_iframe' => array(
+      'template' => 'ode-viewer-iframe',
+      'path' => $path . '/templates/',
+      'type' => 'theme',
+      'variables' => array(
+        'properties' => array(),
+      ),
+    ),
+    'ode_widget' => array(
+      'template' => 'ode-widget',
+      'path' => $path . '/templates/',
+      'type' => 'theme',
+      'variables' => array(
+        'ode_id' => '',
+      ),
+    ),
+    'ode_visualization_widget_iframe' => array(
+      'template' => 'ode-visualization-widget-iframe',
+      'path' => $path . '/templates/',
+      'render element' => 'page'
+    ),
+    'rrss_dropdown_widget' => array(
+      'template' => 'rrss-dropdown-widget',
+      'path' => $path . '/templates/',
+      'variables' => array(
+        'links' => null,
+      ),
+    ),
+  );
+}
+
+/**
+ * Specific callback function for ode flagging. Ode should be loaded
+ * at this point as a node thanks to wildcard %ode_light_nid.
+ * Checks if node exists. Else, this function creates it.
+ */
+function ag_visualization_ode_flag_page($action, $flag_name, $item, $type = 'ajax') {
+  global $user;
+
+  //Check if a problem happened during ode load.
+  if (!isset($item['nid']) || !isset($item['id'])) {
+    drupal_set_message(t('Encountered an error while flagging the node.'), 'error');
+    $output = t("The content could not be updated.");
+    return $output;
+  }
+
+  //Safety needed? All of them are normal strings or numbers.
+  $action = check_plain($action);
+  $flag_name = check_plain($flag_name);
+  $item['nid'] = check_plain($item['nid']);
+  $item['id'] = check_plain($item['id']);
+  $type = check_plain($type);
+
+  //Mark content as flagged by this user.
+  flag($action, $flag_name, $item['nid'], $user);
+
+  if ($type == 'ajax') {
+    //Flag module can create html output for this flag.
+    $output = flag_create_link($flag_name, $item['nid']);
+
+    // See ajax_example_advanced.inc for more details on the available commands
+    // and how to use them.
+    $commands = array();
+    $css_selector = '#ode-' . $item['id'] . '.social-' . $flag_name . ' .social-replace';
+    $commands[] = ajax_command_replace($css_selector, $output);
+
+    //Change like number if it exists
+    $flags_number = flag_get_counts('node', $item['nid']);
+    $like_number = (isset($flags_number['like']) ? $flags_number['like'] : '0');
+    $commands[] = ajax_command_replace(".like-number-value", '<span class="like-number-value">' . $like_number . '</span>');
+
+    //Preparing ajax delivering
+    $page = array('#type' => 'ajax', '#commands' => $commands);
+    ajax_deliver($page);
+  }
+  else {
+    $output = t("The content was correctly updated.");
+    return $output;
+  }
+}
+
+/**
+ * Function to flag odes (existing in drupal or in solr) called by external apps/services
+ */
+function ag_visualization_ode_flag_external($action, $flag_name, $solr_id, $uid) {
+  //Array to return flagging status. 'status' needs TRUE or FALSE, and 'message' returns descripting text.
+  $validation = array();
+
+  // Load ode node if exists, else create it. Item has solrid as 'id' and 'nid'.
+  $item = ode_light_ids_load($solr_id);
+
+  //Check if parameters are empty.
+  if (empty($item) || !isset($item['nid'])) {
+    $validation['status'] = FALSE;
+    $validation['message'] = t('The selected resource could not be found.');
+    return $validation;
+  }
+
+  if (empty($action) || empty($flag_name)) {
+    $validation['status'] = FALSE;
+    $validation['message'] = t('Flag operation not allowed or correctly specified.');
+    return $validation;
+  }
+
+  if (empty($uid)) {
+    $validation['status'] = FALSE;
+    $validation['message'] = t('User identifier not specified.');
+    return $validation;
+  }
+
+  // Load user and flag
+  $user = user_load($uid);
+  $flag = flag($action, $flag_name, $item['nid'], $user);
+
+  // Check if flagging went wrong.
+  if (!$flag) {
+    $validation['status'] = FALSE;
+    $validation['message'] = t("Content could not be flagged. Flagging may be disabled, or user may lack permission.");
+    return $validation;
+  }
+
+  //If everything went okay.
+  $validation['status'] = TRUE;
+  $validation['message'] = t("The content was correctly updated.");
+  return $validation;
+}
+
+/**
+ * Implements %wildcard_load() to return ode where it may be needed in hook_menus.
+ */
+function ode_load($ode_id) {
+  return ag_visualization_ode_get_solr_ode($ode_id);
+}
+
+/**
+ * Implements %wildcard_load() to return ode where it may be needed in hook_menus.
+ * Only drupal needed fields are loaded from Solr.
+ */
+function ode_light_load($ode_id) {
+  //TODO: Depending on ws_client and orchestrator modules, we should request less info.
+  return ag_visualization_ode_get_solr_ode($ode_id);
+}
+
+/**
+ * Implements %wildcard_load() to return ode where it may be needed in hook_menus.
+ * Only drupal needed fields are loaded from Solr.
+ * SAVES these fields in Drupal and returns nid instead of ode.
+ * @return new node
+ */
+function ode_light_node_load($ode_id) {
+  $result = ode_light_ids_load($ode_id);
+  if (!empty($result) && isset($result['nid'])) {
+    $node = entity_load('node', array($result['nid']));
+    //There should be only one element.
+    $node = array_pop($node);
+    return $node;
+  }
+  else {
+    return NULL;
+  }
+}
+
+
+/**
+ * Implements %wildcard_load() to return ode where it may be needed in hook_menus.
+ * Only drupal needed fields are loaded from Solr.
+ * SAVES these fields in Drupal and returns nid instead of ode.
+ * @return array with 'nid' and ode_id as 'id'
+ */
+function ode_light_ids_load($ode_id) {
+  $node_nid = ag_visualization_ode_get_ode_if_exists($ode_id);
+
+  //Return array with nid and solrid.
+  $result = array('id' => $ode_id);
+
+  //Check if it exists already on drupal.
+  if ($node_nid) {
+    $result['nid'] = $node_nid;
+    return $result;
+  }
+  else {
+    //Get ode from solr and save it.
+    $ode = ag_visualization_ode_get_solr_ode($ode_id);
+    if (!empty($ode)) {
+      $nid = ag_visualization_ode_save($ode);
+    } else {
+      return NULL;
+    }
+
+    //Return created nid for flagging urls.
+    $result['nid'] = $nid;
+    return $result;
+  }
+}
+
+/**
+ * Implements %wildcard_load() to return ode where it may be needed in hook_menus.
+ * Same as previous nid load, but doesnt return ode_id.
+ */
+function ode_light_nid_load($ode_id) {
+  $result = ode_light_ids_load($ode_id);
+  if (isset($result['nid'])) {
+    return $result['nid'];
+  }
+  else {
+    return NULL;
+  }
+}
+
+/**
+ * Implements page_callback to visualize ode details.
+ */
+function ag_visualization_ode_detail_page_loaded_callback($ode) {
+
+  $validation = _ag_visualizer_validate_params($ode);
+
+  // Url for search by ODE.
+  $search_ode = l(t('Learning resource'), 'ode-search?type=LEARNING_RESOURCE&f[0]=type%3A"ODE"');
+
+  // Add breadcrumbs,
+  $breadcrumbs = drupal_get_breadcrumb();
+  $breadcrumbs[] = $search_ode;
+  if (!$validation['ok']) {
+    $breadcrumbs[] = t('Resource not found');
+    drupal_set_breadcrumb($breadcrumbs);
+    return $validation['message'];
+  } else {
+    $breadcrumbs[] = (isset($ode['generalTitleStr'])) ? $ode['generalTitleStr']
+      : t('Untitled') ;
+    drupal_set_breadcrumb($breadcrumbs);
+  }
+
+  // Add ajax to use social buttons.
+  drupal_add_library('system', 'drupal.ajax');
+  drupal_add_js('misc/ajax.js');
+
+  // Added this requested change in order to fix problems before production: Ode will now be saved as soon as it is seen.
+  ag_visualization_ode_save($ode);
+
+  // Check if node exists, to load comments, number of visits, etc.
+  $node_nid = ag_visualization_ode_get_ode_if_exists($ode['id']);
+
+  //For visits stats not check if node exists
+  $user = $GLOBALS['user']->uid;
+  $total_visits = ag_visualization_ode_total_visits_ode($node_nid, $ode['id']);
+
+  if ($node_nid) {
+    $node = entity_load('node', array($node_nid));
+    //There should be only one element.
+    $node = array_pop($node);
+
+    //Publish node again in drupal if it is published in solr.
+    if (isset($node->status) && $node->status == 0 && isset($ode['published']) && $ode['published'] == 1) {
+      try {
+        // Edit special values with a wrapper.
+        $ewrapper = entity_metadata_wrapper('node', $node);
+
+        //Ode must be published if it is published in solr.
+        $ewrapper->status->set(1);
+        $ewrapper->save();
+      }
+      catch (EntityMetadataWrapperException $e) {
+        //Ignore if error happened. Watchdog logs it.
+      }
+    }
+
+    // Get the counts of social actions.
+    $like_count = flag_get_counts('node', $node_nid);
+
+    //Render comments
+    $comments = comment_node_page_additions($node);
+    $comments_rendered = render($comments);
+  }
+
+  // Add recommended content block
+  $block = block_load('recommendations', 'recommend_content');
+  $recomended_block = _block_get_renderable_array(_block_render_blocks(array($block)));
+
+  // Add interlinking process block.
+  $block = block_load('interlinking_process', 'interlinking_process_block_info');
+  $interlinking_process = _block_get_renderable_array(_block_render_blocks(array($block)));
+
+  // Build link to mark content as novelty or not.
+  if (user_access('administer content')) {
+    $link = ag_general_generate_novelty_status_link($node);
+  }
+
+  // Pass elements to render content.
+  return theme('ode_detail', array(
+    'properties' => $ode,
+    'node' => (isset($node) ? $node : ''),
+    'novelty_link' => (isset($link)) ? $link : '',
+    'recomended_block' => $recomended_block,
+    'interlinking_process' => $interlinking_process,
+    //Add 1 to total visits because insert process is inside iframe and is loaded after count total visits
+    'page_views' => !empty($total_visits) ? ($total_visits + 1) : '1',
+    'like_count' => !empty($like_count['like']) ? $like_count['like'] : '0',
+    'comments_rendered' => !empty($comments_rendered) ? $comments_rendered : '',
+  ));
+}
+
+/**
+ * Helper for input validation from user
+ *
+ * @param $ode array input parameter
+ *
+ * @return array with 'ok' and 'message' properties indicating if there is any error in the provided info
+ */
+function _ag_visualizer_validate_params($ode) {
+
+  $validation = array(
+    'ok' => TRUE,
+    'message' => '',
+  );
+
+  // If ode is not set, it came with null value.
+  // Check as well if it has no identifier.
+  if (!isset($ode)) {
+    drupal_set_message(t('Encountered an error while connecting to external service.'), 'error');
+    $validation['ok'] = FALSE;
+    $validation['message'] = t('The selected resource could not be found.');
+  }
+  elseif (!isset($ode['id']) || !isset($ode['type']) || $ode['type'] != 'ODE') {
+    drupal_set_title(t('Resource not found'));
+    $validation['ok'] = FALSE;
+    $validation['message'] = t('The selected resource could not be found.');
+  }
+  elseif (empty($ode['published'])) {
+    drupal_set_title(t('Resource not found'));
+    $validation['ok'] = FALSE;
+    $validation['message'] = t('The selected resource could not be found.');
+
+    //Create item to pass function to despublish ode
+    $item = array();
+    $item['id'] = !empty($ode['id']) ? $ode['id'] : '';
+    $item['idDrupal'] = !empty($ode['idDrupal']) ? $ode['idDrupal'] : '';
+    ag_visualization_ode_process_unpublished_ode($item);
+  }
+
+  return $validation;
+}
+
+/**
+ * Implementation of hook_preprocess_HOOK().
+ * Needed to process hierarchical fields to a template-friendly format.
+ */
+function ag_visualization_ode_preprocess_ode_detail(&$vars) {
+  _change_license_description($vars['properties']);
+
+  $properties = & $vars['properties'];
+
+  // Split all tags with commas. Sometimes solr returns one long tag with lots of them.
+  if (isset($properties['labelsStr'])) {
+    $properties['labelsStr'] = _split_tags($properties['labelsStr']);
+  }
+  if (isset($properties['keywords'])) {
+    $properties['keywords'] = _split_tags($properties['keywords']);
+  }
+  if (isset($properties['generalKeywordStr'])) {
+    $properties['generalKeywordStr'] = _split_tags($properties['generalKeywordStr']);
+  }
+
+  // Change the country code by the country language name
+  $countries_field = field_info_field('field_educational_language');
+  $countries = list_allowed_values($countries_field);
+  $countries['x-none'] = t('None');
+  $contry_initial = $properties['educationalLanguageStr'];
+  $properties['educationalLanguageStr'][0] = $countries[$contry_initial[0]];
+
+  // If no thumbnail image insert an image by default. Just like nexus preprocess sarnia_view_ode
+  if (empty($properties['preview'])) {
+    $default_image = drupal_get_path('theme', 'nexus') . '/images/recursos_default.jpg';
+    $properties['default_image'] = theme('image', array(
+      'path' => $default_image,
+      'alt' => !empty($properties['title']) ? $properties['title'] : t('default image')
+    ));
+  }
+
+  /* @todo For style testing: delete when we actually receive this info */
+//  $properties['user_picture'] = '<img src="/sites/all/themes/nexus/images/tmp/intef.jpg" />';
+//  $properties['publicationDate'] = time();
+//  $properties['author'] = l('INTEF', '<front>'); /* this should be converted to link in here */
+  /* End for testing */
+
+  $vars['ode_widget'] = _get_ode_widget_code($properties['id']);
+
+  //Remove same people from contributors. Search template does not need this function.
+  ag_visualization_ode_remove_wrong_contributors($vars);
+
+  //Remove cau.agrega and other client weird requests.
+  ag_visualization_ode_remove_wrong_authors($vars);
+
+  // Extract author information once and for all.
+  ag_visualization_ode_extract_author($vars);
+
+  //Get ode publisher from services
+  //$username_text = ag_visualization_ode_get_author($properties);
+  //$properties['authorStr'] = $username_text;
+
+  // New way for get publicator from publicatorStr / publicatorEmailStr solr
+  // fields.
+  $username_text = ag_visualization_ode_new_get_publicator($properties, 'ode-detail');
+  $properties['authorStr'] = $username_text;
+
+  //Filter lifecycle to show only authors in ode detail.
+  $properties['lifecycleAuthors'] = ag_visualization_ode_filter_authors_from_lifecycle($properties['lifecycleContributeStr']);
+
+  // Normalize the date of publication (d/m/Y).
+  if (!empty($properties['publicationDate'])) {
+    $date = strtotime($properties['publicationDate']);
+    $properties['publicationDate_processed'] = date('d/m/Y', $date);
+  }
+
+  // Normalize keywords for ode detail.
+  if (isset($properties['generalKeywordStr'])) {
+    $properties['generalKeywordStr'] = array_filter($properties['generalKeywordStr']);
+  }
+
+  // Normalize tags for ode detail.
+  if (isset($properties['labelsStr'])) {
+    $properties['labelsStr'] = array_filter($properties['labelsStr']);
+  }
+
+  //New field knowledgeArea
+  if (isset($properties['knowledgeArea'])) {
+    _build_tags_from_taxonomy($properties, 'knowledgeArea', array('type' => 'LEARNING_RESOURCE'), 'knowledgeAreaTags', 'knowledgearea');
+  }
+  //New field learningContext
+  if (isset($properties['learningContext'])) {
+    _build_tags_from_taxonomy($properties, 'learningContext', array('type' => 'LEARNING_RESOURCE'), 'learningContextTags', 'learningcontext');
+  }
+  //New field resourceType
+  if (isset($properties['resourceType'])) {
+    _build_tags_from_taxonomy($properties, 'resourceType', array('type' => 'LEARNING_RESOURCE'), 'resourceTypeTags', 'recurso_educativo');
+  }
+
+
+  // Add social networks.
+  if (module_exists('service_links')) {
+    $render_service_links = array(
+      '#theme' => 'item_list',
+      '#items' => service_links_render(NULL),
+      '#attributes' => array(
+        'html' => TRUE,
+        'class' => array('services_link'),
+      ),
+    );
+
+    $vars['properties']['service_links']['links'] = $render_service_links;
+    $vars['rrss'] = theme('rrss_dropdown_widget', array('links' => $vars['properties']['service_links']));
+  }
+
+  // Calculate number of votes.
+  if (isset($vars['node']->nid)) {
+    $votes = fivestar_get_votes('node', $vars['node']->nid, 'vote', NULL);
+
+    $numbers_votes = isset($votes['count']['value']) ? $votes['count']['value'] : '0';
+    $properties['numbers_votes'] = $numbers_votes;
+  }
+
+  //Add certified link for icon
+  if (!empty($vars['node'])) {
+    $wrapper = entity_metadata_wrapper('node', $vars['node']);
+    $certified = $wrapper->field_certified->raw();
+
+    if (!empty($certified)) {
+      $vars['certified'] = l(t('Quality accredited by INTEF') , 'javascript:', array('external' => TRUE, 'attributes' => array('title' => t('Quality accredited by INTEF'))));
+    }
+
+    //Set link to certificate ode
+    $vars['certificate_link'] = ag_visualization_ode_certificate_link($vars['node']);
+  }
+
+  //Add delete button
+  //Check if user has permission to delete ode
+  if (!empty($properties['mecIdentifierStr']) && ag_visualization_ode_delete_access($properties)) {
+    $vars['delete_link'] = l(t('Delete resource'), 'ode/delete/' . $properties['id'], array('query' => array('destination' => current_path())));
+  }
+
+  //Process all taxonomy fields that may need hierarchical structure
+  // Classification Accesibility - ODE ONLY
+  ag_visualization_ode_process_taxonomies($vars, 'classificationAccessibility', array(
+    0 => 'classificationAccessibility1',
+    1 => 'classificationAccessibility2',
+    2 => 'classificationAccessibility3',
+    3 => 'classificationAccessibility4',
+  ), FALSE, TRUE, 'accesibilidad');
+
+  // Classification competency - ODE ONLY
+  ag_visualization_ode_process_taxonomies($vars, 'classificationCompetency', array(
+    0 => 'classificationCompetency1',
+    1 => 'classificationCompetency2',
+  ), FALSE, TRUE, 'competencia');
+
+  //FOR NOW, OLD CATEGORIES WON'T BE PRINTED
+  // Classification discipline - ODE & LEARNING RESOURCE
+  /*ag_visualization_ode_process_taxonomies($vars, 'classificationDiscipline', array(
+      0 => 'classificationDiscipline1',
+      1 => 'classificationDiscipline2',
+      2 => 'classificationDiscipline3',
+      3 => 'classificationDiscipline4',
+  ), FALSE, FALSE);
+
+  // Classification educational level.  ODE & LEARNING RESOURCE
+  ag_visualization_ode_process_taxonomies($vars, 'classificationEducationalLevel', array(
+      0 => 'classificationEducationalLevel1',
+      1 => 'classificationEducationalLevel2',
+      2 => 'classificationEducationalLevel3',
+      3 => 'classificationEducationalLevel4',
+      4 => 'classificationEducationalLevel5',
+      5 => 'classificationEducationalLevel6',
+    ), FALSE, FALSE);*/
+
+
+  //Translate ALL other taxonomy terms in other fields not hierarchical. This function only translates at depth 1.
+  //Educational resource type
+  if (isset($properties['educationalLearningResourceTypeStr'])) {
+    ag_visualization_ode_translate_terms($properties['educationalLearningResourceTypeStr'], 'en', 'recurso_educativo');
+  }
+  //License universal or not
+  if (isset($properties['rightsAccessStr'])) {
+    ag_visualization_ode_translate_terms($properties['rightsAccessStr'], 'en', 'tipo_de_licencia');
+  }
+}
+
+
+/**
+ * Implementation of hook_preprocess_HOOK().
+ * Needed to process search sarnia templates, without changing any more code in nexus.
+ */
+function ag_visualization_ode_preprocess_sarnia_view_ode(&$vars) {
+  // TODO: remove wrong authors logic comment for ode search.
+  //Remove same people from contributors. Search template does not need this function.
+  //ag_visualization_ode_remove_wrong_contributors($vars);
+
+  //Remove cau.agrega and other client weird requests.
+  //ag_visualization_ode_remove_wrong_authors($vars);
+
+  // Extract author information once and for all.
+  //ag_visualization_ode_extract_author($vars);
+}
+
+/**
+ * Black list of users that need to be replaced by their organization.
+ * This should have been done by queries to solr somehow, and correcting that data.
+ */
+function ag_visualization_ode_get_wrong_authors() {
+  //Check organizations parse
+  $org_names = ag_visualization_ode_organizations_cached();
+
+  $parse_authors = array();
+
+  return ($org_names+$parse_authors);
+}
+
+/**
+ * Remove from lifecycleContributeStr the string cau.agrega and change for INTEF.
+ * By client request.
+ */
+function ag_visualization_ode_remove_wrong_authors(&$vars) {
+  $properties = & $vars['properties'];
+  //Forgive me
+  $authors_to_remove = ag_visualization_ode_get_wrong_authors();
+
+  //FIX: Client requested no "cau.agrega" string must be shown, even if it is real author. Weird.
+  if (isset($properties['authorStr'])) {
+    //Forgive me
+    foreach ($authors_to_remove as $subkey => $subvalue) {
+      if ($properties['authorStr'] == $subkey) {
+        $properties['authorStr'] = $subvalue;
+      }
+      else {
+        $properties['authorStr'] = str_replace($subkey . ' ', $subvalue, $properties['authorStr']);
+      }
+    }
+
+    //Space in string is needed to avoid replacing mails.
+    $properties['authorStr'] = str_replace('cau.agrega ', 'INTEF ', $properties['authorStr']);
+
+    //Remove any email domain
+    $properties['authorStr'] = ag_visualization_ode_remove_emails($properties['authorStr']);
+
+    //In case no vcard is present and it matches, modify completely.
+    if ($properties['authorStr'] == 'cau.agrega') {
+      $properties['authorStr'] = 'INTEF';
+    }
+  }
+
+}
+
+/**
+ * Remove from lifecycleContributeStr the string cau.agrega and change for INTEF.
+ * By client request.
+ */
+function ag_visualization_ode_remove_wrong_contributors(&$vars) {
+  $properties = & $vars['properties'];
+
+  //Forgive me
+  $authors_to_remove = ag_visualization_ode_get_wrong_authors();
+
+  //FIX: Same fix for cau.agrega in contributions.
+  if (isset($properties['lifecycleContributeStr']) && is_array($properties['lifecycleContributeStr'])) {
+    foreach($properties['lifecycleContributeStr'] as $key => $value) {
+      //Space in string is needed to avoid replacing mails.
+      $properties['lifecycleContributeStr'][$key] = str_replace('cau.agrega ', 'INTEF ', $value);
+
+      //There should be a better way, but client requested to remove these users.
+      foreach ($authors_to_remove as $subkey => $subvalue) {
+        $properties['lifecycleContributeStr'][$key] = str_replace($subkey . ' ', $subvalue, $properties['lifecycleContributeStr'][$key]);
+      }
+
+      //In case no vcard is present and it matches, modify completely.
+      if ($value == 'cau.agrega') {
+        $properties['lifecycleContributeStr'][$key] = 'INTEF';
+      }
+
+      //Remove any email domain. At the end, once sustitutions worked.
+      $properties['lifecycleContributeStr'][$key] = ag_visualization_ode_remove_emails($properties['lifecycleContributeStr'][$key]);
+
+      //There should be a better way, but client requested to remove these users.
+      foreach ($authors_to_remove as $subkey => $subvalue) {
+        $properties['lifecycleContributeStr'][$key] = str_replace($subkey . ' ', $subvalue, $properties['lifecycleContributeStr'][$key]);
+      }
+    }
+  }
+}
+
+/**
+ * Remove from a text any email domains
+ */
+function ag_visualization_ode_remove_emails($string) {
+  //Remove any email domain
+  return preg_replace("/(.*)@[\w\.]*?\sEMAIL/", "$1  EMAIL", $string);
+}
+
+/**
+ * Extracts author from ode data, even if it doesnt exists, and removing undesired authors by client.
+ */
+function ag_visualization_ode_extract_author(&$vars) {
+  $properties = & $vars['properties'];
+
+  //CASE ZERO: Array with empty first position from solr. Remove this wrong array.
+  if (isset($properties['authorStr'][0]) && empty($properties['authorStr'][0])) {
+    unset($properties['authorStr']);
+  }
+  elseif (isset($properties['authorStr'][0]) && !empty($properties['authorStr'][0])){
+    $properties['oldAuthor'] = $properties['authorStr'][0];
+  }
+
+  //FIRST PRIORITY - SPECIAL CASE: If ODE comes from an external source (Junta de Andalucia, Madrid, Euskadi), then show that name.
+  if (isset($vars['properties']['odeNode'])) {
+    $path = $vars['properties']['odeNode'];
+  }
+  else {
+    //Else, use normal field technicalLocationStr.
+    if (isset($properties['technicalLocationStr'][0]) && !empty($properties['technicalLocationStr'][0])) {
+      $path = trim($properties['technicalLocationStr'][0], '/');
+    }
+  }
+
+  //If previous two checks for node location (regional) were successful, get author.
+  $regional_name = ag_visualization_ode_get_regional_name_from_url($path);
+  if (!empty($regional_name)) {
+    $vars['properties']['authorStr'] = $regional_name;
+    return TRUE;
+  }
+
+  //Case author is empty, lets check lifecycle field to get original author (oldest one). More priority than original authorStr.
+  //Only if no contribution is set, will this code continue to use original AuthorStr.
+  if (isset($vars['properties']['lifecycleContributeStr'])) {
+    $most_recent_publisher = ag_visualization_ode_extract_author_from_lifecycle($vars['properties']['lifecycleContributeStr']);
+    if (!empty($most_recent_publisher)) {
+      $vars['properties']['authorStr'] = $most_recent_publisher;
+      return TRUE;
+    }
+  }
+
+  //VCARD format if author is an array or not empty. Try to match regexp and get user name.
+  //TODO: Future requirements ask for multiple authors. For now, just one, in array format.
+  if (!empty($properties['authorStr']) && is_array($properties['authorStr'])) {
+    preg_match("/(?P<begin>FN:)(.*)(?P<end>EMAIL)/", $properties['authorStr'][0], $author);
+    if ($author) {
+      $properties['authorStr'] = trim($author['2']);
+      return TRUE;
+    }
+  }
+  elseif (!empty($properties['authorStr'])) {
+    preg_match("/(?P<begin>FN:)(.*)(?P<end>EMAIL)/", $properties['authorStr'], $author);
+    if ($author) {
+      $properties['authorStr'] = trim($author['2']);
+      return TRUE;
+    }
+  }
+
+  // Case it's an array! No VCARD format or this code would have stopped by now.
+  // Last possibility. Show email.
+  if (isset($vars['properties']['oldAuthor'])) {
+    $vars['properties']['authorStr'] = $vars['properties']['oldAuthor'];
+    return TRUE;
+  }
+
+  return FALSE;
+}
+
+/**
+ * Extract oldest author, else, oldest publisher from vcards.
+ */
+function ag_visualization_ode_extract_author_from_lifecycle($lifecycle) {
+  $temp_author = '';
+  $is_author = FALSE;
+  $temp_timestamp = PHP_INT_MAX;
+
+  foreach ($lifecycle as $candidate_info) {
+    $info = explode('##', $candidate_info);
+
+    //Get fields.
+    $role = isset($info[0]) ? $info[0] : '';
+    $vcard = isset($info[1]) ? $info[1] : '';
+    $date_text = isset($info[2]) ? $info[2] : '';
+    $date_type = isset($info[3]) ? $info[3] : '';
+
+    //Get author name.
+    if (!empty($vcard)) {
+      $author = ag_visualization_ode_parse_vcard_for_author($vcard);
+    }
+    else {
+      $author = '';
+    }
+
+    $timestamp = strtotime($date_text);
+
+    //If no temporary author is defined, this one will be chosen.
+    if (empty($temp_author)) {
+      $temp_timestamp = $timestamp;
+      $temp_author = trim($author);
+      $is_author = ($role == 'author');
+      continue;
+    }
+
+    //Publisher replaces publisher if it is newer publication. Less relevant than author. With two publishers same timestamp, existing one prevails.
+    if ($role == 'publisher' && $is_author == FALSE && $timestamp > $temp_timestamp) {
+      $temp_timestamp = $timestamp;
+      $temp_author = trim($author);
+      $is_author = ($role == 'author');
+      continue;
+    }
+
+    //If it is an author, inmmediately replaces publishers, and other authors. No timestamp comparison. Last position wins.
+    if ($role == 'author') {
+      $temp_timestamp = $timestamp;
+      $temp_author = trim($author);
+      $is_author = ($role == 'author');
+      continue;
+    }
+  }
+
+  if(!empty($temp_author)) {
+    $authors_to_remove = ag_visualization_ode_get_wrong_authors();
+    foreach ($authors_to_remove as $subkey => $subvalue) {
+      if ($temp_author == trim($subkey)) {
+        $temp_author = $subvalue;
+      }
+      else {
+        continue;
+      }
+    }
+  }
+
+  //Ensure it is correctly visible. Can not be longer than X characters, for example, a list of authors will be truncated.
+  $temp_author = truncate_utf8($temp_author, 60, TRUE, TRUE);
+
+  return $temp_author;
+}
+
+/**
+ * Query authoring service to get ODE author, in terms of regional entity that uploaded it.
+ * Same priority as technicalLocationStr.
+ */
+function ag_visualization_ode_query_regional_node_author($mec_identifier, $language) {
+  $orch_authoring = new OS_orchestrator_authoring();
+  $result = $orch_authoring->getOdeAuthor($mec_identifier, $language);
+
+  if (isset($result[0]) && $result[0] && isset($result[1]['httpResponseCode']) && $result[1]['httpResponseCode'] == 200 && isset($result[1]['message'])) {
+    return $result[1]['message'];
+  }
+  else {
+    return '';
+  }
+}
+
+
+/**
+ * Same instructions as used in nexus_template to extract an author name from an vcard. Not an email.
+ */
+function ag_visualization_ode_parse_vcard_for_author($vcard) {
+  if ($vcard !== FALSE) {
+    preg_match("/(?P<begin>FN:)(.*)(?P<end>EMAIL)/", $vcard, $author);
+    //Doesnt match, then it doesnt have vcard format. Template expects second position, so we need array [2] fulfilled.
+
+    if (isset($author['2'])) {
+      $result = $author['2'];
+    }
+    else {
+      $result = '';
+    }
+  }
+  else {
+    $result = '';
+  }
+  return $result;
+}
+
+/**
+ * Same instructions as used to extract an author. Now get mail from an vcard.
+ */
+function ag_visualization_ode_parse_vcard_for_mail($vcard) {
+  if ($vcard !== FALSE) {
+    preg_match("/EMAIL;TYPE=INTERNET:(.*?)\s/", $vcard, $author);
+    //Doesnt match, then it doesnt have vcard format. Template expects second position, so we need array [2] fulfilled.
+    if (isset($author['1'])) {
+      $result = $author['1'];
+    }
+    else {
+      $result = '';
+    }
+  }
+  else {
+    $result = '';
+  }
+  return $result;
+}
+
+/**
+ * Same instructions as used to extract an author. Now get mail from an vcard.
+ */
+function ag_visualization_ode_parse_vcard_for_organization($vcard) {
+  if ($vcard !== FALSE) {
+    preg_match("/ORG:(.*)\sEND:VCARD/", $vcard, $author);
+    //Doesnt match, then it doesnt have vcard format. Template expects second position, so we need array [2] fulfilled.
+    if (isset($author['1'])) {
+      $result = $author['1'];
+    }
+    else {
+      $result = '';
+    }
+  }
+  else {
+    $result = '';
+  }
+  return $result;
+}
+
+/**
+ * Extract from lifecycle only contributions of author roles.
+ *
+ * @param $lifecycle
+ *
+ * @return array
+ */
+function ag_visualization_ode_filter_authors_from_lifecycle($lifecycle) {
+  $authors = array();
+
+  foreach ($lifecycle as $candidate_info) {
+    $info = explode('##', $candidate_info);
+
+    // Get fields.
+    $role = isset($info[0]) ? $info[0] : '';
+    $vcard = isset($info[1]) ? $info[1] : '';
+    $date_text = isset($info[2]) ? $info[2] : '';
+    $date_type = isset($info[3]) ? $info[3] : '';
+
+    // Get author name.
+    if ($role == 'author') {
+      $temp_author = ag_visualization_ode_parse_vcard_for_author($vcard);
+      // Check if author is registered to show profile link.
+      $author = callback_get_user_data_by_full_name($temp_author, array('uid'));
+      if (!empty($author)) {
+        $authors[] = l($author->full_name,"profile/{$author->uid}/public");
+      }
+      else {
+        $authors[] = isset($temp_author) ? $temp_author : t('Unnamed');
+      }
+    }
+    else {
+      continue;
+    }
+  }
+
+  return $authors;
+}
+
+/**
+ * @param  $ode ODE.
+ * @param  $fields
+ *         ODE Classification.
+ * @return $result
+ *         Resulting this unordered structure: Array(termId => termLabel).
+ *
+ */
+function ag_visualization_ode_process_taxonomy_fields($ode, $fields = array()) {
+  // Empty parameters.
+  if (empty($fields)) {
+    return array();
+  }
+
+  foreach ($fields as $key => $value) {
+    // Get fields from ode.
+    $aux_keys = (isset($ode[$value]) ? $ode[$value] : array());
+    foreach ($aux_keys as $k => $v) {
+      if (!empty($v)) {
+        $keys[] = $v;
+      }
+    }
+
+    // Get fields labels from ode.
+    $aux_names = (isset($ode[$value . 'Label']) ? $ode[$value . 'Label'] : array());
+    foreach ($aux_names as $k => $v) {
+      if (!empty($v)) {
+        $names[] = $v;
+      }
+    }
+
+  }
+
+  // Combine arrays of keys and values.
+  if (!empty($keys) && !empty($names)) {
+    $result = array_combine($keys, $names);
+  }
+
+  // Result should comply with this structure: Array(termId => termLabel).
+  return (!empty($result)) ? $result : NULL;
+}
+
+/**
+ * Receives a list of fields from theme variables and field name, to process them
+ * as a matrix ant turn it into a tree or simple list, to print with theme_item_list.
+ * Outputs: List of links to render + Tree structure as a list
+ *          following theme_item_list format.
+ * @param  $vars Theme variables to write two new fields on it for template.
+ * @param  $field_name ODE field_name as key for new fields.
+ * @param  $fields ODE Taxonomy levels. All of them must have same size, composing a matrix.
+ */
+function ag_visualization_ode_process_taxonomies(&$vars, $field_name, $fields = array(), $facet = FALSE, $ode_field = FALSE, $vocabulary_name = '') {
+  // Empty parameters.
+  if (empty($fields)) {
+    return array();
+  }
+
+  //Check if specified fields exist in template variables.
+  foreach ($fields as $key => $value) {
+    if (!isset($vars['properties'][$value])) {
+      unset($fields[$key]);
+    }
+  }
+
+  // If no field exists on template, or first level is not available, this field won't be processed.
+  if (empty($fields) || !isset($vars['properties'][$fields[0]])) {
+    return array();
+  }
+
+  //Number of columns and rows
+  $num_limit = count($vars['properties'][$fields[0]]);
+  $num_rows = count($fields);
+  //Variable for render result
+  $render_items = array();
+  //Variable to store tree structure
+  $tree = array();
+
+  //Process initial matrix to render every taxonomy as a link.
+  //Outputs: List of links to render + Tree structure as a list
+  //         following theme_item_list format.
+  for ($i = 0; $i < $num_limit; $i++) {
+    //Store parents to use as key.
+    //Format: key '56' is father of key '56,45'.
+    //key '56,45' is father of '56,45,66' and '56,45,67'
+    $parents = array();
+
+    //Keeps a pointer to current branch of tree.
+    $tree_pointer = &$tree;
+
+    foreach ($fields as $key => $value) {
+      //Get taxonomy identifier
+      $tid = $vars['properties'][$value][$i];
+
+      //Get label
+      if (isset($vars['properties'][$value . 'Label'][$i])) {
+        $term_name = $vars['properties'][$value . 'Label'][$i];
+      }
+
+      //If there is neither tid nor label, get next one
+      if (!$term_name || !$tid) {
+        continue;
+      }
+
+      //Key formed by parents and current tid
+      $new_key = implode(',', array_merge($parents, array($tid)));
+
+      //LIST RENDERING MODE
+      //-Prepare CSS classes:
+      $classes = $parents;
+      array_walk($classes,"ag_visualization_ode_add_string_prefix");
+      $classes[] = 'level-' . $key;
+
+      //Facets options
+      $options = array('query' => array(
+        'type' => 'LEARNING_RESOURCE',
+        'f[0]' => $value . 'Label' . ':"' . $term_name . '"',));
+      //Add type facet if field is only for ode.
+      if ($ode_field) {
+        $options['query']['f[1]'] = 'type:"ODE"';
+      }
+
+      //-Create <li> item if it doesnt exists:
+      if (!isset($render_items[$new_key])) {
+
+        $render_item = array();
+        $render_item['data'] = ($facet ? l(t($term_name), 'ode-search' , $options) : ag_visualization_ode_i18n_translate_term_cached($term_name, 'es', $vocabulary_name));
+        $render_item['id'] = 'term-' . $tid;
+        $render_item['class'] = $classes;
+
+        $render_items[$new_key] = $render_item;
+      }
+
+
+      //TREE MODE - Add element to tree and increase pointer depth.
+      //-Create processed tree, only if key is new.
+      if (!isset($tree_pointer[$new_key])) {
+        $tree_pointer[$new_key]['children'] = array();
+        $tree_pointer[$new_key]['data'] = ($facet ? l(t($term_name), 'ode-search' , $options) : ag_visualization_ode_i18n_translate_term_cached($term_name, 'es', $vocabulary_name));
+        $tree_pointer[$new_key]['id'] = 'term-' . $tid;
+        //$tree_pointer[$new_key]['class'] = $classes;
+      }
+
+      //-Update pointer depth
+      $tree_pointer = &$tree_pointer[$new_key]['children'];
+
+
+      //FINAL: Add to next step
+      $parents[] = $tid;
+    }
+  }
+
+  //Finally, call theme_item_list with both tree structure and list structure
+  //and store it in two new fields in template.
+  $type = 'ul';
+
+  $vars['properties'][$field_name . 'Tree'] = theme_item_list(array('items' => $tree, 'title' => '', 'type' => $type, 'attributes' => array()));
+  $vars['properties'][$field_name . 'Render'] = theme_item_list(array('items' => $render_items, 'title' => '', 'type' => $type, 'attributes' => array()));
+}
+
+/**
+ * Used to concatenate the string "term" to create human readable classses
+ */
+function ag_visualization_ode_add_string_prefix(&$value,$key) {
+  $value = "term-" . $value;
+}
+
+/**
+ * Function to use and save ode as new content type when specific cases occur:
+ * Set as favorite, set as liked, shared in local networks and others.
+ */
+function ag_visualization_ode_save($ode) {
+  global $user;
+
+  //Save ode only for authenticated users. Anonymous users visits will be registered in separated table
+  if ($user->uid == 0) {
+    return;
+  }
+
+  //Save ode only if it is correctly identificated
+  if (!isset($ode['id'])) {
+    return;
+  }
+
+  //Check if it is an ode.
+  if (!isset($ode['type']) || $ode['type'] != 'ODE') {
+    return;
+  }
+
+  //Check if ode exists, then, it won't be created again.
+  if ($existing_nid = ag_visualization_ode_get_ode_if_exists($ode)) {
+    return $existing_nid;
+  }
+
+  // Get publisher user data if it is not defined
+  if (!isset($ode['uid_author'])) {
+    $user_data = ag_visualization_ode_get_publisher($ode['mecIdentifierStr']);
+
+    if (!empty($user_data['uid'])) {
+      $ode['uid_author'] = $user_data['uid'];
+    }
+    else {
+      //If publisher is empty force intef publisher
+      $intef_uid = ag_visualization_get_organization_uid('intef');
+      if (!empty($intef_uid->uid)) {
+        $ode['uid_author'] = $intef_uid->uid;
+      }
+      else {
+        $ode['uid_author'] = 1;
+      }
+    }
+  }
+
+  //Basic node values
+  //TODO: Change user if exists in the platform.
+  $ode_original_author = isset($ode['uid_author']) ? $ode['uid_author'] : 1; //Admin is considered creator of all flagged nodes. Other uids are only accepted through drupal node creation or zip form
+  $values = array(
+    'type' => 'ode',
+    'uid' => $ode_original_author,
+    'status' => isset($ode['published']) ? $ode['published'] : 1,
+    'comment' => 2, // Comments should be open.
+    'promote' => 0,
+    'language' => 'es',
+  );
+
+  if (isset($ode['publicationDate'])) {
+    $values['created'] = strtotime($ode['publicationDate']); //date('Y-m-d\Th:i:s.\Z'//2010-07-12T10:59:04.531Z
+  }
+
+  $entity = entity_create('node', $values);
+
+  try {
+    // Edit special values with a wrapper.
+    $ewrapper = entity_metadata_wrapper('node', $entity);
+
+    // Save solr ID. Main field of ODE Content type.
+    $ewrapper->field_solrid->set($ode['id']);
+    //Ode can be shared
+    $ewrapper->field_question_share->set(TRUE);
+
+    // Save title. If no title is specified, select id.
+    if (isset($ode['generalTitleStr'])) {
+      $ewrapper->title->set($ode['generalTitleStr']);
+    }
+    else {
+      $ewrapper->title->set(t('Untitled'));
+    }
+
+    if (isset($ode['descriptionStr'])) {
+      $ewrapper->field_descripci_n->set(array('value' => $ode['descriptionStr']));
+    }
+
+    //Update common fields
+    ag_visualization_ode_update_fields($ode, $ewrapper);
+
+    //Check if ode was published as organization.
+    if (isset($ode['publish_organization'])) {
+      $ewrapper->field_original_user->set($ode_original_author);
+      $ewrapper->author->set($ode['publish_organization']);
+    }
+
+    //Force new ode share into procomun social network
+    $global_procomun = variable_get('global_community_procomun', 0);
+    $ewrapper->og_group_ref->set(array('gid' => $global_procomun));
+
+    $ewrapper->save();
+    $new_nid = $ewrapper->nid->value();
+    return $new_nid;
+  }
+  catch (EntityMetadataWrapperException $e) {
+    drupal_set_message(t('Error found while creating content'), 'error');
+    return NULL;
+  }
+}
+
+/**
+ * Function for updating ode fields
+ */
+function ag_visualization_ode_update_fields($ode, &$ewrapper) {
+  $properties = $ewrapper->getPropertyInfo();
+
+  //Language
+  if (isset($ode['generalLanguageStr'][0])) {
+    if ($ode['generalLanguageStr'][0] != 'x-none') {
+      $ewrapper->field_general_language->set($ode['generalLanguageStr'][0]);
+    }
+  }
+
+  //Labels
+  //Get all labels from ODE and check if they exists on our taxonomies.
+  $labels = array();
+  if (isset($ode['generalKeywordStr'])) {
+    $labels = ag_visualization_ode_terms_parse_light($ode['generalKeywordStr'], 'tags');
+    if (!empty($labels)) {
+      $ewrapper->field_labels->set(array_values($labels));
+    }
+    else if (empty($properties['field_labels']['required'])) {
+      $ewrapper->field_labels->set(array(NULL));
+    }
+  }
+
+  //knowledge Area
+  if (isset($ode['knowledgeArea'])) {
+    $knowledge_areas = ag_visualization_ode_terms_parse_light($ode['knowledgeArea'], 'knowledgearea');
+    if (!empty($knowledge_areas)) {
+      $ewrapper->field_knowledge_area->set(array_values($knowledge_areas));
+    }
+    else if (empty($properties['field_knowledge_area']['required'])) {
+      $ewrapper->field_knowledge_area->set(array(NULL));
+    }
+  }
+
+  //Learning context
+  if (isset($ode['learningContext'])) {
+    $learning_contexts = ag_visualization_ode_terms_parse_light($ode['learningContext'], 'learningcontext');
+    if (!empty($learning_contexts)) {
+      $ewrapper->field_learning_context->set(array_values($learning_contexts));
+    }
+    else if (empty($properties['field_learning_context']['required'])) {
+      $ewrapper->field_learning_context->set(array(NULL));
+    }
+  }
+
+  //Resource Type
+  if (isset($ode['resourceType'])) {
+    $resource_types = ag_visualization_ode_terms_parse_light($ode['resourceType'], 'tipo_de_recurso');
+    $learning_resources = ag_visualization_ode_terms_parse_light($ode['resourceType'], 'recurso_de_aprendizaje');
+
+    if (empty($resource_types[0])) {
+      if (empty($properties['field_resource_type']['required'])) {
+        $ewrapper->field_resource_type->set(NULL);
+      }
+    }
+    else {
+      $ewrapper->field_resource_type->set($resource_types);
+    }
+
+    if (empty($learning_resources[0])) {
+      if (empty($properties['field_resource_type']['required'])) {
+        $ewrapper->field_recurso_de_aprendizaje->set(NULL);
+      }
+    }
+    else {
+      $ewrapper->field_recurso_de_aprendizaje->set($learning_resources[0]);
+    }
+  }
+}
+
+/**
+ * Function for updating ode information
+ */
+function ag_visualization_ode_update_ode($ode, $nid, $author_uid = NULL) {
+
+  //Update ode only if it is correctly identificated
+  if (!isset($ode['id']) || empty($nid)) {
+    return;
+  }
+
+  //Check if it is an ode.
+  if (!isset($ode['type']) || $ode['type'] != 'ODE') {
+    return;
+  }
+
+  //Load ode node
+  $node = entity_load_single('node', $nid);
+
+  try {
+    // Edit values with a wrapper.
+    $ewrapper = entity_metadata_wrapper('node', $node);
+
+    //Common fields
+    ag_visualization_ode_update_fields($ode, $ewrapper);
+
+    //UID
+    if ($author_uid != NULL) {
+      $ewrapper->author->set($author_uid);
+    }
+
+    $ewrapper->save();
+
+    return TRUE;
+
+  }
+  catch (EntityMetadataWrapperException $e) {
+    drupal_set_message(t('Error found while updating ode: %solrid', array('%solrid' => $ode['id'])), 'error');
+    return NULL;
+  }
+}
+
+/**
+ * Implements hook_preprocess_link()
+ * Used to load ajax libraries and js to flag odes.
+ */
+function ag_visualization_ode_preprocess_link(&$variables) {
+  //Faster option to avoid all other links. We will preprocess ode flag links only.
+
+  if (strpos($variables['path'], 'ode/flag') === 0) {
+
+    //Add AJAX library and JS to toggle flags.
+    drupal_add_library('system', 'drupal.ajax');
+    drupal_add_js('misc/ajax.js');
+  }
+}
+
+
+################
+### DATABASE ###
+################
+
+/**
+ * Recovers entity ode from database if there is one with specific id.
+ */
+function ag_visualization_ode_get_ode_if_exists($odeid) {
+  //Query content type ODE by specfic solarID.
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'node')
+    ->entityCondition('bundle', 'ode')
+    ->fieldCondition('field_solrid', 'value', $odeid);
+
+  //Execute query
+  $result = $query->execute();
+
+  if (isset($result['node'])) {
+    //Get last result. There should be only one.
+    $node = array_pop($result['node']);
+    //Load node nid.
+    return $node->nid;
+  }
+}
+
+/**
+ * Function to query Solr looking for a specific ode. Loads all fields.
+ */
+function ag_visualization_ode_get_solr_ode($ode_id) {
+  $ode_id = check_plain($ode_id);
+
+  //Load and query orchestrator data. In case of error, user is notified.
+  try {
+    $orchestrator = new OS_orchestrator_selection();
+    $ode_service = $orchestrator->selectOde($ode_id);
+
+    //Return first ode with id.
+    return (!empty($ode_service[1][0])) ? $ode_service[1][0] : '';
+  } catch (Exception $e) {
+    return NULL;
+  }
+}
+
+/**
+ * Return download URL for ODE
+ */
+function ag_visualization_ode_check_ode_origin($mecIdentifierStr) {
+
+  $ode_repository_url = variable_get('ode_repository',
+    array('default' => 'http://agrega.educacion.es',
+      'an' => 'http://agrega.juntadeandalucia.es',
+      'ma' => 'http://agrega.educa.madrid.org',
+      'eu' => 'http://agrega.hezkuntza.net'));
+
+  $province = substr($mecIdentifierStr, 3, 2);
+
+  switch($province) {
+    case 'an':
+      $return = $ode_repository_url['an'];
+      break;
+    case 'eu':
+      $return = $ode_repository_url['eu'];
+      break;
+    case 'ma':
+      $return = $ode_repository_url['ma'];
+      break;
+    default:
+      $return = $ode_repository_url['default'];
+      break;
+  }
+
+  return $return;
+}
+
+/**
+ * Increase visits a node of type "ode" and returns node view count.
+ */
+function ag_visualization_ode_node_view_count($node_nid, $uid = 0, $solrid = 0) {
+  //Add node view count only if user is not anonymous.
+  if ($uid > 0) {
+    if (!empty($node_nid)) {
+      db_insert('nodeviewcount')
+        ->fields(array(
+          'nid' => $node_nid,
+          'uid' => $uid,
+          'timestamp' => time(),
+        ))
+        ->execute();
+    }
+  }
+  else {
+    ag_visualization_ode_add_visit_ode_anon($solrid);
+  }
+
+  //Get total visits for ode. With and without created nodes
+  $total_visits = ag_visualization_ode_total_visits_ode($node_nid, $solrid);
+
+  //Check available notification
+  ag_visualization_ode_check_notification($node_nid, $solrid, array('visits' => $total_visits));
+
+  return $total_visits;
+}
+
+/*
+ * Implements hook_entity_info_alter().
+ */
+function ag_visualization_ode_entity_info_alter(&$entity_info) {
+  $entity_info['node']['view modes']['listing'] = array(
+    'label' => t('Listing'),
+    'custom settings' => TRUE,
+  );
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function ag_visualization_ode_preprocess_node(&$vars) {
+  if ($vars['view_mode'] == 'listing' ) {
+    $vars['theme_hook_suggestions'][] = 'node__' . $vars['type'] . '__listing';
+  }
+  if ($vars['type'] == 'recurso_de_aprendizaje' || $vars['type'] == 'ode') {
+    $wrapper = entity_metadata_wrapper('node', $vars['node']);
+    $vars['solr_id'] = $wrapper->field_solrid->value();
+
+    //If view mode is teaser include certified variable
+    if ($vars['view_mode'] == 'teaser') {
+      $certified = $wrapper->field_certified->raw();
+
+      //Add an extra class to classes_array
+      if (!empty($certified)) {
+        $vars['classes_array'][] = 'certified';
+        $vars['certified'] = l(t('Quality accredited by INTEF') , 'javascript:', array('external' => TRUE, 'attributes' => array('title' => t('Quality accredited by INTEF'))));
+      }
+    }
+  }
+}
+
+/**
+ * Implements hoot_entity_view()
+ */
+function ag_visualization_ode_entity_view($entity, $type, $view_mode, $langcode) {
+  //In case of the visualization of one ODE in full view mode redirect the petition
+  if ($type === 'node') {
+    if (isset($entity->type) && $entity->type == 'ode' && $view_mode == 'full'){
+      $ode_wrapper = entity_metadata_wrapper('node', $entity);
+      if (isset($ode_wrapper->field_solrid) && $ode_wrapper->status->value() == NODE_PUBLISHED) {
+        drupal_goto('ode/view/' . $ode_wrapper->field_solrid->value());
+      }
+      else {
+        drupal_goto('user/draft');
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_node_access().
+ */
+function ag_visualization_ode_node_access($node, $op, $account) {
+  if ($node->type == 'ode' && $op == 'update') {
+    // With draft content we needed to give users permission to edit his own content.
+    // But we need to check that this is done only when content is not published.
+    if ($node->status == NODE_PUBLISHED) {
+      return NODE_ACCESS_DENY;
+    }
+  }
+
+  return NODE_ACCESS_IGNORE;
+}
+
+/**
+ * @param $properties Properties of the ODE. Here,
+ */
+function _change_license_description(&$properties) {
+  if (isset($properties['rightsCopyrightAndOtherRestrictionsStr'])) {
+    switch ($properties['rightsCopyrightAndOtherRestrictionsStr']) {
+      case ($properties['rightsCopyrightAndOtherRestrictionsStr'] === 'creative commons: attribution'):
+        $allow_modifications = 1;
+        $comercial_use = 1;
+        $properties['rightsDescriptionStr'] = ag_visualization_ode_get_license_link($allow_modifications, $comercial_use);
+        break;
+      case ($properties['rightsCopyrightAndOtherRestrictionsStr'] === 'creative commons: attribution - non derived work'):
+        $allow_modifications = 0;
+        $comercial_use = 1;
+        $properties['rightsDescriptionStr'] = ag_visualization_ode_get_license_link($allow_modifications, $comercial_use);
+        break;
+      case ($properties['rightsCopyrightAndOtherRestrictionsStr'] === 'creative commons: attribution - non derived work - non commercial'):
+        $allow_modifications = 0;
+        $comercial_use = 0;
+        $properties['rightsDescriptionStr'] = ag_visualization_ode_get_license_link($allow_modifications, $comercial_use);
+        break;
+      case ($properties['rightsCopyrightAndOtherRestrictionsStr'] === 'creative commons: attribution - non commercial'):
+        $allow_modifications = 1;
+        $comercial_use = 0;
+        $properties['rightsDescriptionStr'] = ag_visualization_ode_get_license_link($allow_modifications, $comercial_use);
+        break;
+      case ($properties['rightsCopyrightAndOtherRestrictionsStr'] === 'creative commons: attribution - non commercial - share alike'):
+        $allow_modifications = 2;
+        $comercial_use = 0;
+        $properties['rightsDescriptionStr'] = ag_visualization_ode_get_license_link($allow_modifications, $comercial_use);
+        break;
+      case ($properties['rightsCopyrightAndOtherRestrictionsStr'] === 'creative commons: attribution - share alike'):
+        $allow_modifications = 2;
+        $comercial_use = 1;
+        $properties['rightsDescriptionStr'] = ag_visualization_ode_get_license_link($allow_modifications, $comercial_use);
+        break;
+    }
+  }
+}
+
+/**
+ * @param $value License CC definition string to parse into allow_modifications and comercial_use fields.
+ */
+function _get_license_values($value) {
+  $return = array();
+  if (isset($value)) {
+    switch ($value) {
+      case 'creative commons: attribution':
+        $return = array('allow_modifications' => 1, 'comercial_use' => 1);
+        break;
+      case 'creative commons: attribution - non derived work':
+        $return = array('allow_modifications' => 0, 'comercial_use' => 1);
+        break;
+      case 'creative commons: attribution - non derived work - non commercial':
+        $return = array('allow_modifications' => 0, 'comercial_use' => 0);
+        break;
+      case 'creative commons: attribution - non commercial':
+        $return = array('allow_modifications' => 1, 'comercial_use' => 0);
+        break;
+      case 'creative commons: attribution - non commercial - share alike':
+        $return = array('allow_modifications' => 2, 'comercial_use' => 0);
+        break;
+      case 'creative commons: attribution - share alike':
+        $return = array('allow_modifications' => 2, 'comercial_use' => 1);
+        break;
+    }
+    return $return;
+  }
+}
+
+/**
+ * Helper function for retrieve the link of the CC License for the different values
+ *
+ * @param $allow_modifications
+ *  values: No-> 0, Yes-> 1, Yes, while sharing the same way->2
+ *
+ * @param $comercial_use
+ *  values: No->0, Yes->1
+ */
+function ag_visualization_ode_get_license_link($allow_modifications, $comercial_use, $original_user = NULL, $post = FALSE) {
+  $license_link = '';
+
+  if ((empty($original_user) || $original_user == 0) && $post == TRUE) {
+    return t("Distributed with the same license as the original resource");
+  }
+
+  if ($allow_modifications == 0 && $comercial_use == 0) {
+    $license_link = '<a target="_blank" rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Licencia de Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><div class="license-link-text">' . t('This work is licensed under a') . ' <a target="_blank" rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">' . t('Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License.') . '</a></div>';
+  }
+  elseif ($allow_modifications == 0 && $comercial_use == 1) {
+    $license_link = '<a target="_blank" rel="license" href="http://creativecommons.org/licenses/by-nd/4.0/"><img alt="Licencia de Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by-nd/4.0/88x31.png" /></a><div class="license-link-text">' . t('This work is licensed under a') . ' <a target="_blank" rel="license" href="http://creativecommons.org/licenses/by-nd/4.0/">' . t('Creative Commons Attribution-NoDerivatives 4.0 International License.') . '</a></div>';
+  }
+  elseif ($allow_modifications == 1 && $comercial_use == 0) {
+    $license_link = '<a target="_blank" rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Licencia de Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><div class="license-link-text">' . t('This work is licensed under a') . ' <a target="_blank" rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">' . t('Creative Commons Attribution-NonCommercial 4.0 International License.') . '</a></div>';
+  }
+  elseif ($allow_modifications == 1 && $comercial_use == 1) {
+    $license_link = '<a target="_blank" rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Licencia de Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><div class="license-link-text">' . t('This work is licensed under a') . ' <a target="_blank" rel="license" href="http://creativecommons.org/licenses/by/4.0/">' . t('Creative Commons Attribution 4.0 International License.') . '</a></div>';
+  }
+  elseif ($allow_modifications == 2 && $comercial_use == 0) {
+    $license_link = '<a target="_blank" rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Licencia de Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><div class="license-link-text">' . t('This work is licensed under a') . ' <a target="_blank" rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">' . t('Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.') . '</a></div>';
+  }
+  elseif ($allow_modifications == 2 && $comercial_use == 1) {
+    $license_link = '<a target="_blank" rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Licencia de Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><div class="license-link-text">' . t('This work is licensed under a') . ' <a target="_blank" rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">' . t('Creative Commons Attribution-ShareAlike 4.0 International License.') . '</a></div>';
+  }
+  return $license_link;
+}
+
+/**
+ * Helper function for retrieve the term nameof the CC license for these checkboxes
+ * These values will be sent to solr
+ *
+ * @param $allow_modifications
+ *  values: No-> 0, Yes-> 1, Yes, while sharing the same way->2
+ *
+ * @param $comercial_use
+ *  values: No->0, Yes->1
+ */
+function ag_visualization_ode_get_license_text($allow_modifications = 0, $comercial_use = 0) {
+  if ($allow_modifications == 1 && $comercial_use == 1) {
+    return 'creative commons: attribution';
+  }
+  elseif ($allow_modifications == 0 && $comercial_use == 1) {
+    return 'creative commons: attribution - non derived work';
+  }
+  elseif ($allow_modifications == 0 && $comercial_use == 0) {
+    return 'creative commons: attribution - non derived work - non commercial';
+  }
+  elseif ($allow_modifications == 1 && $comercial_use == 0) {
+    return 'creative commons: attribution - non commercial';
+  }
+  elseif ($allow_modifications == 2 && $comercial_use == 0) {
+    return 'creative commons: attribution - non commercial - share alike';
+  }
+  elseif ($allow_modifications == 2 && $comercial_use == 1) {
+    return 'creative commons: attribution - share alike';
+  }
+}
+
+/**
+ * Translate an array of terms, but keeping same structure for template.
+ * Receives terms in english strings. We need to load term to translate.
+ */
+function ag_visualization_ode_translate_terms(&$terms_words, $langcode = 'en', $vocabulary_name) {
+  if (is_array($terms_words)) {
+    foreach ($terms_words as $key => $word) {
+      $terms_words[$key] = ag_visualization_ode_i18n_translate_term_cached($word, $langcode, $vocabulary_name);
+    }
+  }
+  else {
+    $terms_words = ag_visualization_ode_i18n_translate_term_cached($terms_words, $langcode, $vocabulary_name);
+  }
+}
+
+/**
+ * Translation of specific taxonomies, from a simple english string (not a loaded term) to active language translation of it.
+ * In Solr, this taxonomies are saved in english, but there is no identifier to load taxonomy.
+ * Also, we can't use taxonomy_term_load_by name, if original taxonomy term was introduced in spanish, as it
+ * assumes an english original taxonomy term.
+ * Use in cases where taxonomy cannot be changed to english as original language.
+ *
+ * Receives term as string, source language (must be known to avoid multiple terms), and vocabulary term to shorten queries.
+ * @return Term translated as string, in active language.
+ */
+function ag_visualization_ode_i18n_translate_term($term_unknown, $source_langcode, $vocabulary_name) {
+  global $language;
+  $output_language = $language->language;
+
+  //No empty strings, please.
+  if (empty($term_unknown)) {
+    return $term_unknown;
+  }
+
+  //If source language is the same as output language, no translation is needed.
+  if ($source_langcode == $output_language) {
+    return $term_unknown;
+  }
+
+  //Our taxonomies are in spanish as basic language. If string request is spanish, output is direct. Load taxonomy and translate.
+  if ($source_langcode == 'es') {
+    $load_terms = taxonomy_get_term_by_name($term_unknown, $vocabulary_name);
+    if (empty($load_terms)) {
+      return $term_unknown;
+    }
+    $load_terms_values = array_values($load_terms);
+    return i18n_taxonomy_term_name(array_shift($load_terms_values), $output_language);
+  }
+
+  //Get located word identifier.
+  if (!empty($source_langcode) && !empty($term_unknown)) {
+    $lid = db_query("SELECT lid FROM {locales_target} WHERE translation = :translation AND language = :language",
+      array(':translation' => $term_unknown, ':language' => $source_langcode))->fetchField();
+
+    //Get term id from context in locales_source table.
+    if (!empty($lid)) {
+      $context = db_query("SELECT context FROM {locales_source} WHERE lid = :lid AND textgroup = 'taxonomy' AND context LIKE 'term:%:name'", array(':lid' => $lid))->fetchField();
+      $exploded_context = explode(':', $context);
+
+      //Explode to get term id from context "taxonomy:XXX:name"
+      if (isset($exploded_context[1])) {
+        $term_id = $exploded_context[1];
+        //Translate term, if we achieved TID.
+        if (!empty($term_id) && is_numeric($term_id)) {
+          return i18n_taxonomy_term_name(taxonomy_term_load($term_id), $output_language);
+        }
+      }
+    }
+  }
+
+  //If things get this far, there doesnt seem to be a translation. Just try normal t function.
+  return t($term_unknown);
+}
+
+/**
+ * Same as ag_visualization_ode_i18n_translate_term, but with cache support.
+ * Translation of taxonomies, whatever the original language is, to current language.
+ * Needs i18n taxonomy translation functions.
+ */
+function ag_visualization_ode_i18n_translate_term_cached($term_unknown, $source_langcode, $vocabulary_name) {
+  global $language;
+  $output_language = $language->language;
+
+  $translations = &drupal_static(__FUNCTION__);
+
+  if (!isset($translations[$source_langcode][$term_unknown][$output_language])) {
+    //Fail
+    $translation = ag_visualization_ode_i18n_translate_term($term_unknown, $source_langcode, $vocabulary_name);
+    if ($translation == $term_unknown) {
+      //No caching if same string returned.
+      return $term_unknown;
+    }
+    else {
+      //Save term.
+      $translations[$source_langcode][$term_unknown][$output_language] = $translation;
+      return $translations[$source_langcode][$term_unknown][$output_language];
+    }
+  }
+  //Success
+  return $translations[$source_langcode][$term_unknown][$output_language];
+}
+
+
+/**
+ * Implements hook_cron().
+ */
+function ag_visualization_ode_cron() {
+  $queue = DrupalQueue::get('unpublishedODEs');
+
+  //Get items for queue.
+  //Load and query orchestrator data. In case of error, user is notified.
+  $results = array();
+  //Set every 24 hours.
+  $interval = variable_get('cron_unpublishodes_interval', 24 * 60 * 60);
+  $last_execution = variable_get('cron_unpublishodes_lastexecution', 0);
+
+  //Launch cron if 24 hours passed from last execution.
+  if (time() >= ($last_execution + $interval)) {
+    $orchestrator = new OS_orchestrator_selection();
+    $ode_service = $orchestrator->getUnpublishedODEs();
+
+    //Check called errors
+    if (isset($ode_service[0]) && $ode_service[0] != -1) {
+      //Return first ode with id.
+      $results = (!empty($ode_service[1])) ? $ode_service[1] : array();
+
+      watchdog("ODE unpublishing", t('Preparing cron task queue. Queue: @queue_number elements. Now adding @elements elements.',
+        array('@elements' => count($results), '@queue_number' => $queue->numberOfItems())));
+
+      //Update time.
+      variable_set('cron_unpublishodes_lastexecution', time());
+
+      foreach($results as $item) {
+        $queue->createItem($item);
+      }
+    }
+    else {
+      watchdog("ODE unpublishing", t('Error calling getUnpublishedODEs method.'), array(), WATCHDOG_ERROR);
+    }
+  }
+}
+
+/**
+ * Implements hook_cron_queue_info().
+ */
+function ag_visualization_ode_cron_queue_info() {
+  $queues = array();
+  $queues['unpublishedODEs'] = array(
+    'worker callback' => 'ag_visualization_ode_process_unpublished_ode',
+    'time' => 60,
+  );
+  return $queues;
+}
+
+/**
+ * Function for save ode in drupal, insert or update
+ */
+function ag_visualization_ode_save_ode($element, $process) {
+
+  if (!empty($element['id'])) {
+    $solrid = $element['id'];
+    //Check if ode is already processed.
+    if (!ag_visualization_ode_check_processed_ode($solrid, $process)) {
+      //Get ode data from solr
+      $ode = ag_visualization_ode_get_solr_ode($solrid);
+
+      if (!empty($ode)) {
+        //Check if ode exists in drupal
+        $node_nid = ag_visualization_ode_get_ode_if_exists($solrid);
+
+        //First get uid drupal value for author for facet filters
+        $user_data = ag_visualization_ode_get_publisher($ode['mecIdentifierStr']);
+
+        if (!empty($user_data['uid'])) {
+          $uid = $user_data['uid'];
+          $ode['uid_author'] = $uid;
+        }
+        else {
+          //If publisher is empty force admin publisher
+          $uid = 1;
+          $ode['uid_author'] = 1;
+        }
+
+        if (empty($node_nid)) {
+          //Save ode
+          $nid = ag_visualization_ode_save($ode);
+
+          if (!empty($nid)) {
+            //Insert ode as ok in database
+            ag_visualization_ode_processed_ode($nid, $uid, $solrid);
+          }
+          else {
+            drupal_set_message(t('Error: saving ode in procomun: %solrid', array('%solrid' => $solrid)), 'error');
+            throw new DrupalUpdateException(t('Error: saving ode in procomun: %solrid', array('%solrid' => $solrid)));
+          }
+        }
+        else {
+          //If ode exists. Update uid and taxonomies
+          $result_update = ag_visualization_ode_update_ode($ode, $node_nid, $uid);
+
+          if (!empty($result_update)) {
+            //Insert ode as ok in database. Not in sync process
+            if ($process != 'sync') {
+              ag_visualization_ode_processed_ode($node_nid, $uid, $solrid);
+            }
+          }
+          else {
+            drupal_set_message(t('Error updating existing ode: %solrid', array('%solrid' => $ode['id'])), 'error');
+            throw new DrupalUpdateException(t('Error updating existing ode: %solrid', array('%solrid' => $ode['id'])));
+          }
+        }
+      }
+      else {
+        drupal_set_message(t('Error: No ode data got from solr %solrid', array('%solrid' => $solrid)), 'error');
+        throw new DrupalUpdateException(t('Error: No ode data got from solr %solrid', array('%solrid' => $solrid)));
+      }
+    }
+  }
+  else {
+    drupal_set_message(t('Error: No solrid sent'), 'error');
+    throw new DrupalUpdateException(t('Error: No solrid sent'));
+  }
+}
+
+/**
+ * Function for check if ode is processed in database
+ */
+function ag_visualization_ode_check_processed_ode($solrid, $process) {
+  $return = FALSE;
+  if (!empty($solrid) && $process != 'sync') {
+    $query = db_select('temp_odes_save', 'tos');
+    $query->fields('tos', array('nid'));
+    $query->condition('tos.solrid', $solrid);
+    $result = $query->execute()->fetchField();
+
+    //If the content was found, then return TRUE
+    if (!empty($result) && is_numeric($result)) {
+      $return = TRUE;
+    }
+  }
+
+  return $return;
+}
+
+/**
+ * Function for save ode processed in database
+ */
+function ag_visualization_ode_processed_ode($nid, $uid, $solrid) {
+  if (!empty($nid) && !empty($uid) && !empty($solrid)) {
+    db_insert('temp_odes_save')
+      ->fields(array(
+        'nid' => $nid,
+        'uid' => $uid,
+        'solrid' => $solrid,
+      ))
+      ->execute();
+  }
+}
+
+/**
+ * Unpublish ODE in Drupal with status=0. We won't delete it completely,
+ * this way ode_save and others will work as expected, and publish it back
+ * is still possible.
+ */
+function ag_visualization_ode_process_unpublished_ode($item) {
+  if (!empty($item['idDrupal'])) {
+    try {
+      $entity = entity_load_single('node', $item['idDrupal']);
+      $ewrapper = entity_metadata_wrapper('node', $entity);
+
+      //Unpublished only if type is ode, status was 1, and solr id is right.
+      if (isset($ewrapper->type) && $ewrapper->type->value() == 'ode' && isset($ewrapper->status) && $ewrapper->status->value() == 1 &&
+        isset($ewrapper->field_solrid) && $ewrapper->field_solrid->value() == $item['id']) {
+        $ewrapper->status->set(0);
+        $ewrapper->save();
+      }
+    }
+    catch (EntityMetadataWrapperException $e) {
+      watchdog("ODE unpublishing", t('EntityMetadataWrapperException while processing idDrupal: @id', array('@id' => $item['idDrupal'])), array(), WATCHDOG_ERROR);
+    }
+  }
+}
+
+/**
+ * Compare regional path to 3 possible servers. If paths match, return their name to set as author.
+ */
+function ag_visualization_ode_get_regional_name_from_url($path) {
+  //If previous two checks for node location (regional) were successful, get author.
+  if (!empty($path)) {
+    $intef_nodes = ag_visualization_ode_get_regional_nodes();
+
+    //Path may contain other characters afterwards. But domain might be one of these.
+    foreach($intef_nodes as $key => $value) {
+      $value = trim($value, '/');
+      $path = trim($path, '/');
+
+      //See if one contains the other or otherwise. One of them may have relative paths inside domain.
+      if (strstr($path, $value) || strstr($value, $path)) {
+        return $key;
+      }
+    }
+  }
+  return '';
+}
+
+/**
+ * List of all regional nodes with their names.
+ *
+ * @return array
+ */
+function ag_visualization_ode_get_regional_nodes() {
+  return array(
+    'Junta de Andalucía' => 'agrega.juntadeandalucia.es',
+    'Comunidad de Madrid' => 'agrega.educa.madrid.org',
+    'Eusko Jaurlaritza - Gobierno Vasco' => 'agrega.hezkuntza.net',
+    'Canarias' => 'www3.gobiernodecanarias.org\/medusa/agrega',
+    'Castilla y Leon' => 'agrega.educa.jcyl.es',
+  );
+}
+
+/**
+ * Function to add visit for odes without created nodes
+ */
+function ag_visualization_ode_add_visit_ode_anon($solrid) {
+  if (!empty($solrid)) {
+    //Check if ode has a record in table
+    $total = ag_visualization_ode_visits_count_ode_anon($solrid);
+
+    if ($total == 0) {
+      //Insert record
+      ag_visualization_ode_insert_count_ode_anon($solrid);
+    }
+    else {
+      //Update record
+      ag_visualization_ode_update_count_ode_anon($solrid);
+    }
+  }
+}
+
+/**
+ * Function to count visit for odes without created nodes
+ */
+function ag_visualization_ode_visits_count_ode_anon($solrid) {
+  $total = 0;
+
+  if (!empty($solrid)) {
+    $query = db_select('odecount_anon', 'oa')
+      ->fields('oa', array('total'))
+      ->condition('oa.solrid', $solrid);
+    $result = $query->execute()->fetchField();
+
+    if (!empty($result) && is_numeric($result)) {
+      $total = $result;
+    }
+  }
+
+  return $total;
+}
+
+/**
+ * Function to insert initial visit record for odes without created nodes
+ */
+function ag_visualization_ode_insert_count_ode_anon($solrid) {
+  if (!empty($solrid)) {
+    db_insert('odecount_anon')
+      ->fields(array(
+        'solrid' => $solrid,
+        'total' => 1,
+      ))
+      ->execute();
+  }
+}
+
+/**
+ * Function to update visit record for odes without created nodes
+ */
+function ag_visualization_ode_update_count_ode_anon($solrid) {
+  if (!empty($solrid)) {
+    db_update('odecount_anon')
+      ->expression('total', 'total + 1')
+      ->condition('solrid', $solrid)
+      ->execute();
+  }
+}
+
+/**
+ * Function to count total visits for odes with and without created nodes
+ */
+function ag_visualization_ode_total_visits_ode($node_nid, $solrid) {
+  $total = 0;
+  $total_anon = 0;
+  $total_auth = 0;
+
+  if (!empty($node_nid)) {
+    $total_auth = ag_visualization_ode_visits_count_ode_auth($node_nid);
+  }
+
+  if (!empty($solrid)) {
+    $total_anon = ag_visualization_ode_visits_count_ode_anon($solrid);
+  }
+
+  $total = (int) ($total_anon + $total_auth);
+
+  return $total;
+  //return $total_auth;
+}
+
+/**
+ * Function to count visit for odes with created nodes
+ */
+function ag_visualization_ode_visits_count_ode_auth($node_nid) {
+  $total = 0;
+
+  if (!empty($node_nid)) {
+    $total = db_select('nodeviewcount', 'nvc')
+      ->fields('nvc')
+      ->condition('nid', $node_nid, '=')
+      ->execute()
+      ->rowCount();
+  }
+
+  return $total;
+}
+
+/**
+ * Function to create links for odes certification
+ */
+function ag_visualization_ode_certificate_link($node) {
+  $certificate_link = '';
+
+  //Check user access to this link
+  if (ag_visualization_ode_certificate_link_access()) {
+    $certificate_link = ag_visualization_ode_certificate_link_content($node);
+  }
+
+  return $certificate_link;
+}
+
+/**
+ * Function to create content links for odes certification
+ */
+function ag_visualization_ode_certificate_link_content($node) {
+  //Check if ode node is certified to change link
+  $wrapper = entity_metadata_wrapper('node', $node);
+  $nid = $wrapper->nid->raw();
+
+  $certificate_wrapper = array(
+    '#type' => 'container',
+    '#attributes' => array(
+      'id' => "certificate-ode-$nid",
+      'class' => "certificate-ode",
+    ),
+  );
+
+  if (!$wrapper->field_certified->raw()) {
+    $certificate_wrapper['content']['link'] = array(
+      '#type' => 'link',
+      '#title' => t('Certificate ODE'),
+      '#href' => "ode/certificate/" . $nid . "/certificate/nojs",
+      '#ajax' => array(
+        'wrapper' => "certificate-ode-$nid",
+        'method' => 'html',
+      ),
+    );
+  }
+  else {
+    $certificate_wrapper['content']['link'] = array(
+      '#type' => 'link',
+      '#title' => t('Delete ODE certification'),
+      '#href' => "ode/certificate/" . $nid . "/delete-certificate/nojs",
+      '#ajax' => array(
+        'wrapper' => "certificate-ode-$nid",
+        'method' => 'html',
+      ),
+    );
+  }
+
+  return render($certificate_wrapper);
+}
+
+/**
+ * Function to check access to link for odes certification
+ */
+function ag_visualization_ode_certificate_link_access() {
+  global $user;
+
+  //No check access for anonymous users
+  if ($user->uid > 0) {
+    //Check if user has permission
+    if (user_access('ode certification')) {
+      return TRUE;
+    }
+
+    //Check if user belongs to an organization with permission to certificate ode
+    $org_ids = ag_section_profile_users_get_organization($user->uid);
+    if (!empty($org_ids)) {
+      //Get organizations with permission to certificate ode
+      $org_allowed = variable_get('cert_organization', array());
+
+      if (!empty($org_allowed)) {
+        $org_search = array_intersect($org_ids, array_values($org_allowed));
+
+        if (!empty($org_search)) {
+          return TRUE;
+        }
+      }
+    }
+  }
+
+  return FALSE;
+}
+
+/**
+ * Implements hook_node_update().
+ */
+function ag_visualization_ode_node_update($node) {
+  //Send certified value to Solr in ode nodes
+  if ($node->type == 'ode') {
+    $wrapper = entity_metadata_wrapper('node', $node);
+    $owrapper = entity_metadata_wrapper('node', $node->original);
+
+    $new_certified = $wrapper->field_certified->raw();
+    $old_certified = $owrapper->field_certified->raw();
+    if ($new_certified != $old_certified) {
+      //Parse value to 0 or 1
+      if ($new_certified) $new_certified = 1;
+      else $new_certified = 0;
+      $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+      list($status, $result) = $OS_orchestrator_inyection->UpdateCertified($new_certified, $wrapper->field_solrid->raw());
+      if ($status != 1) {
+        drupal_set_message(t($result), 'error');
+      }
+    }
+  }
+}
+
+/*
+ * Cached function for organizations name
+ */
+function ag_visualization_ode_organizations_cached() {
+  $name = &drupal_static(__FUNCTION__);
+
+  if (!isset($name['org-author'])) {
+    $name['org-author'] = ag_visualization_ode_organizations();
+    return $name['org-author'];
+  }
+
+  return $name['org-author'];
+}
+
+/*
+ * Function for getting organizations name
+ */
+function ag_visualization_ode_organizations() {
+  $orgs_data = array();
+
+  $query = db_select('users', 'u');
+  $query->join('users_roles', 'ur', 'u.uid = ur.uid');
+  $query->join('role', 'r', 'ur.rid = r.rid');
+  $result = $query->fields('u', array('uid', 'name', 'mail'))
+    ->condition('r.name', 'organization', '=')
+    ->execute();
+
+  foreach ($result as $org) {
+    //Extract string from email before @
+    $email_parts = explode('@', $org->mail);
+    if (!empty($email_parts[0])) {
+      $orgs_data[$email_parts[0]] = drupal_strtoupper($org->name);
+    }
+  }
+
+  return $orgs_data;
+}
+
+/**
+ * Implements hook_flag_flag().
+ */
+function ag_visualization_ode_flag_flag($flag, $entity_id, $account, $flagging) {
+  //Check if user like a ode for certifiable
+  if ($flag->name === 'like') {
+    $node = entity_load_single('node', $entity_id);
+    $ewrapper = entity_metadata_wrapper('node', $node);
+
+    if ($node->type == 'ode') {
+      $likes = ag_visualization_ode_total_likes_ode($entity_id);
+      ag_visualization_ode_check_notification($entity_id, $ewrapper->field_solrid->raw(), array('likes' => $likes));
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_insert().
+ */
+function ag_visualization_ode_entity_insert($entity, $entity_type) {
+  //Check if entity is a comment for ode certifiable notification
+  if ($entity_type == 'comment') {
+    //Check only for odes comments
+    if ($entity->node_type == 'comment_node_ode') {
+      $node = entity_load_single('node', $entity->nid);
+      $ewrapper = entity_metadata_wrapper('node', $node);
+      ag_visualization_ode_check_notification($entity->nid, $ewrapper->field_solrid->raw(), array('comments' => $node->comment_count));
+    }
+  }
+}
+
+/**
+ * Implements hook_element_info_alter().
+ */
+function ag_visualization_ode_element_info_alter(&$info) {
+  $info['fivestar']['#process'][] = 'ag_visualization_ode_fivestar_process';
+}
+
+/**
+ * Function to alter ajax callback for fivestar process adding new function
+ */
+function ag_visualization_ode_fivestar_process($element) {
+  $element['vote']['#ajax']['callback'] = 'ag_visualization_ode_fivestar_ajax_submit';
+  return $element;
+}
+
+/**
+ * Function to alter ajax callback for fivestar process
+ */
+function ag_visualization_ode_fivestar_ajax_submit($form, $form_state) {
+  $result = fivestar_ajax_submit($form, $form_state);
+
+  $votes = $form_state['build_info']['args'][0]['count'];
+  $average = $form_state['build_info']['args'][0]['average'];
+  $node_nid = $form_state['build_info']['args'][1]['entity_id'];
+
+  $node = entity_load_single('node', $node_nid);
+  $ewrapper = entity_metadata_wrapper('node', $node);
+  ag_visualization_ode_check_notification($node->nid, $ewrapper->field_solrid->raw(), array('rated' => array('average' => $average, 'votes' => $votes)));
+
+  return $result;
+}
+
+
+/**
+ * Function to count total likes for odes
+ */
+function ag_visualization_ode_total_likes_ode($node_nid) {
+  $total = 0;
+
+  if (!empty($node_nid) && is_numeric($node_nid)) {
+    $flag = flag_get_flag('like');
+
+    $query = db_select('flag_counts', 'fc');
+    $query->fields('fc',array('count'));
+    $query->condition('fc.entity_id', $node_nid, '=');
+    $query->condition('fc.fid', $flag->fid, '=');
+    $total = $query->execute()
+      ->fetchField();
+  }
+
+  return $total;
+}
+
+/**
+ * Function to count total comments for odes
+ */
+function ag_visualization_ode_total_comments_ode($node_nid) {
+  $total = 0;
+
+  if (!empty($node_nid) && is_numeric($node_nid)) {
+    $query = db_select('comment', 'c');
+    $query->fields('c',array('cid'));
+    $query->condition('c.nid', $node_nid, '=');
+    $total = $query->execute()
+      ->rowCount();
+  }
+
+  return $total;
+}
+
+/**
+ * Function to get rated data for odes
+ */
+function ag_visualization_ode_total_rated_ode($node_nid) {
+  $rated_data = array();
+
+  if (!empty($node_nid) && is_numeric($node_nid)) {
+    $results = votingapi_select_results(array('entity_id' => $node_nid, 'function' => array('count', 'average')));
+
+    $rated_data['votes'] = !empty($results[0]['value']) ? $results[0]['value'] : 0;
+    $rated_data['average'] = !empty($results[1]['value']) ? $results[1]['value'] : 0;
+  }
+
+  return $rated_data;
+}
+
+/**
+ * Function to check if an ode is reportable
+ */
+function ag_visualization_ode_check_notification($node_nid, $solrid, $extra_data = array()) {
+  //Check if ode is certified. In this case not send any notification
+  //First load ode from solrid
+  if (!empty($solrid)) {
+    $ode = ag_visualization_ode_get_solr_ode($solrid);
+
+    if (isset($ode['certified']) && !$ode['certified']) {
+      if (!empty($ode['idDrupal']) && is_numeric($ode['idDrupal'])) {
+        //If ode is not certified, check if has any notification in database is not checked as not reportable
+        $result = ag_section_notification_get_ode_message_cached($ode['idDrupal']);
+
+        if ($result == 0) {
+          //Next check message timestamps. Get most recent message for ode
+          $max_timestamp = ag_section_notification_get_ode_recent_message($ode['idDrupal']);
+
+          //Get saved values
+          $ode_notify_time = variable_get('ode_notify_time', 604800);
+          $actual_time = time();
+
+          if (($max_timestamp + $ode_notify_time) < $actual_time) {
+
+            //If ode is potencially certifiable, get saved criteria from database
+            $saved_criteria = variable_get('ode_cert_criteria', array());
+
+            if (!empty($saved_criteria)) {
+              $ok_criteria = 0;
+              $full_criteria = 0;
+
+              foreach ($saved_criteria as $filter) {
+                if (!empty($filter)) {
+                  $full_criteria++;
+
+                  switch ($filter) {
+                    case 'visits':
+                      //Get saved criteria values
+                      $ode_number_visits = variable_get('ode_number_visits', 50);
+                      //Check if we have calculate ode visits
+                      if (isset($extra_data[$filter])) {
+                        $total_visits = $extra_data[$filter];
+                      }
+                      else {
+                        $total_visits = ag_visualization_ode_total_visits_ode($node_nid, $solrid);
+                      }
+                      //Check if ode overcomes the criteria
+                      if ($total_visits > $ode_number_visits) {
+                        $ok_criteria++;
+                      }
+                      break;
+                    case 'likes':
+                      //Get saved criteria values
+                      $ode_number_likes = variable_get('ode_number_likes', 100);
+                      if (isset($extra_data[$filter])) {
+                        $total_likes = $extra_data[$filter];
+                      }
+                      else {
+                        $total_likes = ag_visualization_ode_total_likes_ode($node_nid);
+                      }
+                      //Check if ode overcomes the criteria
+                      if ($total_likes > $ode_number_likes) {
+                        $ok_criteria++;
+                      }
+                      break;
+                    case 'comments':
+                      //Get saved criteria values
+                      $ode_number_comments = variable_get('ode_number_comments', 20);
+                      if (isset($extra_data[$filter])) {
+                        $total_comments = $extra_data[$filter];
+                      }
+                      else {
+                        $total_comments = ag_visualization_ode_total_comments_ode($node_nid);
+                      }
+                      //Check if ode overcomes the criteria
+                      if ($total_comments > $ode_number_comments) {
+                        $ok_criteria++;
+                      }
+                      break;
+                    case 'rated':
+                      //Get saved criteria values
+                      $ode_average = variable_get('ode_average', '80');
+                      $ode_number_votes = variable_get('ode_number_votes', 50);
+                      if (isset($extra_data[$filter])) {
+                        $total_votes = $extra_data[$filter]['votes'];
+                        $average = $extra_data[$filter]['average'];
+                      }
+                      else {
+                        $ode_rated = ag_visualization_ode_total_rated_ode($node_nid);
+                        $total_votes = !empty($ode_rated['votes']) ? $ode_rated['votes'] : 0;
+                        $average = !empty($ode_rated['average']) ? $ode_rated['average'] : 0;
+                      }
+                      //Check if ode overcomes the criteria
+                      if ($total_votes > $ode_number_votes && $average > $ode_average) {
+                        $ok_criteria++;
+                      }
+                      break;
+                  }
+                }
+              }
+
+              //Check if ode overcomes all criteria
+              if ($full_criteria == $ok_criteria && $full_criteria != 0) {
+                //Send notification
+                ag_section_notification_create_ode_message($node_nid);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Function to check access to button for deleting odes
+ */
+function ag_visualization_ode_delete_access($ode) {
+  global $user;
+
+  //No check access for anonymous users
+  if ($user->uid > 0 && !empty($ode['mecIdentifierStr'])) {
+    //Check if user has permission for deleting odes in Agrega
+    $OS_orchestrator_authoring = new OS_orchestrator_authoring();
+    list($status, $result) = $OS_orchestrator_authoring->checkDelete($ode['mecIdentifierStr'], $user->mail);
+
+    if ($status && isset($result->data)) {
+      //Json decode
+      $data = json_decode($result->data);
+
+      if (isset($data->httpResponseCode) && $data->httpResponseCode == 200) {
+        return TRUE;
+      }
+    }
+  }
+
+  return FALSE;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function ag_visualization_ode_form_ode_delete_form_alter(&$form, &$form_state, $form_id) {
+  //Fix ajax delete ode CORS
+  global $is_https;
+  if (isset($form_state['ajax']) && $form_state['ajax']) {
+    if ($is_https) {
+      $options = array('https' => TRUE);
+    }
+    else {
+      $options = array('https' => FALSE);
+    }
+    $form['#action'] = url($_GET['q'] . '/ajax', $options);
+  }
+}
+
+/**
+ * Implements hook_modal_paths
+ */
+function ag_visualization_ode_modal_paths() {
+  $paths = array();
+
+  $paths['ode/delete/%ode'] = array(
+    'style' => 'modal-delete-ode',
+    'reload' => TRUE,
+  );
+  return $paths;
+}
+
+/**
+ * Implements hook_modal_styles().
+ */
+function ag_visualization_ode_modal_styles() {
+  $styles = array();
+
+  $styles['modal-delete-ode'] = array(
+    'modalSize' => array(),
+    'modalClass' => 'delete-ode',
+  );
+  return $styles;
+}
+
+/**
+ * Parse taxonomy from solr to tids
+ * @return tids taxonomies array
+ */
+function ag_visualization_ode_terms_parse_light($origin_terms, $vocabulary_name) {
+  $terms = array();
+
+  // Get harcoded vid from tags vocabulary.
+  switch ($vocabulary_name) {
+    case 'tags':
+      $vid = 1;
+      break;
+    case 'knowledgearea':
+      $vid = 22;
+      break;
+    case 'learningcontext':
+      $vid = 23;
+      break;
+    case 'tipo_de_recurso':
+      $vid = 14;
+      break;
+    case 'recurso_de_aprendizaje':
+      $vid = 15;
+      break;
+  }
+
+  foreach ($origin_terms as $term_name) {
+    $result = db_query('SELECT t.tid FROM {taxonomy_term_data} t WHERE t.name = :name AND t.vid = :vid', array(':name' => $term_name, ':vid' => $vid));
+    $record = $result->fetchObject();
+
+    if (!empty($record)) {
+      $terms[] = $record->tid;
+    }
+    else if ($vocabulary_name == 'tags') {
+      $tid = db_insert('taxonomy_term_data')
+        ->fields(array(
+          'vid' => $vid,
+          'name' => truncate_utf8($term_name, 255),
+        ))
+        ->execute();
+
+      $tindex = db_insert('taxonomy_term_hierarchy')
+        ->fields(array(
+          'tid' => $tid,
+          'parent' => 0,
+        ))
+        ->execute();
+
+      if (!empty($tid)) {
+        // Add term to return array.
+        $terms[] = $tid;
+      }
+    }
+  }
+
+  return $terms;
+}
+
+/**
+ * Parse taxonomy from solr to tids
+ * @return tids taxonomies array
+ */
+function ag_visualization_ode_terms_parse($origin_terms, $vocabulary_name) {
+  $terms = array();
+
+  // Get vid from tags vocabulary.
+  if ($vocabulary_name == 'tags') {
+    $vocabulary = taxonomy_vocabulary_machine_name_load('tags');
+  }
+
+  foreach ($origin_terms as $term_name) {
+    $term = taxonomy_get_term_by_name($term_name, $vocabulary_name);
+
+    if (!empty($term)) {
+      $keys = array_keys($term);
+      $term_tid = current($keys);
+      $terms[] = $term_tid;
+    }
+    else if ($vocabulary_name == 'tags') {
+      // Add term to vocabulary tags
+      $new_term = DrupalToolkit::taxonomyCreate($term_name, $vocabulary->vid);
+
+      // Add term to return array.
+      $terms[] = $new_term->tid;
+    }
+  }
+
+  return $terms;
+}
+
+/**
+ * Function for getting ode publisher
+ */
+function ag_visualization_ode_get_publisher($mecid) {
+  $user_data = array();
+  if (!empty($mecid)) {
+    $orch_authoring = new OS_orchestrator_authoring();
+    $result = $orch_authoring->getOdePublisher($mecid);
+
+    if (isset($result[0]) && $result[0] && isset($result[1]['httpResponseCode']) && $result[1]['httpResponseCode'] == 200 && isset($result[1]['message'])) {
+      //Get uid from email
+      $data = DrupalToolkit::getUserDataByMail($result[1]['message'], array('uid'));
+
+      if (!empty($data->uid)) {
+        $user_data['uid'] = $data->uid;
+      }
+      $user_data['mail'] = $result[1]['message'];
+    }
+  }
+
+  return $user_data;
+}
+
+/**
+ * Function to get odes to process
+ */
+function _ode_save_sync_get_data() {
+  $odes = array();
+
+  //Get solrid from orquestator
+  $orchestrator = new OS_orchestrator_selection();
+
+  $lastSyncDate = variable_get('last_agrega2_odes_sync_date');
+  if (isset($lastSyncDate)) {
+    $date = date("Y-m-d");
+    $time = date("H:i:s");
+    $lastSyncDate = $date."T".$time."Z";
+    variable_set('last_agrega2_odes_sync_date', $lastSyncDate);
+  }
+  else {
+    // Set last sync date only for first execution
+    $lastSyncDate = '2016-06-01T00:00:00Z';
+  }
+
+  $params = array(
+    'q' => 'lastIndexDate:[' . variable_get('last_agrega2_odes_sync_date') .' TO NOW]',
+    'rows' => 100000,
+    'fields' => array('id'),
+    'fq' => 'type:ODE AND published:1',
+  );
+  $response = $orchestrator->multipleSelectionOdeFields($params);
+
+  if (!empty($response[1])) {
+    $odes = $response[1];
+  }
+
+  return $odes;
+}
+
+/**
+ * Function to get odes author from services
+ */
+function ag_visualization_ode_get_author($ode, $add_picture = null) {
+  $output = 'INTEF';
+
+  // Get publisher from services.
+  $user_data = ag_visualization_ode_get_publisher($ode['mecIdentifierStr']);
+
+  if (!empty($user_data['uid'])) {
+    // Get name from drupal username.
+    $account = new stdClass();
+    $account->uid = $user_data['uid'];
+    // Check if user is an organization. If true show only username in uppercase.
+    $org_data = ag_visualization_check_user_organization_cached($user_data['uid']);
+
+    if (empty($org_data)) {
+      $output = '';
+      if (!empty($add_picture)) {
+        $fid = DrupalToolKit::getUserData($account->uid, array('picture'));
+        $account->picture = $fid->picture;
+        $file = file_load($fid->picture);
+        $path = !empty($file->uri) ? $file->uri : variable_get('user_picture_default');
+        $output = theme('image_style', array('style_name' => 'avatar', 'path' => $path)) . ' ';
+      }
+
+      $output .= theme('username', array('account' => $account));
+    }
+    else {
+      $output = $org_data;
+    }
+  }
+  else if (empty($user_data['mail'])) {
+    // If mail is empty will be an ode node. Check this field in ode object.
+    if (!empty($ode['odeNode'])) {
+      switch ($ode['odeNode']) {
+        case 'agrega.juntadeandalucia.es':
+          $output = 'Junta de Andalucía';
+          break;
+        case 'agrega.hezkuntza.net':
+          $output = 'Eusko Jaurlaritza - Gobierno Vasco';
+          break;
+        case 'agrega.educa.madrid.org':
+          $output = 'Comunidad de Madrid';
+          break;
+        case 'www3.gobiernodecanarias.org\/medusa/agrega':
+          $output = 'Canarias';
+          break;
+        case 'agrega.educa.jcyl.es':
+          $output = 'Castilla y Leon';
+          break;
+        default:
+          $output = 'INTEF';
+      }
+    }
+  }
+  else if (!empty($user_data['mail'])) {
+    // Get full name from services.
+    $orch_authoring = new OS_orchestrator_authoring();
+    $result = $orch_authoring->getOdeExternalPublisher($user_data['mail']);
+
+    if (isset($result[0]) && $result[0] && isset($result[1]['httpResponseCode']) && $result[1]['httpResponseCode'] == 200 && isset($result[1]['message'])) {
+      $output = $result[1]['message'];
+    }
+  }
+
+  return $output;
+}
+
+/*
+ * Cached function for check if an user is an organization
+ */
+function ag_visualization_check_user_organization_cached($uid) {
+  $name = &drupal_static(__FUNCTION__);
+
+  if (!isset($name['check-user-org-' . $uid])) {
+    $name['check-user-org-' . $uid] = ag_visualization_check_user_organization($uid);
+    return $name['check-user-org-' . $uid];
+  }
+
+  return $name['check-user-org-' . $uid];
+}
+
+/*
+ * Function for check if an user is an organization
+ */
+function ag_visualization_check_user_organization($uid) {
+  $org_data = array();
+
+  if (!empty($uid)) {
+    $query = db_select('users', 'u');
+    $query->join('users_roles', 'ur', 'u.uid = ur.uid');
+    $query->join('role', 'r', 'ur.rid = r.rid');
+    $result = $query->fields('u', array('uid', 'name', 'mail'))
+      ->condition('r.name', 'organization', '=')
+      ->condition('u.uid', $uid, '=')
+      ->execute()->fetchObject();
+
+    if (!empty($result)) {
+      $org_data = drupal_strtoupper($result->name);
+    }
+  }
+
+  return $org_data;
+}
+
+/*
+ * Function to get uid from organization username
+ */
+function ag_visualization_get_organization_uid($name) {
+  $org_data = NULL;
+
+  if (!empty($name)) {
+    $org_data = DrupalToolKit::getUserDataByName($name, array('uid'));
+  }
+
+  return $org_data;
+}
+
+/**
+ * Retrieve user data based on a provided user full name.
+ *
+ * Callback for ag_visualization_ode_filter_authors_from_lifecycle
+ *
+ * @param string $fullName
+ *   User's full name.
+ * @param array $data
+ *   Additionals fields that we want to get.
+ *
+ * @return mixed
+ *
+ * @ingroup callbacks
+ */
+function callback_get_user_data_by_full_name($fullName, $data) {
+  $query = db_select('profile', 'p');
+  $query->join('users', 'u', 'u.uid = p.uid');
+  $query->join('field_data_field_name_surname', 'ns', 'ns.entity_id = p.pid');
+  $query->join('field_data_field_profile_name', 'pn', 'ns.field_name_surname_value = pn.entity_id');
+  $query->join('field_data_field_profile_surname', 'ps', 'ns.field_name_surname_value = ps.entity_id');
+  $query->leftJoin('file_managed', 'fm', 'u.picture = fm.fid');
+  $query->fields('fm', array('uri'));
+  $query->fields('u', $data);
+  $query->fields('pn', array('field_profile_name_value'));
+  $query->fields('ps', array('field_profile_surname_value'));
+  $query->addExpression("CONCAT(pn.field_profile_name_value, ' ', ps.field_profile_surname_value)", 'full_name');
+  $query->havingCondition('full_name', trim($fullName));
+
+  return $query->execute()->fetchObject();
+}
+
+/**
+ * Retrieve definitive ode publicator from solr field.
+ *
+ * Callback for ag_visualization_ode_preprocess_ode_detail().
+ * Callback for nexus_preprocess_sarnia_view_ode().
+ *
+ * @param array $ode
+ *   Ode information.
+ * @param string $type
+ *   Use type: for ode search / ode detail.
+ *
+ * @return string $output
+ *   Publicator name rendered string.
+ */
+function ag_visualization_ode_new_get_publicator($ode, $type) {
+  if (isset($ode['publicatorStr']) && !empty($ode['publicatorStr'])) {
+    $publicator = $ode['publicatorStr'];
+  }
+  else {
+    $publicator = 'INTEF';
+  }
+
+  switch ($type) {
+    case 'ode-search':
+      $output =  $publicator;
+      break;
+    case 'ode-detail':
+      if (!empty($ode['publicatorEmailStr'])) {
+        // Get uid from email.
+        $data = DrupalToolkit::getUserDataByMail($ode['publicatorEmailStr'], array('uid'));
+
+        if (!empty($data->uid)) {
+          // Get name from drupal username.
+          $account = new stdClass();
+          $account->uid = $data->uid;
+          // Check if user is an organization. If true show only username in
+          // uppercase.
+          $org_data = ag_visualization_check_user_organization_cached($data->uid);
+
+          if (empty($org_data)) {
+            $output = theme('username', array('account' => $account));
+          }
+          else {
+            $output = $org_data;
+          }
+        }
+        else {
+          $output = $publicator;
+        }
+      }
+      else {
+        $output = $publicator;
+      }
+      break;
+  }
+
+  return $output;
+}

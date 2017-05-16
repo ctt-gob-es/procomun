@@ -1,0 +1,12 @@
+name = Google OAuth2
+machine name = google-api-php-client
+description = Provides classes for google oauth2 for php
+version = 1.0.6-beta5
+files[php][] = src/Google/Client.php
+
+; Information added by Drupal.org packaging script on 2016-01-05
+version = "7.x-1.5-rc1+1-dev"
+core = "7.x"
+project = "gauth"
+datestamp = "1451992902"
+

@@ -1,0 +1,56 @@
+diff --git a/sites/all/modules/contrib/demo_tour/demo_tour.module b/sites/all/modules/contrib/demo_tour/demo_tour.module
+index e5b029f..5e19f66 100644
+--- a/sites/all/modules/contrib/demo_tour/demo_tour.module
++++ b/sites/all/modules/contrib/demo_tour/demo_tour.module
+@@ -32,7 +32,7 @@ function _demo_tour_user_takes_tour($user, $tour) {
+   // Add other bootstrap-tour options here
+   foreach ($tour->steps as $index => $step) {
+     $tour->steps[$index]['title'] = t($tour->steps[$index]['title']);
+-    $tour->steps[$index]['content'] = t($tour->steps[$index]['content']);
++    $tour->steps[$index]['content'] = t($tour->steps[$index]['content']['value']);
+     $tour->steps[$index]['placement'] = 'bottom';
+     $tour->steps[$index]['tid'] = $tour->name;
+   }
+@@ -63,10 +63,9 @@ function demo_tour_page_build(&$page) {
+     $tours = ctools_export_load_object('demo_tour_presets');
+ 
+     foreach ($tours as $tour) {
+-
+       if ($tour->auto && !empty($tour->roles) && !_demo_tour_user_took_tour($user, $tour)) {
+ 
+-        // Check if roles match
++        // Check if roles match.
+         $roles = array();
+         foreach ($tour->roles as $rid => $selected) {
+           if ($selected) {
+@@ -75,10 +74,11 @@ function demo_tour_page_build(&$page) {
+         }
+         $roles_match = array_intersect(array_keys($user->roles), $roles);
+ 
+-        // Check if path matches
++        // Check if path matches.
+         $path_matches = true;
+         if (!empty($tour->paths)) {
+-          $path_matches = drupal_match_path(current_path(), $tour->paths);
++          $url = (!empty($_SERVER['QUERY_STRING'])) ? current_path() . '?' . $_SERVER['QUERY_STRING'] : current_path();
++          $path_matches = drupal_match_path($url, $tour->paths);
+         }
+ 
+         if (!empty($roles_match) && $path_matches) {
+diff --git a/sites/all/modules/contrib/demo_tour/plugins/export_ui/demo_tour_ctools_export_ui.inc b/sites/all/modules/contrib/demo_tour/plugins/export_ui/demo_tour_ctools_export_ui.inc
+index eeb499c..ab838dd 100644
+--- a/sites/all/modules/contrib/demo_tour/plugins/export_ui/demo_tour_ctools_export_ui.inc
++++ b/sites/all/modules/contrib/demo_tour/plugins/export_ui/demo_tour_ctools_export_ui.inc
+@@ -101,10 +101,10 @@ function demo_tour_ctools_export_ui_form(&$form, &$form_state) {
+       );
+ 
+       $form['steps'][$i]['content'] = array(
+-        '#type' => 'textarea',
++        '#type' => 'text_format',
+         '#title' => t('Content'),
+         '#description' => t('Content of this step'),
+-        '#default_value' => $preset->steps[$i]['content'],
++        '#default_value' => $preset->steps[$i]['content']['value'],
+       );
+     }
+   }

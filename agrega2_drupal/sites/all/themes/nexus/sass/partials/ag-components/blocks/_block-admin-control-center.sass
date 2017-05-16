@@ -1,0 +1,41 @@
+body.page-admin-control-center
+  table
+    @extend %table-style-2
+    margin-top: 2em
+  .views-field-views-bulk-operations
+    border-right: none
+  .views-exposed-widget label
+    margin-bottom: .9em
+  .feed-icon
+    position: absolute
+    display: block
+    right: 0
+    bottom: 0
+    img
+      display: none
+    a
+      +button-white
+      &:before
+        content: "CSV"
+        width: 100%
+        height: 100%
+      &:hover
+        text-decoration: none
+  .pane-menu-menu-control-center-main-menu
+    min-height: 3em
+    .pane-title
+      display: none
+    .menu
+      +horizontal-list-container
+      &:after
+        content: none
+      >li
+        +horizontal-list-item
+        a
+          color: $white
+          +button(rgba($main_blue, .26))
+          margin-right: 1em
+          &:hover
+            background-color: $deep_blue
+  #edit-select
+    margin-top: 1.5em

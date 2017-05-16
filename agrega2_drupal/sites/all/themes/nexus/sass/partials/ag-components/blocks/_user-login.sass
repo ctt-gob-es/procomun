@@ -1,0 +1,153 @@
+#user-login-block
+  .user-image
+    position: relative
+    padding-right: 15px
+    &:after
+      background: image-url('flecha_azul.png') top center no-repeat
+      content: ''
+      width: 10px
+      height: 8px
+      position: absolute
+      right: 0
+      top: 50%
+      cursor: pointer
+  .user-login
+    &.active
+      .user-image
+        &:after
+          +rotate(180deg)
+    img
+      max-width: none
+      height: 50px
+      width: 50px
+      +border-radius(60px)
+      cursor: pointer
+    .notifications
+      position: absolute
+      bottom: -4px
+      right: 14px
+      background: $dark_orange
+      width: 25px
+      height: 25px
+      +border-radius(25px)
+      display: table
+      text-align: center
+      a
+        color: $white
+        display: table-cell
+        vertical-align: middle
+        &:hover
+          text-decoration: none
+  .block-body
+    background-color: $white
+    padding: 20px
+    z-index: 11
+    right: -22px
+    width: 190px
+    @extend .shadow
+    .logged-in &
+      margin-top: 6px
+      ul
+        margin-bottom: 0
+    &:after
+      content: ''
+      width: 60px
+      height: 10px
+      position: absolute
+      background: $white
+      top: 0
+      right: 0
+    ul li
+      margin: 15px 0
+      a
+        &.active
+          color: $main_blue
+        &:hover
+          text-decoration: none
+      &.first
+        margin-top: 0
+      &.last
+        margin-bottom: 0
+// Register or login
+.not-logged-in #block-dropdown-menu-user-dropdown-menu-user-login-block
+  .block-header
+    padding: 0
+    span
+      +button($orange)
+      padding: 11px 15px
+      &:hover
+        background-color: $dark_orange
+  .block-body
+    width: 310px
+    right: 0
+    margin-top: 16px
+    display: none
+    .user-login-title
+      color: $charcoal
+      font-size: 18px
+      font-weight: 700
+      display: block
+      margin-bottom: 1.5em
+    .form-item-name
+      position: relative
+      &:before
+        position: absolute
+        width: 23px
+        height: 37px
+        content: ''
+        display: block
+        top: 0
+        left: 8px
+        background: image-url("ico-login.png") 0px 50% no-repeat
+        z-index: 9
+    .form-item-pass
+      position: relative
+      &:before
+        position: absolute
+        width: 23px
+        height: 37px
+        content: ''
+        display: block
+        top: 0
+        left: 8px
+        background: image-url("ico-password.png") 0px 50% no-repeat
+        z-index: 9
+    label
+      @extend .hide
+    input[type='text'], input[type='password']
+      width: 100%
+      padding: 8px
+      padding-left: 35px
+      color: $cold_gray
+      &::-webkit-input-placeholder
+        color: $gray
+        font-size: 1em
+        line-height: 1.5em
+      &::-moz-placeholder
+        color: $gray
+        font-size: 1em
+        line-height: 1.5em
+      &:-ms-input-placeholder
+        line-height: 1.5em
+        color: $gray
+        font-size: 1em
+    ul, li
+      margin: 0
+      padding: 0
+      a
+        text-decoration: underline
+        white-space: nowrap
+        display: block
+        text-align: right
+        margin-bottom: 2em
+  #user-login-form,
+  #user-login
+    #edit-submit,
+    #edit-submit--2
+      +button($orange)
+      font-size: 18px
+      background-image: none
+      padding: 11px
+      width: 100%
+      &:hover
+        background-color: $dark_orange

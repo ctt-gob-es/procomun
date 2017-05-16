@@ -1,0 +1,42 @@
+diff --git a/sites/all/modules/patched/wsclient/wsclient_rest/wsclient_rest.module b/sites/all/modules/patched/wsclient/wsclient_rest/wsclient_rest.module
+index a070b03..2370692 100644
+--- a/sites/all/modules/patched/wsclient/wsclient_rest/wsclient_rest.module
++++ b/sites/all/modules/patched/wsclient/wsclient_rest/wsclient_rest.module
+@@ -98,13 +98,36 @@ class WSClientRESTEndpoint extends WSClientEndpoint {
+       $data = $arguments[$operation['data']];
+       unset($arguments[$operation['data']]);
+     }
++    
++    #Si una key no tiene valor, lo elimino del array para evitar errores por parte
++    #del orquestador
++    foreach($arguments as $key => $value) {
++      #Si es un campo atómico
++      if (!is_array($value)) {
++        if (!$value) {
++          unset($arguments[$key]);
++          continue;
++        }
++      }
++      #Si es un campo multivaluado
++      else {
++        #Si es un array, compruebo que todos sus keys tengan valor, de lo contrario los elimino.
++        foreach($value as $key_arr => $value_arr) {
++          if (!$value_arr) unset($arguments[$key][$key_arr]);
++        }
++        
++        #Si finalmente ninguno de los keys del array tiene valor, elimino el array directamente.
++        if (count($arguments[$key]) == 0) unset($arguments[$key]);
++      }
++    }
++
+     $options = array(
+       'method' => $type,
+       'data' => json_encode($arguments),
+       'timeout' => 15,
+       'headers' => array('Content-Type' => 'application/json'),
+     );
+-    
++
+     $result = drupal_http_request($this->service->url . $operation_url, $options);
+     return $result;
+   }

@@ -1,0 +1,414 @@
+<?php
+/**
+ * @file
+ * Setting up the configuration for learning path.
+ */
+
+include_once 'ag_learning_itinerary.features.inc';
+
+module_load_include('inc', 'ag_learning_itinerary', 'includes/handler_learning_path_default_image');
+
+/////////////
+/// HOOKS ///
+/////////////
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function ag_learning_itinerary_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'ctools' && $plugin == 'content_types') {
+    return 'plugins/' . $plugin;
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function ag_learning_itinerary_theme() {
+  $themes = array(
+    'ag_recommended_itinerary_content' => array(
+      'variables' => array(
+        'data' => array(),
+      ),
+    ),
+    'ag_base_itinerary_details' => array(
+      'variables' => array(
+        'data' => array(),
+      ),
+    ),
+  );
+
+  return $themes;
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function ag_learning_itinerary_form_alter(&$form, &$form_state, $form_id) {
+  module_load_include('inc', 'ag_learning_itinerary', 'includes/ag_learning_itinerary.form');
+  $function = "ag_learning_itinerary_form_{$form_id}_alter";
+  if (function_exists($function)) {
+    $function($form, $form_state, $form_id);
+  }
+}
+
+/**
+ * Implements hook_node_presave().
+ */
+function ag_learning_itinerary_node_presave($node) {
+  if ($node->type == 'itinerary') {
+    // Save user-marked content.
+    $options = array(
+      'field' => 'field_itinerary_content',
+      'view_display' => 'learning_path_content_selected',
+      'flag' => 'learning_path_content',
+    );
+    callback_save_learning_path_content($node, $options);
+
+    // Save user-marked interest content.
+    $options = array(
+      'field' => 'field_interest_content',
+      'view_display' => 'learning_path_interest_content_selected',
+      'flag' => 'learning_path_interest_content',
+    );
+    callback_save_learning_path_content($node, $options);
+
+    // Restore the session variable to its default value.
+    $_SESSION['view_ordered'] = FALSE;
+  }
+}
+
+/**
+ * Implements hook_views_data().
+ */
+function ag_learning_itinerary_views_data() {
+  $data = array();
+
+  $data['node']['default_image'] = array(
+    'title' => t('Default image'),
+    'help' => t('Default image for each selected content type'),
+    'field' => array(
+      'handler' => 'handler_learning_path_default_image',
+    ),
+  );
+
+  return $data;
+}
+
+/**
+ * Implements hook_entity_view().
+ */
+function ag_learning_itinerary_entity_view($entity, $type, $view_mode, $langcode) {
+  if ($type == 'node' && $entity->type == 'itinerary' && $view_mode == 'full') {
+    // Load basic info about author.
+    $user_data = DrupalToolKit::getUserData($entity->uid, array('name'));
+
+    $picture_rendered = array(
+      '#theme' => 'image_style',
+      '#style_name' => 'avatar',
+      '#path' => isset($user_data->uri) ? $user_data->uri : variable_get('user_picture_default', ''),
+    );
+
+    $entity->content['user_picture'] = $picture_rendered;
+  }
+}
+
+/**
+ * Implements hook_views_query_alter().
+ */
+function ag_learning_itinerary_views_query_alter(&$view, &$query) {
+  // Order by flagging_id itinerary content and interest content.
+  if ($view->name == 'learning_path_content' &&
+      ($view->current_display == 'learning_path_content_selected' ||
+       $view->current_display == 'learning_path_interest_content_selected')) {
+    $query->orderby[0]['direction'] = 'ASC';
+    $query->orderby[0]['field'] = 'flagging_node.flagging_id';
+  }
+}
+
+/////////////////
+/// CALLBACKS ///
+/////////////////
+
+/**
+ * TODO: Need comments.
+ *
+ * Callback for ag_learning_itinerary_node_presave().
+ *
+ * @param object $node
+ *   Node information.
+ * @param array $options
+ *   Contains the information needed to save the learning path content.
+ *
+ * @ingroup callbacks
+ */
+function callback_save_learning_path_content($node, $options) {
+  global $user;
+
+  // Create an 'entity metadata wrapper' to ease getting data.
+  $wrapper = entity_metadata_wrapper('node', $node);
+
+  // Check if the view was ordered to save the learning path through one method
+  // or another.
+/*  if ($_SESSION['view_ordered']) {
+    $learning_path_content = callback_get_user_content_ordered($options['view_display'], $user);
+  }
+  else {
+    $learning_path_content = callback_get_user_flags($options['flag'], $user);
+  }*/
+
+  // Obtaining itinerary related contents.
+  if ($options['field'] == 'field_itinerary_content' &&
+      isset($_POST['itinerary_content_ref_weight']) &&
+      !empty($_POST['itinerary_content_ref_weight'])) {
+    $itinerary_contents = array();
+
+    $flagged_content = json_decode($_POST['itinerary_content_ref_weight']);
+    if (!empty($flagged_content)) {
+      foreach ($flagged_content as $content) {
+        $itinerary_contents[$content] = array(
+          'id' => $content,
+        );
+      }
+    }
+
+    $wrapper->$options['field']->set(array_keys($itinerary_contents));
+  }
+
+  // Obtaining interest related contents.
+  if ($options['field'] == 'field_interest_content' &&
+      isset($_POST['interest_content_ref_weight']) &&
+      !empty($_POST['interest_content_ref_weight'])) {
+    $interest_contents = array();
+
+    $flagged_content = json_decode($_POST['interest_content_ref_weight']);
+    if (!empty($flagged_content)) {
+      foreach ($flagged_content as $content) {
+        $interest_contents[$content] = array(
+          'id' => $content,
+        );
+      }
+    }
+
+    $wrapper->$options['field']->set(array_keys($interest_contents));
+  }
+
+  //$wrapper->$options['field']->set(array_keys($learning_path_content));
+}
+
+/**
+ * Hide the additional settings tab.
+ *
+ * @param array $form
+ *   Contains the structure of the form.
+ * @param array $form_state
+ *   Contains the current state of the form.
+ *
+ * @return array $form
+ *  The form without additional settings tab.
+ *
+ * @ingroup callbacks
+ */
+function callback_hide_additional_settings($form, &$form_state) {
+  foreach ($form as $key => &$value) {
+    if (is_array($value) && $value['#group'] == 'additional_settings') {
+      $value['#access'] = FALSE;
+
+      // Set up the special properties 'path' and 'status'.
+      $form_state['values']['path']['pathauto'] = TRUE;
+      $form_state['values']['status'] = NODE_PUBLISHED;
+    }
+  }
+
+  return $form;
+}
+
+/**
+ * TODO: Need comments.
+ *
+ * Callback for ag_learning_itinerary_form_itinerary_node_form_alter().
+ *
+ * @param string $flag_name
+ *   The flag name.
+ * @param object $user
+ *   User information.
+ * @param object $node
+ *   Node information.
+ * @param string $field
+ *   Field name from which we want information.
+ *
+ * @ingroup callbacks
+ */
+function callback_flag_user_content($flag_name, $user, $node, $field) {
+  $flagged_content = callback_get_user_flagged_content($node, $field);
+  $field = "{$field}_target_id";
+  foreach ($flagged_content as $element) {
+    flag('flag', $flag_name, $element->$field, $user);
+  }
+}
+
+/**
+ * TODO: Need comments.
+ *
+ * Callback for ag_learning_itinerary_form_itinerary_node_form_alter().
+ *
+ * @param string $flag_name
+ *   The flag name.
+ * @param object $user
+ *   User information.
+ *
+ * @ingroup callbacks
+ */
+function callback_unflag_user_content($flag_name, $user) {
+  $user_flags = callback_get_user_flags($flag_name, $user);
+  foreach ($user_flags as $element) {
+    flag('unflag', $flag_name, $element->entity_id, $user);
+  }
+}
+
+//////////////
+/// THEMES ///
+//////////////
+
+/**
+ * Render a block with recommended elements for the learning path.
+ *
+ * @param array $vars
+ *   The node information.
+ *
+ * @return string
+ *   An HTML output that contains a recommended element.
+ *
+ * @ingroup themeable
+ */
+function theme_ag_recommended_itinerary_content(&$vars) {
+  // Get node object.
+  $node = $vars['data'];
+
+  // Building the URL to access the learning resource.
+  $url = ($node->type != 'ode') ? "node/{$node->nid}" : "ode/view/{$node->field_solrid[LANGUAGE_NONE][0]['value']}";
+  $link = ($node->type != 'ode') ? l($node->title, $url) : l($node->title, $url);
+
+  $recommended_item = array(
+    'element' => array(
+      '#markup' => $link,
+      '#theme_wrappers' => array('container'),
+      '#attributes' => array('class' => 'content-title'),
+    ),
+    '#theme_wrappers' => array('container'),
+    '#attributes' => array('class' => 'recommended-item'),
+  );
+
+  return render($recommended_item);
+}
+
+/**
+ * Render contents for base itinerary block detail.
+ *
+ * @param array $vars
+ *   Contains author and title data.
+ *
+ * @return string
+ *   An HTML output that contains a learning path taken as base content.
+ *
+ * @ingroup themeable
+ */
+function theme_ag_base_itinerary_details(&$vars) {
+  // Get needed data.
+  $title = $vars['data']['title'];
+  $author = $vars['data']['author'];
+
+  $itinerary_detail = array(
+    'title' => array(
+      '#markup' => "<h3>{$title}</h3>",
+    ),
+    'author' => array(
+      '#markup' => $author,
+      '#theme_wrappers' => array('container'),
+      '#attributes' => array('class' => 'content'),
+    ),
+  );
+
+  return render($itinerary_detail);
+}
+
+////////////////
+/// DATABASE ///
+////////////////
+
+/**
+ * TODO: Need comments.
+ *
+ * @param string $flag_name
+ *   The flag name.
+ * @param object $user
+ *   User information.
+ *
+ * @return array|bool $query
+ *   Flags marked by the user.
+ *
+ * @ingroup database
+ */
+function callback_get_user_flags($flag_name, $user) {
+  $flag = flag_get_flag($flag_name);
+
+  $sql = db_select('flagging', 'fg');
+  $sql->fields('fg', array('entity_id'));
+  $sql->condition('fid', $flag->fid);
+  $sql->condition('uid', $user->uid);
+  $sql->orderBy('timestamp', 'DESC');
+  $sql->orderBy('flagging_id', 'ASC');
+  $query = $sql->execute()->fetchAllAssoc('entity_id');
+
+  return (!empty($query)) ? $query : FALSE;
+}
+
+/**
+ * TODO: Need comments.
+ *
+ * Callback for callback_flag_user_content().
+ *
+ * @param object $node
+ *   Node information.
+ * @param string $field
+ *   Field name from which we want information.
+ *
+ * @return array|bool $query
+ *   The content that is part of the learning path.
+ *
+ * @ingroup database
+ */
+function callback_get_user_flagged_content($node, $field) {
+  $sql = db_select("field_data_{$field}", 'fic');
+  $sql->fields('fic', array("{$field}_target_id"));
+  $sql->condition('bundle', $node->type);
+  $sql->condition('entity_id', $node->nid);
+  $query = $sql->execute()->fetchAllAssoc("{$field}_target_id");
+
+  return (!empty($query)) ? $query : FALSE;
+}
+
+/**
+ * TODO: Need comments.
+ *
+ * Callback for ag_learning_itinerary_node_presave().
+ *
+ * @param string $view_display
+ *   The view display name.
+ * @param object $user
+ *   User information.
+ *
+ * @return array|bool $query
+ *   The content that is part of the learning path with a particular order.
+ *
+ * @ingroup database
+ */
+function callback_get_user_content_ordered($view_display, $user) {
+  $sql = db_select('draggableviews_structure', 'ds');
+  $sql->fields('ds', array('entity_id'));
+  $sql->condition('view_display', $view_display);
+  $sql->condition('user_id', $user->uid);
+  $query = $sql->execute()->fetchAllAssoc('entity_id');
+
+  return (!empty($query)) ? $query : FALSE;
+}

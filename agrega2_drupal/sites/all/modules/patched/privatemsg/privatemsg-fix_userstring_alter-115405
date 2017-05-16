@@ -1,0 +1,68 @@
+/**
+ * We need change autocomplete to show "Name surname (Username)"
+ *
+ * Using format_username on this module is necessary to apply the patch
+ * to the proper functioning of messages between users.
+ *
+ * More information to format_username:
+ * https://api.drupal.org/api/drupal/includes%21common.inc/function/format_username/7
+ *
+ * See more at https://redmine.emergya.es/issues/115405
+ */
+diff --git a/sites/all/modules/patched/privatemsg/privatemsg.module b/sites/all/modules/patched/privatemsg/privatemsg.module
+index 5697650..2c44140 100644
+--- a/sites/all/modules/patched/privatemsg/privatemsg.module
++++ b/sites/all/modules/patched/privatemsg/privatemsg.module
+@@ -82,6 +82,7 @@ function _privatemsg_generate_user_array($string, $slice = NULL) {
+   // last four users.
+   // This is done to avoid loading user objects that are not displayed, for
+   // obvious performance reasons.
++
+   $users = explode(',', $string);
+   if (!is_null($slice)) {
+     $users = array_slice($users, $slice);
+@@ -918,8 +919,13 @@ function _privatemsg_parse_userstring($input, $types_limitations = array()) {
+   $denieds = array();
+   foreach ($input as $string) {
+     $string = trim($string);
++
+     // Ignore spaces.
+     if (!empty($string)) {
++      preg_match('/\(.*\)/', $string, $result);
++      $characters = array('(', ')');
++      $string_array = str_replace($characters, '', $result);
++      $string = array_pop($string_array);
+ 
+       // First, collect all matches.
+       $matches = array();
+@@ -1199,6 +1205,7 @@ function privatemsg_sql_autocomplete($search, $names) {
+   if (!empty($names)) {
+     $query->condition('u.name', $names, 'NOT IN');
+   }
++
+   return $query;
+ }
+ 
+@@ -2733,6 +2740,7 @@ function privatemsg_recipient_format($recipient, $options = array()) {
+     $recipient->recipient = $recipient->uid;
+   }
+   $type = privatemsg_recipient_get_type($recipient->type);
++
+   if (isset($type['format'])) {
+     return theme($type['format'], array('recipient' => $recipient, 'options' => $options));
+   }
+diff --git a/sites/all/modules/patched/privatemsg/privatemsg.theme.inc b/sites/all/modules/patched/privatemsg/privatemsg.theme.inc
+index c8c6a56..1bf6e7c 100644
+--- a/sites/all/modules/patched/privatemsg/privatemsg.theme.inc
++++ b/sites/all/modules/patched/privatemsg/privatemsg.theme.inc
+@@ -141,8 +141,9 @@ function theme_privatemsg_username($variables) {
+   if (!isset($recipient->uid)) {
+     $recipient->uid = $recipient->recipient;
+   }
++
+   if (!empty($options['plain'])) {
+-    $name = strip_tags(format_username($recipient));
++    $name = strip_tags(format_username($recipient) . ' (' . $recipient->name . ')');
+     if (!empty($options['unique'])) {
+       $name .= ' [user]';
+     }

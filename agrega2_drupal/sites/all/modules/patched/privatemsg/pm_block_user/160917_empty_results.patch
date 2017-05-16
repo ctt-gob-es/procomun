@@ -1,0 +1,58 @@
+diff --git a/sites/all/modules/patched/privatemsg/pm_block_user/pm_block_user.pages.inc b/sites/all/modules/patched/privatemsg/pm_block_user/pm_block_user.pages.inc
+index 3469c5c..1fa9751 100644
+--- a/sites/all/modules/patched/privatemsg/pm_block_user/pm_block_user.pages.inc
++++ b/sites/all/modules/patched/privatemsg/pm_block_user/pm_block_user.pages.inc
+@@ -106,7 +106,7 @@ function pm_block_user_list() {
+       'sort'  => 'asc',
+       ),
+     array(
+-      'data' => t('Operations'),
++      'data' => '',
+       ),
+   );
+ 
+@@ -120,14 +120,24 @@ function pm_block_user_list() {
+   $select->innerJoin('users', 'u', 'u.uid = pmb.author');
+ 
+   $rows = array();
+-  foreach ($select->execute() as $row) {
+-    $rows[] = array(
+-      theme('username', array('account' => user_load($row->author))),
+-      l(t('unblock'), 'messages/block/' . $row->author, array('query' => drupal_get_destination())),
++  $results = $select->execute()->fetchAll();
++
++  if (!empty($results)) {
++    foreach ($results as $row) {
++      $rows[] = array(
++          theme('username', array('account' => user_load($row->author))),
++          l(t('unblock'), 'messages/block/' . $row->author, array('query' => drupal_get_destination())),
++      );
++    }
++    $form['#header'] = $header;
++    $form['#rows'] = $rows;
++  }
++  else {
++    $form['empty_results'] = array(
++      '#type' => 'item',
++      '#markup' => t('There is no blocked users.'),
+     );
+   }
+-  $form['#header'] = $header;
+-  $form['#rows'] = $rows;
+   return $form;
+ }
+ 
+@@ -202,5 +212,11 @@ function pm_block_user_block_submit($form, &$form_state) {
+  */
+ function theme_pm_block_user_list($variables) {
+   $form = $variables['form'];
+-  return drupal_render_children($form) . theme('table', array('header' => $form['#header'], 'rows' =>  $form['#rows'])) . theme('pager');
++  $table = '';
++
++  if(isset($form['#header']) && isset($form['#rows'])) {
++    $table = theme('table', array('header' => $form['#header'], 'rows' =>  $form['#rows'])) . theme('pager');
++  }
++
++  return drupal_render_children($form) . $table;
+ }
+\ No newline at end of file

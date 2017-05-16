@@ -1,0 +1,164 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_section_polls.features.field_instance.inc: n/a
+#  ag_section_polls.views_default.inc: n/a
+#  ag_section_polls.module: n/a
+#  ag_section_polls.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2016-07-14 11:58+0200\n"
+"PO-Revision-Date: 2016-07-14 11:58+0200\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: ag_section_polls.features.field_instance.inc:122
+msgid "Comunidades en que se publicará"
+msgstr ""
+
+#: ag_section_polls.views_default.inc:87;214
+msgid "Master"
+msgstr "Maestro"
+
+#: ag_section_polls.views_default.inc:88
+msgid "Community polls"
+msgstr "Encuestas de la comunidad"
+
+#: ag_section_polls.views_default.inc:89;224
+msgid "more"
+msgstr "más"
+
+#: ag_section_polls.views_default.inc:90
+msgid "Apply"
+msgstr "Aplicar"
+
+#: ag_section_polls.views_default.inc:91
+msgid "Reset"
+msgstr "Reiniciar"
+
+#: ag_section_polls.views_default.inc:92
+msgid "Sort by"
+msgstr "Ordenar por"
+
+#: ag_section_polls.views_default.inc:93;220
+msgid "Asc"
+msgstr "Asc"
+
+#: ag_section_polls.views_default.inc:94;221
+msgid "Desc"
+msgstr "Desc"
+
+#: ag_section_polls.views_default.inc:95
+msgid "Items per page"
+msgstr "Elementos por página"
+
+#: ag_section_polls.views_default.inc:96
+msgid "- All -"
+msgstr "- Todos -"
+
+#: ag_section_polls.views_default.inc:97
+msgid "Offset"
+msgstr "Desplazamiento"
+
+#: ag_section_polls.views_default.inc:98
+msgid "« first"
+msgstr "« primera"
+
+#: ag_section_polls.views_default.inc:99
+msgid "‹ previous"
+msgstr "‹ anterior"
+
+#: ag_section_polls.views_default.inc:100
+msgid "next ›"
+msgstr "siguiente ›"
+
+#: ag_section_polls.views_default.inc:101
+msgid "last »"
+msgstr "última »"
+
+#: ag_section_polls.views_default.inc:102
+msgid "Node ID"
+msgstr "ID del nodo"
+
+#: ag_section_polls.views_default.inc:103
+msgid "."
+msgstr "."
+
+#: ag_section_polls.views_default.inc:104
+msgid ","
+msgstr ","
+
+#: ag_section_polls.views_default.inc:105;222
+msgid "Todo(s)"
+msgstr ""
+
+#: ag_section_polls.views_default.inc:106;223
+msgid "Content pane"
+msgstr "Panel de contenido"
+
+#: ag_section_polls.views_default.inc:107
+msgid "No results found."
+msgstr "No se han encontrado resultados."
+
+#: ag_section_polls.views_default.inc:108
+msgid "View panes"
+msgstr "Vista panel"
+
+#: ag_section_polls.views_default.inc:215
+msgid "Last survey"
+msgstr "Última encuesta"
+
+#: ag_section_polls.views_default.inc:216
+msgid "más"
+msgstr ""
+
+#: ag_section_polls.views_default.inc:217
+msgid "Aplicar"
+msgstr ""
+
+#: ag_section_polls.views_default.inc:218
+msgid "Reiniciar"
+msgstr ""
+
+#: ag_section_polls.views_default.inc:219
+msgid "Ordenar por"
+msgstr ""
+
+#: ag_section_polls.views_default.inc:225
+msgid "Suscripción de nodos de OG"
+msgstr ""
+
+#: ag_section_polls.views_default.inc:226
+msgid "Vista panel"
+msgstr ""
+
+#: ag_section_polls.module:46
+msgid "0 votes"
+msgstr ""
+
+#: ag_section_polls.module:49
+msgid "@count vote"
+msgid_plural "@count votes"
+msgstr[0] ""
+msgstr[1] "@count votos"
+
+#: ag_section_polls.info:0
+msgid "Agrega2 polls"
+msgstr "Encuestas de Agrega2"
+
+#: ag_section_polls.info:0
+msgid "Polls section for Agrega2"
+msgstr "Sección de encuestas de Agrega2"
+
+#: ag_section_polls.info:0
+msgid "Agrega2"
+msgstr "Agrega2"

@@ -1,0 +1,81 @@
+// All
+.pane-agrega2-polls-panel-pane-1,
+.pane-events-calendar,
+.pane-agrega2-questions-panel-pane-1,
+.pane-ag-voted-content-panel-pane-1,
+.pane-ag-section-questions-answers-questions-debates-recomendations,
+.pane-agrega2-social-networks-panel-pane-1,
+.pane-agrega2-social-networks-panel-pane-2,
+.pane-agrega2-social-networks-panel-pane-5,
+.pane-community-related-content,
+.pane-itinerary-related-content,
+.pane-itinerary-base-detail
+  +pane-grey-bg
+  .form-actions
+    margin-bottom: 0
+  #edit-submit,
+  #edit-submit--2
+    +button($orange)
+    background-image: none
+    width: 100%
+    &:hover
+      background: $dark_orange
+  .pane-title
+    +title-bg
+  .pane-content
+    padding: 0
+  .item-list li:not(.pager-next),
+  .views-row
+    +clearfix()
+    position: relative
+    padding: 15px
+    border-bottom: 1px dashed $gray
+    margin: 0
+    &.views-row-last,
+    &:last-child
+      border: 0
+  .views-field-field-imagen-miniatura
+    //Reserve space for the icon, even when one does not exist
+    position: relative
+    float: left
+    img
+      margin-right: 8px
+  ul
+    margin-bottom: 0
+
+// Welcome module
+.pane-ag-section-user-timeline-wellcome-new-procomun
+  margin-bottom: 0
+  +box-shadow(0px 1px 4px -1px lighten($cold_gray, 15%))
+
+// Timeline
+.page-user-favourites,
+.pane-user-timeline-panel-pane-1
+  .pane-title
+    font-family: $font_pt_sans
+    font-size: 26px
+
+// Answer-question-recomendations
+  .pane-ag-section-questions-answers-questions-debates-recomendations
+// My community
+  .pane-agrega2-social-networks-panel-pane-1,
+  .pane-agrega2-social-networks-panel-pane-2,
+  .pane-agrega2-social-networks-panel-pane-5
+// Community related content
+  .pane-community-related-content
+// Most voted
+  .pane-ag-voted-content-panel-pane-1
+// Ultimas preguntas
+.pane-agrega2-questions-panel-pane-1
+  .pane-content
+    .views-row
+      article
+        color: $charcoal
+        padding: 0
+      .title
+        margin: 0 0 10px
+        font-size: 14px
+        font-family: $font_pt_sans
+        color: $main_blue
+        a
+          color: inherit

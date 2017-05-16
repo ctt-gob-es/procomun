@@ -1,0 +1,222 @@
+<?php
+/**
+ * @file
+ * Code for the ag_external_content feature.
+ */
+
+include_once 'ag_external_content.features.inc';
+
+##################
+##  FORMATTERS  ##
+##################
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function ag_external_content_field_formatter_info() {
+  return array(
+    'strip_tags_and_truncate' => array(
+      'label' => t('Strip content in tags and truncate'),
+      'description' => t('Strip content in selected html tags and truncate result text for a defined number of characters.'),
+      'field types' => array('text', 'text_long', 'text_with_summary'),
+      'settings' => array('strip_tags' => '', 'truncate' => ''),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_settings_form().
+ */
+function ag_external_content_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+  $settings = $instance['display'][$view_mode]['settings'];
+  $element = array();
+
+  $element['strip_tags'] = array(
+    '#title' => t('Strip tags and content'),
+    '#type' => 'textfield',
+    '#description' => t('Enter HTML tags separated by commas'),
+    '#default_value' => !empty($settings['strip_tags']) ? $settings['strip_tags'] : '',
+  );
+
+  $element['truncate'] = array(
+    '#title' => t('Truncate text'),
+    '#type' => 'textfield',
+    '#size' => 10,
+    '#description' => t('Truncate result text for a defined number of characters.'),
+    '#default_value' => !empty($settings['truncate']) ? $settings['truncate'] : '0',
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
+
+  return $element;
+}
+
+/**
+ * Implements hook_field_formatter_settings_summary().
+ */
+function ag_external_content_field_formatter_settings_summary($field, $instance, $view_mode) {
+  $settings = $instance['display'][$view_mode]['settings'];
+  $summary = array();
+
+  $tags = '';
+  if (isset($settings['strip_tags']) && !empty($settings['strip_tags'])) {
+    $tags = $settings['strip_tags'];
+  }
+  else {
+    $tags = t('None');
+  }
+
+  $summary[] = t('Strip content tags: @tags', array('@tags' => $tags));
+
+  if (!empty($settings['truncate']) && $settings['truncate'] != '0') {
+    $summary[] = t('Truncate: @truncate characters', array('@truncate' => $settings['truncate']));
+  }
+  else {
+    $summary[] = t('Truncate: ') . t('None');
+  }
+
+  return implode('<br />', $summary);
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function ag_external_content_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $settings = $display['settings'];
+
+  if (isset($items[0])) {
+    if (isset($items[0]['safe_value'])) {
+      $output = $items[0]['safe_value'];
+    }
+    elseif (isset($items[0]['value'])) {
+      $output = $items[0]['value'];
+    }
+    else {
+      $output = '';
+    }
+  }
+  else {
+    $output = '';
+  }
+
+  // Strip tags and content
+  if (!empty($settings['strip_tags'])) {
+    $strip_tags = '';
+    $tags = explode(',', $settings['strip_tags']);
+    foreach ($tags as $tag) {
+      $strip_tags .= '<' . trim($tag) . '>';
+    }
+
+    // Strip selected tags and content
+    $output = strip_tags_content($output, $strip_tags, TRUE);
+    // Strip whitespaces
+    $output = preg_replace("/\r\n|\r|\n/", '', $output);
+    // Strip empty <p> tags
+    $output = preg_replace('/<p>(\s)?<\/p>/su', '', $output);
+  }
+
+  // Truncate text
+  $output = text_summary($output, $instance['settings']['text_processing'] ? $items[0]['format'] : NULL, $display['settings']['truncate']);
+  $element = array(
+    array(
+      '#markup' => $output,
+    ),
+  );
+
+  return $element;
+}
+
+/**
+ * Strip tags and his content
+ * @params $text
+ *    Text to proccess
+ * @params $tags
+ *    Tags to strip
+ * @params $invert
+ *    Strip defined or not defined tags
+ * @return Proccessed text
+ */
+function strip_tags_content($text, $tags = '', $invert = FALSE) {
+  preg_match_all('/<(.+?)[\s]*\/?[\s]*>/si', trim($tags), $tags);
+  $tags = array_unique($tags[1]);
+
+  if(is_array($tags) && count($tags) > 0) {
+    if($invert == FALSE) {
+      return preg_replace('@<(?!(?:'. implode('|', $tags) .')\b)(\w+)\b.*?>.*?(</\1>)?@si', '', $text);
+    }
+    else {
+      return preg_replace('@<('. implode('|', $tags) .')\b.*?>.*?(</\1>)?@si', '', $text);
+    }
+  }
+  elseif($invert == FALSE) {
+    return preg_replace('@<(\w+)\b.*?>.*?(</\1>)?@si', '', $text);
+  }
+  return $text;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function ag_external_content_form_external_content_node_form_alter(&$form, &$form_state) {
+  global $language;
+
+  //Licenses: Comercial use and allow modifications only visible if user is author of resource.
+  $form['field_comercial_use']['#states']['visible'] = array(
+    ':input[name="field_original_author[und]"]' => array('value' => '1'),
+  );
+  $form['field_allow_modifications']['#states']['visible'] = array(
+    ':input[name="field_original_author[und]"]' => array('value' => '1'),
+  );
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function ag_external_content_preprocess_page(&$variables) {
+  // Add bookmarklet share code to user bar
+  if (module_exists('simple_bookmarklet') && module_enable(array('simple_bookmarklet'))) {
+    $variables['share_link'] = l(t('Share on Procomun'), simple_bookmarklet_get_code(), array(
+      'external' => TRUE,
+      'absolute' => TRUE,
+      'attributes' => array(
+        'id' => 'share-link',
+        'title' => t('Drag this link to the bookmarks bar of your browser to share any external content on Procomun'),
+      ),
+    ));
+  }
+  else {
+    $variables['share_link'] = '';
+  }
+}
+
+/**
+ * Implements hook_entity_view($entity, $type, $view_mode, $langcode).
+ */
+function ag_external_content_entity_view_alter(&$build, $type) {
+  //Put license icon, if license checkboxes are valid and applied to creative commons.
+  //Rendering depends on three fields, but it should be changed to a proper field_formatter for field_original_author.
+  if ($type == 'node' && $build['#bundle'] == 'external_content' && $build['#view_mode'] == 'full') {
+    $node = $build['#node'];
+
+    //Get field values.
+    $original_user = isset($node->field_original_author[LANGUAGE_NONE][0]['value']) ? $node->field_original_author[LANGUAGE_NONE][0]['value'] : NULL;
+    $allow_modifications = isset($node->field_allow_modifications[LANGUAGE_NONE][0]['value']) ? $node->field_allow_modifications[LANGUAGE_NONE][0]['value'] : NULL;
+    $comercial_use = isset($node->field_comercial_use[LANGUAGE_NONE][0]['value']) ? $node->field_comercial_use[LANGUAGE_NONE][0]['value'] : NULL;
+
+    //Show only if it is a Creative Commons license, and these two fields were introduced.
+    if ($allow_modifications != NULL && $comercial_use != NULL) {
+      //Get license link if it is Creative Commons.
+      $link = ag_visualization_ode_get_license_link($allow_modifications, $comercial_use, $original_user, TRUE);
+
+      //Set right before general language.
+      if (!empty($link)) {
+        $build['license_image']['#markup'] = '<div class="license-link">' . $link . '</div>';
+
+        //There must be a previous weight to hold to. Body is required.
+        $weight = isset($build['body']['#weight']) ? $build['body']['#weight'] + 1.5 : NULL;
+
+        //Else, just set 10.
+        $build['license_image']['#weight'] = empty($weight) ? 10 : $weight;
+      }
+    }
+  }
+}

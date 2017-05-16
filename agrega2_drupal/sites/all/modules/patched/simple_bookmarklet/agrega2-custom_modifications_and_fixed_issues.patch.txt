@@ -1,0 +1,57 @@
+# This patch fixes some bugs described in https://www.drupal.org/project/issues/simple_bookmarklet?status=All and customize bookmarklet create link
+diff --git a/sites/all/modules/patched/simple_bookmarklet/js/simple_bookmarklet.js b/sites/all/modules/patched/simple_bookmarklet/js/simple_bookmarklet.js
+index 7c92526..74ed324 100644
+--- a/sites/all/modules/patched/simple_bookmarklet/js/simple_bookmarklet.js
++++ b/sites/all/modules/patched/simple_bookmarklet/js/simple_bookmarklet.js
+@@ -104,7 +104,7 @@
+                  '</div><div id="simple_bookmarklet_mask"></div>';
+         $("body").append(js);
+ 
+-        $('#simple_bookmarklet_close').live('click', function() {
++        $('#simple_bookmarklet_close').on('click', function() {
+           $('#simple_bookmarklet_cont, #simple_bookmarklet_mask').fadeOut(500);
+           $('body, html').css('overflow', 'auto');
+         });
+diff --git a/sites/all/modules/patched/simple_bookmarklet/simple_bookmarklet.module b/sites/all/modules/patched/simple_bookmarklet/simple_bookmarklet.module
+index 4d210fa..0ddb595 100644
+--- a/sites/all/modules/patched/simple_bookmarklet/simple_bookmarklet.module
++++ b/sites/all/modules/patched/simple_bookmarklet/simple_bookmarklet.module
+@@ -205,7 +205,7 @@ function simple_bookmarklet_admin_settings() {
+   }
+ 
+   $form['simple_bookmarklet_code_preview'] = array(
+-    '#markup' => l(t('Drag and drop this link to your bookmarks bar'),
++    '#markup' => l(t('Share on Procomun'),
+                    simple_bookmarklet_get_code(),
+                    array('external' => TRUE, 'absolute' => TRUE)),
+   );
+@@ -351,7 +351,7 @@ function simple_bookmarklet_form_alter(&$form, $form_state, $form_id) {
+ 
+             elseif ($index == '#default_value') {
+               if (is_array($form[$field][$lang][$index])) {
+-                $form[$field][$lang][$index] = explode(',', $value);
++                $form[$field][$lang][0]['value']['#default_value'] = $value;
+               }
+               else {
+                 $form[$field][$lang][$index] = $value;
+@@ -383,7 +383,7 @@ function simple_bookmarklet_page_alter(&$page) {
+     // Using drupal_goto() with destination set causes a recursive redirect loop
+     // Need to decode URL to prevent double-encoding UTF-8 characters
+     // @see https://drupal.org/node/1403616
+-    $preopopulate = $_GET['simple_bookmarklet_prepopulate'];
++    $prepopulate = $_GET['simple_bookmarklet_prepopulate'];
+     $opts = array('simple_bookmarklet' => 1,
+                   'simple_bookmarklet_prepopulate' => $prepopulate);
+     $origin = drupal_get_destination();
+diff --git a/sites/all/modules/patched/simple_bookmarklet/theme/simple-bookmarklet-html.tpl.php b/sites/all/modules/patched/simple_bookmarklet/theme/simple-bookmarklet-html.tpl.php
+index b6cdb1d..60f3068 100644
+--- a/sites/all/modules/patched/simple_bookmarklet/theme/simple-bookmarklet-html.tpl.php
++++ b/sites/all/modules/patched/simple_bookmarklet/theme/simple-bookmarklet-html.tpl.php
+@@ -29,6 +29,7 @@
+   <div class="clear-block">
+     <?php print $page; ?>
+   </div>
++  <?php print $page_bottom; ?>
+   <div class="footer">
+     <?php if (isset($footer)) print $footer; ?>
+   </div>

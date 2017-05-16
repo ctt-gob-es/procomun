@@ -1,0 +1,45 @@
+//Basic typography defined by bootstrap
+body
+  font-family: $font_pt_sans
+  color: $charcoal
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .h1-style,
+  .h2-style,
+  .h3-style
+    font-weight: 700
+    color: $navy
+  h1,
+  .h1-style
+    font-size: 36px
+    margin-top: 0
+    .not-front &
+      font-size: 28px
+  h2,
+  .h2-style
+    font-size: 21px
+    font-family: $font_narrow
+    a
+      color: inherit
+      &:hover
+        color: inherit
+  h3,
+  .h3-style
+    font-size: 21px
+    font-family: $font_narrow
+  a
+    color: $main_blue
+    &:hover
+      text-decoration: underline
+      color: $deep_blue
+    &.active
+      color: $deep_blue
+  .page-title
+    font-size: 28px
+    font-family: $font_pt_sans
+  p
+    line-height: 1.5em

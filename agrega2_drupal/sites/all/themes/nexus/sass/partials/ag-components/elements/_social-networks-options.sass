@@ -1,0 +1,77 @@
+.content-share
+  margin-top: 2em
+  border-bottom: 1px solid $light_gray
+  > *
+    padding-top: 10px
+    padding-bottom: 10px
+.content-share,
+.social-networks-options
+  border-top: 1px solid $light_gray
+  margin-bottom: 0!important
+  display: table!important
+  width: 100%
+  > *
+    display: table-cell
+    vertical-align: middle
+    padding: 5px 14px
+    min-height: 45px
+  .share-local-networks,
+  .share-modal
+    width: 225px
+    white-space: nowrap
+    border-right: 1px solid $light_gray
+    a
+      text-decoration: underline
+  // share icons
+  ul.services_link
+    +clearfix
+    @extend .do-inline
+    margin: 0
+    li
+      float: left
+      margin-right: 10px
+      vertical-align: middle
+      margin: 0 5px 0 0
+      padding: 0
+      display: inline-block
+      &:last-child
+        margin-right: 0
+      a
+        height: 34px
+        overflow: hidden
+        display: block
+        &:hover
+          img
+            opacity: 0.8
+
+// Share outside networks
+.share-outside-networks
+  position: relative
+  text-align: right
+  float: none!important
+  width: 40px
+  border-left: 1px solid $light_gray
+  .toggle-social-networks
+    width: 30px
+    height: 30px
+    background: image-url('ico_compartir.png') center no-repeat
+    cursor: pointer
+    margin: 0
+    display: inline-block
+  .wrapper
+    @extend .shadow
+    position: absolute
+    top: -70px
+    right: 0
+    width: 215px
+    z-index: 9
+    margin-top: 0
+    &:before
+      top: initial
+      bottom: -10px
+      left: initial
+      right: 5px
+    .item-list
+      background: $white
+      position: relative
+      padding: 15px

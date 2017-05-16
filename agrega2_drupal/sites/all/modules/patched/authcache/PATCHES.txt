@@ -1,0 +1,6 @@
+PATCHES APPLIED
+---------------
+
+- Clear all multilingual urls if more than one language is enabled.
+  See: authcache_builtin_expire_v2_clear_multilingual_urls.patch
+  Module: authcache_builtin_expire_v2

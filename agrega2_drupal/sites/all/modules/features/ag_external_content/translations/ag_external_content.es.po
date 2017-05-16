@@ -1,0 +1,143 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_external_content.features.field_instance.inc: n/a
+#  ag_external_content.features.inc: n/a
+#  ag_external_content.module: n/a
+#  ag_external_content.install: n/a
+#  ag_external_content.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2015-12-15 12:39+0100\n"
+"PO-Revision-Date: 2015-12-15 12:39+0100\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: ag_external_content.features.field_instance.inc:686
+msgid "Comunidades en que se publicará"
+msgstr ""
+
+#: ag_external_content.features.field_instance.inc:687
+msgid "Cuerpo del contenido"
+msgstr ""
+
+#: ag_external_content.features.field_instance.inc:688
+msgid "Etiquetas"
+msgstr ""
+
+#: ag_external_content.features.field_instance.inc:689
+msgid "Título"
+msgstr ""
+
+#: ag_external_content.features.field_instance.inc:690
+msgid "Url externa"
+msgstr ""
+
+#: ag_external_content.features.field_instance.inc:691
+msgid "solrID"
+msgstr ""
+
+#: ag_external_content.features.field_instance.inc:692
+msgid "¿Eres el autor original del recurso?"
+msgstr ""
+
+#: ag_external_content.features.field_instance.inc:693
+msgid "¿Permites modificaciones en tu obra?"
+msgstr ""
+
+#: ag_external_content.features.field_instance.inc:694
+msgid "¿Permites usos comerciales de tu obra?"
+msgstr ""
+
+#: ag_external_content.features.inc:25
+msgid "Contenido externo"
+msgstr ""
+
+#: ag_external_content.features.inc:27
+msgid "Crea contenido que proviene de páginas externas por medio de un bookmarklet."
+msgstr ""
+
+#: ag_external_content.features.inc:29
+msgid "Title"
+msgstr "Título"
+
+#: ag_external_content.module:19
+msgid "Strip content in tags and truncate"
+msgstr "Eliminar contenido de etiquetas y recortar"
+
+#: ag_external_content.module:20
+msgid "Strip content in selected html tags and truncate result text for a defined number of characters."
+msgstr "Eliminar el contenido de las etiquetas seleccionadas y recortar la logitud del texto a un número definido de caracteres."
+
+#: ag_external_content.module:35
+msgid "Strip tags and content"
+msgstr "Eliminar etiquetas y contenido"
+
+#: ag_external_content.module:37
+msgid "Enter HTML tags separated by commas"
+msgstr "Introduzca etiquetas HTML separadas por comas."
+
+#: ag_external_content.module:42
+msgid "Truncate text"
+msgstr "Recortar texto"
+
+#: ag_external_content.module:45
+msgid "Truncate result text for a defined number of characters."
+msgstr "Recortar longitud del texto a un número definido de caracteres."
+
+#: ag_external_content.module:65;74
+msgid "None"
+msgstr "Ninguno"
+
+#: ag_external_content.module:68
+msgid "Strip content tags: @tags"
+msgstr "Eliminar etiquetas: @tags"
+
+#: ag_external_content.module:71
+msgid "Truncate: @truncate characters"
+msgstr "Recortar: @truncate caracteres"
+
+#: ag_external_content.module:74
+msgid "Truncate: "
+msgstr "Recortar: "
+
+#: ag_external_content.module:177
+msgid "Share on Procomun"
+msgstr "Compartir en Procomún"
+
+#: ag_external_content.module:182
+msgid "Drag this link to the bookmarks bar of your browser to share any external content on Procomun"
+msgstr "Arrastre este enlace a la barra de marcadores de su navegador para poder compartir cualquier contenido externo en Procomún"
+
+#: ag_external_content.install:49
+msgid "Processed @records records. Finished."
+msgstr ""
+
+#: ag_external_content.install:181
+msgid "Error: No community permissions updated"
+msgstr ""
+
+#: ag_external_content.install:182
+msgid "Error: Community permissions update failed"
+msgstr ""
+
+#: ag_external_content.info:0
+msgid "ag_external_content"
+msgstr ""
+
+#: ag_external_content.info:0
+msgid "Feature with the external content configurations."
+msgstr ""
+
+#: ag_external_content.info:0
+msgid "Agrega2"
+msgstr "Agrega2"

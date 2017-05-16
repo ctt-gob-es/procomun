@@ -1,0 +1,57 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  twitter_timeline.module: n/a
+#  twitter_timeline.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2014-06-09 16:14+0200\n"
+"PO-Revision-Date: 2014-06-09 16:14+0200\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: twitter_timeline.module:13
+msgid "Block which renders a Twitter timeline"
+msgstr "Bloque que muestra el twitter timeline"
+
+#: twitter_timeline.module:29
+msgid "Twitter timeline"
+msgstr "Twitter timeline"
+
+#: twitter_timeline.module:53
+msgid "Widget ID"
+msgstr "Wirdget ID"
+
+#: twitter_timeline.module:55
+msgid "Twitter unique identifier for widget to load"
+msgstr "Identificador único del widget a cargar"
+
+#: twitter_timeline.module:62
+msgid "Widget title"
+msgstr "Título del widget"
+
+#: twitter_timeline.module:64
+msgid "Please, write in English, so it can be successfully translated"
+msgstr "Por favor, escriba en inglés y así se puede traducir satisfactoriamente"
+
+#: twitter_timeline.info:0
+msgid "Twitter Timeline"
+msgstr "Twitter timeline"
+
+#: twitter_timeline.info:0
+msgid "Provides a custom block which renders a timeline from Twitter"
+msgstr "Provee un bloque personalizado que muestra el timeline de twitter "
+
+#: twitter_timeline.info:0
+msgid "Agrega2"
+msgstr "Agrega2"
+

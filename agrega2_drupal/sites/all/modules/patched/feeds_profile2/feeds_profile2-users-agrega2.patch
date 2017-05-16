@@ -1,0 +1,123 @@
+diff --git a/sites/all/modules/patched/feeds_profile2/feeds_profile2.module b/sites/all/modules/patched/feeds_profile2/feeds_profile2.module
+index 5e565d0..4326208 100644
+--- a/sites/all/modules/patched/feeds_profile2/feeds_profile2.module
++++ b/sites/all/modules/patched/feeds_profile2/feeds_profile2.module
+@@ -51,15 +51,110 @@ function feeds_profile2_feeds_after_save(FeedsSource $source, $entity, $item, $e
+       ));
+     }
+ 
+-    // Load entity wrapper.
+-    $profile_wrapper = entity_metadata_wrapper('profile2', $profile);
+-
+-    // Set mapped field values.
+     foreach ($values as $field_name => $value) {
+-      $profile_wrapper->{$field_name}->set($value);
+-    }
+ 
+-    // Save profile.
+-    $profile_wrapper->save();
++      switch ($field_name) {
++
++        case 'field_dni':
++          for ($i = 0; $i < 9; $i++) {
++            $num[$i] = substr($value, $i, 1);
++          }
++          if ($num[8] == substr('TRWAGMYFPDXBNJZSQVHLCKE', substr($value, 0, 8) % 23, 1)) {
++            $last_letter = $num[8];
++            array_pop($num);
++          }
++          $profile->field_dni['und'][0] = array(
++            'last_letter' => $last_letter,
++            'number' => implode('', $num),
++            'type' => 'NIF',
++          );
++          break;
++
++        case 'field_locality_personal_fc':
++          $values = array();
++          $values['field_name'] = 'field_locality_personal_fc'; // field collection name
++          $values['field_locality']['und'][0]['value'] = $value;
++          $values['field_visibility']['und'][0]['value'] = 1;
++          // Create the field collection entry and associate it with the profile
++          $field_entity = entity_create('field_collection_item', $values);
++          $field_entity->setHostEntity('profile2', $profile);
++          $field_entity->save();
++          break;
++
++        case 'field_province_personal_fc':
++          $values = array();
++          $values['field_name'] = 'field_province_personal_fc'; // field collection name
++          $values['field_province']['und'][0]['value'] = $value;
++          $values['field_visibility']['und'][0]['value'] = 1;
++          // Create the field collection entry and associate it with the profile
++          $field_entity = entity_create('field_collection_item', $values);
++          $field_entity->setHostEntity('profile2', $profile);
++          $field_entity->save();
++          break;
++
++        case 'field_country_personal_fc':
++          // DETECT OPTION
++          $countries = array(
++            'Germany' => 'Alemania',
++            'Spain' => 'España'
++          );
++
++          if ($country = array_search($value, $countries)) {
++            $values = array();
++            $values['field_name'] = 'field_country_personal_fc'; // field collection name
++            $values['field_countries']['und'][0]['value'] = $country;
++            $values['field_visibility']['und'][0]['value'] = 1;
++            // Create the field collection entry and associate it with the profile
++            $field_entity = entity_create('field_collection_item', $values);
++            $field_entity->setHostEntity('profile2', $profile);
++            $field_entity->save();
++          }
++          break;
++
++        case 'field_date_birth_personal_fc':
++          $value = str_replace('/', '-', $value);
++          $value = date("Y/m/d H:i:s", strtotime($value));
++          $values = array();
++          $values['field_name'] = 'field_date_birth_personal_fc'; // field collection name
++          $values['field_date_birth']['und'][0]['value'] = $value;
++          $values['field_visibility']['und'][0]['value'] = 1;
++          // Create the field collection entry and associate it with the profile
++          $field_entity = entity_create('field_collection_item', $values);
++          $field_entity->setHostEntity('profile2', $profile);
++          $field_entity->save();
++          break;
++
++        case 'field_name_surname':
++          $values = array();
++          $values['field_name'] = 'field_name_surname';
++          // NAME
++          $values['field_profile_name']['und'][0]['value'] = $value[0];
++          // SURNAME
++          $values['field_profile_surname']['und'][0]['value'] = $value[1];
++          $values['field_visibility']['und'][0]['value'] = 1;
++          // Create the field collection entry and associate it with the profile
++          $field_entity = entity_create('field_collection_item', $values);
++          $field_entity->setHostEntity('profile2', $profile);
++          $field_entity->save();
++          break;
++
++        // field_edu_center_personal_fc
++        case 'field_edu_center_personal_fc':
++          $values = array();
++          $values['field_name'] = 'field_edu_center_personal_fc';
++          $values['field_educative_center']['und'][0]['value'] = $value;
++          $values['field_visibility']['und'][0]['value'] = 1;
++          // Create the field collection entry and associate it with the profile
++          $field_entity = entity_create('field_collection_item', $values);
++          $field_entity->setHostEntity('profile2', $profile);
++          $field_entity->save();
++          break;
++
++        default:
++          $profile->{$field_name}['und'][0]['value'] = $value;
++      }
++    }
++    $profile->save();
+   }
++
+ }

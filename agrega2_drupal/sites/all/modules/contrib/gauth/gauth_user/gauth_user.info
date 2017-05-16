@@ -1,0 +1,13 @@
+name = Google Auth User Support
+description = "Google Authentication for end user.  This module provides addon feature for end user to authenticate for a service"
+core = 7.x
+dependencies[] = gauth
+package = Google Api
+configure = admin/config/services/gauth_user
+
+; Information added by Drupal.org packaging script on 2016-01-05
+version = "7.x-1.5-rc1+1-dev"
+core = "7.x"
+project = "gauth"
+datestamp = "1451992902"
+

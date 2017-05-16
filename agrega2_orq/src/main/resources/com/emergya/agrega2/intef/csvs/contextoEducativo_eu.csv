@@ -1,0 +1,32 @@
+TESAURO INTEF – NPROCOMUN,ÁRBOL CURRICULAR LOE,ETB LRE
+Educación Especial,1#Hezkuntza Berezia,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##1227#hezkuntza berezia
+Educación Infantil,2#Haur Hezkuntza,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##1017#aurreskolako hezkutza
+Educación Primaria,3#Lehen Hezkuntza,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##1024#lehen hezkuntza
+6 -7 años / Primer curso,3#Lehen Hezkuntza##3.1#Lehen zikloa##3.1.1#Lehen maila,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##1024#lehen hezkuntza
+7 - 8 años / Segundo curso,3#Lehen Hezkuntza##3.1#Lehen zikloa##3.1.2#Bigarren maila,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##1024#lehen hezkuntza
+8 - 9 años / Tercer curso,3#Lehen Hezkuntza##3.2#Bigarren zikloa##3.2.1#Hirugarren maila,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##1024#lehen hezkuntza
+9 - 10 años / Cuarto curso,3#Lehen Hezkuntza##3.2#Bigarren zikloa##3.2.2#Laugarren maila,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##1024#lehen hezkuntza
+10 - 11 años / Quinto curso,3#Lehen Hezkuntza##3.3#Hirugarren zikloa##3.3.1#Bosgarren maila,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##1024#lehen hezkuntza
+11 - 12 / Sexto curso,3#Lehen Hezkuntza##3.3#Hirugarren zikloa##3.3.2#Seigarren maila,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##1024#lehen hezkuntza
+Educación Secundaria Obligatoria,4#Derrigorrezko Bigarren Hezkuntza,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##1158#bigarren hezkuntza
+12 - 13 años / Primer curso,4#Derrigorrezko Bigarren Hezkuntza##4.1#Lehen maila,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##1158#bigarren hezkuntza
+13 - 14 años / Segundo curso,4#Derrigorrezko Bigarren Hezkuntza##4.2#Bigarren maila,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##1158#bigarren hezkuntza
+14 - 15 años / Tercer curso,4#Derrigorrezko Bigarren Hezkuntza##4.3#Hirugarren maila,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##1158#bigarren hezkuntza
+15 - 16 / Cuarto curso,4#Derrigorrezko Bigarren Hezkuntza##4.4#Laugarren maila,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##1158#bigarren hezkuntza
+Bachillerato,6#Batxilergoa,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##1158#bigarren hezkuntza
+Formación Profesional,8#Lanbide Heziketa###7#Hasierako Lanbide Gaikuntzarako programak,M60#60 HEZKUNTZA-SISTEMA##386#hezkuntza##1369#lanbide heziketa
+Formación Profesional Básica (más de 15 años),7#Hasierako Lanbide Gaikuntzarako programak,M60#60 HEZKUNTZA-SISTEMA##386#hezkuntza##1369#lanbide heziketa##3110#hasierako lanbide heziketa
+Ciclo formativo grado medio (más de 16 años),8#Lanbide Heziketa##8.1#Erdi mailako prestakuntza-zikloa,M60#60 HEZKUNTZA-SISTEMA##386#hezkuntza##1369#lanbide heziketa##4659#lanbide heziketa espezifikoa##3538#erdi mailako prestakuntza zikloak
+Ciclo formativo grado superior (más de 18 años),8#Lanbide Heziketa##8.2#Goi mailako prestakuntza-zikloa,M60#60 HEZKUNTZA-SISTEMA##386#hezkuntza##1369#lanbide heziketa##4659#lanbide heziketa espezifikoa##2939#goi mailako prestakuntza zikloak
+Educación de Personas Adultas,9#Pertsona Helduen Hezkuntza,M60#60 HEZKUNTZA-SISTEMA##386#hezkuntza##28#helduen hezkuntza
+Enseñanza oficial de idiomas,10#Erregimen Bereziko Irakaskuntzak##10.1#Hizkuntza-eskola ofiziala,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##4782#hizkuntzen irakaskuntza ofizialak
+Nivel básico (A),10#Erregimen Bereziko Irakaskuntzak##10.1#Hizkuntza-eskola ofiziala##10.1.1#Oinarrizko maila,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##4782#hizkuntzen irakaskuntza ofizialak
+Nivel intermedio (B),10#Erregimen Bereziko Irakaskuntzak##10.1#Hizkuntza-eskola ofiziala##10.1.2#Erdiko maila,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##4782#hizkuntzen irakaskuntza ofizialak
+Nivel avanzado ( C ),10#Erregimen Bereziko Irakaskuntzak##10.1#Hizkuntza-eskola ofiziala##10.1.3#Goi maila,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##4782#hizkuntzen irakaskuntza ofizialak
+Enseñanzas de artes plásticas y diseño,10#Erregimen Bereziko Irakaskuntzak##10.2#Arte-irakaskuntzak##10.2.1#Arte plastiko eta diseinuko irakaskuntzak###10#Erregimen Bereziko Irakaskuntzak##10.2#Arte-irakaskuntzak##10.2.2#Arte plastiko eta diseinuko goi ikasketak,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##1623#irakaskuntza artistikoa
+Enseñanzas de música,10#Erregimen Bereziko Irakaskuntzak##10.2#Arte-irakaskuntzak##10.2.3#Hirugarren maila,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##1623#irakaskuntza artistikoa
+Enseñanzas de danza,10#Erregimen Bereziko Irakaskuntzak##10.2#Arte-irakaskuntzak##10.2.4#Dantza-irakaskuntzak,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##1623#irakaskuntza artistikoa
+Enseñanzas de arte dramático,10#Erregimen Bereziko Irakaskuntzak##10.2#Arte-irakaskuntzak##10.2.5#Arte dramatikoko irakaskuntzak,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##1623#irakaskuntza artistikoa
+Enseñanzas deportivas,10#Erregimen Bereziko Irakaskuntzak##10.3#Kirol-irakaskuntzak,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##4676#kirol irakaskuntzak
+Enseñanzas Universitarias,11#Unibertsitate-irakaskuntzak,M60#60 HEZKUNTZA-SISTEMA##403#hezkuntza sistema##587#goi mailako hezkuntza
+Formación del Profesorado,,M60#60 HEZKUNTZA-SISTEMA##386#hezkuntza##1273#irakasleen prestakuntza

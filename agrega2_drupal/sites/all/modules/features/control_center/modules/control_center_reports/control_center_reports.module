@@ -1,0 +1,64 @@
+<?php
+/**
+ * @file
+ * Code for the control_center_reports feature.
+ */
+
+include_once 'control_center_reports.features.inc';
+
+/**
+ * Implements hook_permission().
+ */
+function control_center_reports_permission() {
+  $permissions = array();
+
+  $permissions['access control center procomun reports'] = array(
+    'title' => t('Access to control center procomun reports'),
+  );
+  $permissions['access control center communities reports'] = array(
+    'title' => t('Access to control center communities reports'),
+  );
+
+  return $permissions;
+}
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function control_center_reports_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'ctools' && $plugin == 'content_types') {
+    return 'plugins/' . $plugin;
+  }
+}
+
+# # # # # # # # # # # # #
+# AUXILIARY FUNCTIONS # #
+# # # # # # # # # # # # #
+
+/**
+ * Return all available reports forms inside.
+ */
+function control_center_reports_get_available_reports () {
+  return array(
+    'control_center_reports_procomun_reporting_form' => t('Procomún reporting'),
+    'control_center_reports_communities_reporting_form' => t('Communities reporting'),
+  );
+}
+
+/**
+ * Render a CVS with the report info given.
+ *
+ * @param  Array $report Report table info.
+ */
+function control_center_reports_render_report($report, $filename = 'report.csv') {
+  // Cambiamos las cabeceras para poder descargar el CSV.
+  drupal_add_http_header('Pragma', 'public');
+  drupal_add_http_header('Expires', '0');
+  drupal_add_http_header('Cache-Control', 'must-revalidate; post-check=0; pre-check=0');
+  drupal_add_http_header('Cache-Control', 'private');
+  drupal_add_http_header('Content-Disposition', "attachment; filename=$filename");
+  drupal_add_http_header('Content-Transfer-Encoding', 'binary');
+
+  print theme('format_csv', array('header' => $report['header'], 'rows' => $report['rows']));
+  drupal_exit();
+}

@@ -1,0 +1,54 @@
+/**
+ * CSS for Dropdown menu user module.
+ */
+
+/*
+ * User
+ */
+.user-login {
+  cursor: default;
+}
+
+  /* User image */
+  .user-image {
+    display: inline-block;
+  }
+
+  .user-image img {
+    vertical-align: middle;
+  }
+
+  /* User name */
+  .user-name {
+    display: inline-block
+  }
+
+  /* User settings*/
+  .user-settings {
+    display: inline-block;
+    cursor: pointer;
+  }
+
+  /* User logout */
+  .user-logout {
+    display: inline-block;
+    cursor: pointer;
+  }
+
+
+/* Menu items */
+.block-header {
+  padding: 5px 8px;
+  font-weight: bold;
+}
+
+.block-body {
+  position: absolute;
+  z-index: 1;
+  padding: 5px 8px;
+  min-width: 130px;
+}
+
+#edit-actions {
+  text-align: center;
+}

@@ -1,0 +1,568 @@
+<?php
+/**
+ * Implements hook_update_N().
+ * Comment update for enviroment differences
+ */
+function ag_section_post_update_7000(&$sandbox) {
+  //Comment update for enviroment differences
+}
+
+/**
+ * Implements hook_update_N().
+ * Dpavon: REVERT FEATURE FIRST, NEW FIELD NEEDED. Updates new field "field_original_author" value to non-migrated posts.
+ */
+function ag_section_post_update_7001(&$sandbox) {
+  //Prepare all variables in first iteration
+  if (!isset($sandbox['total'])) {
+
+    //Prepare elements
+    $time_migration = 1418774400; //Wed, 17 Dec 2014 00:00:00 GMT. Migration was finished by then.
+    $time_newfield = 1422453637; //Wed, 28 Jan 2015 14:00:37
+    $sandbox['elements'] = array_values(db_query("SELECT nid,nid FROM node WHERE type = 'post' AND created > :time_migration AND created < :time_newfield AND changed > :time_migration AND changed < :time_newfield", array(':time_migration' => $time_migration, ':time_newfield' => $time_newfield))->fetchAllKeyed());
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = count($sandbox['elements']);
+  }
+
+  //Get batch, or number of entities to process each time.
+  $nodes_per_pass = 10;
+  $end = $sandbox['current'] + $nodes_per_pass;
+
+  $preloaded_batch = node_load_multiple(array_slice($sandbox['elements'], $sandbox['current'], $nodes_per_pass));
+
+  //Loop. Use db_query_range if any query needs to be split between batches.
+  while($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    //Heavy operations
+    $number = $sandbox['current'];
+    $nid = $sandbox['elements'][$number];
+    $node = $preloaded_batch[$nid];
+
+    ag_section_post_update_non_migration_license($node);
+
+    //Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1, meaning we are done.
+  // Also, avoid division by zero
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @nodes nodes for original author. Finished.', array('@nodes' => $sandbox['total'])));
+  }
+}
+
+
+/**
+ * Implements hook_update_N().
+ * Reads from public folder, searching for a file called 'post_licenses.csv'
+ */
+function ag_section_post_update_7002(&$sandbox) {
+  //No execution limit
+  set_time_limit(0);
+
+  //Prepare all variables in first iteration
+  if (!isset($sandbox['total'])) {
+    //Prepare array from file.
+    ag_section_post_prepare_batch_operation($sandbox);
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = ag_section_post_get_total_batch_operations($sandbox);
+  }
+
+  //Get batch, or number of entities to process each time.
+  $nodes_per_pass = 10;
+  $end = $sandbox['current'] + $nodes_per_pass;
+
+  //Loop. Use db_query_range if any query needs to be split between batches.
+  while($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    //Heavy operations
+    $element = ag_section_post_get_element($sandbox);
+    ag_section_post_update_migration_license($sandbox, $element);
+
+    //Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1, meaning we are done.
+  // Also, avoid division by zero
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @nodes nodes. Finished.', array('@nodes' => $sandbox['total'])));
+    drupal_set_message(t('Not found @licences licences.', array('@licences' => count($sandbox['notfound']))));
+
+    //Close log file
+    if (!empty($sandbox['fh_log'])) {
+      fclose($sandbox['fh_log']);
+    }
+  }
+}
+
+/**
+ * Implements hook_update_N().
+ * Update labels for posts
+ */
+function ag_section_post_update_7003(&$sandbox) {
+  //Prepare all variables in first iteration
+  if (!isset($sandbox['total'])) {
+    //Prepare array from query to database.
+    ag_section_post_prepare_batch_operation_labels($sandbox);
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = isset($sandbox['elements']) ? count($sandbox['elements']) : 0;
+  }
+
+  //Get batch, or number of entities to process each time.
+  $nodes_per_pass = 10;
+  $end = $sandbox['current'] + $nodes_per_pass;
+
+  $preloaded_batch = node_load_multiple(array_slice($sandbox['elements'], $sandbox['current'], $nodes_per_pass));
+
+  //Loop. Use db_query_range if any query needs to be split between batches.
+  while($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    //Heavy operations
+    $nid = !empty($sandbox['elements'][$sandbox['current']]) ? $sandbox['elements'][$sandbox['current']] : '';
+    $node = !empty($preloaded_batch[$nid]) ? $preloaded_batch[$nid] : NULL;
+    ag_section_post_update_labels($sandbox, $node);
+
+    //Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1, meaning we are done.
+  // Also, avoid division by zero
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @nodes nodes. Finished.', array('@nodes' => $sandbox['total'])));
+  }
+}
+
+
+/**
+ * For every post node found (non-related to migration), apply new value of field.
+ */
+function ag_section_post_update_non_migration_license($node) {
+  //Load node.
+  $wrapper = entity_metadata_wrapper('node', $node);
+
+  //Change fields: Set original author as true, as all list posts are like that. Then, assign values.
+  if (!$wrapper->field_original_author->value()) {
+    $wrapper->field_original_author->set(TRUE);
+    $wrapper->save();
+  }
+}
+
+/**
+ * Look in public path for specific file (with nodes of type post) that specifies their licenses.
+ */
+function ag_section_post_prepare_batch_operation(&$sandbox) {
+  $temp_array = array();
+
+  //Get path. File must be in public folder with this name. It will be imported just once.
+  $public_path = variable_get('file_public_path', conf_path() . '/files');
+  $real_path = drupal_realpath($public_path);
+  $csvfile = $real_path . '/post_licenses.csv';
+  $logfile = $real_path . '/post_licenses_not_found.log';
+
+  //Check if path exists, else, notify with an error to stop updating.
+  if(!file_exists($csvfile)) {
+    drupal_set_message(t('Path: @path not found. Finished.', array('@path' => $csvfile)));
+    throw new DrupalUpdateException(t('Path: @path not found. Finished.', array('@path' => $csvfile)));
+  }
+
+  //Open log file
+  $fh_log = fopen($logfile, 'a');
+
+  if ($fh_log === FALSE) {
+    drupal_set_message(t('Log Path: @path not writing. Finished.', array('@path' => $logfile)));
+    throw new DrupalUpdateException(t('Log Path: @path not writing. Finished.', array('@path' => $logfile)));
+  }
+  else {
+    //If file opened successfully, save the handler into sandbox variable
+    $sandbox['fh_log'] = $fh_log;
+    //Prepare array for not found licences
+    $sandbox['notfound'] = array();
+  }
+
+  //Open file and get every line of csv file
+  $fh = fopen($csvfile, 'r');
+
+  while ($line = fgetcsv($fh, 0, ';')) {
+    //Text consists of identifier, value of field allow_modifications, value of field comercial_use.
+    $id_agrega = $line[0];
+    $allow_modifications = $line[1];
+    $comercial_use = $line[2];
+
+    //Store in temporal array
+    $temp_array[] = array('id' => $id_agrega, 'am' => $allow_modifications, 'cu' => $comercial_use);
+  }
+  fclose($fh);
+
+  //Return by storing the array in sandbox variable. It will be static and accessible by all update_7001 batch executions.
+  $sandbox['elements'] = $temp_array;
+}
+
+/**
+ * Implements hook_update_N().
+ * Map field_contribuciones_ode with field_author_ref and field_author_others.
+ */
+function ag_section_post_update_7004(&$sandbox) {
+
+  // Prepare all variables in first iteration.
+  if (!isset($sandbox['total'])) {
+    // Prepare array from query.
+    ag_section_post_prepare_batch_update_authors($sandbox);
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = ag_section_post_get_total_batch_operations($sandbox);
+  }
+
+  // Get batch, or number of entities to process each time.
+  $nodes_per_pass = 10;
+  $end = $sandbox['current'] + $nodes_per_pass;
+
+  $ids = array();
+  foreach ($sandbox['elements'] as $element) {
+    $ids[] = $element['idDrupal'];
+  }
+
+  $preloaded_batch = node_load_multiple(array_slice($ids, $sandbox['current'], $nodes_per_pass));
+
+  // Loop.
+  while($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    // Heavy operations.
+    $element = ag_section_post_get_element($sandbox);
+    $node = $preloaded_batch[$element['idDrupal']];
+    ag_section_post_update_authors($sandbox, $node, $element);
+
+    // Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1, meaning we are done.
+  // Also, avoid division by zero.
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @records records. Finished.', array('@records' => $sandbox['total'])));
+  }
+}
+
+/**
+ * Get contents to update authors field
+ */
+function ag_section_post_prepare_batch_update_authors(&$sandbox) {
+  // Get solrid from orchestrator.
+  $orchestrator = new OS_orchestrator_selection();
+  $params = array(
+    'q' => '*:*',
+    'rows' => 100000,
+    'fields' => array('idDrupal', 'id'),
+    'fq' => 'type:POST AND published:1',
+  );
+  $response = $orchestrator->multipleSelectionOdeFields($params);
+
+  $result = array();
+  if (!empty($response[1])) {
+    foreach ($response[1] as $element) {
+      if (isset($element['idDrupal']) && !empty($element['idDrupal'])) {
+        $result[] = $element;
+      }
+    }
+  }
+
+  // Return by storing the array in sandbox variable. It will be static and accessible by all update batch executions.
+  $sandbox['elements'] = $result;
+}
+
+/**
+ * Function for update authors in posts.
+ */
+function ag_section_post_update_authors(&$sandbox, &$node, $element) {
+  if (!empty($node) && is_object($node)) {
+    // Reset field_contribuciones_ode values.
+    unset($node->field_contribuciones_ode[LANGUAGE_NONE]);
+
+    // Map field_contribuciones_ode with field_author_ref (users in Procomún).
+    if (isset($node->field_author_ref[LANGUAGE_NONE]) && !empty($node->field_author_ref[LANGUAGE_NONE])) {
+      $delta = 0;
+      foreach($node->field_author_ref[LANGUAGE_NONE] as $author) {
+        // Map all elements except the first, because the first is the original author.
+        if ($delta > 0) {
+          // Set value for author fullname.
+          $author_full_name = ag_section_profile_users_get_name_surname_cached($author['target_id']);
+          // Set value for author email.
+          $author_email = isset($author['entity']->mail) ? $author['entity']->mail : DrupalToolKit::getUserData($author['target_id'], array('mail'))->mail;
+          // Set value for author organization.
+          $author_organization = callback_get_user_organization($author['target_id']);
+
+          $values = array();
+          $values['field_name'] = 'field_contribuciones_ode';
+          $values['field_contribuidor'][LANGUAGE_NONE][0]['value'] = isset($author_full_name) ? $author_full_name : '';
+          $values['field_correo_electr_nico'][LANGUAGE_NONE][0]['email'] = isset($author_email) ? $author_email : '';
+          $values['field_organizaci_n'][LANGUAGE_NONE][0]['value'] = (isset($author_organization) && $author_organization == true) ? $author_organization : '';
+
+          $entity = entity_create('field_collection_item', $values);
+          $entity->setHostEntity('node', $node);
+          $entity->save();
+        }
+        $delta++;
+      }
+    }
+
+    // Map field_contribuciones_ode with field_author_others (users not in Procomún).
+    if (isset($node->field_author_others[LANGUAGE_NONE]) && !empty($node->field_author_others[LANGUAGE_NONE])) {
+      foreach($node->field_author_others[LANGUAGE_NONE] as $author) {
+        $values = array();
+        $values['field_name'] = 'field_contribuciones_ode';
+        $values['field_contribuidor'][LANGUAGE_NONE][0]['value'] = isset($author['value']) ? $author['value'] : '';
+
+        $entity = entity_create('field_collection_item', $values);
+        $entity->setHostEntity('node', $node);
+        $entity->save();
+      }
+    }
+  }
+}
+
+/**
+ * Return number of operations that will be done.
+ */
+function ag_section_post_get_total_batch_operations($sandbox) {
+  return isset($sandbox['elements']) ? count($sandbox['elements']) : 0;
+}
+
+/**
+ * Gets element with sandbox data.
+ */
+function ag_section_post_get_element($sandbox) {
+  $position = isset($sandbox['current']) ? $sandbox['current'] : 0;
+  return !empty($sandbox['elements']) ? $sandbox['elements'][$position] : array();
+}
+
+/**
+ * For every entry of array that was read from file (node type: posts), load node and assign new license values.
+ */
+function ag_section_post_update_migration_license(&$sandbox, $element) {
+  $agrega_id = $element['id'];
+  //Get from temp tables if this node exists in drupal after post migration.
+  $nid = db_query("SELECT cid FROM {temp_map_content_id} WHERE proid = :proid AND type = 'post'", array(':proid' => strtolower($agrega_id)))->fetchField();
+
+  if (!empty($nid) && is_numeric($nid)) {
+    try {
+      //Load node.
+      $node = entity_load_single('node', $nid);
+      if ($node->type == 'post') {
+        $wrapper = entity_metadata_wrapper('node', $node);
+
+        //Change fields: Set original author as true, as all list posts are like that. Then, assign values.
+        $wrapper->field_original_author->set(TRUE);
+        $wrapper->field_allow_modifications->set($element['am']);
+        $wrapper->field_comercial_use->set($element['cu']);
+
+        $wrapper->save();
+      }
+    }
+    catch (Exception $e) {
+      watchdog('UPDATE ERROR', "Error en el nodo: $agrega_id con con el nid $nid");
+    }
+  }
+  else {
+    //Add to not found array
+    $sandbox['notfound'][] = $agrega_id;
+
+    //Write into log file licences not found in database
+    if (!empty($sandbox['fh_log'])) {
+      fwrite($sandbox['fh_log'], $agrega_id . "\n");
+    }
+  }
+}
+
+/**
+ * Get posts to transform labels
+ */
+function ag_section_post_prepare_batch_operation_labels(&$sandbox) {
+  $query = db_select('node', 'n')
+      ->fields('n', array('nid'))
+      ->condition('n.type', 'post');
+  $result = $query->execute()->fetchCol();
+
+  //Return by storing the array in sandbox variable. It will be static and accessible by all update batch executions.
+  $sandbox['elements'] = $result;
+
+  //Add orchestrator object to avoid load in every iteration
+  $OS_orchestrator_transform = new OS_orchestrator_transform();
+  $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+  $sandbox['orchestrator_transform'] = $OS_orchestrator_transform;
+  $sandbox['orchestrator_inyection'] = $OS_orchestrator_inyection;
+
+  //Get vid from tags vocabulary for new labels
+  $vocabulary_tags = taxonomy_vocabulary_machine_name_load('tags');
+  $vocabulary_area = taxonomy_vocabulary_machine_name_load('knowledgearea');
+  $vocabulary_learning = taxonomy_vocabulary_machine_name_load('learningcontext');
+  if (isset($vocabulary_tags->vid) && isset($vocabulary_area->vid) && isset($vocabulary_learning->vid)) {
+    $sandbox['vocabulary_tags_vid'] = $vocabulary_tags->vid;
+    $sandbox['vocabulary_area_vid'] = $vocabulary_area->vid;
+    $sandbox['vocabulary_learning_vid'] = $vocabulary_learning->vid;
+  }
+  else {
+    drupal_set_message(t('Error getting vid vocabulary. Finished.'));
+    throw new DrupalUpdateException(t('Error getting vid vocabulary. Finished.'));
+  }
+}
+
+/**
+ * For every entry of community array update labels
+ */
+function ag_section_post_update_labels(&$sandbox, $node) {
+  $changes = FALSE;
+
+  if (!empty($node)) {
+    list($status, $result) = $sandbox['orchestrator_transform']->transformPost($node);
+
+    if ($status == 1) {
+      if (!empty($result)) {
+        $nwrapper = entity_metadata_wrapper('node', $node);
+
+        //Check final labels
+        if (isset($result->labels)) {
+          $new_labels = array();
+
+          //Parse labels from name to tid
+          $labels = $result->labels;
+
+          foreach ($labels as $label_name) {
+            $label = DrupalToolkit::taxonomyGetByName($label_name, $sandbox['vocabulary_tags_vid']);
+
+            //check if label is new
+            if (empty($label)) {
+              $new_label = DrupalToolkit::taxonomyCreate($label_name, $sandbox['vocabulary_tags_vid']);
+              if (isset($new_label->tid)) {
+                $new_labels[] = (int) $new_label->tid;
+              }
+            }
+            else {
+              //If label exist add tid to final array
+              foreach ($label as $tid => $label_data) {
+                $new_labels[] = $tid;
+              }
+            }
+          }
+
+          //Update field labels.
+          $actual_labels = $nwrapper->field_labels->raw();
+          if ($actual_labels != $new_labels) {
+            $changes = TRUE;
+            if (!empty($new_labels)) {
+              $nwrapper->field_labels->set($new_labels);
+            }
+            else {
+              $nwrapper->field_labels = NULL;
+            }
+          }
+        }
+
+        //Knowlegde area and learning context
+        $array_data_fields = array(
+          'knowledgeArea' => array(
+            'field' => 'field_knowledge_area',
+            'vid' => $sandbox['vocabulary_area_vid']),
+          'learningContext' => array(
+            'field' => 'field_learning_context',
+            'vid' => $sandbox['vocabulary_learning_vid']),
+        );
+
+        foreach ($array_data_fields as $item => $item_data) {
+          if (isset($result->$item)) {
+            $new_values = array();
+
+            $values = $result->$item;
+            foreach ($values as $value_name) {
+              $value = DrupalToolkit::taxonomyGetByName($value_name, $item_data['vid']);
+
+              //check if item is new
+              if (empty($value)) {
+                //If knowledge area or learning context is new stop the batch and show exception
+                drupal_set_message(t('@field: @name not existing in post with nid @nid and solrid @solrid. Finished.', array('@field' => $item,'@name' => $value_name, '@nid' => $nwrapper->nid->raw(), '@solrid' => $nwrapper->field_solrid->raw())));
+                throw new DrupalUpdateException(t('@field: @name not existing in post with nid @nid and solrid @solrid. Finished.', array('@field' => $item,'@name' => $value_name, '@nid' => $nwrapper->nid->raw(), '@solrid' => $nwrapper->field_solrid->raw())));
+                break;
+              }
+              else {
+                //If item exist add tid to final array
+                foreach ($value as $tid => $value_data) {
+                  $new_values[] = $tid;
+                }
+              }
+            }
+
+            //Update field values
+            $actual_values = $nwrapper->$item_data['field']->raw();
+
+            if ($actual_values != $new_values) {
+              $changes = TRUE;
+              if (!empty($new_values)) {
+                $nwrapper->$item_data['field']->set($new_values);
+              }
+            }
+          }
+        }
+
+        //Save changes if needed
+        if ($changes) {
+          $nwrapper->save();
+
+          //Update SOLR
+          $post_data = array(
+            'solrid' => $nwrapper->field_solrid->raw(),
+            'nid' => $nwrapper->nid->raw(),
+            'field_labels' => !empty($labels) ? $labels : array(),
+            'field_knowledge_area' => !empty($result->knowledgeArea) ? $result->knowledgeArea : array(),
+            'field_learning_context' => !empty($result->learningContext) ? $result->learningContext : array(),
+          );
+
+          list($status_up, $result_up) = $sandbox['orchestrator_inyection']->AddPostCatalog($post_data);
+
+          if ($status_up != 1) {
+            drupal_set_message(t('Error updating post with nid @nid and solrid @solrid in SOLR. Finished.', array('@nid' => $nwrapper->nid->raw(), '@solrid' => $nwrapper->field_solrid->raw())));
+            throw new DrupalUpdateException(t('Error updating post with nid @nid and solrid @solrid in SOLR. Finished.', array('@nid' => $nwrapper->nid->raw(), '@solrid' => $nwrapper->field_solrid->raw())));
+          }
+        }
+      }
+      else {
+        drupal_set_message(t('Missing data in post with nid @nid. Finished', array('@nid' => $node->nid)));
+        throw new DrupalUpdateException(t('Missing data in post with nid @nid. Finished.', array('@nid' => $node->nid)));
+      }
+    }
+    else {
+      drupal_set_message(t('Error on request to orchestrator in post with nid @nid. Finished: ' . $result, array('@nid' => $node->nid)));
+      throw new DrupalUpdateException(t('Error on request to orchestrator in post with nid @nid. Finished: ' . $result, array('@nid' => $node->nid)));
+    }
+  }
+  else {
+    drupal_set_message(t('Post node missing. Finished.'));
+    throw new DrupalUpdateException(t('Post node missing. Finished.'));
+  }
+}

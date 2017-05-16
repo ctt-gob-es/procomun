@@ -1,0 +1,927 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_visualization_ode.features.field_instance.inc: n/a
+#  ag_visualization_ode.features.inc: n/a
+#  ag_visualization_ode.forms.inc: n/a
+#  ag_visualization_ode.widget.inc: n/a
+#  ag_visualization_ode.module: n/a
+#  includes/ag_visualization_ode.pages.inc: n/a
+#  ag_visualization_ode.install: n/a
+#  ag_visualization_ode.info: n/a
+#  includes/ag_visualization_ode.admin.inc: n/a
+#  templates/ode-detail.tpl.php: n/a
+#  templates/ode-viewer-iframe.tpl.php: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2017-01-18 11:08+0100\n"
+"PO-Revision-Date: 2017-01-18 11:08+0100\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: ag_visualization_ode.features.field_instance.inc:3536
+msgid "Accesibilidad"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3537
+msgid "Agrupacion de alumnos"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3538
+msgid "Arbol Curricular"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3539
+msgid "Archivos a adjuntar"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3540
+msgid "Certificado"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3541
+msgid "Competencias"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3542
+msgid "Comunidades en que se publicará"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3543
+msgid "Conocimiento previo"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3544
+msgid "Contexto educativo"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3545
+msgid "Correo Electrónico"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3546
+msgid "Descripción"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3547
+msgid "Descripción de la fecha"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3548
+msgid "Drag and drop"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3549
+msgid "Etiquetas"
+msgstr "Filtra per etiquetes"
+
+#: ag_visualization_ode.features.field_instance.inc:3550
+msgid "Etiquetas (separadas por comas): Procure introducir términos que describan de manera específica el contenido del recurso, evitando ambigüedades, palabras que no aporten significado alguno y los plurales."
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3551
+msgid "Fecha de creación"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3552
+msgid "Idioma"
+msgstr "Filtra per idioma"
+
+#: ag_visualization_ode.features.field_instance.inc:3553
+msgid "Idioma del destinatario"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3554
+msgid "Imagen miniatura"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3555
+msgid "Lugar de utilización"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3556
+msgid "Modalidad de uso"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3557
+msgid "Nivel Educativo"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3558
+msgid "Nivel de agregación"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3559
+msgid "Nombre"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3560
+msgid "Nombre y apellidos"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3561
+msgid "Objetivos didácticos"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3562
+msgid "Organización"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3563
+msgid "Otros autores"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3564
+msgid "Para utilizar por"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3565
+msgid "Permitir que otros lo compartan"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3566
+msgid "Recuerde que las etiquetas deben estar separadas por comas."
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3567
+msgid "Recurso Educativo"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3568
+msgid "Recurso de Aprendizaje"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3569
+msgid "Rol del contribuidor"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3570
+msgid "Tipo de recurso desde mimetype"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3571
+msgid "Tipo de recurso educativo"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3572 ag_visualization_ode.features.inc:29
+msgid "Título"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3573
+msgid "Usuario original"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3574
+msgid "Valorar"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3575
+msgid "solrID"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3576
+msgid "¿Permites modificaciones en tu obra?"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3577
+msgid "¿Permites usos comerciales de tu obra?"
+msgstr ""
+
+#: ag_visualization_ode.features.field_instance.inc:3578
+msgid "Área de conocimiento"
+msgstr ""
+
+#: ag_visualization_ode.features.inc:25
+msgid "Recurso de aprendizaje"
+msgstr ""
+
+#: ag_visualization_ode.features.inc:30
+msgid "Los campos marcados con un asterisco son obligatorios."
+msgstr ""
+
+#: ag_visualization_ode.forms.inc:27
+msgid "With this option you may upload SCORM o IMS package, compressed in zip format, for publishing at Procomún."
+msgstr ""
+"Con esta opción podrá adjuntar un paquete SCORM o IMS, en formato "
+"comprimido zip, para su publicación en Procomún."
+
+#: ag_visualization_ode.forms.inc:33
+msgid "Also, you may upload a zip without any catalog file and some files in its root folder. These files will be processed and redirected to a resource creation form where you may complete any catalog information."
+msgstr ""
+"También puede adjuntar un archivo sin catalogación ninguna que posea "
+"archivos en su directorio raíz. Estos archivos serán procesados y "
+"redirigidos a un formulario de creación de recursos de aprendizaje "
+"donde puede completar la información de catalogación."
+
+#: ag_visualization_ode.forms.inc:48
+msgid "Add new files"
+msgstr ""
+
+#: ag_visualization_ode.forms.inc:58
+msgid "Communities in which are published"
+msgstr "Comunidades donde será publicado"
+
+#: ag_visualization_ode.forms.inc:60
+msgid "Communities where the content will be published"
+msgstr "Comunidades donde será publicado el contenido"
+
+#: ag_visualization_ode.forms.inc:75
+msgid "Submit"
+msgstr "Enviar"
+
+#: ag_visualization_ode.forms.inc:221
+msgid "There was a problem creating the educational resource. Please, contact the administrators"
+msgstr ""
+"Ha habido un problema al crear el recurso educativo. Por favor, "
+"contacte con los administradores."
+
+#: ag_visualization_ode.forms.inc:337;396
+msgid "You may access created educational resource by clicking on this link: !link"
+msgstr ""
+"Puedes acceder al recurso de aprendizaje creado pulsando el siguiente "
+"enlace: !link"
+
+#: ag_visualization_ode.forms.inc:370
+msgid "Exception produced creating the ODE with message: @message"
+msgstr ""
+
+#: ag_visualization_ode.forms.inc:375;376
+msgid "Error when publishing on Agrega"
+msgstr "Error al publicar en Agrega"
+
+#: ag_visualization_ode.forms.inc:382;383
+msgid "User has reached maximum data limit in Agrega."
+msgstr "La cuenta de usuario ha alcanzado su máximo de capacidad en Agrega."
+
+#: ag_visualization_ode.forms.inc:388
+msgid "Submitted package couldn't be processed (LOM-ES categories not valid or absent). Please review it, fix any errors and submit it again."
+msgstr "La publicación del paquete no se ha podido completar (falta la catalogación LOM-ES o el paquete es incorrecto). Revíselo corrigiendo los errores anteriores y vuelva atrás para iniciar el proceso de nuevo."
+
+#: ag_visualization_ode.forms.inc:389
+msgid "Exception produced when sending ODE to Sorl/Tomcat server: @message"
+msgstr ""
+
+#: ag_visualization_ode.forms.inc:393
+msgid "The resource was created correctly"
+msgstr "El recurso se ha creado correctamente"
+
+#: ag_visualization_ode.forms.inc:397;402
+msgid "Response received: @message"
+msgstr ""
+
+#: ag_visualization_ode.forms.inc:401
+msgid "The resource was imported correctly"
+msgstr "El recurso ha sido importado correctamente"
+
+#: ag_visualization_ode.forms.inc:407
+msgid "External server not available. Please contact an administrator."
+msgstr ""
+"Servidor externo no disponible. Por favor, contacte con un "
+"administrador."
+
+#: ag_visualization_ode.forms.inc:408
+msgid "Exception produced when sending ODE to Sorl/Tomcat server: @faultstring"
+msgstr ""
+
+#: ag_visualization_ode.forms.inc:413
+msgid "External server did not respond or request is empty."
+msgstr ""
+
+#: ag_visualization_ode.forms.inc:706;738
+msgid "At least the Procomún community must be selected"
+msgstr "Al menos la comunidad Procomún debe ser seleccionada"
+
+#: ag_visualization_ode.forms.inc:710
+msgid "You can't publish a content in Help and FAQ in addition with other communities"
+msgstr ""
+"No puedes publicar contenido en Ayuda y FAQs a la vez que en otras "
+"comunidades"
+
+#: ag_visualization_ode.forms.inc:714
+msgid "Only administrators can publish on this community"
+msgstr "Solo los administradores pueden publicar en esta comunidad"
+
+#: ag_visualization_ode.forms.inc:724
+msgid "You can't mark as certified a draft learning resource"
+msgstr ""
+
+#: ag_visualization_ode.forms.inc:742
+msgid "You can't publish content in FAQs and Help and in other group at the same time"
+msgstr ""
+
+#: ag_visualization_ode.forms.inc:770
+msgid "Please enter an author name"
+msgstr "Por favor, introduzca un nombre de autor"
+
+#: ag_visualization_ode.forms.inc:774
+msgid "Please enter an author mail"
+msgstr "Por favor, introduzca una dirección de correo del autor"
+
+#: ag_visualization_ode.forms.inc:808;875
+msgid "Error detected while processing values"
+msgstr ""
+
+#: ag_visualization_ode.forms.inc:959
+msgid "Image could not be uploaded to Solr. Solr_ID: @id, Image path: @imagepath"
+msgstr ""
+
+#: ag_visualization_ode.forms.inc:1051;1055
+msgid "The field %field is required."
+msgstr "El campo %field es necesario."
+
+#: ag_visualization_ode.forms.inc:1060
+msgid "You must select at least one item of any of the blocks in section resource type"
+msgstr ""
+"Debe seleccionar al menos un ítem de alguno de los bloques en el "
+"apartado tipo de recurso"
+
+#: ag_visualization_ode.forms.inc:1090
+msgid "No publish as organization"
+msgstr "No publicar como una organización"
+
+#: ag_visualization_ode.forms.inc:1095
+msgid "Publish as @org_name"
+msgstr "Publicar como @org_name"
+
+#: ag_visualization_ode.forms.inc:1101
+msgid "Publish this content as a organization"
+msgstr "Publicar este contenido como una organización"
+
+#: ag_visualization_ode.forms.inc:1110
+msgid "My organizations"
+msgstr "Mis organizaciones"
+
+#: ag_visualization_ode.forms.inc:1133
+msgid "Are you sure you want to delete resource?"
+msgstr "¿Estás seguro de eliminar el recurso?"
+
+#: ag_visualization_ode.forms.inc:1164
+msgid "Resource delete successfully."
+msgstr "Recurso eliminado correctamente"
+
+#: ag_visualization_ode.forms.inc:1173
+msgid "Error deleting resource in procomun"
+msgstr "Error al eliminar el recurso en procomún"
+
+#: ag_visualization_ode.forms.inc:1177
+msgid "Error deleting selected resource"
+msgstr "Error al eliminar el recurso seleccionado"
+
+#: ag_visualization_ode.forms.inc:1181
+msgid "Error deleting resource"
+msgstr "Error al eliminar el recurso"
+
+#: ag_visualization_ode.forms.inc:1185
+msgid "No resource selected"
+msgstr "No ha seleccionado el recurso"
+
+#: ag_visualization_ode.forms.inc:1219;1266
+msgid "See profile"
+msgstr ""
+
+#: ag_visualization_ode.forms.inc:1239
+msgid "Add another author"
+msgstr "Añadir otro autor"
+
+#: ag_visualization_ode.widget.inc:91
+msgid "Fullscreen"
+msgstr "Pantalla completa"
+
+#: ag_visualization_ode.widget.inc:299
+msgid "Download as"
+msgstr "Descargar como"
+
+#: ag_visualization_ode.widget.inc:312
+msgid "Download"
+msgstr "Descargar"
+
+#: ag_visualization_ode.widget.inc:363
+msgid "Image"
+msgstr "Imagen"
+
+#: ag_visualization_ode.module:129
+msgid "Ode certification"
+msgstr ""
+
+#: ag_visualization_ode.module:130
+msgid "Allow ode certification"
+msgstr ""
+
+#: ag_visualization_ode.module:133
+msgid "Config ode rating"
+msgstr ""
+
+#: ag_visualization_ode.module:134
+msgid "Allow config ode rating notifications"
+msgstr ""
+
+#: ag_visualization_ode.module:205
+msgid "Encountered an error while flagging the node."
+msgstr ""
+
+#: ag_visualization_ode.module:206
+msgid "The content could not be updated."
+msgstr ""
+
+#: ag_visualization_ode.module:240;287
+msgid "The content was correctly updated."
+msgstr "El contenido fue actualizado correctamente"
+
+#: ag_visualization_ode.module:258;484;489;494
+msgid "The selected resource could not be found."
+msgstr "El recurso seleccionado no pudo ser encontrado."
+
+#: ag_visualization_ode.module:264
+msgid "Flag operation not allowed or correctly specified."
+msgstr ""
+
+#: ag_visualization_ode.module:270
+msgid "User identifier not specified."
+msgstr ""
+
+#: ag_visualization_ode.module:281
+msgid "Content could not be flagged. Flagging may be disabled, or user may lack permission."
+msgstr ""
+
+#: ag_visualization_ode.module:381
+msgid "Learning resource"
+msgstr "Recurso de aprendizaje"
+
+#: ag_visualization_ode.module:387;487;492
+msgid "Resource not found"
+msgstr "Recurso no encontrado"
+
+#: ag_visualization_ode.module:392;1304
+msgid "Untitled"
+msgstr "Sin título"
+
+#: ag_visualization_ode.module:482
+msgid "Encountered an error while connecting to external service."
+msgstr "Error encontrado mientras se conectaba a un servicio externo"
+
+#: ag_visualization_ode.module:529
+msgid "None"
+msgstr "Ninguno"
+
+#: ag_visualization_ode.module:538
+msgid "default image"
+msgstr "Imagen por defecto"
+
+#: ag_visualization_ode.module:626;626;1595;1595 includes/ag_visualization_ode.pages.inc:47;47
+msgid "Quality accredited by INTEF"
+msgstr "Calidad acreditada por INTEF"
+
+#: ag_visualization_ode.module:636
+msgid "Delete resource"
+msgstr "Eliminar recurso"
+
+#: ag_visualization_ode.module:1049
+msgid "Unnamed"
+msgstr ""
+
+#: ag_visualization_ode.module:1329
+msgid "Error found while creating content"
+msgstr "Error encontrado creando contenido"
+
+#: ag_visualization_ode.module:1443
+msgid "Error found while updating ode: %solrid"
+msgstr ""
+
+#: ag_visualization_ode.module:1572
+msgid "Listing"
+msgstr "Listado"
+
+#: ag_visualization_ode.module:1717
+msgid "Distributed with the same license as the original resource"
+msgstr "Se respeta la licencia original del recurso"
+
+#: ag_visualization_ode.module:1721;1724;1727;1730;1733;1736
+msgid "This work is licensed under a"
+msgstr "Esta obra está bajo una licencia"
+
+#: ag_visualization_ode.module:1721
+msgid "Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License."
+msgstr ""
+
+#: ag_visualization_ode.module:1724
+msgid "Creative Commons Attribution-NoDerivatives 4.0 International License."
+msgstr ""
+
+#: ag_visualization_ode.module:1727
+msgid "Creative Commons Attribution-NonCommercial 4.0 International License."
+msgstr ""
+
+#: ag_visualization_ode.module:1730
+msgid "Creative Commons Attribution 4.0 International License."
+msgstr ""
+
+#: ag_visualization_ode.module:1733
+msgid "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License."
+msgstr ""
+
+#: ag_visualization_ode.module:1736
+msgid "Creative Commons Attribution-ShareAlike 4.0 International License."
+msgstr ""
+
+#: ag_visualization_ode.module:1898
+msgid "Preparing cron task queue. Queue: @queue_number elements. Now adding @elements elements."
+msgstr ""
+
+#: ag_visualization_ode.module:1909
+msgid "Error calling getUnpublishedODEs method."
+msgstr ""
+
+#: ag_visualization_ode.module:1964;1965
+msgid "Error: saving ode in procomun: %solrid"
+msgstr ""
+
+#: ag_visualization_ode.module:1979;1980
+msgid "Error updating existing ode: %solrid"
+msgstr ""
+
+#: ag_visualization_ode.module:1985;1986
+msgid "Error: No ode data got from solr %solrid"
+msgstr ""
+
+#: ag_visualization_ode.module:1991;1992
+msgid "Error: No solrid sent"
+msgstr ""
+
+#: ag_visualization_ode.module:2050
+msgid "EntityMetadataWrapperException while processing idDrupal: @id"
+msgstr ""
+
+#: ag_visualization_ode.module:2229
+msgid "Certificate ODE"
+msgstr "Certificar ODE"
+
+#: ag_visualization_ode.module:2240
+msgid "Delete ODE certification"
+msgstr "Eliminar certificación ODE"
+
+#: ag_visualization_ode.module:33
+msgid "Flag"
+msgstr "Bandera"
+
+#: ag_visualization_ode.module:42
+msgid "Share with your communities"
+msgstr "Compartir con tus comunidades"
+
+#: ag_visualization_ode.module:43
+msgid "Allow share a content in your communities"
+msgstr "Permite a los usuarios compartir contenidos con tus comunidades"
+
+#: ag_visualization_ode.module:52;53
+msgid "Delete resource confirmation"
+msgstr "Confirmación de borrado de recurso"
+
+#: ag_visualization_ode.module:62
+msgid "Add new comment"
+msgstr "Añadir nuevo comentario"
+
+#: ag_visualization_ode.module:69
+msgid "Publish learning resource"
+msgstr "Publicar recurso de aprendizaje"
+
+#: ag_visualization_ode.module:76
+msgid "Manage certificate ode"
+msgstr ""
+
+#: ag_visualization_ode.module:84
+msgid "Manage ode configuration"
+msgstr "Gestionar configuración odes"
+
+#: ag_visualization_ode.module:85
+msgid "General ode configuration."
+msgstr ""
+
+#: ag_visualization_ode.module:93
+msgid "Manage ode rating notifications"
+msgstr "Gestionar criterios para notificaciones"
+
+#: ag_visualization_ode.module:94
+msgid "Manage ode rating values for notifications"
+msgstr ""
+
+#: ag_visualization_ode.module:104
+msgid "Autocomplete user by name"
+msgstr ""
+
+#: ag_visualization_ode.module:113
+msgid "Autocomplete user by email"
+msgstr ""
+
+#: ag_visualization_ode.install:212;262
+msgid "Processed @records records. Finished."
+msgstr "Se han procesado @records registros. Finalizado"
+
+#: ag_visualization_ode.install:279;280
+msgid "Path: @path not found. Finished."
+msgstr ""
+
+#: ag_visualization_ode.install:389;390
+msgid "Error insert record. No complete data"
+msgstr ""
+
+#: ag_visualization_ode.install:416;417
+msgid "Error: No procomun gid sent"
+msgstr ""
+
+#: ag_visualization_ode.install:421;422
+msgid "Error: No ode sent"
+msgstr ""
+
+#: ag_visualization_ode.info:0
+msgid "ag_visualization_ode"
+msgstr ""
+
+#: ag_visualization_ode.info:0
+msgid "Agrega2"
+msgstr "Agrega2"
+
+#: includes/ag_visualization_ode.admin.inc:10
+msgid "Rated variables"
+msgstr ""
+
+#: includes/ag_visualization_ode.admin.inc:18
+msgid "Average"
+msgstr "Promedio"
+
+#: includes/ag_visualization_ode.admin.inc:25 templates/ode-detail.tpl.php:47
+msgid "Number of votes"
+msgstr "Número de votos"
+
+#: includes/ag_visualization_ode.admin.inc:33
+msgid "Likes variables"
+msgstr ""
+
+#: includes/ag_visualization_ode.admin.inc:41
+msgid "Number of likes"
+msgstr "Número de Me gusta"
+
+#: includes/ag_visualization_ode.admin.inc:49
+msgid "Visits variables"
+msgstr ""
+
+#: includes/ag_visualization_ode.admin.inc:57
+msgid "Number of visits"
+msgstr "Número de visitas"
+
+#: includes/ag_visualization_ode.admin.inc:65
+msgid "Comments variables"
+msgstr ""
+
+#: includes/ag_visualization_ode.admin.inc:73
+msgid "Number of comments"
+msgstr "Número de comentarios"
+
+#: includes/ag_visualization_ode.admin.inc:82
+msgid "Rated"
+msgstr "Valoración"
+
+#: includes/ag_visualization_ode.admin.inc:82
+msgid "Likes"
+msgstr "Me gusta"
+
+#: includes/ag_visualization_ode.admin.inc:82
+msgid "Visits"
+msgstr "Visitas"
+
+#: includes/ag_visualization_ode.admin.inc:82 templates/ode-detail.tpl.php:38
+msgid "Comments"
+msgstr "Comentarios"
+
+#: includes/ag_visualization_ode.admin.inc:83
+msgid "Select the criteria to be met by odes to be certifiables"
+msgstr ""
+"Selecciona los criterios que deben cumplir los odes para ser "
+"certificables"
+
+#: includes/ag_visualization_ode.admin.inc:92
+msgid "Time to re-notify odes not certified in seconds"
+msgstr "Tiempo para re-notificar los odes certificables en segundos"
+
+#: includes/ag_visualization_ode.pages.inc:16
+msgid "ODE certified successfully"
+msgstr "ODE certificado correctamente"
+
+#: includes/ag_visualization_ode.pages.inc:21
+msgid "Removed ode certification successfully"
+msgstr "Certificación del ODE eliminada correctamente"
+
+#: templates/ode-detail.tpl.php:26;26
+msgid "Report incident with resource viewer"
+msgstr ""
+
+#: templates/ode-detail.tpl.php:33
+msgid "Page views"
+msgstr "Visitas"
+
+#: templates/ode-detail.tpl.php:82
+msgid "Published by"
+msgstr "Publicado por"
+
+#: templates/ode-detail.tpl.php:105;107
+msgid "Share with my communities"
+msgstr "Compartir en mis comunidades"
+
+#: templates/ode-detail.tpl.php:135
+msgid "Like"
+msgstr "Me gusta"
+
+#: templates/ode-detail.tpl.php:142;144
+msgid "Comment"
+msgstr "Comentario"
+
+#: templates/ode-detail.tpl.php:153
+msgid "Favorite"
+msgstr "Favorito"
+
+#: templates/ode-detail.tpl.php:165
+msgid "Flag as offensive"
+msgstr "Reportar como inadecuado"
+
+#: templates/ode-detail.tpl.php:196
+msgid "Summary"
+msgstr "Resumen"
+
+#: templates/ode-detail.tpl.php:210
+msgid "Educational orientation"
+msgstr "Orientaciones didácticas"
+
+#: templates/ode-detail.tpl.php:221
+msgid "License"
+msgstr "Licencia"
+
+#: templates/ode-detail.tpl.php:230
+msgid "License type"
+msgstr "Tipo de licencia"
+
+#: templates/ode-detail.tpl.php:251
+msgid "Authors"
+msgstr "Autores"
+
+#: templates/ode-detail.tpl.php:264
+msgid "End user"
+msgstr "Usuario final"
+
+#: templates/ode-detail.tpl.php:275
+msgid "Educative context"
+msgstr "Contexto educativo"
+
+#: templates/ode-detail.tpl.php:291
+msgid "General"
+msgstr "General"
+
+#: templates/ode-detail.tpl.php:299
+msgid "Keywords"
+msgstr "Palabras clave"
+
+#: templates/ode-detail.tpl.php:317
+msgid "Technique"
+msgstr "Técnica"
+
+#: templates/ode-detail.tpl.php:325
+msgid "Technical format"
+msgstr "Formato técnico"
+
+#: templates/ode-detail.tpl.php:336
+msgid "Technical requirement"
+msgstr "Requisito técnico"
+
+#: templates/ode-detail.tpl.php:341
+msgid "@key: "
+msgstr ""
+
+#: templates/ode-detail.tpl.php:342
+msgid "@value"
+msgstr ""
+
+#: templates/ode-detail.tpl.php:351
+msgid "Technical installation"
+msgstr "Instalación técnica"
+
+#: templates/ode-detail.tpl.php:360
+msgid "Technical platform"
+msgstr "Plataforma técnica"
+
+#: templates/ode-detail.tpl.php:375
+msgid "Educational use"
+msgstr "Uso educativo"
+
+#: templates/ode-detail.tpl.php:383
+msgid "Interactivity type"
+msgstr "Tipo de interactividad"
+
+#: templates/ode-detail.tpl.php:394
+msgid "Interactivity level"
+msgstr "Nivel de interactividad"
+
+#: templates/ode-detail.tpl.php:405
+msgid "Semantic density"
+msgstr "Densidad semántica"
+
+#: templates/ode-detail.tpl.php:416
+msgid "Age"
+msgstr "Edad"
+
+#: templates/ode-detail.tpl.php:427
+msgid "Difficulty"
+msgstr "Dificultad"
+
+#: templates/ode-detail.tpl.php:438
+msgid "Learning time"
+msgstr "Tiempo de aprendizaje"
+
+#: templates/ode-detail.tpl.php:449
+msgid "Target Language"
+msgstr "Idioma destinatario"
+
+#: templates/ode-detail.tpl.php:460
+msgid "Cognitive process"
+msgstr "Proceso cognitivo"
+
+#: templates/ode-detail.tpl.php:477
+msgid "Clasification"
+msgstr "Clasificación"
+
+#: templates/ode-detail.tpl.php:485
+msgid "Knowledge area"
+msgstr "Área de conocimiento"
+
+#: templates/ode-detail.tpl.php:494
+msgid "Learning context"
+msgstr "Contexto educativo"
+
+#: templates/ode-detail.tpl.php:503
+msgid "Resource type"
+msgstr "Tipo de recurso"
+
+#: templates/ode-detail.tpl.php:512
+msgid "Accesibility"
+msgstr "Accesibilidad"
+
+#: templates/ode-detail.tpl.php:519
+msgid "Competency"
+msgstr "Competencia"
+
+#: templates/ode-detail.tpl.php:530
+msgid "Contributions"
+msgstr "Contribuciones"
+
+#: templates/ode-detail.tpl.php:541
+msgid "Role"
+msgstr "Rol"
+
+#: templates/ode-detail.tpl.php:542
+msgid "Author"
+msgstr "Autor"
+
+#: templates/ode-detail.tpl.php:543
+msgid "Date"
+msgstr "Fecha"
+
+#: templates/ode-detail.tpl.php:551
+msgid "@contributors"
+msgstr ""
+
+#: templates/ode-detail.tpl.php:580
+msgid "Filter by knowledge area"
+msgstr "Filtrar por área de conocimiento"
+
+#: templates/ode-detail.tpl.php:593
+msgid "Filter by learning context"
+msgstr "Filtrar por contexto educativo"
+
+#: templates/ode-detail.tpl.php:606
+msgid "Filter by resource type"
+msgstr "Filtrar por tipo de recurso"
+
+#: templates/ode-viewer-iframe.tpl.php:6
+msgid "Navigation"
+msgstr "Navegación"
+
+#: templates/ode-viewer-iframe.tpl.php:9
+msgid "Hide navigation"
+msgstr "Ocultar navegación"
+
+#: templates/ode-viewer-iframe.tpl.php:17
+msgid "Maximize"
+msgstr "Maximizar"
+
+#: templates/ode-viewer-iframe.tpl.php:18
+msgid "Minimize"
+msgstr "Minimizar"
+
+#: templates/ode-viewer-iframe.tpl.php:23
+msgid "Insert"
+msgstr "Insertar"

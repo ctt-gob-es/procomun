@@ -1,0 +1,10 @@
+// Holds specific styles for layout, not content
+.view-agrega2-events {
+  .events-list > .views-row {
+    margin-top: 0;
+
+    + .views-row {
+      margin-top: 1.5em;
+    }
+  }
+}

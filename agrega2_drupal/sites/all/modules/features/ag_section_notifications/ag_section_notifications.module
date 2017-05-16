@@ -1,0 +1,919 @@
+<?php
+/**
+ * @file
+ * Code for the Ag section notifications feature.
+ */
+
+include_once 'ag_section_notifications.features.inc';
+
+/**
+ * Implements hook_menu().
+ */
+function ag_section_notifications_menu() {
+  $items = array();
+
+  $items['ag_notifications/%message/%/%/%'] = array(
+    'title' => 'Subscribe-unsubcribe notification',
+    'page callback' => 'ag_section_notifications_manage_membership',
+    'page arguments' => array(1,2,3,4),
+    'access callback' => 'ag_section_notifications_manage_membership_access_calback',
+    'access arguments' => array(1, 2),
+  );
+
+  $items['ag_notifications/%message/delete'] = array(
+    'title' => 'delete a message',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ag_section_notifications_delete_message_form', 1),
+    'file' => 'ag_section_notifications.forms.inc',
+    'access callback' => 'ag_section_notifications_message_access',
+    'access arguments' => array(1,'delete'),
+  );
+
+  $items['ag_notifications/%message/read/%'] = array(
+    'page callback' => 'ag_section_notifications_mark_as_read',
+    'page arguments' => array(1, 3),
+    'access arguments' => array('mark message as read'),
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['ag_notifications/%message/reportable/%'] = array(
+    'page callback' => 'ag_section_notifications_mark_as_reportable',
+    'page arguments' => array(1, 3),
+    'access arguments' => array('mark message as reportable'),
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['admin/config/ag_notifications'] = array(
+    'title' => t('Mail configuration for ag_notifications'),
+    'description' => t('Configuration for ag_notificactions module.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ag_notifications_settings'),
+    'access callback' => 'user_access',
+    'access arguments' => array('Administer notifications'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'ag_notifications.admin.inc',
+  );
+
+  //Organizations allowed to certificate ode
+  $items['admin/people/organization/notification-organization'] = array(
+    'title' => 'Reportable organizations for certifiable ode',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('notification_organization_form'),
+    'access arguments' => array('notify organization'),
+    'file' => 'ag_section_notifications.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  $items['messages/notifications'] = array(
+    'title'            => 'Notifications',
+    'page callback'    => 'ag_section_notifications_user_notifications',
+    'file'             => 'ag_section_notifications.forms.inc',
+    'access arguments' => array('mark message as read'),
+    'type'             => MENU_LOCAL_TASK,
+    'weight'           => -20,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_token_info().
+ */
+function ag_section_notifications_token_info() {
+  $info['tokens']['procomun']['ode-path'] = array(
+    'name' => t('Ode path'),
+    'description' => t('Url of ode path'),
+  );
+
+  $info['tokens']['procomun']['manage-faq-path'] = array(
+    'name' => t('Manage FAQ path'),
+    'description' => t('Url of manage FAQ path'),
+  );
+
+  $info['tokens']['procomun']['faq-path'] = array(
+    'name' => t('FAQ path'),
+    'description' => t('Url of FAQ path'),
+  );
+
+  return $info;
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function ag_section_notifications_tokens($type, $tokens, array $data = array(), array $options = array()) {
+  $replacements = array();
+
+  if ($type === 'procomun') {
+    $wp_message = entity_metadata_wrapper('message', $data['message']);
+
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'ode-path':
+          //Get ode node
+          $node = $wp_message->field_node_ref->value();
+          $wp_node = entity_metadata_wrapper('node', $node);
+          $replacements[$original] = l($wp_node->title_field->value(), 'ode/view/' . $wp_node->field_solrid->raw(), array('attributes' => array('target' => '_blank')));
+          break;
+
+        case 'manage-faq-path':
+          $replacements[$original] = l(t('See list of pending moderation FAQ'), 'admin/control-center/content/faq-pending');
+          break;
+
+        case 'faq-path':
+          $replacements[$original] = l(t('You can see it in the FAQ section'), 'help/faq');
+          break;
+      }
+    }
+  }
+
+  return $replacements;
+}
+
+function ag_section_notifications_manage_membership_access_calback($message, $gid) {
+  global $user;
+
+  $wp_message = entity_metadata_wrapper('message', $message);
+
+  return og_ui_user_access_group('add user', 'node', 2) ||
+    in_array($user->uid, $wp_message->field_target_users->raw());
+}
+
+/**
+ * Custom access callback for check permissions for messages
+ */
+function ag_section_notifications_message_access($message, $op) {
+
+  switch ($op) {
+    case 'delete':
+      global $user;
+
+      // Get the users targeted:
+      $wp_message = entity_metadata_wrapper('message', $message);
+      $users_targeted = isset($wp_message->field_target_users) ? $wp_message->field_target_users->raw() : array();
+      // Check permissions for delete own messages:
+      $delete_own_access = user_access('delete own message') && in_array($user->uid, $users_targeted);
+      // Return TRUE if we can delete own messages or any:
+      $permission = user_access('delete any message') || $delete_own_access;
+      break;
+
+    case 'read':
+      global $user;
+
+      // Get the users targeted:
+      $wp_message = entity_metadata_wrapper('message', $message);
+      // Check permissions for mark message as read.
+      $permission = user_access('mark message as read');
+      break;
+
+    default:
+      $permission = FALSE;
+      break;
+  }
+
+  return $permission;
+}
+
+function ag_section_notifications_manage_membership($message, $gid, $user_uid, $op) {
+  global $user;
+  // Get the membership associated with this user and gid:
+  $membership = og_get_membership('node', $gid, 'user', $user_uid);
+  if ($membership) {
+    // Switch $op for delete or accept the membership:
+    switch ($op) {
+      case 'subscribe':
+        $membership->state = 1;
+        $membership->save();
+        $notification_required = _check_notifications_needed($gid);
+        if ($notification_required) {
+          // Create the new notification for the user targeted:
+          $message_invitation = message_create('new_invitation_pending_subscribe_confirmation', array('uid' => $user->uid));
+          $wrapper = entity_metadata_wrapper('message', $message_invitation);
+          $wrapper->field_target_users->set(array($user_uid));
+          $wrapper->field_social_network_ref->set($gid);
+          $wrapper->field_message_status->set(0);
+          $wrapper->save();
+        }
+        $succes_text = t('Invitation acepted. A message has benn sent to community admin user.');
+        break;
+      case 'unsubscribe':
+        // Delete the current membership
+        $membership->delete();
+        $succes_text = t('Invitation rejected. A message has benn sent to community admin user.');
+        break;
+      default:
+        // No valid op, redirect:
+        drupal_goto("user/$user->uid/notifications");
+        break;
+    }
+    // Show the success message:
+    drupal_set_message($succes_text);
+    // Set the message as watched:
+    $wp_message = entity_metadata_wrapper('message', $message);
+    $wp_message->field_message_status->set(1);
+    $wp_message->save();
+
+    if ($message->type == 'new_invitation_pending') {
+      _ag_notifications_send_confirmation_to_admins($message, $gid, $user_uid, $op);
+    }
+  }
+  // Redirect to user_notifications:
+  drupal_goto("user/$user->uid/notifications");
+}
+
+function _ag_notifications_send_confirmation_to_admins($message, $gid, $user_uid, $op) {
+  // Generamos notificaciones a los admins del grupo
+  // notificando que el usuario ha aceptado o no la invitacion.
+  switch ($op) {
+    case 'subscribe':
+      $new_message = message_create('new_invitation_pending_subscribe_confirmation', array('uid' =>
+        $user_uid));
+      break;
+    case 'unsubscribe':
+      $new_message = message_create('new_invitation_pending_unsubscribe_confirmation', array('uid' =>
+        $user_uid));
+      break;
+
+    default:
+      break;
+  }
+  if ($new_message) {
+    $wrapper = entity_metadata_wrapper('message', $new_message);
+    $admin_members = OgDrupalToolKit::getUsersByRoleName('node', 'social_network', $gid,
+      OG_ADMINISTRATOR_ROLE)->fetchAllKeyed(1,2);
+    $wrapper->field_target_users->set(array_keys($admin_members));
+    $wrapper->field_social_network_ref->set($gid);
+    $wrapper->field_message_status->set(0);
+    $wrapper->save();
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function ag_section_notifications_preprocess_entity(&$variables) {
+  if ($variables['entity_type'] == 'message') {
+    $message = $variables['message'];
+    // If the message has been wached, add a class to flag it:
+    if (isset($message->field_message_status[LANGUAGE_NONE][0]['value'])) {
+      if ($message->field_message_status[LANGUAGE_NONE][0]['value']) {
+        $variables['classes_array'][] = 'message-processed';
+      }
+      else {
+        $variables['classes_array'][] = 'message-unseen';
+      }
+    }
+
+    //Add class for ajax sustitutions.
+    if (isset($message->mid)) {
+      $variables['classes_array'][] = 'message-ajax-' . $message->mid;
+    }
+  }
+}
+
+/**
+ * Implements hook_permission().
+ */
+function ag_section_notifications_permission() {
+  $permissions = array(
+    'delete own message' => array(
+      'title' => t('Delete own message'),
+    ),
+    'delete any message' => array(
+      'title' => t('Delete any message'),
+    ),
+    'administer notifications' => array(
+      'title' => t('Administer notifications')
+    ),
+    'mark message as read' => array(
+      'title' => t('Mark message as read')
+    ),
+    'mark message as reportable' => array(
+      'title' => t('Mark message as reportable')
+    ),
+  );
+
+  return $permissions;
+}
+
+
+/**
+ * Hook_og_membership_insert().
+ */
+function ag_section_notifications_og_membership_insert(OgMembership $og_membership) {
+
+  if ($og_membership->state === 2) {
+    // Tenemos que comprobar que el grupo es publico (restringido) ya que es el unico
+    // tipo de grupo que genera memberships en estado pending:
+    $group_entity = entity_load_single('node', $og_membership->gid);
+    $wrapper = entity_metadata_wrapper('node', $group_entity);
+    // If the community is restricteted only sent notifications if it's not by invitation:
+    if (arg(2) != 'invite') {
+      if (isset($wrapper->group_access) && isset($wrapper->field_og_permissions_level)) {
+        $group_type = $wrapper->group_access->value();
+        $group_type_level = $wrapper->field_og_permissions_level->value();
+
+        // Red restringida:
+        if (!$group_type && $group_type_level == 1) {
+          // Get the admins of the group:
+          $admin_members = OgDrupalToolKit::getUsersByRoleName('node', 'social_network', $og_membership->gid, OG_ADMINISTRATOR_ROLE)
+            ->fetchAllKeyed(1, 2);
+
+          // The group is a public group: Send the notifications to admins:
+          $message = message_create('new_member_pending', array('uid' => $og_membership->etid));
+          $wrapper = entity_metadata_wrapper('message', $message);
+          $wrapper->field_target_users->set(array_keys($admin_members));
+          $wrapper->field_social_network_ref->set($og_membership->gid);
+          $wrapper->field_message_status->set(0);
+          $wrapper->save();
+
+          // Generamos una notificación al usuario que solicita:
+          $message = message_create('new_member_pending_confirmation', array('uid' => 1));
+          $wrapper = entity_metadata_wrapper('message', $message);
+          $wrapper->field_target_users->set(array($og_membership->etid));
+          $wrapper->field_social_network_ref->set($og_membership->gid);
+          $wrapper->save();
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_view().
+ */
+function ag_section_notifications_entity_view($entity, $type, $view_mode, $langcode) {
+  if ($type === 'message') {
+    $wp_message = entity_metadata_wrapper('message', $entity);
+    // Loadd basic info about author:
+    $user_data = DrupalToolkit::getUserData($entity->uid, array('name'));
+    // Define User picture render:
+    $picture_rendered = array(
+      '#theme' => 'image_style',
+      '#style_name' => 'avatar',
+      '#path' => isset($user_data->uri) ? $user_data->uri : variable_get('user_picture_default', ''),
+      '#attributes' => array(
+        'class' => 'user-picture',
+      ),
+    );
+    $entity->content['user_picture'] = $picture_rendered;
+
+    // Define Username render:
+    if (!empty($user_data)) {
+      $user_name = array(
+        '#markup' => l($user_data->name, "user/$entity->uid"),
+      );
+      $entity->content['user_name'] = $user_name;
+    }
+    // Define the message subject:
+    // NOTE : I've to do this like this because with CKeditor i couln't define links
+    // with community link. May be i'm a little luser because of that but sorry,
+    // if you get it with CKeditor pleaser notice me :D i'll apreciate it.
+    $message_subject = array(
+      '#markup' => _ag_section_notifications_get_subject($entity),
+    );
+
+    $entity->content['message_subject'] = $message_subject;
+    //Filter empty tokens in message contents
+    $temp_message_content = $entity->content['message__message_text__0']['#markup'];
+    $temp_message_content = preg_replace('/(\[[a-z:\-]*\])+/', '', $temp_message_content);
+    $entity->content['message__message_text__0']['#markup'] = $temp_message_content;
+
+    // Get the links:
+    $links = _ag_section_notifications_get_links($entity);
+
+    // Si se ha llegado a definir algun link, lo metemos:
+    if (!empty($links)) {
+      $entity->content['links'] = array(
+        '#type' => 'container',
+        'content' => $links,
+        '#attributes' => array('class' => 'message-links'),
+      );
+    }
+  }
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function ag_section_notifications_block_info() {
+  $blocks['ag_notifications_block'] = array(
+    'info' => t('User notifications block'),
+    'cache' => DRUPAL_CACHE_PER_USER,
+  );
+
+  $blocks['ag_notifications_types_block'] = array(
+    'info' => t('User notifications types block'),
+    'cache' => DRUPAL_CACHE_PER_USER,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function ag_section_notifications_block_view($delta) {
+  $block = array();
+
+  switch ($delta) {
+    case 'ag_notifications_block':
+      global $user;
+      //Get notifications number
+      $notifications_number = ag_section_notifications_get_number_unread();
+      if ($notifications_number > 0) {
+        $notifications_number_html = '<span class="user-notifications-number">' . $notifications_number . '</span>';
+      }
+      else {
+        $notifications_number_html = '';
+      }
+
+      //Get messages number. Privatemsg already has a method to get unread messages number.
+      $messages_number = module_exists('privatemsg') ? privatemsg_unread_count($user) : 0;
+      if ($messages_number > 0) {
+        $messages_number_html = '<span class="user-messages-number">' . $messages_number . '</span>';
+      }
+      else {
+        $messages_number_html = '';
+      }
+
+      $block['content'] = array(
+        '#type' => 'container',
+        'content' => array(
+          'notifications' => array(
+            '#prefix' => '<span class="user-notifications-link">',
+            '#markup' => l(t('user notifications'), "user/$user->uid/notifications", array('attributes' => array('title' => t('Notifications')))) . $notifications_number_html,
+            '#suffix' => '</span>',
+          ),
+          'privatemsg' => array(
+            '#prefix' => '<span class="user-messages-link">',
+            '#markup' => l(t('user private messages'), "messages", array('attributes' => array('title' => t('Messages')))) . $messages_number_html,
+            '#suffix' => '</span>',
+          ),
+        ),
+        '#attributes' => array('class' => 'content-user-notifications'),
+      );
+      break;
+    case 'ag_notifications_types_block':
+      global $user;
+      $block['content'] = array(
+        '#type' => 'container',
+        'content' => array(
+          'notifications_types' => array(
+            '#prefix' => '<span class="notification-invitation">',
+            '#markup' => l(t('Invitations'), "user/$user->uid/notifications"),
+            '#suffix' => '</span>',
+          ),
+          'messages' => array(
+            '#prefix' => '<span class="user-private-messages">',
+            '#markup' => l(t('Private messages'), "messages"),
+            '#suffix' => '</span>',
+          ),
+        ),
+        '#attributes' => array('class' => 'content-notifications-types'),
+      );
+      break;
+  }
+
+  return $block;
+}
+
+/**
+ *  Implements hook_form_alter().
+ */
+function ag_section_notifications_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'pm_block_user_list') {
+    $form['new']['#description'] = t('Block a user to avoid him/her to send you a private message');
+
+    // Add blocked users list title
+    $form['new']['list_title'] = array(
+      '#type' => 'markup',
+      '#prefix' => '<h3 class="blocked-user-list">',
+      '#markup' => t('Blocked users'),
+      '#suffix' => '</h3>',
+    );
+  }
+}
+
+# # # # # # # # # # # #
+# # Auxiliar functions #
+# # # # # # # # # # # #
+
+/**
+ * Auxiliar function thta retrieve all subject for each message type:
+ */
+function _ag_section_notifications_get_subject ($entity) {
+  // If isset field_social_network_ref we get the link to get it:
+  if (isset($entity->field_social_network_ref)) {
+    $wrapper = entity_metadata_wrapper('message', $entity);
+    $community = $wrapper->field_social_network_ref->raw();
+    // Get the entity title
+    if (!empty($community)) {
+      $community_title = DrupalToolkit::getNodeTitle(array($community))->title;
+      $community_link = l($community_title, "node/$community");
+    }
+  }
+  $output = '';
+  $message_creation = format_date($entity->timestamp, 'short');
+  switch ($entity->type) {
+    case 'new_member_pending':
+      $output = t('wish to be a member of !community_link', array('!community_link' => $community_link));
+      break;
+    case 'new_member_pending_confirmation':
+      $output = t('Your request to !community_link has been sent', array(
+        '!community_link' => $community_link));
+      break;
+    case 'new_invitation_pending':
+      $output = t('invites you to !community_link', array(
+        '!community_link' => $community_link));
+      break;
+    case 'new_invitation_pending_subscribe_confirmation':
+      $output = t('has acepted the invitation to !community_link', array(
+        '!community_link' => $community_link));
+      break;
+    case 'new_invitation_pending_unsubscribe_confirmation':
+      $output = t('has deny the invitation to !community_link', array(
+        '!community_link' => $community_link));
+      break;
+    case 'new_pending_community':
+      $output = t('has created a new community');
+      break;
+    case 'requested_community_creation_pending':
+      $output = t('Your petition for create a community has been received');
+      break;
+    case 'new_pending_faq':
+      $output = t('has sent a new question');
+      break;
+    case 'new_faq_accepted':
+      $output = t('has validated your question');
+      break;
+    default:
+      break;
+  }
+
+  //Add creation date to message
+  $output .= ' - ' . $message_creation;
+
+  return $output;
+}
+
+/**
+ * Auxiliar function that retrieve the correct links for eahc message type:
+ */
+function _ag_section_notifications_get_links($entity) {
+  $links = array();
+  global $user;
+
+  drupal_add_library('system', 'drupal.ajax');
+  $wp_message = entity_metadata_wrapper('message', $entity);
+
+  // If user has access to delete:
+  if (ag_section_notifications_message_access($entity, 'delete')) {
+    $links['delete-link'] = array(
+      '#markup' => l(t('Delete'), "ag_notifications/$entity->mid/delete",
+        array(
+          'attributes' => array(
+            'class' => ('delete-message')
+          )
+        )
+      ),
+      '#weight' => 3,
+    );
+  }
+
+  // If the message is active add the links to acept/deny.
+  $messages_with_links = array('new_invitation_pending', 'new_member_pending');
+
+  if (isset($wp_message->field_message_status) && in_array($entity->type, $messages_with_links, TRUE)) {
+    // get message status:
+    $status = $wp_message->field_message_status->value();
+    if (!$status) {
+      switch ($entity->type) {
+        case 'new_invitation_pending':
+          $wrapper = entity_metadata_wrapper('message', $entity);
+          $gid = $wrapper->field_social_network_ref->raw();
+          $uid = $wrapper->field_target_users->raw();
+          // Accept link:
+          $links['acept-link'] = array(
+            '#markup' => l(t('Accept'), "ag_notifications/$entity->mid/$gid/$uid[0]/subscribe",
+              array(
+                'attributes' => array('class' => 'accept'),
+                'query' => array(
+                  'destination' => "user/$user->uid/my-communities",
+                ),
+              )
+            ),
+          );
+          // Deny link:
+          $links['deny-link'] = array(
+            '#markup' => l(t('Deny'), "ag_notifications/$entity->mid/$gid/$uid[0]/unsubscribe",
+               array(
+                'attributes' => array('class' => 'deny'),
+                'query' => array(
+                  'destination' => "user/$user->uid/my-communities/pending",
+                ),
+              )
+            ),
+          );
+          break;
+        case 'new_member_pending':
+          $wrapper = entity_metadata_wrapper('message', $entity);
+          $gid = $wrapper->field_social_network_ref->raw();
+
+          // Accept link:
+          $links['acept-link'] = array(
+            '#markup' => l(t('Accept'), "ag_notifications/$entity->mid/$gid/$entity->uid/subscribe",
+                array(
+                'attributes' => array('class' => 'accept'),
+              )
+            ),
+          );
+          // Deny link:
+          $links['deny-link'] = array(
+            '#markup' => l(t('Deny'), "ag_notifications/$entity->mid/$gid/$entity->uid/unsubscribe",
+                array(
+                'attributes' => array('class' => 'deny'),
+              )
+            ),
+          );
+          break;
+
+        default:
+          break;
+      }
+    }
+  }
+
+  //See if message was read.
+  if (isset($wp_message->field_message_status)) {
+    $watched = $wp_message->field_message_status->value();
+  }
+  else {
+    $watched = 1;
+  }
+
+  //Avoid this link for "new invitation_pending", as they are marked as read if user accepts or refuses the invitation.
+  if (!$watched && ag_section_notifications_message_access($entity, 'read') && !in_array($entity->type, $messages_with_links, TRUE)) {
+    $links['read-link'] = array(
+      '#markup' => l(t('Mark as read'), "ag_notifications/$entity->mid/read/nojs",
+        array(
+          'attributes' => array(
+            'class' => array('mark-read-message', 'use-ajax'),
+          )
+        )
+      ),
+      '#weight' => 4,
+    );
+  }
+
+  //Add link for ode certifiable notification
+  if (isset($wp_message->field_reportable) && ag_section_notification_get_ode_message_cached($wp_message->field_node_ref->raw()) == 0) {
+    $links['reportable-link'] = array(
+      '#markup' => l(t('Not notify more'), "ag_notifications/$entity->mid/reportable/nojs",
+        array(
+          'attributes' => array(
+            'class' => array('reportable-message-' . $wp_message->field_node_ref->raw(), 'use-ajax'),
+          )
+        )
+      ),
+      '#weight' => 5,
+    );
+  }
+
+  return $links;
+}
+
+/*
+ * Remove the pending notifications form a user given the user author and $gid.
+ */
+function ag_section_notifications_remove_pendig_notifications($message_type, $uid, $gid) {
+  /* Get the messages where:
+   * - Bundle : $message_type
+   * - message uid : $uid
+   * - Group id : group
+   */
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'message')
+    ->entityCondition('bundle', $message_type)
+    ->propertyCondition('uid', $uid)
+    ->fieldCondition('field_social_network_ref', 'target_id', $gid)
+    ->fieldCondition('field_message_status', 'value', 0);
+
+  $results = $query->execute();
+
+  if (!empty($results['message'])) {
+    // Delete all messages:
+    entity_delete_multiple('message', array_keys($results['message']));
+  }
+}
+
+/**
+ * Check if the given group id is resctricted.
+ */
+function _check_notifications_needed($gid){
+  $notification_required = FALSE;
+  $group = node_load($gid);
+  $wrapper = entity_metadata_wrapper('node', $group);
+
+  $group_type = $wrapper->group_access->value();
+  $group_type_level = $wrapper->field_og_permissions_level->value();
+
+  // Restricted community
+  if (!$group_type && $group_type_level == 1) {
+    $notification_required = TRUE;
+  }
+  return $notification_required;
+}
+
+/**
+ * Ajax callback that receives a message loaded by node_load as an argument, and
+ * it flags the message status to 1 (watched), marking it as read by the user.
+ * Also, removes "Mark as read" button, and changes message style background by css.
+ */
+function ag_section_notifications_mark_as_read($message, $ajax) {
+  $wp_message = entity_metadata_wrapper('message', $message);
+
+  //Get status of this message. 1=watched, 0=not watched.
+  if (isset($wp_message->field_message_status)) {
+    $watched = $wp_message->field_message_status->value();
+
+    //Double check if it is unread. Usually, this function is not called then, as there is not button if its read.
+    if (empty($watched)) {
+      $wp_message->field_message_status->set(1);
+      $wp_message->save();
+    }
+  }
+  //Case user has js/ajax
+  if ($ajax === 'ajax') {
+    // Define a new array to hold our AJAX commands.
+    $ajax_commands = array();
+
+    //Change unseen class for processed class.
+    $ajax_commands[] = ajax_command_invoke('.message-unseen.message-ajax-' . $message->mid, 'addClass', array('message-processed'));
+    $ajax_commands[] = ajax_command_invoke('.message-unseen.message-ajax-' . $message->mid, 'removeClass', array('message-unseen'));
+
+    //Remove button, as it is already flagged as read.
+    $ajax_commands[] = ajax_command_remove('.message-ajax-' . $message->mid . ' .mark-read-message');
+
+    // Return our commands in JSON.
+    ajax_deliver(array('#type' => 'ajax', '#commands' => $ajax_commands));
+  }
+  else {
+    global $user;
+    //Unlikely case that no js/ajax available, just notify and reload. Might be improved with page $_GET.
+    drupal_set_message(t('Message has been marked as read'));
+    if (isset($user->uid) && is_numeric($user->uid)) {
+      drupal_goto('user/' . $user->uid . '/notificaciones');
+    }
+    else {
+      drupal_goto();
+    }
+  }
+}
+
+/**
+ * Ajax callback that receives a message loaded by node_load as an argument for reportable odes
+ * Also, removes "Not nofify more" link
+ */
+function ag_section_notifications_mark_as_reportable($message, $ajax) {
+  $wp_message = entity_metadata_wrapper('message', $message);
+
+  //Check field value
+  if (isset($wp_message->field_reportable)) {
+    $reportable = $wp_message->field_reportable->raw();
+
+    //If value is 0 the notification can be marked
+    if (empty($watched)) {
+      $wp_message->field_reportable->set(1);
+      $wp_message->save();
+    }
+  }
+
+  //Case user has js/ajax
+  if ($ajax === 'ajax') {
+    // Define a new array to hold our AJAX commands.
+    $ajax_commands = array();
+
+    //Remove button, as it is already flagged as read.
+    $ajax_commands[] = ajax_command_remove('.reportable-message-' . $wp_message->field_node_ref->raw());
+
+    // Return our commands in JSON.
+    ajax_deliver(array('#type' => 'ajax', '#commands' => $ajax_commands));
+  }
+  else {
+    global $user;
+    //Unlikely case that no js/ajax available, just notify and reload. Might be improved with page $_GET.
+    drupal_set_message(t('Message has been marked as not reportable'));
+    if (isset($user->uid) && is_numeric($user->uid)) {
+      drupal_goto('user/' . $user->uid . '/notificaciones');
+    }
+    else {
+      drupal_goto();
+    }
+  }
+}
+
+/**
+ * Get number of unread messages of logged in user. TODO: Cache this values.
+ */
+function ag_section_notifications_get_number_unread() {
+  global $user;
+
+  try {
+    $query = db_select('message', 'm');
+    $query->fields('m',array('mid'));
+    $query->join('field_data_field_message_status', 'fm', 'fm.entity_id = m.mid');
+    $query->join('field_data_field_target_users', 'ft', 'ft.entity_id = m.mid');
+
+    $query->condition('fm.field_message_status_value', 0, '=');
+    $query->condition('ft.field_target_users_target_id', $user->uid, '=');
+
+    $query->condition('m.type', array('new_invitation_pending'), 'NOT IN');
+
+    $result = $query->execute();
+    $number = $result->rowCount();
+  }
+  catch (PDOException $e) {
+    //Fail silently
+    $number = 0;
+  }
+  return $number;
+}
+
+/**
+ * Cached function for  not reportable ode notification from nid
+ */
+function ag_section_notification_get_ode_message_cached($nid) {
+  $name = &drupal_static(__FUNCTION__);
+
+  if (!isset($name['reportable-ode'])) {
+    $name['reportable-ode'] = ag_section_notification_get_ode_message($nid);
+    return $name['reportable-ode'];
+  }
+
+  return $name['reportable-ode'];
+}
+
+/**
+ * Function to get not reportable ode notification from nid
+ */
+function ag_section_notification_get_ode_message($nid) {
+  $result = 0;
+  if (!empty($nid) && is_numeric($nid)) {
+    $query = db_select('field_data_field_node_ref', 'fdfnr');
+    $query->fields('fdfr',array('field_reportable_value'));
+    $query->join('field_data_field_reportable', 'fdfr', 'fdfnr.entity_id = fdfr.entity_id');
+    $query->condition('fdfnr.field_node_ref_target_id', $nid, '=');
+    $query->condition('fdfr.field_reportable_value', 1, '=');
+    $result = $query->execute()
+      ->rowCount();
+  }
+
+  return $result;
+}
+
+/**
+ * Function to get most recent ode notification from nid
+ */
+function ag_section_notification_get_ode_recent_message($nid) {
+  $result = 0;
+  if (!empty($nid) && is_numeric($nid)) {
+    $query = db_select('message', 'm');
+    $query->addExpression('MAX(m.timestamp)', 'timestamp');
+    $query->join('field_data_field_node_ref', 'fdfnr', 'fdfnr.entity_id = m.mid');
+    $query->condition('fdfnr.field_node_ref_target_id', $nid, '=');
+    $result = $query->execute()
+      ->fetchField();
+  }
+
+  return $result;
+}
+
+/**
+ * Function to create ode notification
+ */
+function ag_section_notification_create_ode_message($node_nid) {
+  if (!empty($node_nid) && is_numeric($node_nid)) {
+    //Force sender of the notification to admin user
+    $message = message_create('certificate_ode', array('uid' => 1));
+    $wrapper = entity_metadata_wrapper('message', $message);
+    //Create new notification for each intef organization user
+    //Get users to notify
+    $orgs = variable_get('notification_organization', array());
+    //Get users from organizations
+    $users = ag_section_profile_users_get_users_organization($orgs);
+
+    $uids = array();
+    foreach ($users as $org_uid => $users_org) {
+      foreach ($users_org as $user_uid) {
+        $uids[] = $user_uid;
+      }
+    }
+
+    $wrapper->field_target_users->set($uids);
+    $wrapper->field_message_status->set(0);
+    $wrapper->field_node_ref->set($node_nid);
+    $wrapper->field_reportable->set(0);
+    $wrapper->save();
+  }
+}

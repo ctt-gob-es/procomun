@@ -1,0 +1,11 @@
+.ico {
+  display: inline-block;
+
+  &.ico-tree-closed {
+    @include bg-build('ico-collapsed.png');
+  }
+
+  &.ico-tree-opened {
+    @include bg-build('ico-expanded.png');
+  }
+}

@@ -1,0 +1,30 @@
+@import ../ag-dependencies/bootstrap/variables
+@import ../ag-dependencies/bootstrap/glyphicons
+// Grid ----------------------------------------------------------------------
+$grid_bg       : #ffc501
+$grid_border   : #fe4b02
+$gray          : #777777
+body.grid
+  background: image-url("grid.png") 50% 0 repeat-y
+
+.button_grid
+  @extend .glyphicon 
+  @extend .glyphicon-eye-open
+  position: absolute
+  left: 0px
+  top: 100px
+  padding: 10px
+  background: $grid_bg
+  border-top-right-radius: 5px
+  border-bottom-right-radius: 5px
+  border: 1px solid $grid_border
+  border-left: 0px
+  box-shadow: 1px 1px 10px $gray
+  &:hover
+    opacity: 0.9
+
+.grid .button_grid
+  @extend .glyphicon-eye-close
+
+.grid .messages
+  @extend .hide !optional

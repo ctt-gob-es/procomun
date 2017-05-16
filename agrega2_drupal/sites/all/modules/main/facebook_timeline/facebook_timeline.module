@@ -1,0 +1,87 @@
+<?php
+
+/**
+ * @file Implements facebook_timeline module
+ */
+
+/**
+ * Implements hook_block_info()
+ * Block definition for the facebook timeline
+ */
+function facebook_timeline_block_info() {
+  $blocks['facebook_block'] = array(
+    'info' => t('Block for rendering the facebook timeline'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ * Define the content of the block
+ */
+function facebook_timeline_block_view($delta = '') {
+  //the block to return
+  $block = array();
+
+  switch ($delta) {
+    case 'facebook_block':
+      drupal_add_js(drupal_get_path('module', 'facebook_timeline') . '/js/fb-sdk.js');
+      $block['subject'] = t('Facebook timeline');
+      $block['content'] = array(
+        '#theme' => 'facebook_timeline_widget_block',
+        '#fanpage' => variable_get('facebook_timeline_widget_page', ''),
+      );
+      break;
+  }
+
+  return $block;
+}
+
+/**
+ * Implements hook_block_configure()
+ * Configure the block for facebook
+ */
+function facebook_timeline_block_configure($delta = '') {
+  $form = array();
+
+  if ($delta == 'facebook_block') {
+    //widget page
+    $form['facebook_timeline_widget_page'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Facebook page'),
+      '#default_value' => variable_get('facebook_timeline_widget_page', ''),
+      '#description' => t('The name of the facebook fan page'),
+      '#required' => TRUE,
+    );
+  }
+
+  return $form;
+}
+
+/**
+ * Implements hook_block_save().
+ * This function save the block configuration
+ */
+function facebook_timeline_block_save($delta = '', $edit = array()) {
+  if ($delta == 'facebook_block') {
+    variable_set('facebook_timeline_widget_page', $edit['facebook_timeline_widget_page']);
+  }
+}
+
+/**
+ * Implements hook_theme().
+ *
+ */
+function facebook_timeline_theme($existing, $type, $theme, $path) {
+  return array(
+    'facebook_timeline_widget_block' => array(
+      'variables' => array(
+        'fanpage' => '',
+      ),
+      'path' => drupal_get_path('module', 'facebook_timeline') . '/templates',
+      'template' => 'facebook-timeline-widget',
+    ),
+  );
+}

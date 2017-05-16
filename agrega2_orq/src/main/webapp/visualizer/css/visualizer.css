@@ -1,0 +1,161 @@
+@charset "UTF-8";
+@import url(http://fonts.googleapis.com/css?family=PT+Sans:400,700);
+/* line 1, ../sass/partials/dependencies/_jqtree.scss */
+ul.jqtree-tree { margin-left: 0; }
+
+/* line 5, ../sass/partials/dependencies/_jqtree.scss */
+ul.jqtree-tree, ul.jqtree-tree ul.jqtree_common { list-style: none outside; margin-bottom: 0; padding: 0; }
+
+/* line 12, ../sass/partials/dependencies/_jqtree.scss */
+ul.jqtree-tree ul.jqtree_common { display: block; margin-left: 12px; margin-right: 0; }
+
+/* line 17, ../sass/partials/dependencies/_jqtree.scss */
+ul.jqtree-tree li.jqtree-closed > ul.jqtree_common { display: none; }
+
+/* line 21, ../sass/partials/dependencies/_jqtree.scss */
+ul.jqtree-tree li.jqtree_common { clear: both; list-style-type: none; }
+
+/* line 25, ../sass/partials/dependencies/_jqtree.scss */
+ul.jqtree-tree .jqtree-toggler { border-bottom: none; color: #333; text-decoration: none; margin-right: 0.5em; }
+
+/* line 32, ../sass/partials/dependencies/_jqtree.scss */
+ul.jqtree-tree .jqtree-toggler:hover { color: #000; text-decoration: none; }
+
+/* line 37, ../sass/partials/dependencies/_jqtree.scss */
+ul.jqtree-tree .jqtree-element { cursor: pointer; }
+
+/* line 41, ../sass/partials/dependencies/_jqtree.scss */
+.jqtree-tree .jqtree-title { color: #1C4257; vertical-align: middle; margin-left: 1.5em; }
+
+/* line 47, ../sass/partials/dependencies/_jqtree.scss */
+.jqtree-tree .jqtree-title.jqtree-title-folder { margin-left: 0; }
+
+/* line 51, ../sass/partials/dependencies/_jqtree.scss */
+ul.jqtree-tree li.jqtree-folder { margin-bottom: 4px; }
+
+/* line 55, ../sass/partials/dependencies/_jqtree.scss */
+ul.jqtree-tree li.jqtree-folder.jqtree-closed { margin-bottom: 1px; }
+
+/* line 59, ../sass/partials/dependencies/_jqtree.scss */
+ul.jqtree-tree .jqtree-toggler.jqtree-closed { background-position: 0 0; }
+
+/* line 63, ../sass/partials/dependencies/_jqtree.scss */
+span.jqtree-dragging { color: #fff; background: #000; opacity: 0.6; cursor: pointer; padding: 2px 8px; }
+
+/* line 71, ../sass/partials/dependencies/_jqtree.scss */
+ul.jqtree-tree li.jqtree-ghost { position: relative; z-index: 10; margin-right: 10px; }
+
+/* line 77, ../sass/partials/dependencies/_jqtree.scss */
+ul.jqtree-tree li.jqtree-ghost span { display: block; }
+
+/* line 81, ../sass/partials/dependencies/_jqtree.scss */
+ul.jqtree-tree li.jqtree-ghost span.jqtree-circle { border: solid 2px #0000ff; -webkit-border-radius: 100px; -moz-border-radius: 100px; border-radius: 100px; height: 8px; width: 8px; position: absolute; top: -4px; left: -6px; }
+
+/* IE 6, 7, 8 */
+@media \0screen\,screen\9 { /* line 95, ../sass/partials/dependencies/_jqtree.scss */
+  ul.jqtree-tree li.jqtree-ghost span.jqtree-circle { background: url(jqtree-circle.png) no-repeat; border: 0 none; } }
+/* line 101, ../sass/partials/dependencies/_jqtree.scss */
+ul.jqtree-tree li.jqtree-ghost span.jqtree-line { background-color: #0000ff; height: 2px; padding: 0; position: absolute; top: -1px; left: 2px; width: 100%; }
+
+/* line 111, ../sass/partials/dependencies/_jqtree.scss */
+ul.jqtree-tree li.jqtree-ghost.jqtree-inside { margin-left: 48px; }
+
+/* line 115, ../sass/partials/dependencies/_jqtree.scss */
+ul.jqtree-tree span.jqtree-border { position: absolute; display: block; left: -2px; top: 0; border: solid 2px #0000ff; border-radius: 6px; margin: 0; box-sizing: content-box; }
+
+/* line 126, ../sass/partials/dependencies/_jqtree.scss */
+ul.jqtree-tree .jqtree-element { position: relative; }
+
+/* line 130, ../sass/partials/dependencies/_jqtree.scss */
+ul.jqtree-tree li.jqtree-selected > .jqtree-element, ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover { background-color: #97BDD6; background: -webkit-gradient(linear, left top, left bottom, from(#bee0f5), to(#89afca)); background: -moz-linear-gradient(top, #bee0f5, #89afca); background: -ms-linear-gradient(top, #bee0f5, #89afca); background: -o-linear-gradient(top, #bee0f5, #89afca); text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7); }
+
+/* line 140, ../sass/partials/dependencies/_jqtree.scss */
+ul.jqtree-tree .jqtree-moving > .jqtree-element .jqtree-title { outline: dashed 1px #0000ff; }
+
+/*------------------ Variables Agrega2 ------------------ */
+/* Colors */
+/* Primary Colors */
+/* Secondary Colors */
+/* Other */
+/* Fonts */
+/* PT Sans */
+/* Heights */
+/* Breakpoints */
+/* Other */
+/*------------------ Mixins @todo doc all mixins please. ------------------ */
+/* line 7, ../sass/partials/utilities/_mixins.sass */
+.clearfix:after { content: "."; display: block; visibility: hidden; height: 0; clear: both; }
+
+/* It prepares an element to display an image based on its attributes */
+/* line 1, ../sass/partials/components/_icons.scss */
+.ico { display: inline-block; }
+/* line 4, ../sass/partials/components/_icons.scss */
+.ico.ico-tree-closed { background: url('../images/ico-collapsed.png?1414148448') no-repeat scroll 0 0 transparent; width: 3px; height: 7px; }
+/* line 8, ../sass/partials/components/_icons.scss */
+.ico.ico-tree-opened { background: url('../images/ico-expanded.png?1414148448') no-repeat scroll 0 0 transparent; width: 7px; height: 3px; }
+
+/* line 52, ../sass/partials/components/_media-object.scss */
+.media-object { overflow: hidden; /*
+la posible ausencia de un elemento "img.right" afecta la alineación del body.
+Permitamos reforzar la alineación deseada */ }
+/* line 6, ../sass/partials/components/_media-object.scss */
+.media-object > .body { overflow: hidden; }
+/* line 14, ../sass/partials/components/_media-object.scss */
+.media-object.left .body { text-align: left; }
+/* line 18, ../sass/partials/components/_media-object.scss */
+.media-object > .img { float: left; margin-right: 10px; }
+/* line 22, ../sass/partials/components/_media-object.scss */
+.media-object > .img img { display: block; }
+/* line 27, ../sass/partials/components/_media-object.scss */
+.media-object > .img.left { float: left; margin-right: 10px; margin-left: 0; }
+/* line 33, ../sass/partials/components/_media-object.scss */
+.media-object > .img.left + .body { text-align: left; }
+/* line 38, ../sass/partials/components/_media-object.scss */
+.media-object > .img.right { float: right; margin-left: 10px; margin-right: 0; }
+/* line 43, ../sass/partials/components/_media-object.scss */
+.media-object > .img.right + .body { text-align: right; }
+/* line 7, ../sass/partials/utilities/_mixins.sass */
+.media-object:after { content: "."; display: block; visibility: hidden; height: 0; clear: both; }
+
+/* line 1, ../sass/partials/_main.scss */
+body { margin: 0; padding-bottom: 5px; padding-right: 5px; background: #f2f2f2; color: #3A7BB5; font-family: "PT Sans", sans-serif; font-size: 12px; }
+/* line 10, ../sass/partials/_main.scss */
+/*body { width: 90%; height: 90%; }*/
+
+/* line 17, ../sass/partials/_main.scss */
+.media-object .lateral-menu.img { padding: 0px 15px; max-width: 25%; max-width: 15%; margin-right: 0; font-size: 14px; /* override jqtree */ }
+/* line 25, ../sass/partials/_main.scss */
+.media-object .lateral-menu.img .jqtree-tree { word-break: break-word; }
+/* line 27, ../sass/partials/_main.scss */
+.media-object .lateral-menu.img .jqtree-tree .jqtree-title { color: #3A7BB5; }
+/* line 32, ../sass/partials/_main.scss */
+.media-object .lateral-menu.img .jqtree-tree ul, .media-object .lateral-menu.img .jqtree-tree li { margin-bottom: 5px; padding-bottom: 5px; }
+/* line 36, ../sass/partials/_main.scss */
+.media-object .lateral-menu.img .jqtree-tree ul:last-child, .media-object .lateral-menu.img .jqtree-tree li:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: 0; }
+/* line 43, ../sass/partials/_main.scss */
+.media-object .lateral-menu.img .jqtree-tree .jqtree-element.jqtree_common + ul.jqtree_common { margin-top: 5px; padding-top: 5px; }
+/* line 48, ../sass/partials/_main.scss */
+.media-object .lateral-menu.img .jqtree-tree > li { border-bottom: 1px dashed grey; }
+/* line 51, ../sass/partials/_main.scss */
+.media-object .lateral-menu.img .jqtree-tree > li:last-child { border-bottom: 0; }
+/* line 56, ../sass/partials/_main.scss */
+.media-object .lateral-menu.img .jqtree-tree .tree-icons { position: relative; top: 5px; }
+/* line 61, ../sass/partials/_main.scss */
+.media-object .lateral-menu.img .jqtree-tree .jqtree-title { margin-left: 1em; }
+/* line 64, ../sass/partials/_main.scss */
+.media-object .lateral-menu.img .jqtree-tree .jqtree-title.jqtree-title-folder { margin-left: 0em; display: block; overflow: hidden; }
+/* line 70, ../sass/partials/_main.scss */
+.media-object .lateral-menu.img .jqtree-tree .jqtree-title.jqtree_common { display: block; }
+/* line 75, ../sass/partials/_main.scss */
+.media-object .lateral-menu.img .jqtree-tree .jqtree-toggler { vertical-align: middle; float: left; display: block; }
+/* line 81, ../sass/partials/_main.scss */
+.media-object .lateral-menu.img .jqtree-tree .jqtree-element:hover { text-decoration: underline; }
+/* line 85, ../sass/partials/_main.scss */
+.media-object .lateral-menu.img .jqtree-tree .jqtree-selected > .jqtree-element { font-weight: bold; background: none; }
+/* line 89, ../sass/partials/_main.scss */
+.media-object .lateral-menu.img .jqtree-tree .jqtree-selected > .jqtree-element:hover { background: none; }
+/* line 94, ../sass/partials/_main.scss */
+.media-object .lateral-menu.img .jqtree-tree .jqtree-element.jqtree_common { padding-left: 5px; padding-right: 5px; }
+
+/* line 102, ../sass/partials/_main.scss */
+#content { background: #FFF; border: 0; border-left: 1px solid #cccccc; width: 100%;}

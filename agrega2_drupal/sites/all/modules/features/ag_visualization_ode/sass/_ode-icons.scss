@@ -1,0 +1,46 @@
+/* It prepares an element to display an image based on its attributes */
+@mixin bg-build($img, $repeat: no-repeat, $scroll: scroll, $x: 0, $y: 0, $color: transparent) {
+  background: image-url($img) $repeat $scroll $x $y $color;
+  width: image-width($img);
+  height: image-height($img);
+}
+
+// Provide a general way of getting/using the project icons
+.ico {
+
+  display: inline-block;
+
+  @mixin ico($img, $display: inline-block) {
+    @include bg-build($img);
+    display: $display;
+  }
+
+  &.ico-descargar {
+    @include ico('ico-descargar.png');
+  }
+  &.ico-mas {
+    @include ico('ico-mas.png');
+  }
+  &.ico-maximize {
+    @include ico('ico-maximize.png');
+  }
+  &.ico-menos {
+    @include ico('ico-menos.png');
+  }
+  &.ico-minimize {
+    @include ico('ico-minimize.png');
+  }
+  &.ico-fullscreen {
+    @include ico('ico-fullscreen.png');
+  }
+  &.ico-navegacion {
+    @include ico('ico-navegacion.png');
+  }
+  &.ico-insertar {
+    @include ico('ico-insertar.png');
+  }
+  &.ico-x-green {
+    @include ico('ico-x-green.png');
+  }
+
+}

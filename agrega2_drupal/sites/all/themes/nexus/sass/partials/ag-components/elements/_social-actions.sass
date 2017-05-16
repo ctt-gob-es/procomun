@@ -1,0 +1,236 @@
+// In order to reuse, we generalize the social actions to a component
+
+// Structure: <ul class="social-links"><li class="social-like"><a>like it</a></li><li class="social-comment">..</li>...</ul>
+.highlight-header
+  border-top: 1px solid $light_gray
+
+.flag-follow-user .flag-message
+  position: absolute
+  top: -3em
+  line-height: normal
+  left: 0
+  text-align: left
+  width: 200px
+  text-align: center
+  font-size: .8em
+  +border-radius(5px)
+  background-color: $cold_gray
+  color: white
+  padding: .5em
+  box-shadow: 0 0 10px $charcoal
+.flag-follow-user > a
+  +icon-aware("ico-seguir.png", 2px)
+.social-links-block,
+ul.social
+  +clearfix()
+  @extend .highlight-header
+  padding: .2em 1em
+  display: block
+  li,
+  ul.inline li
+    display: inline-block
+    vertical-align: top
+    margin: 0
+    padding: 0
+    a
+      line-height: 24px
+      display: inline-block
+      padding-right: .3em
+      font-size: 13px
+
+  ul.links,
+  .flag-wrapper
+    float: left
+
+.field-name-field-valora-el-recurso
+  width: 100%
+
+ul.social
+  padding: 10px 0 10px 0
+  margin-bottom: 0
+  ul
+    margin-bottom: 0
+  .field-type-fivestar
+    padding-top: 1em
+    display: inline-block
+// @todo replace for icons as markup
+
+.comment-reply
+  +icon-aware("ico-responder.png", 2px)
+
+.flag-abuse-comment > a,
+.flag-abuse-node a
+  +icon-aware("ico-reportar.png", 2px)
+
+.flag-like a,
+.social-like a
+  +icon-aware("ico-megusta.png", 2px)
+  &:before
+    top: -4px
+    position: relative
+
+.flag-follow-user a
+  &:before
+    position: relative
+    top: -1px
+  &.flag-action
+    &:before
+      opacity: 0.3
+
+.flag-favorite a,
+.social-favorite > a,
+.social-favorite .social-replace a
+  +icon-aware("ico-favorito.png", 2px)
+  &:before
+    background-position: 0 -1px
+  &.flag-action
+    &:before
+      opacity: 0.3
+
+.comment-add a,
+a.comment-link,
+.social-comment
+  +icon-aware("ico-comentar.png", 0px)
+
+.comment-delete
+  +icon-aware("bt-eliminar.png", 2px)
+
+.comment-edit
+  +icon-aware("bt-editar.png", 2px)
+
+.comment-approve
+  +icon-aware("bt-aprobar.png", 2px)
+
+// Special icons for Social Network
+.node-type-social-network
+  // Me gusta
+  .flag-like a,
+  .social-like a
+    +icon-aware("ico-megusta.png", 2px)
+    width: initial
+    height: initial
+    &:before
+      top: -2px
+      position: relative
+  // Reportar
+  .flag-abuse-comment > a,
+  .flag-abuse-node a
+    +icon-aware("ico-reportar.png", 2px)
+    color: $main_blue
+    width: initial
+    height: initial
+    &.unflag-action,
+    &:hover
+      color: $deep_blue
+  // Responder
+  .comment-reply,
+  .content-count a
+    +icon-aware("ico-responder.png", 2px)
+    color: $main_blue
+    width: initial
+    height: initial
+    a
+      color: inherit
+    &:hover
+      color: $main_blue
+  // Seguir
+  .flag-follow-user a
+    +icon-aware("ico-seguir.png", 2px)
+    color: $main_blue
+    width: initial
+    height: initial
+    &.unflag-action,
+    &:hover
+      color: $deep_blue
+    &.flag-action
+      &:before
+        opacity: 0.3
+  // Favorito
+  .flag-favorite a,
+  .social-favorite > a,
+  .social-favorite .social-replace a
+    +icon-aware("ico-favorito.png", 2px)
+    width: initial
+    height: initial
+    &.unflag-action,
+    &:before
+      background-position: 0 -1px
+    &.flag-action
+      &:before
+        opacity: 0.3
+  // Comentar
+  a.comment-link,
+  .social-comment
+    +icon-aware("ico-comentar.png", 2px)
+    color: $main_blue
+    width: initial
+    height: initial
+    &:hover
+      color: $deep_blue
+  // Eliminar
+  .comment-delete
+    +icon-aware("bt-eliminar.png", 2px)
+    color: $main_blue
+    width: initial
+    height: initial
+    a
+      color: inherit
+    &:hover
+      color: $deep_blue
+  // Editar
+  .comment-edit
+    +icon-aware("bt-editar.png", 2px)
+    color: $main_blue
+    width: initial
+    height: initial
+    a
+      color: inherit
+    &:hover
+      color: $deep_blue
+
+// Novelty
+.flag-novelty a
+  +icon-aware("ico_novedad.png", 2px)
+  width: initial
+  height: initial
+  &.flag-action
+    &:before
+      opacity: 0.3
+
+// social links share:
+// This is only the generic widget style. Please,
+// avoid any page/section specific style here.
+.service-links
+  .service-label
+    @extend .hide-accessible
+  .links
+    white-space: nowrap
+    float: left
+    margin: 0
+    li
+      height: 24px
+      overflow: hidden
+      position: relative
+      margin: 0
+      display: block
+      float: left
+      margin-right: 5px
+      a
+        display: block
+        height: inherit
+        &:hover
+          img
+            display: block
+            position: relative
+            top: -31px
+
+//Exceptions
+#comments .comment .social-links
+  li a
+    text-transform: capitalize
+    &:hover
+      color: $deep_blue
+  li.comment_forbidden a
+    line-height: inherit
+    vertical-align: bottom
+    padding-right: 0

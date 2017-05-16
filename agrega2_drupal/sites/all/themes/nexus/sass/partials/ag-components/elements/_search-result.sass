@@ -1,0 +1,117 @@
+// Implementación generica de un resultado de busqueda.
+// Si necesitas hacer una variante puedes utilizar el class extra que hay en cada uno de los tipos de resultado. Ver sites/all/themes/nexus/templates/views/search/*.tpl
+// Para mas comodidad encontrarás estos class declarados al final de este archivo
+.not-logged-in
+  // Márgenes
+    .discussion-result ,
+    .poll-result,
+    .post-result,
+    .event-result
+      .col-sm-10
+        margin-bottom: 2em
+      .col-sm-2
+        padding-bottom: 1em
+    .community-result
+      .extra-info
+        margin-top: 1em
+.search-result,
+.pane-agrega2-debates-panel-pane-1 li.views-row,
+.public-activity li.views-row
+  list-style: none
+  position: relative
+  margin-bottom: 3em !important
+  // Iconos
+  @each $type in post, ode, community, question, discussion, poll, event, url, external-content, debates, debate, learning-path, podcast, webinar
+    .node-#{$type} h2,
+    &.#{$type}-result .title
+      background: image-url('ico_#{$type}.png') left center no-repeat
+  h2
+    padding-left: 35px
+
+.search-result
+  border-bottom: 1px dashed $gray
+  // Este nivel representa las columnas que tiene el <li>
+  .col-sm-10
+    margin-bottom: 1em
+  .col-sm-2
+    padding: 0
+    padding-bottom: 2em
+  > *
+    &:first-child
+      padding-left: 0
+      padding-right: 0
+    > .image
+      text-align: center
+    > .title
+      margin-top: 0
+      margin-bottom: 1em
+      color: $navy
+      padding-left: 35px
+      a
+        color: inherit
+        &:hover
+          text-decoration: none
+          color: $navy
+    > .description
+      line-height: 1.2em
+      margin-bottom: 1em
+    > .url
+      margin-bottom: 1em
+      // Metadata en general no está en uso. Hay alguna que otra implementacion específica.
+      // Ver al final del archivo en implementaciones para busquedas especificas.
+      //.metadata
+    // Table style
+    > .extra-info
+      margin-bottom: 1em
+      // To distribute how many cols should use every "<td>", go to the templates and touch col-md-[N]
+  .content-type
+    p
+      display: inline-block
+      width: auto
+      background-color: $light_blue
+      padding: .3em .5em
+      color: $white
+      font-weight: bold
+      font-size: 14px
+      +border-radius(3px)
+  // Modificadores
+  // -----------------------------
+  &.learning-resources-result, &.ode-result
+    > *
+      > .description
+        .metadata
+          margin-bottom: 10px
+          padding-bottom: 5px
+          border-bottom: 1px solid $light_gray
+          .author
+            img
+              +border-radius(30px)
+              width: 32px
+              height: 32px
+          .publication-date
+            border-left: 1px solid $charcoal
+            padding-left: 5px
+            margin-left: 3px
+  &.user-result
+    display: table
+    padding-bottom: 2em
+    h2
+      margin-bottom: 0
+      padding-left: 0
+    .col-sm-1,
+    .col-sm-11
+      display: table-cell
+      vertical-align: middle
+      float: none
+    .flag-wrapper
+      bottom: -1em
+    img
+      width: 60px
+      height: 60px
+      +border-radius(100px)
+    .flag-follow-user
+      float: right
+      position: absolute
+      right: 0
+.default-image
+  width: 100%

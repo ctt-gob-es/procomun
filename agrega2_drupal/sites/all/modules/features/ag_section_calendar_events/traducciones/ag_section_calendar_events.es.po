@@ -1,0 +1,306 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_section_calendar_events.features.field_instance.inc: n/a
+#  ag_section_calendar_events.features.inc: n/a
+#  ag_section_calendar_events.views_default.inc: n/a
+#  ag_section_calendar_events.module: n/a
+#  ag_section_calendar_events.install: n/a
+#  ag_section_calendar_events.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2016-07-11 11:42+0200\n"
+"PO-Revision-Date: 2016-07-11 11:42+0200\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: ag_section_calendar_events.features.field_instance.inc:813
+msgid "Categoría"
+msgstr ""
+
+#: ag_section_calendar_events.features.field_instance.inc:814
+msgid "Comunidades en que se publicará"
+msgstr ""
+
+#: ag_section_calendar_events.features.field_instance.inc:815
+msgid "Copy here the code that youtube provides the live event"
+msgstr "Copia aquí el código que ofrece youtube en el evento en directo"
+
+#: ag_section_calendar_events.features.field_instance.inc:816
+msgid "Descripción"
+msgstr ""
+
+#: ag_section_calendar_events.features.field_instance.inc:817
+msgid "Etiquetas"
+msgstr ""
+
+#: ag_section_calendar_events.features.field_instance.inc:818
+msgid "Fecha"
+msgstr ""
+
+#: ag_section_calendar_events.features.field_instance.inc:819
+msgid "Marcar contenido como novedad"
+msgstr ""
+
+#: ag_section_calendar_events.features.field_instance.inc:820
+msgid "Tipo de evento"
+msgstr ""
+
+#: ag_section_calendar_events.features.field_instance.inc:821 ag_section_calendar_events.features.inc:36
+msgid "Título"
+msgstr ""
+
+#: ag_section_calendar_events.features.field_instance.inc:822
+msgid "Vídeo"
+msgstr ""
+
+#: ag_section_calendar_events.features.field_instance.inc:823
+msgid "solrID"
+msgstr ""
+
+#: ag_section_calendar_events.features.inc:32
+msgid "Evento"
+msgstr ""
+
+#: ag_section_calendar_events.features.inc:34
+msgid "Crear un nuevo evento"
+msgstr ""
+
+#: ag_section_calendar_events.views_default.inc:178;780
+msgid "Master"
+msgstr "Maestro"
+
+#: ag_section_calendar_events.views_default.inc:179;781
+msgid "más"
+msgstr ""
+
+#: ag_section_calendar_events.views_default.inc:180;782
+msgid "Aplicar"
+msgstr ""
+
+#: ag_section_calendar_events.views_default.inc:181;783
+msgid "Reiniciar"
+msgstr ""
+
+#: ag_section_calendar_events.views_default.inc:182;784
+msgid "Ordenar por"
+msgstr ""
+
+#: ag_section_calendar_events.views_default.inc:183;785
+msgid "Asc"
+msgstr "Asc"
+
+#: ag_section_calendar_events.views_default.inc:184;786
+msgid "Desc"
+msgstr "Desc"
+
+#: ag_section_calendar_events.views_default.inc:185
+msgid "Elementos por página"
+msgstr ""
+
+#: ag_section_calendar_events.views_default.inc:186
+msgid "- Todos -"
+msgstr ""
+
+#: ag_section_calendar_events.views_default.inc:187
+msgid "Desplazamiento"
+msgstr ""
+
+#: ag_section_calendar_events.views_default.inc:188
+msgid "« primera"
+msgstr ""
+
+#: ag_section_calendar_events.views_default.inc:189
+msgid "‹ anterior"
+msgstr ""
+
+#: ag_section_calendar_events.views_default.inc:190
+msgid "siguiente ›"
+msgstr ""
+
+#: ag_section_calendar_events.views_default.inc:191
+msgid "última »"
+msgstr ""
+
+#: ag_section_calendar_events.views_default.inc:192
+msgid "Node ID"
+msgstr "ID del nodo"
+
+#: ag_section_calendar_events.views_default.inc:193
+msgid "."
+msgstr "."
+
+#: ag_section_calendar_events.views_default.inc:194
+msgid ","
+msgstr ","
+
+#: ag_section_calendar_events.views_default.inc:195;788
+msgid "Todo(s)"
+msgstr ""
+
+#: ag_section_calendar_events.views_default.inc:196
+msgid "Fecha de inicio (indexed)"
+msgstr ""
+
+#: ag_section_calendar_events.views_default.inc:197
+msgid "Fecha final (indexed)"
+msgstr ""
+
+#: ag_section_calendar_events.views_default.inc:198;798
+msgid "Content pane"
+msgstr "Panel de contenido"
+
+#: ag_section_calendar_events.views_default.inc:199;790
+msgid "more"
+msgstr "más"
+
+#: ag_section_calendar_events.views_default.inc:200
+msgid "No se han encontrado resultados."
+msgstr ""
+
+#: ag_section_calendar_events.views_default.inc:201;800
+msgid "Vista panel"
+msgstr ""
+
+#: ag_section_calendar_events.views_default.inc:202
+msgid "user events"
+msgstr ""
+
+#: ag_section_calendar_events.views_default.inc:203
+msgid "No results found"
+msgstr "No se han encontrado resultados"
+
+#: ag_section_calendar_events.views_default.inc:787
+msgid "Suscripción de nodos de OG"
+msgstr ""
+
+#: ag_section_calendar_events.views_default.inc:789
+msgid "Month"
+msgstr "Mes"
+
+#: ag_section_calendar_events.views_default.inc:791
+msgid "Week"
+msgstr "Semana"
+
+#: ag_section_calendar_events.views_default.inc:792
+msgid "Day"
+msgstr "Día"
+
+#: ag_section_calendar_events.views_default.inc:793
+msgid "Year"
+msgstr "Año"
+
+#: ag_section_calendar_events.views_default.inc:794
+msgid "Block"
+msgstr "Bloque"
+
+#: ag_section_calendar_events.views_default.inc:795
+msgid "Grupo de nodos desde la membrebesía de OG"
+msgstr ""
+
+#: ag_section_calendar_events.views_default.inc:796
+msgid "Upcoming"
+msgstr "Próximos"
+
+#: ag_section_calendar_events.views_default.inc:797
+msgid "Bloque de los próximos eventos"
+msgstr ""
+
+#: ag_section_calendar_events.views_default.inc:799
+msgid "Calendario de eventos"
+msgstr ""
+
+#: ag_section_calendar_events.views_default.inc:801
+msgid "My events Content pane"
+msgstr "Panel de contenido de mis eventos"
+
+#: ag_section_calendar_events.views_default.inc:802
+msgid "Events calendar"
+msgstr "Calendario de eventos"
+
+#: ag_section_calendar_events.views_default.inc:803 ag_section_calendar_events.module:25
+msgid "Upcoming events"
+msgstr "Próximos eventos"
+
+#: ag_section_calendar_events.module:36
+msgid "Separated date for agrega2"
+msgstr "Fechas separadas para agrega2"
+
+#: ag_section_calendar_events.module:37
+msgid "The field data will be separated when a date has a begin and end date"
+msgstr ""
+"Este campo de fecha se separará cuando una fecha tenga establecido "
+"una fecha de inicio y de fin"
+
+#: ag_section_calendar_events.module:41
+msgid "Translated selected value with class"
+msgstr "Traducida valores seleccionados con clase"
+
+#: ag_section_calendar_events.module:42
+msgid "Show the translated value with a specific class"
+msgstr "Mostrar el valor traducido con clase específica"
+
+#: ag_section_calendar_events.module:46
+msgid "Custom date format for Agrega2"
+msgstr ""
+
+#: ag_section_calendar_events.module:51
+msgid "Custom date format to display as table"
+msgstr ""
+
+#: ag_section_calendar_events.module:184;189
+msgid "Start date:"
+msgstr "Fecha de inicio:"
+
+#: ag_section_calendar_events.module:190
+msgid "End date:"
+msgstr "Fecha de finalización:"
+
+#: ag_section_calendar_events.module:249
+msgid "Start date"
+msgstr "Fecha de inicio"
+
+#: ag_section_calendar_events.module:254
+msgid "End date"
+msgstr "Fecha final"
+
+#: ag_section_calendar_events.module:311
+msgid "Invalid iframe URL."
+msgstr ""
+
+#: ag_section_calendar_events.module:329
+msgid "Make a comment"
+msgstr "Comentar"
+
+#: ag_section_calendar_events.install:51
+msgid "Processed @records records. Finished."
+msgstr ""
+
+#: ag_section_calendar_events.install:103
+msgid "Error: Event update failed"
+msgstr ""
+
+#: ag_section_calendar_events.install:107;108
+msgid "Error: No event sent"
+msgstr ""
+
+#: ag_section_calendar_events.info:0
+msgid "Agrega2 calendar events"
+msgstr "Calendario de eventos de Agrega2"
+
+#: ag_section_calendar_events.info:0
+msgid "This is the feature for events calendar"
+msgstr "Esta es la feature de calendario de eventos"
+
+#: ag_section_calendar_events.info:0
+msgid "Agrega2"
+msgstr "Agrega2"

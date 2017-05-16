@@ -1,0 +1,58 @@
+//This form works different from the other ones. It should look like the comments, as used in debates
+#answer-node-form
+  width: calc(100% - 4em)
+  margin: 1em 2em
+  border-bottom: 1px dashed $gray
+  padding-bottom: 1em
+  .chosen-container
+    &#edit_field_answer_state_und_chosen,
+    &#edit_field_categories_und_chosen
+      width: 95%!important
+      a
+        width: 100%
+  #edit-field-answer-state,
+  #edit-field-categories
+    width: 50%
+    display: block
+    float: left
+    label
+      width: 100%
+      display: block
+      float: none
+      border: 0
+      margin: 0 0 5px
+      padding: 0
+  .vertical-tabs,
+  .form-actions
+    clear: both
+  #edit-field-categories
+    label,
+    .chosen-container
+      margin-left: 5%
+  .form-type-textarea label
+    display: none
+  .form-textarea-wrapper
+    position: relative
+    float: none
+    width: 100%
+    border: 1px solid $light_gray
+    textarea
+      border-color: transparent
+      height: 100px
+      &:focus
+        outline: 1px solid transparent
+    .grippie
+      display: none
+  //Correct description for textarea in this content type, as there is no label to the left
+  .form-item.form-type-textarea > .form-textarea-wrapper ~ .description
+    +breakpoint($tablet-min)
+      float: none
+      margin-left: 0
+      width: 100%
+.panel-pane
+  div.node.answer
+    margin: 1em 2em
+    width: calc(100% - 4em)
+    padding-bottom: 1em
+    &:last-child
+      margin-bottom: 0

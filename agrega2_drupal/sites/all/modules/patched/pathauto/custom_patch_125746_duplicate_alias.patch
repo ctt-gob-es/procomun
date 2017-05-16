@@ -1,0 +1,18 @@
+diff --git a/sites/all/modules/contrib/pathauto/pathauto.inc b/sites/all/modules/contrib/pathauto/pathauto.inc
+index 9f98eec..6ac5262 100644
+--- a/sites/all/modules/contrib/pathauto/pathauto.inc
++++ b/sites/all/modules/contrib/pathauto/pathauto.inc
+@@ -65,11 +65,10 @@ define('PATHAUTO_PUNCTUATION_DO_NOTHING', 2);
+  *   TRUE if an alias exists, FALSE if not.
+  */
+ function _pathauto_alias_exists($alias, $source, $language = LANGUAGE_NONE) {
+-  $pid = db_query_range("SELECT pid FROM {url_alias} WHERE source <> :source AND alias = :alias AND language IN (:language, :language_none) ORDER BY language DESC, pid DESC", 0, 1, array(
++  //Change alias exists function without check language
++  $pid = db_query_range("SELECT pid FROM {url_alias} WHERE source <> :source AND alias = :alias ORDER BY language DESC, pid DESC", 0, 1, array(
+     ':source' => $source,
+     ':alias' => $alias,
+-    ':language' => $language,
+-    ':language_none' => LANGUAGE_NONE,
+   ))->fetchField();
+ 
+   return !empty($pid);

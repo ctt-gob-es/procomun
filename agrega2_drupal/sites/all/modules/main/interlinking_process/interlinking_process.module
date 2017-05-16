@@ -1,0 +1,182 @@
+<?php
+
+/**
+ * @file
+ * Interlinking process block
+ */
+
+/**
+* Implements hook_theme().
+*/
+function interlinking_process_theme($existing, $type, $theme, $path) {
+  $themes = array();
+
+  $themes['interlinking_process'] = array(
+    'variables' => array(
+      'data' => array(),
+    ),
+    'template' => '/templates/interlinking-process',
+  );
+
+  return $themes;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function interlinking_process_block_info() {
+  $block = array();
+
+  $block['interlinking_process_block_info'] = array(
+    'info' => t('Interlinking process block'),
+  );
+
+  return $block;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function interlinking_process_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'interlinking_process_block_info':
+      $ode = menu_get_object('ode', 2);
+      $block['subject'] = t('It may interest you');
+      $block['content'] = interlinking_process_render_content($ode);
+      break;
+  }
+
+  return $block;
+}
+
+/**
+ * Callback to render content of interlinking process.
+ */
+function interlinking_process_render_content($ode) {
+  $content = array();
+
+  // Call to interlinking service.
+  if (!empty($ode['id'])) {
+    $OS_orchestrator_recommender = new OS_orchestrator_recommender();
+    list($total, $result) = $OS_orchestrator_recommender->getInterlinkingContent($ode['id']);
+  }
+
+  if (isset($result) && !empty($result)) {
+    foreach ($result as $key => $value) {
+      $value = explode('##', $value);
+      $crop = variable_get('max_title_chars', 32);
+
+      $origin = $value[2];
+
+      if($origin !== 'CULTURA') {
+
+        $item['link'] = $value[0];
+        $item['title'] = $value[1];
+        $item['origin'] = $origin;
+
+        $link_value = explode('/', $value[0]);
+        $item['origin_link'] = $link_value[2] . '/visualizer';
+
+        // Get extra information.
+        switch($item['origin']) {
+          case 'BNE':
+            $item['origin_title'] = 'BNE';
+            $item['image'] = drupal_get_path('theme', 'nexus') . '/images/bne_logo.jpg';
+            $item['origin_link'] = 'http://' . $link_value[2];
+            break;
+
+          case 'DBPEDIA':
+            $item['origin_title'] = 'DBpedia';
+            $item['image'] = drupal_get_path('theme', 'nexus') . '/images/dbpedia_logo.png';
+            $item['origin_link'] = 'http://' . $link_value[2] . '/About';
+            break;
+
+          case 'REDINED':
+            $item['origin_title'] = 'Redined';
+            $item['image'] = drupal_get_path('theme', 'nexus') . '/images/redinet_logo.png';
+            $item['origin_link'] = 'http://' . $link_value[2];
+            break;
+
+          case 'MUSEO_PRADO':
+            $item['origin_title'] = 'Museo del Prado';
+            $item['image'] = drupal_get_path('theme', 'nexus') . '/images/museoprado_logo.png';
+            $item['origin_link'] = 'http://' . $link_value[2];
+            break;
+          case 'EUROPEANA':
+            $item['origin_title'] = 'Europeana';
+            $item['image'] = drupal_get_path('theme', 'nexus') . '/images/europeana_logo.png';
+            $item['origin_link'] = 'http://' . $link_value[2];
+            break;
+          case 'HISPANA':
+            $item['origin_title'] = 'Hispana';
+            $item['image'] = drupal_get_path('theme', 'nexus') . '/images/hispana_logo.png';
+            $item['origin_link'] = 'http://' . $link_value[2];
+            break;
+        }
+
+        if (drupal_strlen($item['title']) > $crop && preg_match('#^https?://#i', $item['title']) === 1) {
+          $item['title'] = truncate_utf8($item['title'], $crop) . " ...";
+        }
+
+        $item_rendered = array(
+          '#theme' => 'interlinking_process',
+          '#data' => $item,
+        );
+        $items[] = render($item_rendered);
+      }
+    }
+
+    if(!empty($items)) {
+      $see_more = array();
+      $see_more[] = array(
+        'data' => l(t('Load more'), 'javascript:', array('external' => TRUE)),
+        'class' => array('pager-next'),
+      );
+      $attributes = array(
+        'class' => 'pager pager-load-more', // a string or indexed (string) array with the classes for the list tag
+      );
+      $attributes_links = array(
+        'class' => 'interlinking-list',
+      );
+      $content = array(
+        '#type' => 'container',
+        'content' => array(
+          'list' => array(
+            '#theme' => 'item_list',
+            '#items' => $items,
+            '#attributes' => $attributes_links,
+          ),
+          'show-more'=> array(
+            '#prefix' => '<div class="show-more">',
+            '#markup' => theme('item_list', array('items' => $see_more, 'attributes' =>  $attributes)),
+            '#attached' => array(
+              'js' => array(drupal_get_path('module', 'interlinking_process') . '/js/interlinking.js'),
+            ),
+            '#suffix' => '</div>',
+          ),
+        ),
+      );
+    }
+    else {
+      $content = renderEmptyContent();
+    }
+  }
+  else {
+    $content = renderEmptyContent();
+  }
+
+  return $content;
+}
+
+/**
+ * Function to render empty content if no results found in 'titleLinkStr' field on Solr.
+ */
+function renderEmptyContent() {
+  $result = array(
+     '#type' => 'markup',
+     '#markup' => '<div class="view-empty"><span>' . t('No links have been found for interlinking process') . '</span></div>',
+   );
+  return $result;
+}

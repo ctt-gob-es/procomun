@@ -1,0 +1,794 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_section_social_netwok.admin.inc: n/a
+#  ag_section_social_netwok.features.field_instance.inc: n/a
+#  ag_section_social_netwok.views_default.inc: n/a
+#  ag_section_social_netwok.features.inc: n/a
+#  ag_section_social_netwok.forms.inc: n/a
+#  ag_section_social_netwok.module: n/a
+#  ag_section_social_netwok.widget.inc: n/a
+#  ag_section_social_netwok_handler_community_type.inc: n/a
+#  ag_section_social_netwok_handler_moderate.inc: n/a
+#  templates/content-comunity-public-dashboard.tpl.php: n/a
+#  ag_section_social_netwok.install: n/a
+#  ag_section_social_netwok.info: n/a
+#  plugins/content_types/comunity_public_dashboard/comunity_public_dashboard.inc: n/a
+#  plugins/content_types/create_community_link/create_community_link.inc: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2016-07-20 11:46+0200\n"
+"PO-Revision-Date: 2016-07-20 11:46+0200\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: ag_section_social_netwok.admin.inc:7
+msgid "Config the global community procomun"
+msgstr "Configuración de la comunidad global de procomún"
+
+#: ag_section_social_netwok.admin.inc:13
+msgid "Dont select a community as global community procomun"
+msgstr "No selecciona una comunidad como comunidad global de procomún"
+
+#: ag_section_social_netwok.admin.inc:18
+msgid "Select the global community of procomun"
+msgstr "Seleccionar la comunidad global de procomún"
+
+#: ag_section_social_netwok.features.field_instance.inc:1732
+msgid "<p><strong>Sin restricción:</strong> El usuario puede unirse a la comunidad directamente sin validación.<br /><strong>Restringido:</strong> El usuario puede unirse a la comunidad pero necesita validación por parte del administrador.</p>\r\n"
+msgstr ""
+
+#: ag_section_social_netwok.features.field_instance.inc:1734
+msgid "Check as global community"
+msgstr "Verificar como comunidad global"
+
+#: ag_section_social_netwok.features.field_instance.inc:1735 ag_section_social_netwok.views_default.inc:938
+msgid "Descripción"
+msgstr ""
+
+#: ag_section_social_netwok.features.field_instance.inc:1736
+msgid "Determine if this is an OG group."
+msgstr "Determina si esta es un Grupo orgánico"
+
+#: ag_section_social_netwok.features.field_instance.inc:1737 ag_section_social_netwok.views_default.inc:940
+msgid "Estado"
+msgstr ""
+
+#: ag_section_social_netwok.features.field_instance.inc:1738
+msgid "Estado de la red social"
+msgstr ""
+
+#: ag_section_social_netwok.features.field_instance.inc:1739 ag_section_social_netwok.views_default.inc:1145
+msgid "Etiquetas"
+msgstr ""
+
+#: ag_section_social_netwok.features.field_instance.inc:1740
+msgid "Group"
+msgstr "Grupo"
+
+#: ag_section_social_netwok.features.field_instance.inc:1741
+msgid "Imagen de grupo"
+msgstr ""
+
+#: ag_section_social_netwok.features.field_instance.inc:1742
+msgid "Introduzca las diferentes etiquetas separadas por comas."
+msgstr "Enter the different tags separated by commas."
+
+#: ag_section_social_netwok.features.field_instance.inc:1743
+msgid "Nivel de permisos y roles del grupo"
+msgstr ""
+
+#: ag_section_social_netwok.features.field_instance.inc:1744
+msgid "Old Procomun community id"
+msgstr ""
+
+#: ag_section_social_netwok.features.field_instance.inc:1745
+msgid "Roles de grupo y permisos"
+msgstr ""
+
+#: ag_section_social_netwok.features.field_instance.inc:1746
+msgid "Twitter API Key"
+msgstr ""
+
+#: ag_section_social_netwok.features.field_instance.inc:1747
+msgid "Twitter API Secret"
+msgstr ""
+
+#: ag_section_social_netwok.features.field_instance.inc:1748
+msgid "Twitter Access token"
+msgstr ""
+
+#: ag_section_social_netwok.features.field_instance.inc:1749
+msgid "Twitter Access token secret"
+msgstr ""
+
+#: ag_section_social_netwok.features.field_instance.inc:1750
+msgid "Twitter Hashtag"
+msgstr ""
+
+#: ag_section_social_netwok.features.field_instance.inc:1751 ag_section_social_netwok.features.inc:302 ag_section_social_netwok.views_default.inc:952
+msgid "Título"
+msgstr ""
+
+#: ag_section_social_netwok.features.field_instance.inc:1752
+msgid "Visibilidad del grupo"
+msgstr ""
+
+#: ag_section_social_netwok.features.field_instance.inc:1753
+msgid "message_status"
+msgstr "stado_message"
+
+#: ag_section_social_netwok.features.field_instance.inc:1754
+msgid "social_network_ref"
+msgstr ""
+
+#: ag_section_social_netwok.features.field_instance.inc:1755
+msgid "solrID"
+msgstr ""
+
+#: ag_section_social_netwok.features.field_instance.inc:1756
+msgid "target_users"
+msgstr ""
+
+#: ag_section_social_netwok.features.inc:298
+msgid "Comunidad"
+msgstr ""
+
+#: ag_section_social_netwok.forms.inc:13
+msgid "Search in your follow users to invite to your community"
+msgstr "Busca en tus seguidores para invitar a tu comunidad"
+
+#: ag_section_social_netwok.forms.inc:26
+msgid "Invite"
+msgstr "Invitar"
+
+#: ag_section_social_netwok.forms.inc:69
+msgid "Your invitation has been sent succesfully"
+msgstr "Tu invitación se ha enviado satisfactoriamente"
+
+#: ag_section_social_netwok.forms.inc:73
+msgid "This user is a member or has a pending subscription for this group"
+msgstr ""
+"Este usuario ya es miembro o está pendiente de aprobación la "
+"suscripción a este grupo"
+
+#: ag_section_social_netwok.forms.inc:78
+msgid "This user does not exists in Procomun"
+msgstr "Este usuario no existe en Procomún"
+
+#: ag_section_social_netwok.forms.inc:91
+msgid "Accept"
+msgstr "Aceptar"
+
+#: ag_section_social_netwok.forms.inc:98
+msgid "Reject"
+msgstr "Rechazar"
+
+#: ag_section_social_netwok.forms.inc:126
+msgid "The community has been accepted successfully."
+msgstr "La comunidad ha sido aceptada correctamente"
+
+#: ag_section_social_netwok.forms.inc:137
+msgid "There was a problem while accepting community. Try again later."
+msgstr ""
+
+#: ag_section_social_netwok.forms.inc:163
+msgid "The community has been rejected successfully."
+msgstr ""
+
+#: ag_section_social_netwok.forms.inc:175
+msgid "There was a problem while rejecting community. Try again later."
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:215;1800
+msgid "Defaults"
+msgstr "Predefinidos"
+
+#: ag_section_social_netwok.views_default.inc:216;406;924;1129;1801;1904
+msgid "más"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:217;407;925;1130;1645;1802;1905;2018
+msgid "Aplicar"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:218;408;926;1131;1646;1803;1906;2019
+msgid "Reiniciar"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:219;409;1804;1907;2020
+msgid "Ordenar por"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:220;410;534;928;1133;1648;1805;1908;2021
+msgid "Asc"
+msgstr "Asc"
+
+#: ag_section_social_netwok.views_default.inc:221;411;535;929;1134;1649;1806;1909;2022
+msgid "Desc"
+msgstr "Desc"
+
+#: ag_section_social_netwok.views_default.inc:222;412;930;1135;1650;1807;1910;2023
+msgid "Elementos por página"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:223;413;931;1136;1651;1808;1911;2024
+msgid "- Todos -"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:224;414;932;1137;1652;1809;1912;2025
+msgid "Desplazamiento"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:225;415;1138;1653;1810;1913;2026
+msgid "« primera"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:226;416;1139;1654;1811;1914;2027
+msgid "‹ anterior"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:227;417;1140;1655;1812;1915;2028
+msgid "siguiente ›"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:228;418;1141;1656;1813;1916;2029
+msgid "última »"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:229;1658
+msgid "Grupo de nodos desde la membrebesía de OG"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:230
+msgid "Profile"
+msgstr "Perfil"
+
+#: ag_section_social_netwok.views_default.inc:231;421;538;1143;1659;1816;1920
+msgid "Todo(s)"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:232
+msgid "%1 miembros"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:233
+msgid "Member list"
+msgstr "Lista de miembros"
+
+#: ag_section_social_netwok.views_default.inc:234;423;540;943;1149;1661;1819;1922;2034
+msgid "more"
+msgstr "más"
+
+#: ag_section_social_netwok.views_default.inc:235;424;944;1150;1662;1821;1923;2035
+msgid "Vista panel"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:404;529;922;1128;1642;1902;2015
+msgid "Master"
+msgstr "Maestro"
+
+#: ag_section_social_netwok.views_default.inc:405
+msgid "Community members"
+msgstr "Miembros de la comunidad"
+
+#: ag_section_social_netwok.views_default.inc:419;1918
+msgid "."
+msgstr "."
+
+#: ag_section_social_netwok.views_default.inc:420
+msgid "Nombre de usuario"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:422
+msgid "Content pane"
+msgstr "Panel de contenido"
+
+#: ag_section_social_netwok.views_default.inc:530
+msgid "See more comments"
+msgstr "Ver más comentarios"
+
+#: ag_section_social_netwok.views_default.inc:531
+msgid "Apply"
+msgstr "Aplicar"
+
+#: ag_section_social_netwok.views_default.inc:532
+msgid "Reset"
+msgstr "Reiniciar"
+
+#: ag_section_social_netwok.views_default.inc:533
+msgid "Sort by"
+msgstr "Ordenar por"
+
+#: ag_section_social_netwok.views_default.inc:536
+msgid "Content"
+msgstr "Contenido"
+
+#: ag_section_social_netwok.views_default.inc:537
+msgid "Reply"
+msgstr "Responder"
+
+#: ag_section_social_netwok.views_default.inc:539
+msgid "Teaser comments"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:541
+msgid "View panes"
+msgstr "Vista panel"
+
+#: ag_section_social_netwok.views_default.inc:923
+msgid "Communities pending list"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:927;1132;1647
+msgid "Order by"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:933
+msgid "«"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:934
+msgid "‹"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:935
+msgid "›"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:936
+msgid "»"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:937
+msgid "Title"
+msgstr "Título"
+
+#: ag_section_social_netwok.views_default.inc:939 ag_section_social_netwok.module:795
+msgid "Community type"
+msgstr "Tipo de comunidad"
+
+#: ag_section_social_netwok.views_default.inc:941
+msgid "Acciones"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:942
+msgid "pending communities"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:945
+msgid "communities list"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:946
+msgid "Comunidades"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:947;1815
+msgid "Suscripción de nodos de OG"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:948
+msgid "- Choose an operation -"
+msgstr "- Elegir una operación -"
+
+#: ag_section_social_netwok.views_default.inc:949
+msgid "Published"
+msgstr "Publicado"
+
+#: ag_section_social_netwok.views_default.inc:950
+msgid "Administrar usuarios"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:951
+msgid "Publicado"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:953
+msgid "communities list export"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:954
+msgid "Communities list export"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:1142
+msgid "flag"
+msgstr "marca"
+
+#: ag_section_social_netwok.views_default.inc:1144
+msgid "Categoría"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:1146
+msgid "Tipo"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:1147
+msgid "Favourites"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:1148
+msgid "List of favourites"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:1643
+msgid "My suibscribed communities"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:1644
+msgid "Ver más"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:1657
+msgid "El usuario no es miembro de ningún grupo"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:1660
+msgid "My communities"
+msgstr "Mis comunidades"
+
+#: ag_section_social_netwok.views_default.inc:1663
+msgid "My communities - Timeline"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:1664
+msgid "My subscribed communities"
+msgstr "Mis comunidades suscritas"
+
+#: ag_section_social_netwok.views_default.inc:1665
+msgid "You aren't member of a community"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:1666
+msgid "My pending communities"
+msgstr "Mis comunidades pendientes"
+
+#: ag_section_social_netwok.views_default.inc:1667
+msgid "My pending requests"
+msgstr "Mis solicitudes pendientes"
+
+#: ag_section_social_netwok.views_default.inc:1668
+msgid "You do not have pending requests."
+msgstr "Usted no tiene solicitudes pendientes."
+
+#: ag_section_social_netwok.views_default.inc:1669
+msgid "My communities - profile"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:1670
+msgid "Mis comunidades"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:1671
+msgid "%1's communities"
+msgstr "Comunidades de %1"
+
+#: ag_section_social_netwok.views_default.inc:1814
+msgid "No hay contenido en este grupo."
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:1817
+msgid "Widget activity content"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:1818
+msgid "Actividad reciente"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:1820
+msgid "No hay actividad reciente en esta comunidad."
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:1903 ag_section_social_netwok.widget.inc:170
+msgid "Recent activity"
+msgstr "Actividad reciente"
+
+#: ag_section_social_netwok.views_default.inc:1917
+msgid "Node ID"
+msgstr "ID del nodo"
+
+#: ag_section_social_netwok.views_default.inc:1919
+msgid ","
+msgstr ","
+
+#: ag_section_social_netwok.views_default.inc:1921
+msgid "content pane"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:2016
+msgid "My favourites"
+msgstr "Mis favoritos"
+
+#: ag_section_social_netwok.views_default.inc:2017
+msgid "Ver +"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:2030
+msgid "No hay nuevo contenido en tus favoritos"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:2031
+msgid "Flagged node with flag favorite (indexed)"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:2032
+msgid "Users who flagged the entity with flag favorite"
+msgstr ""
+
+#: ag_section_social_netwok.views_default.inc:2033
+msgid "My favourites content pane"
+msgstr ""
+
+#: ag_section_social_netwok.widget.inc:87 ag_section_social_netwok.module:611
+msgid "Public community"
+msgstr "Comunidad pública"
+
+#: ag_section_social_netwok.widget.inc:88
+msgid "Share public community"
+msgstr "Compartir comunidad pública"
+
+#: ag_section_social_netwok.widget.inc:91 ag_section_social_netwok.module:618
+msgid "Restricted community"
+msgstr "Comunidad restringida"
+
+#: ag_section_social_netwok.widget.inc:92
+msgid "Share restricted community"
+msgstr "Compartir comunidad restringida"
+
+#: ag_section_social_netwok.widget.inc:160
+msgid "Resources:"
+msgstr "Recursos:"
+
+#: ag_section_social_netwok.widget.inc:165
+msgid "Members:"
+msgstr "Miembros:"
+
+#: ag_section_social_netwok_handler_community_type.inc:43
+msgid "Private"
+msgstr ""
+
+#: ag_section_social_netwok_handler_community_type.inc:48
+msgid "Restricted"
+msgstr "Restringido"
+
+#: ag_section_social_netwok_handler_community_type.inc:52
+msgid "Public"
+msgstr "Público"
+
+#: ag_section_social_netwok_handler_moderate.inc:21
+msgid "Moderate"
+msgstr "Moderar"
+
+#: ag_section_social_netwok.module:28
+msgid "Invite new users to your community"
+msgstr "Invitar nuevos usuarios a tu comunidad"
+
+#: ag_section_social_netwok.module:47
+msgid "Moderate the creation of a community"
+msgstr "Moderar la creación de una comunidad"
+
+#: ag_section_social_netwok.module:48
+msgid "Moderation page for communities"
+msgstr ""
+
+#: ag_section_social_netwok.module:105
+msgid "Invite user to group"
+msgstr "Invitar usuario al grupo"
+
+#: ag_section_social_netwok.module:106
+msgid "Allow invite users to this group"
+msgstr "Permitir invitar usuarios a este grupo"
+
+#: ag_section_social_netwok.module:120
+msgid "Facets filters title"
+msgstr ""
+
+#: ag_section_social_netwok.module:149
+msgid "Filter by"
+msgstr "Filtrar por"
+
+#: ag_section_social_netwok.module:333
+msgid "Be a member and colaborate!"
+msgstr "Hazte miembro y colabora"
+
+#: ag_section_social_netwok.module:336
+msgid "You are already a member of this community"
+msgstr "Ya eres un miembro de esta comunidad"
+
+#: ag_section_social_netwok.module:339
+msgid "Click for unsubscribe"
+msgstr "Haga click para desinscribirse"
+
+#: ag_section_social_netwok.module:384
+msgid "View user profile"
+msgstr ""
+
+#: ag_section_social_netwok.module:441
+msgid "Community's members"
+msgstr ""
+
+#: ag_section_social_netwok.module:521
+msgid "%name is required"
+msgstr "%name es requerido"
+
+#: ag_section_social_netwok.module:540
+msgid "Home"
+msgstr "Inicio"
+
+#: ag_section_social_netwok.module:544
+msgid "Questions/Debates"
+msgstr "Preguntas/Debates"
+
+#: ag_section_social_netwok.module:548
+msgid "Surveys"
+msgstr "Encuestas"
+
+#: ag_section_social_netwok.module:552
+msgid "Events"
+msgstr "Eventos"
+
+#: ag_section_social_netwok.module:556 templates/content-comunity-public-dashboard.tpl.php:25
+msgid "Members"
+msgstr "Miembros"
+
+#: ag_section_social_netwok.module:570
+msgid "Administer newsletters"
+msgstr "Administrar boletines de noticias"
+
+#: ag_section_social_netwok.module:578
+msgid "Invite friends"
+msgstr "Invitar amigos"
+
+#: ag_section_social_netwok.module:583
+msgid "About this community"
+msgstr "Sobre esta comunidad"
+
+#: ag_section_social_netwok.module:600
+msgid "Private community"
+msgstr "Comunidad privada"
+
+#: ag_section_social_netwok.module:687
+msgid "Not defined"
+msgstr "Sin definir"
+
+#: ag_section_social_netwok.module:703
+msgid "Edit"
+msgstr "Editar"
+
+#: ag_section_social_netwok.module:712
+msgid "Unsubscribe"
+msgstr "Desinscribirse"
+
+#: ag_section_social_netwok.module:757
+msgid "Community"
+msgstr "Comunidad"
+
+#: ag_section_social_netwok.module:763
+msgid "Your community requested has been successfully sent. You will be noticed when an admin accept or deny it."
+msgstr ""
+"Tu solicitud de alta de comunidad ha sido enviada correctamente. "
+"Serás notificado cuando un administrador la acepte o la deniegue."
+
+#: ag_section_social_netwok.module:776
+msgid "Administer communities creation"
+msgstr ""
+
+#: ag_section_social_netwok.module:777
+msgid "Allow people to accept or reject a community creation request"
+msgstr ""
+
+#: ag_section_social_netwok.module:788
+msgid "Moderate handler"
+msgstr ""
+
+#: ag_section_social_netwok.module:789
+msgid "Handler for moderate links in moderating social networks"
+msgstr ""
+
+#: ag_section_social_netwok.module:796
+msgid "Render the community type, public, private or restricted"
+msgstr ""
+
+#: ag_section_social_netwok.module:821
+msgid "Congratulations now you are a member of this community"
+msgstr "¡Enhorabuena! Ahora eres miembro de esta comunidad."
+
+#: ag_section_social_netwok.module:836
+msgid "You can't publish a content in Help and FAQ in addition with other communities"
+msgstr ""
+"No puedes publicar contenido en Ayuda y FAQs a la vez que en otras "
+"comunidades"
+
+#: ag_section_social_netwok.module:840
+msgid "Only administrators can publish on this community"
+msgstr "Solo los administradores pueden publicar en esta comunidad"
+
+#: ag_section_social_netwok.module:959
+msgid "Content published in Help and faqs network can not be shared in other networks.\n       Please disable @title checkbox or assign it to other available networks."
+msgstr ""
+
+#: ag_section_social_netwok.module:1006
+msgid "This comunity is private. Contact with the administrator"
+msgstr "Esta comunidad es privada. Contacte con el administrador"
+
+#: ag_section_social_netwok.module:1010
+msgid "This is not a community"
+msgstr "Este contenido no es una comunidad"
+
+#: ag_section_social_netwok.module:1022
+msgid "edit"
+msgstr "editar"
+
+#: ag_section_social_netwok.module:18
+msgid "Procomun Social Network config"
+msgstr "Configuración de la Red Social Procomún"
+
+#: ag_section_social_netwok.module:19
+msgid "Configure the settings of social network procomun"
+msgstr "Configurar la configuración de la red social procomún"
+
+#: ag_section_social_netwok.module:38
+msgid "Autocomplete path"
+msgstr "Ruta de autocompletar"
+
+#: ag_section_social_netwok.install:46;47
+msgid "Problems connecting with Solr. Stopping update."
+msgstr ""
+
+#: ag_section_social_netwok.install:64
+msgid "Processed @nodes social networks to update communityAdminSupr field in solr. Finished."
+msgstr ""
+
+#: ag_section_social_netwok.info:0
+msgid "ag_section_social_netwok"
+msgstr ""
+
+#: ag_section_social_netwok.info:0
+msgid "Feature with all required for a social network"
+msgstr "Feature con todo lo requerido para una red social"
+
+#: ag_section_social_netwok.info:0 plugins/content_types/comunity_public_dashboard/comunity_public_dashboard.inc:9 plugins/content_types/create_community_link/create_community_link.inc:8
+msgid "Agrega2"
+msgstr "Agrega2"
+
+#: plugins/content_types/comunity_public_dashboard/comunity_public_dashboard.inc:6
+msgid "Comunity public dashboard"
+msgstr "Panel de control públco para la red social"
+
+#: plugins/content_types/comunity_public_dashboard/comunity_public_dashboard.inc:7
+msgid "Render the main block of a comunity public view."
+msgstr "Renderiza el bloque principal de la vista de la comunidad"
+
+#: plugins/content_types/comunity_public_dashboard/comunity_public_dashboard.inc:8
+msgid "Node"
+msgstr "Nodo"
+
+#: plugins/content_types/create_community_link/create_community_link.inc:6
+msgid "Create community link"
+msgstr ""
+
+#: plugins/content_types/create_community_link/create_community_link.inc:7
+msgid "Create community link in My communities section"
+msgstr ""
+
+#: plugins/content_types/create_community_link/create_community_link.inc:25;28
+msgid "Request a new community"
+msgstr "Solicitar alta de nueva comunidad"
+
+#: templates/content-comunity-public-dashboard.tpl.php:17
+msgid "Resources"
+msgstr "Recursos"
+
+#: templates/content-comunity-public-dashboard.tpl.php:31
+msgid "Administrators"
+msgstr "Administradores"

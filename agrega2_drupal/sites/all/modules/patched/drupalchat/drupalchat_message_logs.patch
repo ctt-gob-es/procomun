@@ -1,0 +1,24 @@
+diff --git a/sites/all/modules/patched/drupalchat/js/drupalchat.js b/sites/all/modules/patched/drupalchat/js/drupalchat.js
+index 82ece7a..72e982d 100644
+--- a/sites/all/modules/patched/drupalchat/js/drupalchat.js
++++ b/sites/all/modules/patched/drupalchat/js/drupalchat.js
+@@ -492,9 +492,8 @@ function drupalchatMain() {
+       // MESSAGE LOGS.
+       jQuery.getJSON(Drupal.settings.drupalchat.logMessagesUrl, function(data) {
+           jQuery.each(data.messages, function (key, val){
+-            jQuery("#chatbox_"+chatboxtitle+" .chatboxcontent").append('<p>'+val.user+'</p>');
+-            jQuery("#chatbox_"+chatboxtitle+" .chatboxcontent").append('<p>'+val.date+'</p>');
+-            jQuery("#chatbox_"+chatboxtitle+" .chatboxcontent").append('<p>'+val.message+'</p>');
++            output = '<span class="chatboxtime">'+val.date+'</span><a href="'+Drupal.settings.basePath+'user/'+val.user+'">'+val.user+'</a></div><p class="' + val.message + '">'+val.message+'</p>';
++            jQuery("#chatbox_"+chatboxtitle+" .chatboxcontent").append(output);
+           });
+       });
+ 
+@@ -561,6 +560,7 @@ function drupalchatMain() {
+   			chatboxtitle = (drupalchatroom || drupalselfmessage)?value.uid2:value.uid1;
+   			if (jQuery("#chatbox_"+chatboxtitle).length <= 0) {
+               createChatBox(chatboxtitle, drupalchatroom?drupalchat_messages.buddylist[value.uid2].name:value.name, 1);
++              return;
+   			}
+   			else if (jQuery("#chatbox_"+chatboxtitle+" .subpanel").is(':hidden')) {
+   				if (jQuery("#chatbox_"+chatboxtitle).css('display') == 'none') {

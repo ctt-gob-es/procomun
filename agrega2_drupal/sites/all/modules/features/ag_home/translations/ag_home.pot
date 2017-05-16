@@ -1,0 +1,58 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_home.features.field_instance.inc: n/a
+#  ag_home.features.inc: n/a
+#  ag_home.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2014-09-01 10:51+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: ag_home.features.field_instance.inc:258
+msgid "Descripción"
+msgstr ""
+
+#: ag_home.features.field_instance.inc:259
+msgid "Enlace"
+msgstr ""
+
+#: ag_home.features.field_instance.inc:260
+msgid "Imagen"
+msgstr ""
+
+#: ag_home.features.field_instance.inc:261 ag_home.features.inc:26
+msgid "Título"
+msgstr ""
+
+#: ag_home.features.inc:22
+msgid "Banner"
+msgstr ""
+
+#: ag_home.features.inc:24
+msgid "Banner ad"
+msgstr ""
+
+#: ag_home.info:0
+msgid "Home"
+msgstr ""
+
+#: ag_home.info:0
+msgid "Feature para la home de Agrega2"
+msgstr ""
+
+#: ag_home.info:0
+msgid "Agrega2"
+msgstr ""
+

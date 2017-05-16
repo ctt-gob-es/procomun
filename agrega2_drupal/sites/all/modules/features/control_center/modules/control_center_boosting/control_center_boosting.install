@@ -1,0 +1,99 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the control center boosting module.
+ */
+
+/**
+ * Implements hook_update_N().
+ * Update Drupal solr_fields content based on solr.
+ */
+function control_center_boosting_update_7000(&$sandbox) {
+    // Prepare all variables in first iteration.
+    if (!isset($sandbox['total'])) {
+        // Prepare array from solr.
+        control_center_boosting_prepare_batch_solr_fields($sandbox);
+
+        $sandbox['current'] = 0;
+        $sandbox['total'] = control_center_boosting_get_total($sandbox);
+    }
+
+    // Get batch, or number of entities to process each time.
+    $fields_per_pass = 10;
+    $end = $sandbox['current'] + $fields_per_pass;
+
+    while ($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+        // Heavy operations.
+        $element = control_center_boosting_get_element($sandbox);
+        control_center_boosting_add_fields($sandbox, $element);
+
+        // Increase by one.
+        $sandbox['current']++;
+    }
+
+    // Set the value for finished. If current == total then finished will be 1, meaning we are done.
+    // Also, avoid division by zero.
+    if ($sandbox['total'] == 0) {
+        $sandbox['#finished'] = 1;
+    }
+    else {
+        $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+    }
+
+    if ($sandbox['#finished'] === 1) {
+        drupal_set_message(t('Processed @records records. Finished.', array('@records' => $sandbox['total'])));
+    }
+}
+
+/**
+ * Return number of operations that will be done.
+ */
+function control_center_boosting_get_total($sandbox) {
+    return isset($sandbox['elements']) ? count($sandbox['elements']) : 0;
+}
+
+/**
+ * Gets element with sandbox data.
+ */
+function control_center_boosting_get_element($sandbox) {
+    $position = isset($sandbox['current']) ? $sandbox['current'] : 0;
+    return !empty($sandbox['elements']) ? $sandbox['elements'][$position] : array();
+}
+
+function control_center_boosting_prepare_batch_solr_fields(&$sandbox) {
+    // Build orchestrator to get all the fields from REST service.
+    $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+    $boostingFields = $OS_orchestrator_inyection->getFieldsBoosting();
+
+    if(isset($boostingFields[0]) && $boostingFields[0] != -1) {
+        $sandbox['elements'] = $boostingFields[1];
+    }
+    else {
+        $sandbox['elements'] = array();
+    }
+}
+
+/**
+ * Custom function to do heavy operations with batch data.
+ */
+function control_center_boosting_add_fields(&$sandbox, $element) {
+    try {
+        // Fill initial values.
+        $values = array(
+            'type' => 'solr_fields',
+            'title' => $element,
+            'uid' => 1,
+        );
+
+        // Create entity and set fields.
+        $entity = entity_create('node', $values);
+        $wrapper = entity_metadata_wrapper('node', $entity);
+        $wrapper->field_boosting_weight->set(0);
+        $wrapper->save();
+    }
+    catch(EntityMetadataWrapperException $e) {
+        drupal_set_message(t('Error creating solr_field: !name', array('!name' => $element)), 'error');
+    }
+
+}

@@ -1,0 +1,13 @@
+name = ER Svc
+description = "Allows for logins through a Services endpoint when the Email Registration module is installed.  Valid with Services endpoint login API 1.0 only"
+core = 7.x
+package = Mail
+dependencies[] = email_registration
+dependencies[] = services
+
+; Information added by Drupal.org packaging script on 2014-08-28
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "er_svc"
+datestamp = "1409248130"
+

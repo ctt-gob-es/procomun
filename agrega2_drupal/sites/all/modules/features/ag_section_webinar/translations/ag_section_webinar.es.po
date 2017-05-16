@@ -1,0 +1,242 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_section_webinar.features.field_instance.inc: n/a
+#  ag_section_webinar.features.inc: n/a
+#  ag_section_webinar.module: n/a
+#  ag_section_webinar.install: n/a
+#  ag_section_webinar.info: n/a
+#  includes/ag_section_webinar.forms.inc: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2017-04-28 14:04+0200\n"
+"PO-Revision-Date: 2017-04-28 14:04+0200\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: ag_section_webinar.features.field_instance.inc:1558
+msgid "Comunidades en que se publicará"
+msgstr ""
+
+#: ag_section_webinar.features.field_instance.inc:1559
+msgid "Contexto educativo"
+msgstr ""
+
+#: ag_section_webinar.features.field_instance.inc:1560
+msgid "Descripción"
+msgstr ""
+
+#: ag_section_webinar.features.field_instance.inc:1561
+msgid "Duración"
+msgstr ""
+
+#: ag_section_webinar.features.field_instance.inc:1562
+msgid "Duración de la clase, expresada en minutos."
+msgstr ""
+
+#: ag_section_webinar.features.field_instance.inc:1563
+msgid "Enlace a la grabación"
+msgstr ""
+
+#: ag_section_webinar.features.field_instance.inc:1564
+msgid "Etiquetas"
+msgstr "Filtra per etiquetes"
+
+#: ag_section_webinar.features.field_instance.inc:1565
+msgid "Fecha"
+msgstr ""
+
+#: ag_section_webinar.features.field_instance.inc:1566
+msgid "Grabar la clase"
+msgstr ""
+
+#: ag_section_webinar.features.field_instance.inc:1567
+msgid "Idioma"
+msgstr "Filtra per idioma"
+
+#: ag_section_webinar.features.field_instance.inc:1568
+msgid "Imagen miniatura"
+msgstr ""
+
+#: ag_section_webinar.features.field_instance.inc:1569
+msgid "Marcar contenido como novedad"
+msgstr ""
+
+#: ag_section_webinar.features.field_instance.inc:1570
+msgid "Permitir que otros lo compartan"
+msgstr ""
+
+#: ag_section_webinar.features.field_instance.inc:1571 ag_section_webinar.features.inc:32
+msgid "Título"
+msgstr ""
+
+#: ag_section_webinar.features.field_instance.inc:1572
+msgid "Valorar"
+msgstr ""
+
+#: ag_section_webinar.features.field_instance.inc:1573
+msgid "classID"
+msgstr ""
+
+#: ag_section_webinar.features.field_instance.inc:1574
+msgid "solrID"
+msgstr ""
+
+#: ag_section_webinar.features.field_instance.inc:1575
+msgid "¿Eres el autor original del recurso?"
+msgstr ""
+
+#: ag_section_webinar.features.field_instance.inc:1576
+msgid "¿Permites modificaciones en tu obra?"
+msgstr ""
+
+#: ag_section_webinar.features.field_instance.inc:1577
+msgid "¿Permites usos comerciales de tu obra?"
+msgstr ""
+
+#: ag_section_webinar.features.field_instance.inc:1578
+msgid "Área de conocimiento"
+msgstr ""
+
+#: ag_section_webinar.features.inc:28
+msgid "Webinar"
+msgstr ""
+
+#: ag_section_webinar.features.inc:30
+msgid "Use Webinars to share in communities posts with WizIQ webinars widget embed."
+msgstr ""
+
+#: ag_section_webinar.module:21
+msgid "Ag webinar subscribe-unsubscribe"
+msgstr ""
+
+#: ag_section_webinar.install:104
+msgid "Processed @records records. Finished."
+msgstr "Se han procesado @records registros. Finalizado"
+
+#: ag_section_webinar.install:278
+msgid "Error: No community permissions updated"
+msgstr ""
+
+#: ag_section_webinar.install:279
+msgid "Error: Community permissions update failed"
+msgstr ""
+
+#: ag_section_webinar.install:400
+msgid "View the webinar"
+msgstr "Ver el webinar"
+
+#: ag_section_webinar.info:0
+msgid "ag_section_webinar"
+msgstr ""
+
+#: ag_section_webinar.info:0
+msgid "Feature with the webinars configurations."
+msgstr ""
+
+#: ag_section_webinar.info:0
+msgid "Agrega2"
+msgstr "Agrega2"
+
+#: includes/ag_section_webinar.forms.inc:53
+msgid "Persistence"
+msgstr "Persistencia"
+
+#: includes/ag_section_webinar.forms.inc:92
+msgid "Delete"
+msgstr "Eliminar"
+
+#: includes/ag_section_webinar.forms.inc:131;133;174;176;306;309;383;385
+msgid "WizIQ error: "
+msgstr ""
+
+#: includes/ag_section_webinar.forms.inc:157
+msgid "Database insert error: "
+msgstr "Error al insertar en la base de datos: "
+
+#: includes/ag_section_webinar.forms.inc:181
+msgid "WizIQ error: Failed to update virtual class"
+msgstr "WizIQ error: Fallo al actualizar la clase virtual"
+
+#: includes/ag_section_webinar.forms.inc:250
+msgid "Subscribe to the webinar"
+msgstr "Suscribirse al webinar"
+
+#: includes/ag_section_webinar.forms.inc:267
+msgid "Login to the webinar"
+msgstr "Entrar al webinar"
+
+#: includes/ag_section_webinar.forms.inc:329
+msgid "You have been subscribed successfully"
+msgstr "Te has suscrito correctamente"
+
+#: includes/ag_section_webinar.forms.inc:337
+msgid "Sorry but your subscription for this webinar has failed. Try again later."
+msgstr ""
+"Lo sentimos pero tu suscripción a este webinar ha fallado. Inténtelo "
+"de nuevo más tarde."
+
+#: includes/ag_section_webinar.forms.inc:430
+msgid "Specified time zone is not available."
+msgstr "La zona horaria especificada no está disponible"
+
+#: includes/ag_section_webinar.forms.inc:431
+msgid "Start datetime cannot precede current datetime."
+msgstr "La fecha de comienzo no puede ser anterior a la fecha actual."
+
+#: includes/ag_section_webinar.forms.inc:432
+msgid "Invalid start_time parameter."
+msgstr "Parámetro start_time inválido."
+
+#: includes/ag_section_webinar.forms.inc:433
+msgid "A webinar is already scheduled on that date and time. Please try a different date and time."
+msgstr "Ya hay un webinar programado para esa fecha y hora. Por favor, pruebe una fecha y hora diferentes."
+
+#: includes/ag_section_webinar.forms.inc:434
+msgid "title parameter is missing."
+msgstr "Falta el parámetro title."
+
+#: includes/ag_section_webinar.forms.inc:435
+msgid "start_time parameter is missing."
+msgstr "Falta el parámetro start_time."
+
+#: includes/ag_section_webinar.forms.inc:436
+msgid "Datetime is not in valid format."
+msgstr "El formato de la fecha no es válido."
+
+#: includes/ag_section_webinar.forms.inc:437
+msgid "presenter_email parameter is missing."
+msgstr "Falta el parámetro presenter_email."
+
+#: includes/ag_section_webinar.forms.inc:438
+msgid "presenter_email is not valid."
+msgstr "presenter_email no es válido."
+
+#: includes/ag_section_webinar.forms.inc:439
+msgid "You have already scheduled a class for the current time."
+msgstr "Ya tiene un webinar programado en la fecha actual."
+
+#: includes/ag_section_webinar.forms.inc:440
+msgid "The language is invalid or unsupported in the VC."
+msgstr "El idioma no es válido."
+
+#: includes/ag_section_webinar.forms.inc:441
+msgid "extend_duration parameter is empty or invalid."
+msgstr "Parámetro extend_duration no es válido."
+
+#: includes/ag_section_webinar.forms.inc:447
+msgid "Class duration cannot exceed @msg_var minutes."
+msgstr "La duración de la clase no puede superar @msg_var minutos."
+
+#: includes/ag_section_webinar.forms.inc:452
+msgid "Attendees cannot exceed @msg_var."
+msgstr "El número de asistentes no puede superar @msg_var."

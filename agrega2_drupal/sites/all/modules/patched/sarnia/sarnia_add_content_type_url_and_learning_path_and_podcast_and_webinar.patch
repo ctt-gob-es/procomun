@@ -1,0 +1,17 @@
+diff --git a/sites/all/modules/patched/sarnia/sarnia.module b/sites/all/modules/patched/sarnia/sarnia.module
+index b5e21ea..9cbb8d1 100644
+--- a/sites/all/modules/patched/sarnia/sarnia.module
++++ b/sites/all/modules/patched/sarnia/sarnia.module
+@@ -381,7 +381,8 @@ function sarnia_theme($existing, $type, $theme, $path) {
+     'question',
+     'learning_resource',
+     'response',
+-    'post'
++    'post',
++    'url',
++    'learning_path',
++    'podcast',
++    'webinar',
+   );
+ 
+   // Create a theme for each type

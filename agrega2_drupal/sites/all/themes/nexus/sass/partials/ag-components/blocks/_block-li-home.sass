@@ -1,0 +1,60 @@
+.block-li-home
+  .views-row
+    border-bottom: 1px dashed $gray
+    padding: 20px 0
+    &-last
+      border-bottom: 0
+      padding-bottom: 10px
+  // Fields
+  .views-field-title,
+  .views-field-title-field
+    font-size: 21px
+    color: $navy
+    font-family: $font_narrow
+    margin-bottom: 15px
+    a
+      color: inherit
+      &:hover
+        text-decoration: none
+        color: inherit
+  .views-field-body
+    font-size: 15px
+    color: $cold_gray
+    line-height: 1.5em
+    img
+      @extend .hide
+  .views-field-created
+    text-align: right
+    color: $dark_green
+  // Middle
+  &.pane-home-middle-content
+    padding: 0 4.35em
+    .views-field-title
+      margin: 0
+  // View more
+  .home-view-more
+    text-transform: uppercase
+    font-size: 16px
+    font-family: $font_narrow
+    font-weight: 700
+    display: block
+    position: relative
+    a
+      color: $orange
+      display: block
+      text-align: right
+      padding-right: 30px
+      &:after
+        content: image-url('ico_flecha_naranja.png')
+        width: 25px
+        height: 25px
+        right: 0px
+        top: -4px
+        position: absolute
+        +transition(all 0.5s ease)
+      &:hover
+        color: $dark_orange
+        text-decoration: none
+        &:after
+          right: -4px
+

@@ -1,0 +1,692 @@
+<?php
+
+/**
+ * @file
+ * Orchestrator services - module file.
+ */
+
+/**
+ * Implements hook_user_login(&$edit, $account).
+ */
+function orchestrator_services_user_login(&$edit, $account) {
+  $array_cookie = array('id_control_cache' => $account->uid);
+  user_cookie_save($array_cookie);
+}
+
+/**
+ * Implements hook_user_logout().
+ */
+function orchestrator_services_user_logout($account) {
+  user_cookie_delete('id_control_cache');
+}
+
+/**
+ * Implements hook_form_alter((&$form, &$form_state, $form_id).
+ */
+function orchestrator_services_form_alter(&$form, &$form_state, $form_id) {
+  #Login en Drupal
+  if ($form_id == 'user_login' || $form_id == 'user_login_block') {
+    // Add custom validate login function with Agrega Service and new login mechanism.
+    $form['#validate'][] = '_orchestrator_services_login_agrega';
+    $element_validate = array_shift($form['#validate']);
+    $new_validates = array($element_validate, '_orchestrator_services_user_login');
+    $form['#validate'] = array_merge($new_validates, $form['#validate']);
+  }
+
+  #Add user in orchestrator
+  if($form_id == 'user_register_form' && !in_array('organization', $form_state['build_info']['args'])){
+    $form['#validate'][] = '_orchestrator_services_add_user';
+  }
+
+  #Edit user (account)
+  elseif ($form_id == 'user_profile_form' && count($form_state['build_info']['args']) == 1) {
+    $form['#validate'][] = '_orchestrator_services_edit_account';
+  }
+
+  #Delete user
+  elseif ($form_id == 'user_multiple_cancel_confirm' || $form_id == 'user_cancel_confirm_form') {
+    $form['#validate'][] = '_orchestrator_services_delete_user';
+  }
+
+  #Delete content
+  elseif (($form_id == 'node_admin_content' && $form_state['input']['operation'] == 'delete') || $form_id == 'node_delete_confirm') {
+    if(isset($form['#node']) && !empty($form['#node']->field_solrid)) {
+      $form['#validate'][] = '_orchestrator_services_delete_content';
+    }
+  }
+
+  #Delete content from VBO
+  elseif ($form_id == 'views_form_agrega2_communities_administration_panel_pane_2' ||
+          $form_id == 'views_form_agrega2_content_administration_panel_pane_1') {
+    $form['#validate'][] = '_orchestrator_services_delete_content';
+  }
+
+  #Add/edit content
+  else {
+    $entities = _orchestrator_services_entities_involved();
+    $entities = _orchestrator_services_add_node_form($entities);
+
+    if (array_key_exists($form_id, $entities)) {
+      $form['#validate'][] = '_orchestrator_services_update_content';
+    }
+  }
+
+  #Refs. #116794 - Añado un mail para errores de login
+  if ($form_id == 'system_site_information_settings') {
+    $form['site_information']['login_error_mail'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Correo electrónico de contacto ante error en el login',
+      '#default_value' => variable_get('login_error_mail', variable_get('site_mail', ini_get('sendmail_from'))),
+      '#description' => 'Este correo electrónico se mostrará en el mensaje de error que aparece al hacer login en el portal con credenciales incorrectas.',
+      '#required' => TRUE,
+    );
+  }
+}
+
+/**
+ * Function for new mechanism login.
+ */
+function _orchestrator_services_user_login($form, &$form_state) {
+
+  // Only proccess this validate function if not previous errors.
+  $errors = form_get_errors();
+
+  if (empty($errors)) {
+    $user_email = $form_state['input']['name'];
+
+    // Check if user exist in Agrega.
+    $OS_orchestrator_useradmin = new OS_orchestrator_useradmin();
+    list($status, $result) = $OS_orchestrator_useradmin->checkUserInAgrega($user_email);
+
+    if ($status == 1) {
+      if ($result->httpResponseCode == 404) {
+        // Check if user has account in Procomun.
+        $data = DrupalToolkit::getUserDataByMail($user_email, array('uid', 'name'));
+        if (!empty($data->uid)) {
+          // Simulate login. Check user login and pass.
+          $user_pass = $form_state['input']['pass'];
+          $user_uid = user_authenticate($data->name, $user_pass);
+
+          if (!empty($user_uid)) {
+            $entity_profile = profile2_load_by_user($user_uid, 'datos_personales');
+
+            // Register user in Agrega if login is success.
+            // Parse data for AddUser function.
+            $profile = (array) orchestrator_services_parse_user_profile_data($entity_profile);
+
+            list($status, $result) = $OS_orchestrator_useradmin->AddUser($user_email, $user_pass, $profile);
+
+            if ($status == 1) {
+              // Update solrid in drupal database.
+              $solrid = $result->documentId;
+              _orchestrator_services_update_solrid_profile($entity_profile->pid, $solrid);
+
+              // Update idDrupal in SOLR.
+              list($status, $result) = $OS_orchestrator_useradmin->updateSolr($user_uid, $solrid);
+
+              if ($status == 1) {
+                // Reload profile solrid value.
+                $entity_profile->field_solrid[LANGUAGE_NONE][0]['value'] = $solrid;
+                list($status, $result) = orchestrator_services_update_entity_solr($entity_profile);
+                if ($status != 1) {
+                  drupal_set_message(t('The element is not register in server'), 'error');
+                }
+              }
+              else {
+                form_set_error('form', t('Error login user in Procomún. Cod-1'));
+              }
+            }
+            else {
+              form_set_error('form', t('Error login user in Procomún. Cod-2'));
+            }
+          }
+          else {
+            form_set_error('form', t('Error login user in Procomún web'));
+          }
+        }
+      }
+      elseif ($result->httpResponseCode == 502) {
+        form_set_error('form', t('Error checking user credentials'));
+      }
+    }
+    else {
+      // Error in request to orquestator.
+      form_set_error('form', t('Error on login in Procomún'));
+    }
+  }
+}
+
+/**
+ * Function for parsing profile from object to array. Emulate form behaviour.
+ */
+function orchestrator_services_parse_user_profile_data($profile) {
+
+  if (!empty($profile)) {
+    $fc_list = array(
+      'field_name_surname',
+      'field_date_birth_personal_fc',
+      'field_country_personal_fc',
+      'field_province_personal_fc',
+      'field_locality_personal_fc',
+      'field_edu_center_personal_fc',
+      'field_place_fc',
+    );
+
+    foreach ($fc_list as $fc_item) {
+      //Load field collection
+      $fc = $profile->$fc_item;
+      $field_collection_id = !empty($fc[LANGUAGE_NONE][0]['value']) ? $fc[LANGUAGE_NONE][0]['value'] : NULL;
+      if (!empty($field_collection_id)) {
+        $field_collection = entity_load('field_collection_item', array($field_collection_id));
+        $field_collection = array_values($field_collection);
+        $field_collection = $field_collection[0];
+
+        // Replace field collections id for entity loaded
+        $profile_fc = &$profile->$fc_item;
+        $profile_fc[LANGUAGE_NONE][0] = (array) $field_collection;
+      }
+    }
+  }
+
+  return $profile;
+}
+
+/**
+ * Function to update solrid in profile entity.
+ */
+function _orchestrator_services_update_solrid_profile($pid, $solrid) {
+  if (!empty($pid) && !empty($solrid)) {
+    db_update('field_data_field_solrid')
+    ->fields(array(
+      'field_solrid_value' => $solrid,
+    ))
+    ->condition('entity_id', $pid)
+    ->execute();
+  }
+}
+
+/**
+ * Check user login in Agrega for migrated user without password.
+ */
+function _orchestrator_services_login_agrega($form, &$form_state) {
+  $errors = form_get_errors();
+
+  if ($errors && (array_key_exists('name', $errors) || array_key_exists('pass', $errors))) {
+    $OS_orchestrator_useradmin = new OS_orchestrator_useradmin();
+    list($status, $result) = $OS_orchestrator_useradmin->login($form_state['input']['name'], $form_state['input']['pass']);
+
+    // User exists in Agrega.
+    if ($status == 1) {
+      // If the user exists in Drupal, launched a false sessión warning the user to change its password.
+      $user_uid = db_query('SELECT uid FROM {users} WHERE mail = :mail', array(':mail' => $form_state['input']['name']))->fetch();
+
+      if ($user_uid->uid) {
+
+        global $user;
+
+        // Replace user variable.
+        $user = user_load($user_uid->uid);
+
+        // Session regenerate.
+        drupal_session_regenerate();
+
+        // Remove drupal messages
+        unset($_SESSION['messages']);
+
+        // Notife for user.
+        drupal_set_message(t('ATTENTION! It is important to update your password. You can click !here to edit your user profile', array('!here' => l(t('here'), 'user/' . $user->uid . '/edit'))), 'warning');
+
+        // Remove flood register.
+        $ip_user = _orchestrator_services_getRealIP();
+        db_query('DELETE FROM {flood} WHERE identifier like :ip', array(':ip' => "%$ip_user%"));
+
+        // Redirect user to timeline.
+        drupal_goto('user/' . $user->uid . '/timeline');
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_og_role_grant($entity_type, $gid, $uid, $rid)
+ */
+function orchestrator_services_og_role_grant($entity_type, $gid, $uid, $rid) {
+
+  if ($entity_type == 'node' && $rid = OG_ADMINISTRATOR_ROLE) {
+
+    $node_type = db_query('SELECT type FROM {node} WHERE nid = :nid', array(':nid' => $gid))->fetch();
+
+    if ($node_type->type == 'social_network') {
+      $memberships = OgDrupalToolKit::getUsersByRoleName('node', 'social_network', $gid, OG_ADMINISTRATOR_ROLE)->fetchAllKeyed(1,2);
+      $memberships[$uid] = 'administrator member';
+
+      $memberships = array_keys($memberships);
+      $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+      list($status, $result) = $OS_orchestrator_inyection->Update_communityAdminSups($gid, $memberships);
+
+      if ($status != 1) {
+        drupal_set_message(t($result), 'error');
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_og_role_revoke($entity_type, $gid, $uid, $rid)
+ */
+function orchestrator_services_og_role_revoke($entity_type, $gid, $uid, $rid) {
+
+  if ($entity_type == 'node' && $rid = OG_ADMINISTRATOR_ROLE) {
+    $node_type = db_query('SELECT type FROM {node} WHERE nid = :nid', array(':nid' => $gid))->fetch();
+
+    if ($node_type->type == 'social_network') {
+      $memberships = OgDrupalToolKit::getUsersByRoleName('node', 'social_network', $gid, OG_ADMINISTRATOR_ROLE)->fetchAllKeyed(1,2);
+      unset($memberships[$uid]);
+
+      $memberships = array_keys($memberships);
+      $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+      list($status, $result) = $OS_orchestrator_inyection->Update_communityAdminSups($gid, $memberships);
+
+      if ($status != 1) {
+        drupal_set_message(t($result), 'error');
+      }
+    }
+  }
+}
+
+/**
+ * Add user in orchestrator
+ */
+function _orchestrator_services_add_user($form, &$form_state) {
+
+  $errors = form_get_errors();
+
+  if (!$errors) {
+    $OS_orchestrator_useradmin = new OS_orchestrator_useradmin();
+    list($status, $result) = $OS_orchestrator_useradmin->AddUser($form_state['input']['mail'], $form_state['input']['pass']['pass1'], $form_state['values']['profile_datos_personales']);
+    if ($status != 1) {
+      form_set_error('', t($result));
+    }
+
+    else $form_state['values']['profile_datos_personales']['field_solrid']['und'][0]['value'] = $result->documentId;
+  }
+}
+
+/**
+ * Update user account in orchestrator
+ */
+function _orchestrator_services_edit_account($form, &$form_state) {
+
+  $errors = form_get_errors();
+
+  if (!$errors && $form_state['values']['submit'] == $form_state['clicked_button']['#value']) {
+    $OS_orchestrator_useradmin = new OS_orchestrator_useradmin();
+
+    $user = user_load($form['#entity']->uid);
+    if ($user->uid != 1) {
+      if ($form_state['input']['pass']['pass1']) $pass = $form_state['input']['pass']['pass1'];
+      else $pass = '';
+
+      $profile = profile2_load_by_user($form['#entity']->uid, 'datos_personales');
+
+      list($status, $result) = $OS_orchestrator_useradmin->edit_account($form_state['input']['mail'], $pass, $form['#entity']->uid, $profile->field_solrid['und'][0]['value']);
+
+      if ($status != 1) {
+        //If it is an "user mail not found" error, notify with our specific translated string. Else, just print it.
+        $error = (strpos($result, 'User not found with mail') !== false) ? t('User mail not found in Agrega. Please contact an administrator.') : $result;
+        //Print translated error.
+        form_set_error('', t($error));
+      }
+    }
+  }
+}
+
+/**
+ * Delete user in orchestrator
+ */
+function _orchestrator_services_delete_user($form, &$form_state) {
+  //Add "user_cancel_block" user_cancel_method into if sentence
+  if ($form_state['values']['user_cancel_method'] == 'user_cancel_reassign' || $form_state['values']['user_cancel_method'] == 'user_cancel_delete' || $form_state['values']['user_cancel_method'] == 'user_cancel_block') {
+
+    $OS_orchestrator_useradmin = new OS_orchestrator_useradmin();
+
+    if ($form_state['values']['submit'] == $form_state['clicked_button']['#value']) {
+
+      if (array_key_exists('accounts', $form_state['values']) && count($form_state['values']['accounts']) > 0) {
+        foreach($form_state['values']['accounts'] as $value) {
+          if ($value != 1) {
+            $profile = profile2_load_by_user($value, 'datos_personales');
+            $user_mail = db_query('SELECT mail FROM {users} WHERE uid = :uid', array(':uid' => $value))->fetchObject();;
+
+            list($status, $result) = $OS_orchestrator_useradmin->delete_user($profile->field_solrid['und'][0]['value'], $user_mail->mail);
+            if ($status != 1) {
+              form_set_error('', t($result));
+            }
+          }
+        }
+      }
+      elseif (array_key_exists('uid', $form_state['values']) && $form_state['values']['uid'] != 1) {
+        $profile = profile2_load_by_user($form_state['values']['uid'], 'datos_personales');
+
+        list($status, $result) = $OS_orchestrator_useradmin->delete_user($profile->field_solrid['und'][0]['value'], $form_state['build_info']['args'][0]->mail);
+        if ($status != 1) {
+          form_set_error('', t($result));
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Update content in orchestrator
+ */
+function _orchestrator_services_update_content($form, &$form_state) {
+
+  $errors = form_get_errors();
+  //Only send to solr request when clicked submit button. For add more buttons was sending request to solr
+  if (!$errors && $form_state['clicked_button']['#name'] == 'op' && ($form_state['clicked_button']['#value'] == t('Save') || $form_state['clicked_button']['#value'] == t('Send'))) {
+    $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+
+    $entities = _orchestrator_services_entities_involved();
+    $entities = _orchestrator_services_add_node_form($entities);
+
+    // Change publication status for content available to be saved as draft.
+    $available_to_save_as_draft = array(
+      'ode_node_form',
+      'post_node_form',
+      'event_node_form',
+      'external_content_node_form',
+    );
+
+    if (in_array($form['form_id']['#value'], $available_to_save_as_draft)) {
+      $form_state['values']['status'] = 1;
+    }
+
+    list($status, $result) = $OS_orchestrator_inyection->$entities[$form['#form_id']]($form_state['values']);
+    if ($status != 1) {
+      form_set_error('', t($result));
+    }
+
+    else $form_state['values']['field_solrid'][LANGUAGE_NONE][0]['value'] = $result->documentId;
+  }
+  // Unpublish in solr if a published content is saved as draft
+  else if (!$errors && $form_state['clicked_button']['#name'] == 'op' && ($form_state['clicked_button']['#value'] == t('Save as draft')) &&
+           isset($form_state['values']['field_solrid'][LANGUAGE_NONE][0]['value']) && !empty($form_state['values']['field_solrid'][LANGUAGE_NONE][0]['value'])) {
+    $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+
+    $entities = _orchestrator_services_entities_involved();
+    $entities = _orchestrator_services_add_node_form($entities);
+
+    // Change publication status if publish -> draft
+    $form_state['values']['status'] = 0;
+
+    list($status, $result) = $OS_orchestrator_inyection->$entities[$form['#form_id']]($form_state['values']);
+    if ($status != 1) {
+      form_set_error('', t($result));
+    }
+  }
+}
+
+/**
+ * Delete content in orchestrator
+ */
+function _orchestrator_services_delete_content($form, &$form_state) {
+  if ($form_state['values']['submit'] == $form_state['clicked_button']['#value']) {
+
+    $entities = _orchestrator_services_entities_involved();
+    $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+
+    if (array_key_exists('nodes', $form_state['values']) && count($form_state['values']['nodes']) > 0) {
+      foreach($form_state['values']['nodes'] as $value) {
+        $node = node_load($value);
+        if ($node->nid && array_key_exists($node->type, $entities)) {
+          list($status, $result) = $OS_orchestrator_inyection->UnpublishDocument($node->field_solrid['und'][0]['value']);
+          if ($status != 1) {
+            form_set_error('', t($result));
+          }
+          else {
+            switch ($node->type) {
+              // If podcast content type, delete resource in Soundcloud.
+              case 'podcast':
+                soundcloud_delete_content($node);
+                break;
+              // If webinar content type, cancel class in WizIQ.
+              case 'webinar':
+                wiziq_cancel_class($node);
+                break;
+            }
+          }
+        }
+      }
+    }
+    elseif (array_key_exists('nid', $form_state['values'])) {
+      $node = node_load($form_state['values']['nid']);
+
+      if ($node->nid && array_key_exists($node->type, $entities)) {
+        list($status, $result) = $OS_orchestrator_inyection->UnpublishDocument($node->field_solrid['und'][0]['value']);
+        if ($status != 1) {
+          form_set_error('', t($result));
+        }
+        else {
+          switch ($node->type) {
+            // If podcast content type, delete resource in Soundcloud.
+            case 'podcast':
+              soundcloud_delete_content($node);
+              break;
+            // If webinar content type, cancel class in WizIQ.
+            case 'webinar':
+              wiziq_cancel_class($node);
+              break;
+          }
+        }
+      }
+    }
+    elseif (isset($form_state['selection']) && ($form_state['input']['op'] == 'Confirmar'
+      && $form_state['operation']->operationId == 'action::views_bulk_operations_delete_item')) {
+      foreach($form_state['selection'] as $value) {
+        $node = node_load($value);
+        if (($node->nid && array_key_exists($node->type, $entities)) && isset($node->field_solrid['und'][0]['value'])) {
+          list($status, $result) = $OS_orchestrator_inyection->UnpublishDocument($node->field_solrid['und'][0]['value']);
+          if ($status != 1) {
+            form_set_error('', t($result));
+          }
+          else {
+            switch ($node->type) {
+              // If podcast content type, delete resource in Soundcloud.
+              case 'podcast':
+                soundcloud_delete_content($node);
+                break;
+              // If webinar content type, cancel class in WizIQ.
+              case 'webinar':
+                wiziq_cancel_class($node);
+                break;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_insert($entity, $type).
+ */
+function orchestrator_services_entity_insert($entity, $type) {
+
+  if ($type == 'profile2' && $entity->type == 'datos_personales') {
+    #Add profile to orchestrator
+    $OS_orchestrator_useradmin = new OS_orchestrator_useradmin();
+    list($status, $result) = $OS_orchestrator_useradmin->updateSolr($entity->uid, $entity->field_solrid['und'][0]['value']);
+    if ($status != 1) {
+      drupal_set_message(t($result), 'error');
+    }
+
+    list($status, $result) = orchestrator_services_update_entity_solr($entity);
+    if ($status == -1) {
+      drupal_set_message(t('The element is not register in server'), 'error');
+    }
+  }
+
+  else {
+    $entities = _orchestrator_services_entities_involved();
+
+    if ($type == 'node' && array_key_exists($entity->type, $entities)) {
+      list($status, $result) = orchestrator_services_update_entity_solr($entity);
+      if ($status == -1) {
+        drupal_set_message(t('The element is not register in server'), 'error');
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_update($entity, $type).
+ */
+function orchestrator_services_entity_update($entity, $type) {
+  // Update entity in solr when published
+  if ($type == 'node' && $entity->status == 1) {
+    $entities = _orchestrator_services_entities_involved();
+
+    if ($type == 'node' && array_key_exists($entity->type, $entities)) {
+      list($status, $result) = orchestrator_services_update_entity_solr($entity);
+      if ($status == -1) {
+        drupal_set_message(t('The element is not register in server'), 'error');
+      }
+    }
+  }
+}
+
+/**
+ * Returns the entities that are sent to the orchestrator
+ */
+function _orchestrator_services_entities_involved() {
+
+  $entities = array();
+
+  #methods relations
+  $entities['social_network'] = 'AddCommunity';
+  $entities['question'] = 'AddQuestion';
+  $entities['answer'] = 'AddResponse';
+  $entities['debate'] = 'AddDiscussion';
+  $entities['event'] = 'AddEvent';
+  $entities['poll'] = 'AddPoll';
+  $entities['ode'] = 'AddOde';
+  $entities['post'] = 'AddPost';
+  $entities['recurso_de_aprendizaje'] = 'AddLearningResource';
+  $entities['external_content'] = 'AddUrl';
+  $entities['itinerary'] = 'AddLearningPath';
+  $entities['podcast'] = 'AddPodcast';
+  $entities['webinar'] = 'AddWebinar';
+
+  return $entities;
+}
+
+/**
+ * Returns the entities including 'node_form' in keys
+ */
+function _orchestrator_services_add_node_form($entities) {
+
+  $return = array();
+
+  foreach($entities as $key => $value) {
+    $return[$key . '_node_form'] = $value;
+  }
+
+  return $return;
+}
+
+/**
+ * Implements hook_form_profile2_form_alter(&$form, &$form_state)
+ */
+function orchestrator_services_form_profile2_form_alter(&$form, &$form_state) {
+  #Update profile (datos personales)
+  if (array_key_exists('datos_personales', $form_state['profiles']) && count($form_state['profiles']) == 1 && $form_state['profiles']['datos_personales']->uid && $form_state['profiles']['datos_personales']->uid != 1) {
+    $form['#validate'][] = '_orchestrator_services_edit_profile';
+  }
+}
+
+function _orchestrator_services_edit_profile($form, &$form_state) {
+  $errors = form_get_errors();
+  if (!$errors) {
+    $OS_orchestrator_useradmin = new OS_orchestrator_useradmin();
+    list($status, $result) = $OS_orchestrator_useradmin->edit('', '', '', $form_state['values']['profile_datos_personales'], $form_state['profiles']['datos_personales']->uid, $form_state['profiles']['datos_personales']->field_solrid['und'][0]['value']);
+    if ($status != 1) {
+      form_set_error('', t($result));
+    }
+  }
+}
+
+/**
+ * Get IP User().
+ */
+function _orchestrator_services_getRealIP() {
+	if (!empty($_SERVER['HTTP_CLIENT_IP']))
+		return $_SERVER['HTTP_CLIENT_IP'];
+	if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
+		return $_SERVER['HTTP_X_FORWARDED_FOR'];
+
+	return $_SERVER['REMOTE_ADDR'];
+}
+
+/**
+ * Function for updating some user data into solr.
+ */
+function orchestrator_services_update_entity_solr($entity) {
+  $status = 0;
+  $result = '';
+
+  // Check if entity has solrid.
+  if (!empty($entity->field_solrid[LANGUAGE_NONE][0]['value'])) {
+    $solrid = $entity->field_solrid[LANGUAGE_NONE][0]['value'];
+
+    // Check if entity is in solr.
+    $OS_orchestrator_selection = new OS_orchestrator_selection();
+    $solr_item = $OS_orchestrator_selection->selectOde($solrid);
+
+    if (!empty($solr_item[1][0])) {
+      $publicationDate = '';
+      if (!empty($entity->created)) {
+        $date = date("Y-m-d", $entity->created);
+        $time = date("H:i:s", $entity->created);
+        $publicationDate = $date."T".$time."Z";
+
+        // TODO: Comentado temporalmente, para que no actualice publicationDate cada vez que se actualice el contenido
+        // Update node created value if draft (edit case too) to publish
+/*        $currentDate = time();
+        if (!empty($entity->nid) && !$entity->is_new) {
+          db_update('node')
+            ->fields(array('created' => $currentDate))
+            ->condition('nid', $entity->nid)
+            ->execute();
+
+          $date = date("Y-m-d", $currentDate);
+          $time = date("H:i:s", $currentDate);
+          $publicationDate = $date."T".$time."Z";
+        }*/
+      }
+
+      if ($entity->type == 'datos_personales') {
+        $eid = !empty($entity->uid) ? $entity->uid : NULL;
+      }
+      else {
+        $eid = !empty($entity->nid) ? $entity->nid : NULL;
+      }
+
+      $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+      list($status, $result) = $OS_orchestrator_inyection->UpdateSolr($eid, $solrid, $publicationDate);
+      if ($status != 1) {
+        drupal_set_message(t($result), 'error');
+      }
+    }
+    else {
+      // If element was not found in solr change status to -1 for registering in function callback.
+      $status = -1;
+    }
+  }
+  else {
+    // If element was not found in solr change status to -2 for registering in function callback.
+    $status = -2;
+  }
+
+  return array($status, $result);
+}

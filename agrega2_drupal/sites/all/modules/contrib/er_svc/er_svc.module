@@ -1,0 +1,130 @@
+<?php
+/**
+* @file
+* Email Registration (Services) module file
+*/
+
+/**
+ * implements hook_services_resources_alter()
+ */
+function er_svc_services_resources_alter(&$resources, &$endpoint) {
+  $resources['user']['actions']['login']['callback'] = '_er_svc_resource_login';
+  $resources['user']['actions']['login']['args'][0]['name'] = 'mail';
+  $resources['user']['actions']['login']['args'][0]['description'] = 'A valid email address registered as an account';
+  $resources['user']['actions']['login']['args'][0]['source']['data'] = 'mail';
+  $resources['user']['actions']['login']['args'][1]['name'] = 'pass';
+  $resources['user']['actions']['login']['args'][1]['source']['data'] = 'pass';
+}
+
+/**
+ * Alternative to login process when email_registation module is enabled
+ * replaces _user_resource_login()
+ *
+ * Login a user using the specified credentials.
+ *
+ * Note this will transfer a plaintext password.
+ *
+ * @param $mail
+ *   Email address for account to be logged in.
+ * @param $pass
+ *   Password, must be plain text and not hashed.
+ *
+ * @return
+ *   A valid session object.
+ */
+function _er_svc_resource_login($mail, $pass) {
+  global $user;
+  $username = null;
+  if ($name = db_query('SELECT name FROM {users} WHERE LOWER(mail) = LOWER(:mail)', array(':mail' => $mail))->fetchField()) {
+      $username = $name;
+    }
+
+
+  if ($user->uid) {
+    // user is already logged in
+    return services_error(strip_tags(t('Already logged in as @user.', array('@user' => $user->mail)), 406));
+  }
+
+  // Check if account is active.
+  if (!$username) {
+    return services_error(strip_tags(t('The account for %mail does not exist.', array('%mail' => $mail)), 404));
+  }
+
+  if (user_is_blocked($username)) {
+    return services_error(strip_tags(t('The account for %mail has not been activated or is blocked.', array('%mail' => $mail)), 403));
+  }
+
+  $uid = user_authenticate($username, $pass);
+
+  if ($uid) {
+    $user = user_load($uid);
+    if ($user->uid) {
+      user_login_finalize();
+
+      $return = new stdClass();
+      $return->sessid = session_id();
+      $return->session_name = session_name();
+
+      services_remove_user_data($user);
+
+      $return->user = $user;
+
+      return $return;
+    }
+  }
+  
+  else {
+    $OS_orchestrator_useradmin = new OS_orchestrator_useradmin();
+    list($status, $result) = $OS_orchestrator_useradmin->login($mail, $pass);
+
+    #El usuario existe en el orquestador
+    if ($status == 1) {
+      
+      #Si existe el usuario en Drupal, lanzo una falsa sessión advirtiendo al usuario para que modifique su contraseña
+      $user_uid = db_query('SELECT uid FROM {users} WHERE mail = :mail', array(':mail' => $mail))->fetch();
+
+      if ($user_uid->uid) {
+        #Reemplazo el usuario 
+        $user = user_load($user_uid->uid);
+
+        #Regenero la sessión
+        drupal_session_regenerate();
+
+        #Elimino el mensaje emitido por Drupal
+        unset($_SESSION['messages']);
+
+        #Aviso al usuario para que modifique la contraseña. De esta forma, se evitará este consumo inncesario para una próxima vez
+        drupal_set_message(t('ATTENTION! It is important to update your password. You can click !here to edit your user profile', array('!here' => l(t('here'), 'user/' . $user->uid . '/edit'))), 'warning');
+
+        #Elimino la advertencia en la tabla Flood de Drupal para indicar que no se trata de un usuario peligroso
+        $ip_user = _orchestrator_services_getRealIP();
+        db_query('DELETE FROM {flood} WHERE identifier like :ip', array(':ip' => "%$ip_user%"));
+
+        $return = new stdClass();
+        $return->sessid = session_id();
+        $return->session_name = session_name();
+
+        services_remove_user_data($user);
+
+        $return->user = $user;
+        return $return;
+
+      }
+    }
+  }
+
+  watchdog('user', 'Invalid login attempt for %mail.', array('%mail' => $mail));
+  return services_error(t('Invalid email or password.'), 401);
+}
+
+/**
+ * Adds email address back into user object, and removes username
+ */
+function er_svc_services_account_object_alter(&$account) {
+  if ($mail = db_query('SELECT mail FROM {users} WHERE LOWER(name) = LOWER(:name)', array(':name' => $account->name))->fetchField()) {
+    $account->mail = $mail;
+  }
+  if (!user_access('administer users')) {
+    unset($account->name);
+  }
+}

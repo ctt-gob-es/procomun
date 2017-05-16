@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Ag section voting feature.
+ */
+
+include_once 'ag_section_voting.features.inc';

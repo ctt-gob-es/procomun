@@ -1,0 +1,140 @@
+/**
+ * @file
+ * Widgets styles
+ */
+// Comunity widget.
+#comunity-public-widget,
+#public-profile-widget
+  border: 1px solid $light_gray
+  // Header.
+  .comunity-public-widget-header,
+  .public-profile-widget-header
+    // Procomun logo.
+    .procomun-logo
+      display: block
+      height: 110px
+      width: 100%
+      background-color: $header_gray
+      position: relative
+      padding: 0 10px
+      img
+        width: 100%
+        max-width: 240px
+        position: absolute
+        left: 0
+        right: 0
+        margin: 0 auto
+        padding: 0 5px
+        top: 50%
+        +transform(translateY(-50%))
+    // Comunity title.
+    .comunity-title
+      display: block
+      font-family: $font_pt_sans
+      color: $navy
+      font-weight: 700
+      font-size: 17px
+      width: 90%
+      margin: .5em auto 0 auto
+  // Members and resources.
+  .comunity-public-widget-counters,
+  .public-profile-widget-counters,
+  .public-profile-widget-content
+    +clearfix()
+    border-top: 1px solid $light_gray
+    border-bottom: 1px solid $light_gray
+    padding: .7em 0
+    width: 90%
+    margin: 0 auto 1em auto
+    .comunity-public-widget-count,
+    .public-profile-widget-count
+      width: 50%
+      float: left
+      text-align: center
+      &:first-child
+        border-right: 1px solid $light_gray
+    .comunity-public-widget-count-title,
+    .public-profile-widget-count-title
+      padding-left: 25px
+      &.comunity-members
+        background: image-url('ico-comunidad-widget.png') 0 center no-repeat
+      &.comunity-resources
+        background: image-url('ico-book.png') 0 center no-repeat
+    .comunity-public-widget-count-number,
+    .public-profile-widget-count-number
+      color: $main_blue
+      font-weight: 700
+      font-family: $font_pt_sans
+    span:first-child
+      width: auto
+      float: left
+      border: none
+      img
+        width: 125px
+    span
+      float: right
+      width: 56%
+      border-bottom: 1px dotted
+      padding: 0.25em  0
+    .public-profile-link
+      border: none
+  // Activities.
+  .comunity-public-widget-activity,
+  .public-profile-widget-activity
+    .recent-activity-label
+      display: block
+      font-family: $font_pt_sans
+      color: $navy
+      border-bottom: 1px solid $light_gray
+      font-weight: 700
+      font-size: 14px
+      width: 90%
+      margin: 0 auto .5em auto
+    .recent-activity-list
+      .view-community-content,
+      .view-agrega2-profiles
+        > .item-list
+          padding: .5em
+          background-color: $header-gray
+          ul
+            margin: 0
+          a
+            background-color: transparent
+        .view-content
+          width: 90%
+          margin: 0 auto .5em auto
+      .contextual-links-wrapper
+        display: none
+      .views-row
+        +clearfix()
+        margin: .5em 0
+        font-size: 12px
+        font-weight: 700
+      .views-field-title,
+      .views-field-field-question-ref
+        width: 65%
+        margin-right: 5%
+        float: left
+        overflow: hidden
+        text-overflow: ellipsis
+        white-space: nowrap
+      .views-field-type
+        width: 30%
+        float: right
+// Image widget.
+.image-widget
+  border: 1px solid #d2d2d2
+  padding: 21px
+  +border-radius(3px)
+.image-widget-data,
+.file-widget
+  word-break: break-all
+  .file
+    width: 100%
+    overflow-wrap: break-word
+    word-break: break-word
+  input[type=file]
+    overflow-wrap: break-word
+    word-break: break-word
+    display: inline-flex
+    max-width: 460px

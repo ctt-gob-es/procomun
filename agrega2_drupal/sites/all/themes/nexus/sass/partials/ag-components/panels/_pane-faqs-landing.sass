@@ -1,0 +1,99 @@
+.pane-custom-translatable-block,
+.help-rankings
+  width: 31.3%
+  float: left
+  margin-left: 3%
+  &.first
+    clear: both
+    margin-left: 0
+.pane-custom-translatable-block
+  text-align: center
+  border-bottom: 1px solid $light_gray
+  padding-bottom: 10px
+  margin-bottom: 20px
+  .custom-block-content
+    padding: 5px 0
+    font-size: 16px
+    color: $cold_gray
+    line-height: 1.25em
+  .custom-block-title
+    color: $deep_blue
+    font-weight: bold
+    font-size: 20px
+    border-bottom: 1px solid $light_gray
+    padding-bottom: 10px
+    margin-bottom: 10px
+    a
+      display: block
+      padding-top: 120px
+      background-size: 100px
+      background-repeat: no-repeat
+      background-position: center top
+      &:hover
+        text-decoration: none
+  .landing-help-manual
+    a
+      background-image: image-url('img_manual.png')
+  .landing-help-faq
+    a
+      background-image: image-url('img_preguntas.png')
+  .landing-help-new
+    a
+      background-image: image-url('img_novedades.png')
+.help-rankings
+  margin-top: 1em
+  h2
+    font-size: 18px
+    font-weight: bold
+    color: $navy
+    padding: 8px 0 8px 40px
+    background-repeat: no-repeat
+    background-position: 5px center
+    border-bottom: 2px solid $gray
+    padding-bottom: 5px
+    margin-bottom: 0
+  &.most-viewed
+    h2
+      background-image: image-url('ico_podium.png')
+  &.most-rated
+    h2
+      background-image: image-url('ico_ribbon.png')
+  &.most-recent
+    h2
+      background-image: image-url('ico_reciente.png')
+  .view-empty
+    padding: 10px 0
+  .view-content
+    li
+      border-bottom: 1px solid $light_gray
+      font-size: 14px
+      overflow: hidden
+      &.views-row-even
+        background-color: $header_gray
+      .views-field-type
+        display: block
+        float: left
+        span
+          width: 30px
+          height: 34px
+          display: block
+          background-repeat: no-repeat
+          background-position: 5px center
+          &.help-icon-faq
+            background-image: image-url('ico_pregunta.png')
+          &.help-icon-manual
+            background-image: image-url('ico_manual.png')
+          &.help-icon-functionality
+            background-image: image-url('ico_novedades.png')
+
+      .views-field-title
+        float: left
+        max-width: calc(100% - 30px)
+        a
+          display: block
+          padding: 10px 0
+          margin-left: 5px
+          white-space: nowrap
+          text-overflow: ellipsis
+          overflow: hidden
+          padding-right: 10px

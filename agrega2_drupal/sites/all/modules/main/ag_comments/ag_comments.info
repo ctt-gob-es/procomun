@@ -1,0 +1,4 @@
+name = "Agrega2 comments"
+description = "Module for customize comments in Agrega2 project"
+package = Emergya
+core = "7.x"

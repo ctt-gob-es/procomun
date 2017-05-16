@@ -1,0 +1,18 @@
+diff --git a/sites/all/modules/patched/facetapi/plugins/facetapi/adapter.inc b/sites/all/modules/patched/facetapi/plugins/facetapi/adapter.inc
+index e0d66f5..abb2197 100644
+--- a/sites/all/modules/patched/facetapi/plugins/facetapi/adapter.inc
++++ b/sites/all/modules/patched/facetapi/plugins/facetapi/adapter.inc
+@@ -1490,10 +1490,12 @@ class FacetapiFacetProcessor {
+     // @see https://www.drupal.org/node/1398036 for why array_keys() is used
+     // instead of element_children().
+     foreach (array_keys($build) as $value) {
++      // Add double quotes to values not related to date or without "map options".
++      $filter_value = ((strpos($this->facet['name'],'Date') === false && !$this->facet['map options']) !== false) ? '"' . $value . '"' : $value;
+       $item_defaults = array(
+         '#markup' => $value,
+         '#indexed_value' => $value,
+-        '#active' => $adapter->itemActive($this->facet['name'], '"' . $value . '"'),
++        '#active' => $adapter->itemActive($this->facet['name'], $filter_value),
+       );
+       $build[$value] = array_merge($defaults, $item_defaults, $build[$value]);
+     }

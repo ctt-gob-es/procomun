@@ -1,0 +1,15 @@
+diff --git a/sites/all/modules/patched/shs/README.txt b/sites/all/modules/patched/shs/README.txt
+index db0039c..9f18d8a 100644
+--- a/sites/all/modules/patched/shs/README.txt
++++ b/sites/all/modules/patched/shs/README.txt
+@@ -94,4 +94,7 @@ Parche aplicado por fjperez@emergya.com
+ 
+ 
+ Name: shs_remove_number_results_when_no_result.patch
+-Description: Remove the number of results when we have no results for the learning resources taxonomies tree. By default we print "(0)".
+\ No newline at end of file
++Description: Remove the number of results when we have no results for the learning resources taxonomies tree. By default we print "(0)".
++
++Name: shs_select_default_value.patch
++Description: By default the select is empty and should be _none.
+\ No newline at end of file

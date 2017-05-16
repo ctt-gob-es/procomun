@@ -1,0 +1,12 @@
+diff --git a/sites/all/modules/contrib/service_links/images/facebook.png b/sites/all/modules/contrib/service_links/images/facebook.png
+index 49dfb91..7c4077a 100644
+Binary files a/sites/all/modules/contrib/service_links/images/facebook.png and b/sites/all/modules/contrib/service_links/images/facebook.png differ
+diff --git a/sites/all/modules/contrib/service_links/images/google_plus.png b/sites/all/modules/contrib/service_links/images/google_plus.png
+index 200c8f7..13a5192 100644
+Binary files a/sites/all/modules/contrib/service_links/images/google_plus.png and b/sites/all/modules/contrib/service_links/images/google_plus.png differ
+diff --git a/sites/all/modules/contrib/service_links/images/linkedin.png b/sites/all/modules/contrib/service_links/images/linkedin.png
+index aac1182..f467b67 100644
+Binary files a/sites/all/modules/contrib/service_links/images/linkedin.png and b/sites/all/modules/contrib/service_links/images/linkedin.png differ
+diff --git a/sites/all/modules/contrib/service_links/images/twitter.png b/sites/all/modules/contrib/service_links/images/twitter.png
+index 84704eb..e8e79fd 100644
+Binary files a/sites/all/modules/contrib/service_links/images/twitter.png and b/sites/all/modules/contrib/service_links/images/twitter.png differ

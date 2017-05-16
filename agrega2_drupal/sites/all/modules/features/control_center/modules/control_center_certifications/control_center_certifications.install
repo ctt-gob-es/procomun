@@ -1,0 +1,168 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the control center certifications module.
+ */
+
+/**
+ * Implements hook_update_N().
+ * Update resources whit anonymous visits
+ */
+function control_center_certifications_update_7000(&$sandbox) {
+  //Prepare all variables in first iteration
+
+  if (!isset($sandbox['total'])) {
+    //Prepare array from query
+    control_center_certifications_prepare_batch_anonymous_visits($sandbox);
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = control_center_certifications_get_total($sandbox);
+  }
+
+  //Get batch, or number of entities to process each time.
+  $nodes_per_pass = 10;
+  $end = $sandbox['current'] + $nodes_per_pass;
+
+  //Loop. Use db_query_range if any query needs to be split between batches.
+  while($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    //Heavy operations
+    $element = control_center_certifications_get_element($sandbox);
+    control_center_certifications_update_visits($sandbox, $element);
+
+    //Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1, meaning we are done.
+  // Also, avoid division by zero
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @records records. Finished.', array('@records' => $sandbox['total'])));
+  }
+}
+
+/**
+ * Function to get anonymous visits
+ */
+function control_center_certifications_prepare_batch_anonymous_visits(&$sandbox) {
+  $temp_array = array();
+
+  // Add field processed
+  if (!db_field_exists('odecount_anon', 'processed')) {
+    try {
+      db_add_field('odecount_anon', 'processed',
+        array(
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'default' => 0,
+        )
+      );
+    }
+    catch (PDOException $e) {
+      drupal_set_message(t('Error: failed to add field processed to odecount_anon table'), 'error');
+      throw new DrupalUpdateException(t('Error: failed to add field processed to odecount_anon table'));
+    }
+  }
+
+  // Retrieve anonymous visits info
+  $query = db_select('odecount_anon', 'oa');
+  $query->leftJoin('field_data_field_solrid', 'fdfs', 'fdfs.field_solrid_value = oa.solrid');
+  $query->fields('oa', array('solrid', 'total', 'processed'));
+  $query->fields('fdfs', array('field_solrid_value', 'entity_id'));
+
+  $results = $query->execute();
+  foreach ($results->fetchAll() as $result) {
+    $temp_array[] = $result;
+  }
+
+  //Return by storing the array in sandbox variable. It will be static and accessible by all update_7000 batch executions.
+  $sandbox['elements'] = $temp_array;
+}
+
+/**
+ * Return number of operations that will be done.
+ */
+function control_center_certifications_get_total($sandbox) {
+  return isset($sandbox['elements']) ? count($sandbox['elements']) : 0;
+}
+
+/**
+ * Gets element with sandbox data.
+ */
+function control_center_certifications_get_element($sandbox) {
+  $position = isset($sandbox['current']) ? $sandbox['current'] : 0;
+  return !empty($sandbox['elements']) ? $sandbox['elements'][$position] : array();
+}
+
+/**
+ * Function for include anonymous visits in total visits
+ */
+function control_center_certifications_update_visits(&$sandbox, $element) {
+  if (!empty($element)) {
+    $status = 0;
+    if ($element->entity_id != NULL) {
+      if ($element->processed == '0') {
+        for ($i = 0; $i < (int)$element->total; $i++) {
+          $data = array(
+            'nid' => $element->entity_id,
+            'uid' => '0',
+            'timestamp' => REQUEST_TIME,
+          );
+          if (drupal_write_record('nodeviewcount', $data) == FALSE) {
+            $status = 1;
+            $error = t('Error: failed to insert record (nid: @nid | element: @pos) in database', array (
+              '@nid' => $element->entity_id,
+              '@pos' => $i
+            ));
+          }
+        }
+
+        // Update processed field if the visits has been saved correctly
+        if ($status == 0) {
+          try {
+            db_update('odecount_anon')
+              ->fields(array('processed' => 1))
+              ->condition('solrid', $element->solrid, '=')
+              ->execute();
+          }
+          catch (PDOException $e) {
+            $status = 1;
+            $error = t('Error: failed to update processed (set processed) field in odecount_anon table');
+          }
+        }
+      }
+    }
+    else if ($element->processed == '0') {
+      // Only return error if the element hasn't been never
+      try {
+        db_update('odecount_anon')
+          ->fields(array('processed' => 1))
+          ->condition('solrid', $element->solrid, '=')
+          ->execute();
+      }
+      catch (PDOException $e) {
+        $status = 1;
+        $error = t('Error: failed to update processed (not exists ode) field in odecount_anon table');
+      }
+
+      // Comment for prevent stop batch in each fail, because is indifferent
+      //$status = 1;
+
+      $error = t('Notice: the ode (solrid: @solrid) does not exits in Drupal', array('@solrid' => $element->solrid));
+      print_r($error . "\n");
+    }
+
+    if ($status != 0) {
+      drupal_set_message($error, 'error');
+      throw new DrupalUpdateException($error);
+    }
+  }
+}

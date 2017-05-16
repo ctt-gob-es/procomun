@@ -1,0 +1,13 @@
+diff --git a/sites/all/modules/patched/shs/shs.module b/sites/all/modules/patched/shs/shs.module
+index bf4ab09..6f64fee 100644
+--- a/sites/all/modules/patched/shs/shs.module
++++ b/sites/all/modules/patched/shs/shs.module
+@@ -813,7 +813,7 @@ function shs_term_get_children($identifier, $parent = 0, $settings = array(), $r
+             $num_nodes = _shs_term_get_node_count($term, TRUE);
+             $num_nodes--;
+             // Update term label.
+-            $terms[$vocabulary_cache_key][$langcode][$parent][1][$term->tid] = t('!term_name (!node_count)', array('!term_name' => $term->name, '!node_count' => $num_nodes));
++            $terms[$vocabulary_cache_key][$langcode][$parent][1][$term->tid] = ($num_nodes > 0) ? t('!term_name (!node_count)', array('!term_name' => $term->name, '!node_count' => $num_nodes)) : t('!term_name', array('!term_name' => $term->name));
+           }
+         }
+       }

@@ -1,0 +1,52 @@
+--- a/docroot/sites/all/modules/contrib/term_reference_tree/term_reference_tree.widget.inc
++++ b/docroot/sites/all/modules/contrib/term_reference_tree/term_reference_tree.widget.inc
+@@ -665,7 +665,8 @@
+   $t = NULL;
+   if (module_exists('locale') && !empty($term->tid)) {
+     $t = taxonomy_term_load($term->tid);
+-    $term_name = entity_label('taxonomy_term', $t);
++    //$term_name = entity_label('taxonomy_term', $t);
++    $term_name = _term_reference_tree_label($term);
+   }
+   else {
+     $term_name = $term->name;
+@@ -773,3 +774,39 @@
+ 
+   return $container;
+ }
++
++/**
++ * Based on entity label, but loads the term only if needed.
++ */
++function _term_reference_tree_label($term) {
++  static $info, $label_mode, $key;
++  if (!isset($label_mode)) {
++    $info = entity_get_info('taxonomy_term');
++    if (isset($info['label callback']) && function_exists($info['label callback'])) {
++      $label_mode = 'callback';
++    }
++    elseif (!empty($info['entity keys']['label'])) {
++      $key = $info['entity keys']['label'];
++      $label_mode = 'key';
++    }
++    else {
++      $label_mode = 'none';
++    }
++  }
++  $label = FALSE;
++
++  if ($label_mode == 'callback') {
++    $t = taxonomy_term_load($term->tid);
++    $label = $info['label callback']($t, 'taxonomy_term');
++  }
++  elseif ($label_mode == 'key') {
++    if (!isset($term->{$key})) {
++      $term = taxonomy_term_load($term->tid);
++    }
++    if (isset($term->{$key})) {
++      $label = $term->{$key};
++    }
++  }
++
++  return $label;
++}

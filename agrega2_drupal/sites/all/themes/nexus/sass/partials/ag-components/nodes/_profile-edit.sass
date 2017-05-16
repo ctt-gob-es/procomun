@@ -1,0 +1,32 @@
+#user-profile-form
+  //Special treatment for the user picture upload field
+  .form-item-files-picture-upload
+    +clearfix()
+    margin-bottom: .5em
+    > label
+      +special-label
+    > input
+      +special-input
+    > .description
+      +special-description()
+  .field-name-field-date-birth,
+  .field-name-field-year,
+  .field-name-field-exp-date-cv
+    //Hide title for the from-to date field
+    .form-wrapper > legend
+      display: none
+  #edit-profile-datos-personales-field-url-educative-center
+    //Adapt styles for the link field without title
+    .form-type-link-field
+      > label
+        +special-label
+      > .link-field-subrow
+        +special-input
+        .form-type-textfield
+          margin-top: 0
+          input
+            width: 100%
+.page-user.logged-in.page-user-edit
+  #content-wrap
+    legend
+      margin-bottom: 1em

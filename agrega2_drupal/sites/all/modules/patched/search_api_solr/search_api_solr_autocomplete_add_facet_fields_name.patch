@@ -1,0 +1,64 @@
+diff --git a/sites/all/modules/patched/search_api_solr/includes/service.inc b/sites/all/modules/patched/search_api_solr/includes/service.inc
+index ccf0050..b9182b4 100644
+--- a/sites/all/modules/patched/search_api_solr/includes/service.inc
++++ b/sites/all/modules/patched/search_api_solr/includes/service.inc
+@@ -1723,8 +1723,9 @@ class SearchApiSolrService extends SearchApiAbstractService {
+         }
+ 
+         $matches = array();
++        $facet_name_fields = array();
+         if (isset($response->facet_counts->facet_fields)) {
+-          foreach ($response->facet_counts->facet_fields as $terms) {
++          foreach ($response->facet_counts->facet_fields as $facet_field => $terms) {
+             foreach ($terms as $term => $count) {
+               if (isset($matches[$term])) {
+                 // If we just add the result counts, we can easily get over the
+@@ -1736,6 +1737,8 @@ class SearchApiSolrService extends SearchApiAbstractService {
+                 $matches[$term] = $count;
+               }
+             }
++            // Add Matches to an array with facet names.
++            $facet_name_fields[$facet_field] = $matches;
+           }
+ 
+           if ($matches) {
+@@ -1768,20 +1771,25 @@ class SearchApiSolrService extends SearchApiAbstractService {
+ 
+             // Build suggestions using returned facets
+             $incomp_length = strlen($incomp);
+-            foreach ($matches as $term => $count) {
+-              if (drupal_strtolower(substr($term, 0, $incomp_length)) == $incomp) {
+-                $suggestions[] = array(
+-                  'suggestion_suffix' => substr($term, $incomp_length),
+-                  'term' => $term,
+-                  'results' => $count,
+-                );
+-              }
+-              else {
+-                $suggestions[] = array(
+-                  'suggestion_suffix' => ' ' . $term,
+-                  'term' => $term,
+-                  'results' => $count,
+-                );
++            foreach ($facet_name_fields as $facet_field => $matches_fields) {
++              // We need $facet_field to determine which facet field affects per option.
++              foreach ($matches_fields as $term => $count) {
++                if (drupal_strtolower(substr($term, 0, $incomp_length)) == $incomp) {
++                  $suggestions[] = array(
++                    'suggestion_suffix' => substr($term, $incomp_length),
++                    'term' => $term,
++                    'results' => $count,
++                    'facet_field' => $facet_field,
++                  );
++                }
++                else {
++                  $suggestions[] = array(
++                    'suggestion_suffix' => ' ' . $term,
++                    'term' => $term,
++                    'results' => $count,
++                    'facet_field' => $facet_field,
++                  );
++                }
+               }
+             }
+           }

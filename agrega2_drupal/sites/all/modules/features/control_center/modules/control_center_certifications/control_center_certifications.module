@@ -1,0 +1,266 @@
+<?php
+/**
+ * @file
+ * Code for the control_center_certifications feature.
+ */
+
+include_once 'control_center_certifications.features.inc';
+
+/**
+ * Implementation of hook_ctools_plugin_directory().
+ */
+function control_center_certifications_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'ctools' && $plugin == 'content_types') {
+    return 'plugins/' . $plugin;
+  }
+}
+
+###################################
+##  CUSTOM EXPOSED FILTER HOOKS  ##
+###################################
+
+/**
+ * Implementation of hook_views_handlers() to register all of the basic handlers
+ * views uses.
+ */
+function control_center_certifications_views_handlers() {
+  return array(
+    'info' => array(
+      // Path to handler files
+      'path' => drupal_get_path('module', 'control_center_certifications') . '/includes',
+    ),
+    'handlers' => array(
+      // Register our custom filter, with the class/file name and parent class
+      'control_center_certifications_handler_filter_certification_criterion' => array(
+        'parent' => 'views_handler_filter',
+      ),
+      'control_center_certifications_handler_sort_by_any' => array(
+        'parent' => 'views_handler_sort',
+      ),
+      'control_center_certifications_handler_sort_by_likes' => array(
+        'parent' => 'views_handler_sort',
+      ),
+      'control_center_certifications_handler_sort_by_comments' => array(
+        'parent' => 'views_handler_sort',
+      ),
+      'control_center_certifications_handler_sort_by_votes' => array(
+        'parent' => 'views_handler_sort',
+      ),
+      'control_center_certifications_handler_sort_by_visits' => array(
+        'parent' => 'views_handler_sort',
+      ),
+    ),
+  );
+}
+
+function control_center_certifications_views_data() {
+  $data = array();
+
+  $data['node']['certification_criterion'] = array(
+    'group' => t('Custom'),
+    'real field' => 'certification_criterion',
+    'title' => t('Certification criterion'),
+    'help' => t('Certification criterion by likes, comments, votes and visits.'),
+    'filter' => array(
+      'handler' => 'control_center_certifications_handler_filter_certification_criterion',
+    ),
+  );
+
+  $data['node']['sort_by_any'] = array(
+    'group' => t('Custom'),
+    'real field' => 'sort_by_any',
+    'title' => t('- Any -'),
+    'help' => t('Sort by any'),
+    'sort' => array(
+      'handler' => 'control_center_certifications_handler_sort_by_any',
+    ),
+  );
+
+  $data['node']['sort_by_likes'] = array(
+    'group' => t('Custom'),
+    'real field' => 'sort_by_likes',
+    'title' => t('Likes'),
+    'help' => t('Sort by likes'),
+    'sort' => array(
+      'handler' => 'control_center_certifications_handler_sort_by_likes',
+    ),
+  );
+
+  $data['node']['sort_by_comments'] = array(
+    'group' => t('Custom'),
+    'real field' => 'sort_by_comments',
+    'title' => t('Comments'),
+    'help' => t('Sort by comments'),
+    'sort' => array(
+      'handler' => 'control_center_certifications_handler_sort_by_comments',
+    ),
+  );
+
+  $data['node']['sort_by_votes'] = array(
+    'group' => t('Custom'),
+    'real field' => 'sort_by_votes',
+    'title' => t('Votes'),
+    'help' => t('Sort by votes'),
+    'sort' => array(
+      'handler' => 'control_center_certifications_handler_sort_by_votes',
+    ),
+  );
+
+  $data['node']['sort_by_visits'] = array(
+    'group' => t('Custom'),
+    'real field' => 'sort_by_visits',
+    'title' => t('Visits'),
+    'help' => t('Sort by visits'),
+    'sort' => array(
+      'handler' => 'control_center_certifications_handler_sort_by_visits',
+    ),
+  );
+
+
+  return $data;
+}
+
+###################################
+##  CUSTOM BULK OPERATION HOOKS  ##
+###################################
+
+/**
+ * Implements hook_action_info()
+ * It provides a custom action for VBO views
+ */
+function control_center_certifications_action_info() {
+  return [
+    'control_center_certifications_certify_odes' => [
+      'type' => 'node',
+      'label' => t('Certify learning resources'),
+      'configurable' => FALSE,
+      'vbo_configurable' => FALSE,
+    ],
+    'control_center_certifications_remove_certification' => [
+      'type' => 'node',
+      'label' => t('Remove certification of learning resources'),
+      'configurable' => FALSE,
+      'vbo_configurable' => FALSE,
+    ]
+  ];
+}
+
+/**
+ * It provides a custom action for VBO views
+ * In this case this is used to certify odes
+ */
+function control_center_certifications_certify_odes(&$node, $context) {
+  if (!empty($node) && $context['view_info']['name'] === 'agrega2_content_certification') {
+    $wrapper = entity_metadata_wrapper('node', $node);
+    $wrapper->field_certified->set(TRUE);
+    $wrapper->save();
+  }
+}
+
+/**
+ * It provides a custom action for VBO views
+ * In this case this is used to remove certification of odes
+ */
+function control_center_certifications_remove_certification(&$node, $context) {
+  if (!empty($node) && $context['view_info']['name'] === 'agrega2_content_certification') {
+    $wrapper = entity_metadata_wrapper('node', $node);
+    $wrapper->field_certified->set(FALSE);
+    $wrapper->save();
+  }
+}
+
+/**
+ * Implements hook_views_pre_render()
+ */
+function control_center_certifications_views_pre_render(&$view) {
+  if ($view->name == 'agrega2_content_certification' && $view->current_display == 'panel_pane_certifications_list') {
+    foreach ($view->result as $result) {
+      $result->field_field_certified[0]['rendered']['#markup'] = ($result->field_field_certified[0]['rendered']['#markup'] == 'yes') ? t('Yes') : t('No');
+
+      // Calculate likes
+      if (isset($result->flagging_node_uid)) {
+        $result->field_field_solrid[0]['rendered']['#markup'] = $result->flagging_node_uid;
+        $result->field_field_solrid[0]['raw']['value'] = $result->flagging_node_uid;
+      }
+      else {
+        $likes = db_query('SELECT nid, total_likes
+                           FROM odelikescount
+                           WHERE nid = :nid', array(':nid' => $result->nid))->fetchAssoc();
+
+        $result->field_field_solrid[0]['rendered']['#markup'] = $likes['total_likes'];
+        $result->field_field_solrid[0]['raw']['value'] = $likes['total_likes'];
+      }
+
+      // Calculate comments
+      if (isset($result->node_comment_statistics_comment_count)) {
+        $result->field_field_solrid_1[0]['rendered']['#markup'] = $result->node_comment_statistics_comment_count;
+        $result->field_field_solrid_1[0]['raw']['value'] = $result->node_comment_statistics_comment_count;
+      }
+      else {
+        $comments = db_query('SELECT node.nid AS nid, node_comment_statistics.comment_count AS node_comment_statistics_comment_count
+                              FROM node node
+                              INNER JOIN node_comment_statistics node_comment_statistics ON node.nid = node_comment_statistics.nid
+                              WHERE node.type IN (:tipo) AND node.nid = :nid', array(':tipo' => 'ode', ':nid' => $result->nid))->fetchAssoc();
+
+        $result->field_field_solrid_1[0]['rendered']['#markup'] = $comments['node_comment_statistics_comment_count'];
+        $result->field_field_solrid_1[0]['raw']['value'] = $comments['node_comment_statistics_comment_count'];
+      }
+
+      // Calculate votes
+      if (isset($result->votingapi_cache_node_count_value)) {
+        $result->field_field_solrid_2[0]['rendered']['#markup'] = $result->votingapi_cache_node_count_value;
+        $result->field_field_solrid_2[0]['raw']['value'] = $result->votingapi_cache_node_count_value;
+      }
+      else {
+        $votes = db_query('SELECT node.nid AS nid, votingapi_cache_node_count.value AS votingapi_cache_node_count_value
+                           FROM node node
+                           LEFT JOIN votingapi_cache votingapi_cache_node_count ON node.nid = votingapi_cache_node_count.entity_id AND (votingapi_cache_node_count.entity_type = :entity_type AND votingapi_cache_node_count.function = :function)
+                           WHERE node.type IN (:tipo) AND node.nid = :nid', array(
+                             ':entity_type' => 'node',
+                             ':function' => 'count',
+                             ':tipo' => 'ode',
+                             ':nid' => $result->nid))->fetchAssoc();
+
+        $result->field_field_solrid_2[0]['rendered']['#markup'] = ($votes['votingapi_cache_node_count_value'] == NULL) ? '0' : $votes['votingapi_cache_node_count_value'];
+        $result->field_field_solrid_2[0]['raw']['value'] = ($votes['votingapi_cache_node_count_value'] == NULL) ? '0' : $votes['votingapi_cache_node_count_value'];
+      }
+
+      // Calculate average
+      $average = db_query('SELECT node.nid AS nid, votingapi_cache_node_average.value AS votingapi_cache_node_average_value
+                           FROM node node
+                           LEFT JOIN votingapi_cache votingapi_cache_node_average ON node.nid = votingapi_cache_node_average.entity_id AND (votingapi_cache_node_average.entity_type = :entity_type AND votingapi_cache_node_average.function = :function)
+                           WHERE node.type IN (:tipo) AND node.nid = :nid', array(
+                             ':entity_type' => 'node',
+                             ':function' => 'average',
+                             ':tipo' => 'ode',
+                             ':nid' => $result->nid))->fetchAssoc();
+
+      $result->field_field_solrid_3[0]['rendered']['#markup'] = ($average['votingapi_cache_node_average_value'] == NULL) ? '0' : $average['votingapi_cache_node_average_value'];
+      $result->field_field_solrid_3[0]['raw']['value'] = ($average['votingapi_cache_node_average_value'] == NULL) ? '0' : $average['votingapi_cache_node_average_value'];
+
+      // Calculate visits
+      if (isset($result->nodeviewcount_nid)) {
+        $result->field_field_solrid_4[0]['rendered']['#markup'] = $result->nodeviewcount_nid;
+        $result->field_field_solrid_4[0]['raw']['value'] = $result->nodeviewcount_nid;
+      }
+      else {
+        $visits = db_query('SELECT nid, total_visits
+                            FROM odevisitscount
+                            WHERE nid = :nid', array(':nid' => $result->nid))->fetchAssoc();
+
+        $result->field_field_solrid_4[0]['rendered']['#markup'] = $visits['total_visits'];
+        $result->field_field_solrid_4[0]['raw']['value'] = $visits['total_visits'];
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function control_center_certifications_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'views_exposed_form' && $form_state['view']->name == 'agrega2_content_certification' && $form_state['view']->current_display == 'panel_pane_certifications_list') {
+    $form['field_certified_value']['#options'][0] = t('No');
+    $form['field_certified_value']['#options'][1] = t('Yes');
+  }
+}

@@ -1,0 +1,197 @@
+.page-user.logged-in:not(.page-user-cancel):not(.page-user-badges):not(.page-user-edit):not(.page-user-imce)
+  #content-wrap
+    h1
+      display: none
+    //Adjust tabs as the primary tabs are now a green button
+//  ul.tabs.primary
+//    border: 0
+//    float: right
+//    li
+//      display: inline-block
+//      a
+//        +button-icon($orange, "../images/ico-editar.png")
+//        margin-right: 20px
+//        &:hover
+//          background-color: $dark_orange
+
+//Define list of divs where to style label and text
+$list-main-divs-cuenta: profile-mi-cuenta-email, profile-mi-cuenta-idioma
+
+$list-main-divs-datos: field-name-field-profile-name, field-name-field-profile-surname, field-name-field-date-birth, field-name-field-sex, field-name-field-countries, field-name-field-dni, field-name-field-place, field-name-field-educative-center, field-name-field-url-educative-center, field-name-field-province, field-name-field-locality, field-name-field-about-me, field-name-field-countries, field-name-field-sex, field-name-field-province-dir3, field-name-field-locality-dir3, field-name-field-date-birth
+
+$list-main-divs-cv: field-name-field-current-position-cv, field-name-field-educational-level-cv, field-name-field-degree-year-cv, field-name-field-degree-locality-cv, field-name-field-degree-entity-cv, field-name-field-degree-title-cv, field-name-field-countries, field-name-field-year, field-name-field-lang-cv, field-name-field-level-lang-cv, field-name-field-institution, field-name-field-academic-title, field-name-field-description-formation, field-name-field-exp-date-cv, field-name-field-locality, field-name-field-position, field-name-field-description-position, field-name-field-province, field-name-field-annotations, field-name-field-level-privacy
+$list-header-divs-cv: field-name-field-degree-cv-fc, field-name-field-additional-formation-cv-fc, field-name-field-lang-level-cv-fc, field-name-field-experience-cv
+
+=set-label-field-styles-cuenta($div-list)
+  @each $list-main-div in $div-list
+    .#{$list-main-div}
+      clear: both
+      label
+        +make-sm-column(3)
+        +label-grey()
+      div
+        +make-sm-column(9)
+        +div-nextto-label-grey()
+
+=set-label-field-styles-datos($div-list)
+  @each $list-main-div in $div-list
+    .#{$list-main-div}
+      clear: both
+      +clearfix()
+      //margin-bottom: .5em
+      .field-label
+        +make-sm-column(3)
+        +label-grey()
+      .field-items, .item-list
+        +make-sm-column(9)
+        +div-nextto-label-grey()
+        padding: 0
+=set-label-field-styles-cv($div-list)
+  @each $list-main-div in $div-list
+    .#{$list-main-div}
+      clear: both
+      +clearfix()
+      margin-bottom: .5em
+      .field-label
+        +make-sm-column(3)
+        +label-grey()
+      .field-items
+        +make-sm-column(9)
+        +div-nextto-label-grey()
+
+=set-header-styles-cv($div-list)
+  @each $list-main-div in $div-list
+    .#{$list-main-div}
+      margin-top: 2em
+      & > .field-label
+        font-weight: bold
+        color: $navy
+        font-size: 18px
+        display: block
+        float: none
+        margin-bottom: .5em
+      & > .field-items
+        display: block
+        float: none
+        & > .field-item
+          margin-bottom: 2em
+
+.page-user.logged-in
+  //Own profile picture
+  .profile-mi-cuenta-imagen
+    img
+      margin: 0 1em 1em 0
+      float: left
+      border: 10px solid $lightest_gray
+      max-width: 52px
+  #profile-mi-cuenta
+    .profile-mi-cuenta-nombre h2
+      font-size: 24px
+    +set-label-field-styles-cuenta($list-main-divs-cuenta)
+
+  #profile-datos-personales
+    > h3
+      border-bottom: 0
+      font-size: 28px
+      margin-top: 40px
+    +set-label-field-styles-datos($list-main-divs-datos)
+    img.user-public-picture
+      max-width: 150px
+
+  #profile-cv
+    h3
+      border-bottom: 0
+      font-size: 24px
+    +set-label-field-styles-cv($list-main-divs-cv)
+    +set-header-styles-cv($list-header-divs-cv)
+  .tab-pane.active
+    +clearfix()
+
+  //Set style for tags
+  div.most-used-tags
+    ul
+      +clearfix()
+    li.first
+      margin-left: 0px
+      a
+        +tag()
+    li
+      a
+        +tag()
+        margin-right: 10px!important
+    ul
+      padding: 7px 15px
+      li
+        display: block
+        float: left
+        margin: 0
+
+  //Set style for title of social network section
+  .field-name-field-social-network-personal-fc
+    > .field-label
+      text-transform: uppercase
+      color: $navy
+      padding: .5em 0
+      border-bottom: 1px dotted $light_gray
+      font-weight: normal
+      margin: 1em 0
+    .field.field-type-link-field
+      display: inline-block
+      vertical-align: top
+      margin-right: 2em
+      margin-bottom: 1em
+      font-size: 0
+      color: transparent
+      line-height: 0
+      > .field-label
+        display: none
+    .field-name-field-facebook a
+      +icon-aware("ico-facebook-green.png", 5px)
+    .field-name-field-twitter a
+      +icon-aware("ico-twitter-green.png", 5px)
+    .field-name-field-linkedin a
+      +icon-aware("ico-linkedin-green.png", 5px)
+
+
+  .most-used-tags
+    .item-list
+      padding: 3px 10px
+      ul
+        margin: 0
+
+  .social-network-links
+    margin-top: 1em
+    clear: both
+    .social-follow-me
+      display: inline-block
+      margin: 10px 0
+
+  #profile-datos-personales .entity-profile2
+    width: 75%
+    float: left
+    @media only screen and (min-width : 320px) and (max-width : 480px)
+      width: 50%
+    @media only screen and (min-width : 768px) and (max-width : 990px)
+      width: 69%
+    @media only screen and (min-width : 990px) and (max-width : 1200px) and (orientation : landscape)
+      width: 76%
+
+.user-mozilla-badges
+  clear: both
+  padding-top: 3em
+
+// Public profile
+.page-profile-public
+  .contextual-links-region,
+  .center
+    position: initial
+// General
+.page-user
+  .block-system > .content,
+  &-edit #content-wrap
+    position: relative
+  &-edit
+    #content-wrap
+      padding-top: 0
+      .view-profile-button
+        right: 2em

@@ -1,0 +1,131 @@
+<?php
+/**
+ * @file
+ * Code for the Home feature.
+ */
+
+include_once 'ag_home.features.inc';
+
+/**
+ * Implements hook_theme().
+ */
+function ag_home_theme() {
+  $themes = array(
+    'custom_register_link' => array(
+      'arguments' => array(
+        'element' => NULL,
+        'field' => NULL,
+      ),
+    ),
+  );
+
+  return $themes;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function ag_home_block_info() {
+  $blocks = array();
+
+  $blocks['custom_register_link'] = array(
+    'info' => t('Custom register link'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function ag_home_block_view($delta = '') {
+  $block = array();
+
+  switch($delta){
+    case 'custom_register_link':
+      $block['subject'] = t('Custom register link');
+      $block['content'] = theme('custom_register_link');
+      break;
+  }
+
+  return $block;
+}
+
+/**
+ * Function theme for custom_register_link block
+ */
+function theme_custom_register_link($vars) {
+  return array(
+    '#prefix' => '<div class="register-link">',
+    '#markup' => '<span>' . t('All this and more in Procomun. Sign up now.') . '</span>' . l(t('Sign up'), 'user/register'),
+    '#suffix' => '</div>'
+  );
+}
+
+/**
+ * Implementation of hook_block_view_alter().
+ */
+function ag_home_block_view_alter(&$data, $block) {
+  $result = array();
+  $type = '';
+
+  switch ($block->delta) {
+    case 'banner-home---comunidades':
+      $type = 'COMMUNITY';
+      break;
+
+    case 'banner-home---recursos':
+      $type = 'ODE OR LEARNING_RESOURCE';
+      break;
+
+    case 'banner-home---articulos':
+      $type = 'POST';
+      break;
+
+    case 'banner-home---eventos':
+      $type = 'EVENT';
+      break;
+  }
+
+  if (!empty($type)) {
+    // Create the Search Api query.
+    $query = search_api_query('sarnia_ode_search');
+    $query_filter = $query->createFilter();
+    $query_filter->condition('type', $type);
+    $query->filter($query_filter);
+    $query->range(0, 0);
+    $result = $query->execute();
+  }
+
+  $type = ($type == 'ODE OR LEARNING_RESOURCE') ? 'LEARNING_RESOURCE' : $type;
+
+  // Create link to search results page
+  if (isset($result['result count'])) {
+    $result_count = $result['result count'];
+    $data['content']['bean'][$block->delta]['field_banner_extra'][0]['#markup'] = l($result_count, 'ode-search', array(
+      'query' => array(
+        'type' => $type,
+      ),
+    ));
+  }
+
+  // Create link to search results page
+  if (!empty($data['content']['bean'][$block->delta]['field_banner_description'][0]['#markup']) && isset($result['result count'])) {
+    $description = $data['content']['bean'][$block->delta]['field_banner_description'][0]['#markup'];
+    $data['content']['bean'][$block->delta]['field_banner_description'][0]['#markup'] = l($description, 'ode-search', array(
+      'query' => array(
+        'type' => $type,
+      ),
+    ));
+  }
+}
+
+/**
+ * Implements hook_cron().
+ * Load home most visited view
+ */
+function ag_home_cron() {
+  $most_visited = views_embed_view('ag_home_most_visited', $display_id = 'panel_pane_home_most_visited');
+  variable_set('cached_ag_home_most_visited', $most_visited);
+}

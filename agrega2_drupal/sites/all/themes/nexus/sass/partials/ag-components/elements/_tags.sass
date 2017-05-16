@@ -1,0 +1,11 @@
+body:not(.page-node-add):not(.page-node-edit)
+  .field-type-taxonomy-term-reference:not(.field-name-field-knowledge-area):not(.field-name-field-learning-context),
+  .tags
+    overflow: hidden
+    a:not(.chosen-single)
+      +tag
+
+// Views
+.field-type-taxonomy-term-reference:not(.field-name-field-knowledge-area):not(.field-name-field-learning-context):not(.field-name-field-competencias):not(.field-name-field-accesibilidad)
+  .field-label
+    @extend .hide-accessible

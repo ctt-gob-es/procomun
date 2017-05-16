@@ -1,0 +1,91 @@
+<?php
+/**
+ * @file
+ * Code for the Control center communities feature.
+ */
+
+include_once 'control_center_communities.features.inc';
+
+/**
+ * Implements hook_block_info().
+ */
+function control_center_communities_block_info() {
+  $blocks['ccenter_manage_community_users'] = array(
+    'info' => t('Control Center - Administer community users'),
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function control_center_communities_block_view($delta) {
+  $block = array();
+
+  switch ($delta) {
+    case 'ccenter_manage_community_users':
+      $community_id = arg(3);
+      $add_user = arg(5);
+
+      if (is_numeric($community_id)) {
+        $block['content'] = [
+          '#theme' => 'item_list',
+          '#items' => [
+            ['data' => l(t('Users list'), "admin/control-center/community/$community_id/users", ['attributes' => ['title' => t('Users list')]])],
+            ['data' => l(t('Add user to community'), "admin/control-center/community/$community_id/users/add-user", ['attributes' => ['title' => t('Add user to community')]])],
+          ],
+          '#attributes' => [
+            'class' => 'tabs primary clearfix',
+          ]
+        ];
+
+        // Mark 'li' tag as active.
+        if (empty($add_user)) {
+          $block['content']['#items'][0]['class'] = ['active'];
+        }
+        else {
+          $block['content']['#items'][1]['class'] = ['active'];
+        }
+      }
+      break;
+  }
+
+  return $block;
+}
+
+/**
+ * Implementation of hook_ctools_plugin_directory().
+ */
+function control_center_communities_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'ctools' && $plugin == 'content_types') {
+    return 'plugins/' . $plugin;
+  }
+}
+
+/**
+ * Implements hook_action_info()
+ * It provides a custom action for VBO views
+ */
+function control_center_communities_action_info() {
+  return [
+    'control_center_communities_remove_user_from_community' => [
+      'type' => 'user',
+      'label' => t('Remove user from community'),
+      'configurable' => FALSE,
+      'vbo_configurable' => FALSE,
+    ]
+  ];
+}
+
+/**
+ * It provides a custom action for VBO views
+ * In this case this is used to remove users from a community
+ */
+function control_center_communities_remove_user_from_community(&$user, $context) {
+  // Unsubscribe users from community
+  if (!empty($user) && $context['view_info']['name'] === 'agrega2_communities_user_administration' &&
+      !(empty($context['view_info']['arguments'][0])) && is_numeric($context['view_info']['arguments'][0])) {
+    og_ungroup('node', $context['view_info']['arguments'][0], 'user', $user->uid);
+  }
+}

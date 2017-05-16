@@ -1,0 +1,77 @@
+.detail-content,
+.wrapper-ode
+  @extend .box-shadow
+.detail-content
+  margin-bottom: 20px
+  .detail-title
+    margin-bottom: 15px
+.wrapper-ode
+  .title
+    margin-top: 0
+    text-transform: uppercase
+    color: $navy
+  .content > div
+    clear: both
+    > label
+      text-transform:  uppercase
+      color: $cold_gray
+      display: block
+      float: left
+      margin-right: 1em
+    > div
+      display: inline-block
+
+
+// Node full detail
+.page-node-
+  h2
+    font-size: 28px
+.node-full
+  position: relative
+  footer
+    margin-top: 1em
+    padding: 1em .5em
+  // Fields
+  .answer-links
+    li.first
+      margin-left: 0
+  .author-info
+    margin-top: 1em
+    margin-bottom: 2em
+    .user-picture
+      width: 75px
+      img
+        width: 60px
+        height: 60px
+  .field-name-og-group-ref
+    width: 85%
+    margin-left: 5px
+    .field-item
+      display: inline-block
+      border-left: 1px solid $charcoal
+      padding-left: 5px
+      margin-left: 5px
+      &:first-child
+        border-left-width: 0
+        margin: 0
+        padding: 0
+    .see-more
+      cursor: pointer
+  // Poll
+  .field-type-taxonomy-term-reference 
+    .field-items
+      a
+        +tag()
+  .publication-groups
+    margin-top: .5em
+    span
+      vertical-align: top
+    > *
+      display: inline-block
+  iframe
+    margin: 0 auto
+    margin-bottom: 1em
+    display: block
+    min-width: 70%
+  .license-link
+    margin: 2em 0

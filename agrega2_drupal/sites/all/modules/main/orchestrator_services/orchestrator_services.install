@@ -1,0 +1,9 @@
+<?php
+
+/**
+ * Implements hook_update_N().
+ * #116794 - Set variable login_error_mail to default value
+ */
+function orchestrator_services_update_7000() {
+  variable_set('login_error_mail', 'meducacion@intef.educacion.es');
+}

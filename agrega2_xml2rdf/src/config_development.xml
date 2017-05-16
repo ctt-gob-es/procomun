@@ -1,0 +1,12 @@
+<LOM2RDF>
+	<SOURCE_URL>http://www.agrega.es/ont/lom2owl#</SOURCE_URL>
+	<SOURCE_FILE>*</SOURCE_FILE>
+	<XML_Folder>*</XML_Folder>
+	<OUTPUT_Format>N-TRIPLE</OUTPUT_Format>
+	<OUTPUT_Folder>*</OUTPUT_Folder>
+	<LOM_PREFIX>lomes</LOM_PREFIX>
+	<PORT>123</PORT>
+	<DATASET_NAME>agrega_dataset_test</DATASET_NAME>
+	<RECORDS>100</RECORDS>
+	<DumpFileName>AgregaTEST</DumpFileName>
+</LOM2RDF>

@@ -1,0 +1,31 @@
+diff --git a/sites/all/modules/contrib/wsclient/wsclient_rest/wsclient_rest.module b/sites/all/modules/contrib/wsclient/wsclient_rest/wsclient_rest.module
+index 621a417..c381ce5 100644
+--- a/sites/all/modules/contrib/wsclient/wsclient_rest/wsclient_rest.module
++++ b/sites/all/modules/contrib/wsclient/wsclient_rest/wsclient_rest.module
+@@ -98,17 +98,12 @@ class WSClientRESTEndpoint extends WSClientEndpoint {
+       $data = $arguments[$operation['data']];
+       unset($arguments[$operation['data']]);
+     }
+-    try {
+-      $response = $client->execute(new HttpClientRequest($this->service->url . $operation_url, array(
+-        'method' => $type,
+-        'parameters' => $arguments,
+-        'data' => $data,
+-      )));
+-      return $response;
+-    }
+-    catch (HttpClientException $e) {
+-      throw new WSClientException('Error invoking the REST service %name, operation %operation: %error', array('%name' => $this->service->label, '%operation' => $operation_name, '%error' => $e->getMessage()));
+-    }
++    $options = array(
++      'method' => $type,
++      'data' => json_encode($arguments),
++      'timeout' => 15,
++      'headers' => array('Content-Type' => 'application/json'),
++    );
++
++    $result = drupal_http_request($this->service->url . $operation_url, $options);
++    return $result;
+   }
+ 
+   public function formAlter(&$form, &$form_state) {

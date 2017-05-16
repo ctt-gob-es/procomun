@@ -1,0 +1,60 @@
+diff --git a/includes/service.inc b/includes/service.inc
+index 964d262..ccf0050 100644
+--- a/includes/service.inc
++++ b/includes/service.inc
+@@ -1116,7 +1116,8 @@ class SearchApiSolrService extends SearchApiAbstractService {
+       // We can find the item id and score in the special 'search_api_*'
+       // properties. Mappings are provided for these properties in
+       // SearchApiSolrService::getFieldNames().
+-      $result['id'] = $result['fields']['search_api_id'];
++//      $result['id'] = $result['fields']['search_api_id'];
++      $result['id'] = $result['fields']['search_api_item_id'];
+       $result['score'] = $result['fields']['search_api_relevance'];
+ 
+       $index_id = $this->getIndexId($index->machine_name);
+diff --git a/includes/solr_field.inc b/includes/solr_field.inc
+index 74f7cd8..b9b3b19 100644
+--- a/includes/solr_field.inc
++++ b/includes/solr_field.inc
+@@ -69,7 +69,7 @@ class SearchApiSolrField {
+    *   The type of the Solr field.
+    */
+   public function getType() {
+-    return $this->field->type;
++    return $this->field->field->type;
+   }
+ 
+   /**
+@@ -82,7 +82,7 @@ class SearchApiSolrField {
+    */
+   public function getSchema() {
+     if (!isset($this->schema)) {
+-      foreach (str_split(str_replace('-', '', $this->field->schema)) as $key) {
++      foreach (str_split(str_replace('-', '', $this->field->field->schema)) as $key) {
+         $this->schema[$key] = isset(self::$schemaLabels[$key]) ? self::$schemaLabels[$key] : $key;
+       }
+     }
+@@ -99,7 +99,7 @@ class SearchApiSolrField {
+    *   The mask describing the solr aggregate field, if there is one.
+    */
+   public function getDynamicBase() {
+-    return isset($this->field->dynamicBase) ? $this->field->dynamicBase : NULL;
++    return isset($this->field->field->dynamicBase) ? $this->field->field->dynamicBase : NULL;
+   }
+ 
+   /**
+diff --git a/search_api_solr.info b/search_api_solr.info
+index a7c272a..80ce33a 100644
+--- a/search_api_solr.info
++++ b/search_api_solr.info
+@@ -10,3 +10,10 @@ files[] = includes/solr_connection.inc
+ files[] = includes/solr_connection.interface.inc
+ files[] = includes/solr_field.inc
+ files[] = includes/spellcheck.inc
++
++; Information added by Drupal.org packaging script on 2013-12-25
++version = "7.x-1.4"
++core = "7.x"
++project = "search_api_solr"
++datestamp = "1387970905"
++

@@ -1,0 +1,26 @@
+diff --git a/sites/all/modules/patched/pathauto/pathauto.module b/sites/all/modules/patched/pathauto/pathauto.module
+index 9ac411a..9c42740 100644
+--- a/sites/all/modules/patched/pathauto/pathauto.module
++++ b/sites/all/modules/patched/pathauto/pathauto.module
+@@ -771,7 +771,7 @@ function pathauto_user_update_alias(stdClass $account, $op, array $options = arr
+ 
+   module_load_include('inc', 'pathauto');
+   $uri = entity_uri('user', $account);
+-  pathauto_create_alias('user', $op, $uri['path'], array('user' => $account), NULL, $options['language']);
++  pathauto_create_alias('user', $op, "profile/{$account->uid}/public", array('user' => $account), NULL, $options['language']);
+ 
+   // Because blogs are also associated with users, also generate the blog paths.
+   if (!empty($options['alias blog'])) {
+diff --git a/sites/all/modules/patched/pathauto/pathauto.pathauto.inc b/sites/all/modules/patched/pathauto/pathauto.pathauto.inc
+index 28d3ce0..a05ceb1 100644
+--- a/sites/all/modules/patched/pathauto/pathauto.pathauto.inc
++++ b/sites/all/modules/patched/pathauto/pathauto.pathauto.inc
+@@ -13,7 +13,7 @@
+  * Used primarily by the bulk delete form.
+  */
+ function pathauto_path_alias_types() {
+-  $objects['user/'] = t('Users');
++  $objects['profile/'] = t('Users');
+   $objects['node/'] = t('Content');
+   if (module_exists('blog')) {
+     $objects['blog/'] = t('User blogs');

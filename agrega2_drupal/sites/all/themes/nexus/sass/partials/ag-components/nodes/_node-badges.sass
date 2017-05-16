@@ -1,0 +1,114 @@
+/**
+ * User public badges
+ */
+.user-mozilla-badges
+  ul
+    li
+      display: inline-block
+      img
+        cursor: pointer
+.page-user.logged-in #profile-datos-personales
+  .user-mozilla-badges
+.user-mozilla-badges-metadata
+  position: fixed
+  top: 20%
+  left: 0
+  overflow: hidden
+  right: 0
+  width: 800px
+  max-height: 450px
+  overflow-y: auto
+  overflow-x: hidden
+  margin-left: auto
+  margin-right: auto
+  background-color: white
+  +border-radius(5px)
+  padding: 2em
+  z-index: 999999
+  visibility: hidden
+  &.is-visible
+    visibility: visible    
+  .badge-modal-header
+    .close-badge-icon
+      background: image-url('ico-x.png') 0 0 no-repeat
+      float: right
+      width: 16px
+      height: 16px
+      text-indent: -9999px
+      &:hover
+        width: 17px
+        background: image-url('ico-x-green.png') 0 0 no-repeat
+  .badge-modal-content
+    +clearfix()
+    text-align: left
+    strong
+      font-size: 12px
+      text-transform: uppercase
+      color: $navy
+    .badge-modal-img
+      width: auto
+      max-width: 30%
+      float: left
+      margin-right: 3%
+      img
+        max-width: 100% !important
+    .badge-content-list
+      float: left
+      width: 60%
+      h4
+        border-bottom: 1px solid $light_gray
+        padding-bottom: 3px
+        &:first-child
+          margin-top: 0
+      ul
+        margin-bottom: 20px
+        li
+          +clearfix()
+          display: block
+          margin-bottom: 8px
+          strong
+            width: 30%
+            float: left
+            margin-right: 5%
+          span
+            width: 60%
+            float: left
+.badge-screen
+  position: fixed
+  top: 0
+  right: 0
+  left: 0
+  bottom: 0
+  background-color: black
+  opacity: 0
+  visibility: hidden
+  z-index: 9
+  &.is-visible
+    opacity: .4
+    visibility: visible
+.page-user-view.sidebar-right
+  .center
+    position: initial
+// Badge button configuration
+.badge-configuration
+  +button($main_blue)
+  display: inline-block
+  &:hover
+    color: $white
+    background-color: $deep_blue
+// Configurate your badges form
+#ag-badges-config-form
+  .form-item-badges-groups
+    label
+      margin-bottom: 15px
+  // Save or come back buttons    
+  .form-actions, a
+    float: right  
+  a
+    margin: .93em 0
+    text-decoration: none
+    +button($main_blue)
+    display: inline-block
+    &:hover
+      color: $white
+      background-color: $deep_blue

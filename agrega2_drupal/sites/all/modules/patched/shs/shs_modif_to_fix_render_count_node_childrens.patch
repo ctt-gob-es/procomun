@@ -1,0 +1,22 @@
+diff --git a/sites/all/modules/patched/shs/shs.module b/sites/all/modules/patched/shs/shs.module
+index 6f4bf2e..bf4ab09 100644
+--- a/sites/all/modules/patched/shs/shs.module
++++ b/sites/all/modules/patched/shs/shs.module
+@@ -811,6 +811,7 @@ function shs_term_get_children($identifier, $parent = 0, $settings = array(), $r
+           if ($node_count) {
+             // Count nodes associated to this term (and its children).
+             $num_nodes = _shs_term_get_node_count($term, TRUE);
++            $num_nodes--;
+             // Update term label.
+             $terms[$vocabulary_cache_key][$langcode][$parent][1][$term->tid] = t('!term_name (!node_count)', array('!term_name' => $term->name, '!node_count' => $num_nodes));
+           }
+@@ -1051,7 +1052,8 @@ function _shs_term_get_node_count($term, $count_children = FALSE) {
+   // Maybe this needs some more caching and value-updates on node_save()/
+   // _update()/delete().
+   if (empty($num_nodes["{$term->tid}:{$count_children}"])) {
+-    $index_table = 'taxonomy_index';
++    //$index_table = 'taxonomy_index';
++    $index_table = 'taxonomy_term_hierarchy';
+     if (module_exists('taxonomy_entity_index')) {
+       $index_table = 'taxonomy_entity_index';
+     }

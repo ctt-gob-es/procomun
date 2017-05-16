@@ -1,0 +1,43 @@
+diff --git a/sites/all/modules/contrib/authcache/modules/authcache_builtin_expire_v2/authcache_builtin_expire_v2.module b/sites/all/modules/contrib/authcache/modules/authcache_builtin_expire_v2/authcache_builtin_expire_v2.module
+index a39d53a..6e830eb 100644
+--- a/sites/all/modules/contrib/authcache/modules/authcache_builtin_expire_v2/authcache_builtin_expire_v2.module
++++ b/sites/all/modules/contrib/authcache/modules/authcache_builtin_expire_v2/authcache_builtin_expire_v2.module
+@@ -14,15 +14,34 @@ function authcache_builtin_expire_v2_expire_cache($urls, $wildcards, $object_typ
+   $cids = array();
+   $wildcard_cids = array();
+ 
++  // Obtain the enabled languages.
++  $langs = language_list('enabled');
++  $langs_availables = count($langs[1]);
++
+   foreach (authcache_enum_keys() as $key) {
+     foreach (array_keys($urls) as $path) {
+-      $cid = $key . url($path, array('absolute' => FALSE, 'alias' => TRUE));
++      // If more tha one languages available, clear all urls with prefix.
++      if ($langs_availables > 1) {
++        foreach ($langs[1] as $lang) {
++          $cid = $key . url($path, array('absolute' => FALSE, 'alias' => TRUE, 'language' => $lang));
+ 
+-      if (empty($wildcards[$path])) {
+-        $cids[] = $cid;
++          if (empty($wildcards[$path])) {
++            $cids[] = $cid;
++          }
++          else {
++            $wildcard_cids[] = $cid;
++          }
++        }
+       }
+       else {
+-        $wildcard_cids[] = $cid;
++        $cid = $key . url($path, array('absolute' => FALSE, 'alias' => TRUE));
++
++        if (empty($wildcards[$path])) {
++          $cids[] = $cid;
++        }
++        else {
++          $wildcard_cids[] = $cid;
++        }
+       }
+     }
+   }

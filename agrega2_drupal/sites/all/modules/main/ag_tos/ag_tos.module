@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * Implementation file of og_tos module.
+ */
+
+/**
+ *  Implements hook_init().
+ */
+function ag_tos_init() {
+  global $user;
+
+  $is_edit_path = drupal_match_path(current_path(), 'user/'. $user->uid . '/edit/datos_personales');
+  $is_logout_path = drupal_match_path(current_path(), 'user/logout');
+  $is_devel_path = drupal_match_path(current_path(), 'devel/switch*');
+  $is_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+  $terms_path = drupal_match_path(current_path(), 'node/1');
+  $privacity_path = drupal_match_path(current_path(), 'node/2');
+
+  if (!$is_ajax && $user->uid >0 && !$is_edit_path && !$is_logout_path && !$is_devel_path && !$terms_path && !$privacity_path) {
+    $sql = 'SELECT fdft.field_tos_value ';
+    $sql .= 'FROM field_data_field_tos fdft ';
+    $sql .= 'INNER JOIN profile p ON fdft.entity_id = p.pid ';
+    $sql .= 'WHERE p.uid = :uid AND ';
+    $sql .= 'fdft.field_tos_value = 1';
+
+    $params = array('uid' => $user->uid);
+
+    $result = db_query($sql, $params);
+    $record = $result->fetchCol('field_tos');
+
+    if (empty($record)) {
+      if (!drupal_is_cli()) {
+        drupal_get_messages('warning', TRUE);
+        drupal_set_message(t("You must read and accept the terms of use and privacy policy on this zone. Please, read them, check the the \"checkbox\" (fisrt line under the tabs) if you agree and click at the \"Save\" button located at the end of the page"), 'warning');
+        drupal_goto('user/' . $user->uid . '/edit/datos_personales');
+      }
+    }
+  }
+}

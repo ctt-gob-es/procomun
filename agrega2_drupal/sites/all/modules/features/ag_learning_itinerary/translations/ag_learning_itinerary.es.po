@@ -1,0 +1,406 @@
+# $Id$
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  ag_learning_itinerary.context.inc: n/a
+#  ag_learning_itinerary.features.field_instance.inc: n/a
+#  ag_learning_itinerary.features.inc: n/a
+#  ag_learning_itinerary.views_default.inc: n/a
+#  ag_learning_itinerary.module: n/a
+#  ag_learning_itinerary.install: n/a
+#  ag_learning_itinerary.info: n/a
+#  plugins/content_types/itinerary_base_detail/itinerary_base_detail.inc: n/a
+#  plugins/content_types/itinerary_related_content/itinerary_related_content.inc: n/a
+#  includes/ag_learning_itinerary.form.inc: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2016-12-23 11:27+0100\n"
+"PO-Revision-Date: 2016-12-23 11:27+0100\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: ag_learning_itinerary.context.inc:51
+msgid "Learning path"
+msgstr ""
+
+#: ag_learning_itinerary.features.field_instance.inc:910
+msgid "Comunidades en que se publicará"
+msgstr ""
+
+#: ag_learning_itinerary.features.field_instance.inc:911
+msgid "Contexto educativo"
+msgstr ""
+
+#: ag_learning_itinerary.features.field_instance.inc:912
+msgid "Descripción"
+msgstr ""
+
+#: ag_learning_itinerary.features.field_instance.inc:913
+msgid "Etiquetas"
+msgstr "Filtra per etiquetes"
+
+#: ag_learning_itinerary.features.field_instance.inc:914
+msgid "Itinerario base"
+msgstr ""
+
+#: ag_learning_itinerary.features.field_instance.inc:915
+msgid "Otros recursos de interés"
+msgstr ""
+
+#: ag_learning_itinerary.features.field_instance.inc:916
+msgid "Permitir que otros lo compartan"
+msgstr ""
+
+#: ag_learning_itinerary.features.field_instance.inc:917
+msgid "Recursos del itinerario"
+msgstr ""
+
+#: ag_learning_itinerary.features.field_instance.inc:918 ag_learning_itinerary.features.inc:156 ag_learning_itinerary.views_default.inc:952
+msgid "Título"
+msgstr ""
+
+#: ag_learning_itinerary.features.field_instance.inc:919
+msgid "solrID"
+msgstr ""
+
+#: ag_learning_itinerary.features.field_instance.inc:920
+msgid "Área de conocimiento"
+msgstr ""
+
+#: ag_learning_itinerary.features.inc:152
+msgid "Itinerario de aprendizaje"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:104;1034
+msgid "Master"
+msgstr "Maestro"
+
+#: ag_learning_itinerary.views_default.inc:105;936
+msgid "más"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:106;937
+msgid "Aplicar"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:107;938
+msgid "Reiniciar"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:108;958
+msgid "Ordenar por"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:109;940;1040
+msgid "Asc"
+msgstr "Asc"
+
+#: ag_learning_itinerary.views_default.inc:110;941;1041
+msgid "Desc"
+msgstr "Desc"
+
+#: ag_learning_itinerary.views_default.inc:111;942
+msgid "Elementos por página"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:112;943
+msgid "- Todos -"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:113;944
+msgid "Desplazamiento"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:114
+msgid "« primera"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:115
+msgid "‹ anterior"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:116
+msgid "siguiente ›"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:117
+msgid "última »"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:118
+msgid "Empty itinerary content"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:119
+msgid "This itinerary doesn't have attached content."
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:120
+msgid "Content entity referenced from field_itinerary_content"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:121
+msgid "Todo(s)"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:122
+msgid "Panel de contenido"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:123;956;1036
+msgid "more"
+msgstr "más"
+
+#: ag_learning_itinerary.views_default.inc:124
+msgid "Vista panel"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:934
+msgid "Defaults"
+msgstr "Predefinidos"
+
+#: ag_learning_itinerary.views_default.inc:935
+msgid "Generar contenidos del boletín"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:939
+msgid "Order by"
+msgstr "Ordenar por"
+
+#: ag_learning_itinerary.views_default.inc:945
+msgid "«"
+msgstr "«"
+
+#: ag_learning_itinerary.views_default.inc:946
+msgid "‹"
+msgstr "‹"
+
+#: ag_learning_itinerary.views_default.inc:947
+msgid "›"
+msgstr "›"
+
+#: ag_learning_itinerary.views_default.inc:948
+msgid "»"
+msgstr "»"
+
+#: ag_learning_itinerary.views_default.inc:949
+msgid "No hay contenido con estos filtros"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:950
+msgid "flag"
+msgstr "marca"
+
+#: ag_learning_itinerary.views_default.inc:951
+msgid "Marcado"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:953
+msgid "Tipo"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:954
+msgid "Learning path content"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:955
+msgid "Add content to the learning path"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:957
+msgid "Search"
+msgstr "Buscar"
+
+#: ag_learning_itinerary.views_default.inc:959
+msgid "There is no content with this filters."
+msgstr "No hay contenido con estos filtros"
+
+#: ag_learning_itinerary.views_default.inc:960
+msgid "Title"
+msgstr "Título"
+
+#: ag_learning_itinerary.views_default.inc:961
+msgid "Type"
+msgstr "Tipo"
+
+#: ag_learning_itinerary.views_default.inc:962
+msgid "Knowledge area"
+msgstr "Área de conocimiento"
+
+#: ag_learning_itinerary.views_default.inc:963
+msgid "Learning context"
+msgstr "Contexto educativo"
+
+#: ag_learning_itinerary.views_default.inc:964
+msgid "Learning path content selected"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:965
+msgid "Content added to the learning path"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:966
+msgid "It has not yet added content"
+msgstr "Todavía no se ha añadido ningún contenido"
+
+#: ag_learning_itinerary.views_default.inc:967
+msgid "Learning path interest content"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:968
+msgid "Add interest content"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:969
+msgid "marca"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:970
+msgid "Learning path interest content selected"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:1035
+msgid "My learning paths"
+msgstr "Mis itinerarios de aprendizaje"
+
+#: ag_learning_itinerary.views_default.inc:1037
+msgid "Apply"
+msgstr "Aplicar"
+
+#: ag_learning_itinerary.views_default.inc:1038
+msgid "Reset"
+msgstr "Reiniciar"
+
+#: ag_learning_itinerary.views_default.inc:1039
+msgid "Sort by"
+msgstr "Ordenar por"
+
+#: ag_learning_itinerary.views_default.inc:1042
+msgid "Items per page"
+msgstr "Elementos por página"
+
+#: ag_learning_itinerary.views_default.inc:1043
+msgid "- All -"
+msgstr "- Todos -"
+
+#: ag_learning_itinerary.views_default.inc:1044
+msgid "Offset"
+msgstr "Desplazamiento"
+
+#: ag_learning_itinerary.views_default.inc:1045
+msgid "« first"
+msgstr "« primera"
+
+#: ag_learning_itinerary.views_default.inc:1046
+msgid "‹ previous"
+msgstr "‹ anterior"
+
+#: ag_learning_itinerary.views_default.inc:1047
+msgid "next ›"
+msgstr "siguiente ›"
+
+#: ag_learning_itinerary.views_default.inc:1048
+msgid "last »"
+msgstr "última »"
+
+#: ag_learning_itinerary.views_default.inc:1049
+msgid "You do not have any learning path yet."
+msgstr "Todavía no tienes ningún itinerario de aprendizaje."
+
+#: ag_learning_itinerary.views_default.inc:1050
+msgid "Node ID"
+msgstr "ID del nodo"
+
+#: ag_learning_itinerary.views_default.inc:1051
+msgid "."
+msgstr "."
+
+#: ag_learning_itinerary.views_default.inc:1052
+msgid ","
+msgstr ","
+
+#: ag_learning_itinerary.views_default.inc:1053
+msgid "My learning paths content pane"
+msgstr ""
+
+#: ag_learning_itinerary.views_default.inc:1054
+msgid "View panes"
+msgstr "Vista panel"
+
+#: ag_learning_itinerary.module:88
+msgid "Default image"
+msgstr "Imagen predeterminada"
+
+#: ag_learning_itinerary.module:89
+msgid "Default image for each selected content type"
+msgstr ""
+
+#: ag_learning_itinerary.install:53
+msgid "Processed @records records. Finished."
+msgstr "Se han procesado @records registros. Finalizado"
+
+#: ag_learning_itinerary.install:208
+msgid "Error: No community permissions updated"
+msgstr ""
+
+#: ag_learning_itinerary.install:209
+msgid "Error: Community permissions update failed"
+msgstr ""
+
+#: ag_learning_itinerary.info:0
+msgid "ag_learning_itinerary"
+msgstr ""
+
+#: ag_learning_itinerary.info:0
+msgid "Feature with the learning itineraries configurations."
+msgstr ""
+
+#: ag_learning_itinerary.info:0 plugins/content_types/itinerary_base_detail/itinerary_base_detail.inc:9 plugins/content_types/itinerary_related_content/itinerary_related_content.inc:9
+msgid "Agrega2"
+msgstr "Agrega2"
+
+#: includes/ag_learning_itinerary.form.inc:60
+msgid "Copy of: @title"
+msgstr "Copia de: @title"
+
+#: plugins/content_types/itinerary_base_detail/itinerary_base_detail.inc:6
+msgid "Base learning path detail"
+msgstr "Detalle del itinerario de aprendizaje original"
+
+#: plugins/content_types/itinerary_base_detail/itinerary_base_detail.inc:7
+msgid "Render the base learning path details for an learning path that have been cloned."
+msgstr ""
+"Renderiza los detalles del itinerario base para un itinerario de "
+"aprendizaje que ha sido clonado."
+
+#: plugins/content_types/itinerary_base_detail/itinerary_base_detail.inc:8 plugins/content_types/itinerary_related_content/itinerary_related_content.inc:8
+msgid "Node"
+msgstr "Nodo"
+
+#: plugins/content_types/itinerary_base_detail/itinerary_base_detail.inc:33
+msgid "Original learning path"
+msgstr "Itinerario de aprendizaje original"
+
+#: plugins/content_types/itinerary_related_content/itinerary_related_content.inc:6
+msgid "Learning path related content"
+msgstr "Contenido relacionado del itinerario de aprendizaje"
+
+#: plugins/content_types/itinerary_related_content/itinerary_related_content.inc:7
+msgid "Render the related content for a learning path"
+msgstr "Renderiza el contenido relacionado para un itinerario de aprendizaje"
+
+#: plugins/content_types/itinerary_related_content/itinerary_related_content.inc:33
+msgid "Related contents"
+msgstr "Contenidos relacionados"
+
+#: plugins/content_types/itinerary_related_content/itinerary_related_content.inc:74
+msgid "There is no related content for this learning path"
+msgstr "No hay contenido relacionado para este itinerario de aprendizaje."

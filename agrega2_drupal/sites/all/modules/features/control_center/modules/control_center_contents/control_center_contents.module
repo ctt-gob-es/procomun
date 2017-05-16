@@ -1,0 +1,62 @@
+<?php
+/**
+ * @file
+ * Code for the Control center contents feature.
+ */
+
+include_once 'control_center_contents.features.inc';
+
+
+/**
+ * Implements hook_permission().
+ */
+function control_center_contents_permission() {
+  $permissions = array();
+
+  $permissions['access control center contents'] = array(
+    'title' => t('Access to control center contents'),
+  );
+
+  return $permissions;
+}
+
+/**
+ * Implements hook_form_alter.
+ */
+function control_center_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'views_form_agrega2_content_administration_panel_pane_1') {
+    $form['#validate'][] = 'control_center_custom_validate_control_center_solr_update';
+  }
+}
+
+/**
+ * Custom function to update solr con VBO operations for control center.
+ */
+function control_center_custom_validate_control_center_solr_update(&$form, &$form_state) {
+  $operation = FALSE;
+  $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+
+  // Prepare operation method according to Views Bulk Operation operationId.
+  switch ($form_state['operation']->operationId) {
+    case 'action::node_unpublish_action':
+    case 'action::views_bulk_operations_delete_item':
+      $operation = 'UnpublishDocument';
+      break;
+    case 'action::node_publish_action':
+      $operation = 'PublishDocument';
+      break;
+  }
+
+  if ($operation) {
+    $nodes = node_load_multiple($form_state['selection']);
+    // Loop through each selected element.
+    foreach ($nodes as $node) {
+      $wrapper = entity_metadata_wrapper('node', $node);
+
+      if ($wrapper->__isset('field_solrid')) {
+        // Invoke operation method on all items which have solrid field.
+        $OS_orchestrator_inyection->$operation($wrapper->field_solrid->value());
+      }
+    }
+  }
+}

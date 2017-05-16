@@ -1,0 +1,14 @@
+diff --git a/sites/all/modules/patched/feeds_comment_processor/FeedsCommentProcessor.inc b/sites/all/modules/patched/feeds_comment_processor/FeedsCommentProcessor.inc
+index 7a2de02..6e52a5f 100644
+--- a/sites/all/modules/patched/feeds_comment_processor/FeedsCommentProcessor.inc
++++ b/sites/all/modules/patched/feeds_comment_processor/FeedsCommentProcessor.inc
+@@ -268,7 +268,8 @@ class FeedsCommentProcessor extends FeedsProcessor {
+ 
+     // Let other modules expose mapping targets.
+     self::loadMappers();
+-    feeds_alter('feeds_comment_processor_targets', $targets);
++    $entity_type = $this->entityType();
++    drupal_alter('feeds_processor_targets', $targets, $entity_type);
+ 
+     return $targets;
+   }

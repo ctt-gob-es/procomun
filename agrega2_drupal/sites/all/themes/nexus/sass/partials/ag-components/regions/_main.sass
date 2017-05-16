@@ -1,0 +1,74 @@
+#main-content
+  background-color: rgba($main_blue, .12)
+  border-top: 1px solid rgba($main_blue, .26)
+  border-bottom: 1px solid rgba($main_blue, .26)
+.region-content
+  clear: both
+// White Background
+// Regions
+.page-ode-add,
+.page-node-ag-section-newsletter,
+.page-ag-section-newsletter,
+.page-flag,
+.page-comment-reply,
+.page-comment-delete,
+.page-login-clave,
+.node-type-page:not(.page-node-66):not(.page-node-67),
+.page-node-edit,
+.page-node-add,
+.page-help,
+.page-messages,
+.node-type-post,
+.node-type-poll,
+.node-type-external-content,
+.node-type-podcast,
+.node-type-webinar
+  #content-wrap
+    @extend .box-shadow
+    margin-bottom: 1em
+    display: block
+.page-login-clave
+  #content-wrap
+    display: inline-block
+// Others / Panels
+.wrapper-detail-content,
+.page-ode-search #primary #content,
+.community-wall-header,
+.timeline-header,
+.panel-display > .panel-col.col-md-6 .pane-content > .view > .view-content > .views-row,
+.view-my-favourites .view-empty,
+.view-user-timeline .view-empty
+  @extend .box-shadow
+  margin-bottom: 1em
+
+.page-node-members,
+.page-node-events,
+.page-node-polls,
+.page-user-timeline,
+.page-user-favourites,
+.page-user-learning-paths
+  .col-md-6 .view-content .item-list ul li.views-row
+    @extend .box-shadow
+    margin-bottom: 1em
+
+  margin-bottom: 1em
+.timeline-header
+  position: relative
+  margin-bottom: 0
+  padding-bottom: 0
+  h2
+    margin: 0
+  &:after
+    width: 100%
+    display: block
+    height: 10px
+    background: $white
+    position: absolute
+    bottom: -8px
+    content: ''
+    left: 0
+    z-index: 2
+
+// Padding sidebar
+html body #page #sidebar-first
+  padding-right: 0

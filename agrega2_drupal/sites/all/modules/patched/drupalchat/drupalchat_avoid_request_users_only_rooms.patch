@@ -1,0 +1,53 @@
+diff --git a/sites/all/modules/patched/drupalchat/drupalchat.module b/sites/all/modules/patched/drupalchat/drupalchat.module
+index 9e1e71d..0b4c6e7 100644
+--- a/sites/all/modules/patched/drupalchat/drupalchat.module
++++ b/sites/all/modules/patched/drupalchat/drupalchat.module
+@@ -177,8 +177,8 @@ function _drupalchat_chat() {
+   $chat['name'] = 'chat';
+   $chat['header'] = t('Chat');
+ 
+-  $buddylist = _drupalchat_buddylist($user->uid);
+-  $buddylist_online = _drupalchat_buddylist_online($buddylist);
++  //$buddylist = _drupalchat_buddylist($user->uid);
++  $buddylist_online = _drupalchat_buddylist_online();//_drupalchat_buddylist_online($buddylist);
+ 
+ 
+   //JON COMMENTS
+@@ -753,8 +753,8 @@ function drupalchat_poll() {
+       //$last_timestamp = 1;
+   }
+ 
+-  $buddylist = _drupalchat_buddylist($user->uid);
+-  $buddylist_online_old = _drupalchat_buddylist_online($buddylist);
++  //$buddylist = _drupalchat_buddylist($user->uid);
++  $buddylist_online_old = _drupalchat_buddylist_online();//_drupalchat_buddylist_online($buddylist);
+ 
+ 
+ 
+@@ -921,7 +921,7 @@ function _drupalchat_buddylist($uid) {
+   return $users;
+ }
+ 
+-function _drupalchat_buddylist_online($buddylist) {
++function _drupalchat_buddylist_online($buddylist = NULL) {
+   global $user, $base_url;
+ 
+   $users = array();
+@@ -937,7 +937,7 @@ function _drupalchat_buddylist_online($buddylist) {
+     $users['room_' . $_SESSION['chatroom_drupal']]['p'] = $base_url . '/' . drupal_get_path('module', 'drupalchat') . '/themes/' . variable_get('drupalchat_theme', 'light') . '/images/default_room.png';
+   }
+ 
+-  if (variable_get('drupalchat_rel', DRUPALCHAT_REL_AUTH) > DRUPALCHAT_REL_AUTH) {
++  /*if (variable_get('drupalchat_rel', DRUPALCHAT_REL_AUTH) > DRUPALCHAT_REL_AUTH) {
+     // Return empty on an empty buddylist
+     if (empty($buddylist)) {
+       $users['total'] = 0;
+@@ -983,7 +983,7 @@ function _drupalchat_buddylist_online($buddylist) {
+   $users['total'] = count($users);
+   if(variable_get('drupalchat_enable_chatroom', 1) == 1) {
+     $users['total']--;
+-  }
++  }*/
+   return $users;
+ }
+ 

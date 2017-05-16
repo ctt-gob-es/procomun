@@ -1,0 +1,9 @@
+name = "Emergya Drupal Toolkit"
+description = "This module include a class with static methods that we can use for commons drupal task like getnodeTitle"
+core = 7.x
+
+files[] = includes/DrupalToolKit.inc
+files[] = includes/OgDrupalToolKit.inc
+files[] = includes/FlagDrupalToolKit.inc
+Tests;
+files[] = tests/testOgDrupalToolKit.test

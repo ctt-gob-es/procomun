@@ -1,0 +1,54 @@
+#share-link
+  display: inline-block
+  background: $white
+  border: 1px solid $main_blue
+  +border-radius(3px)
+  color: $main_blue
+  display: block
+  font-family: $font_narrow
+  font-size: 13px
+  font-weight: normal
+  padding: 5px 7px
+  text-align: center
+  width: 80px
+  position: relative
+  margin-top: 5px
+  &:hover
+    border-color: $deep_blue
+    color: $deep_blue
+    text-decoration: none
+    &:before
+      position: absolute
+      content: image-url('flecha_compartir.png')
+      left: -33px
+      top: 0px
+
+
+/* Tooltip Share on Procomun */
+.ui-tooltip
+  background: $white
+  color: $charcoal
+  font-size: 12px
+  font-family: $font_pt_sans
+  border: 0
+  line-height: 18px
+  padding: 0
+  max-width: 185px
+  +box-shadow(0px 0px 10px 1px $light_gray)
+  &:before
+    content: ""
+    position: absolute
+    width: 10px
+    height: 10px
+    left: 20%
+    top: 0
+    background: $white
+    border-color: transparent transparent $white $white
+    transform-origin: 0 0
+    transform: rotate(135deg)
+    +box-shadow(-1px 0px 6px 0 $light_gray)
+  .ui-tooltip-content
+    position: relative
+    z-index: 9
+    background: $white
+    padding: 8px

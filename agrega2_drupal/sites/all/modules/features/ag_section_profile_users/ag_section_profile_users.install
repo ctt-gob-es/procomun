@@ -1,0 +1,465 @@
+<?php
+
+/**
+  * Implements hook_update_N().
+  * Update ag_section_profile_users weight to 1 because we need to override after profile 2 module.
+  */
+function ag_section_profile_users_update_7000() {
+  db_query("UPDATE {system} SET weight = 1 WHERE name = 'ag_section_profile_users'");
+}
+
+/**
+ * Jlbellido: Update fiel_twitter values to the new formatter:
+ */
+function ag_section_profile_users_update_7001() {
+  $results = db_query('SELECT field_twitter_url as url, entity_id, revision_id FROM {field_data_field_twitter} ft WHERE field_twitter_url IS NOT NULL');
+  foreach ($results as $result) {
+    if (!preg_match('/^(http|https)\:\/\/twitter.com\/[A-Za-z0-9_]+$/', $result->url)) {
+      // The url don't fit with http://twitter.com/XXX: try to fix it.
+      $twitter_username = _extract_twitter_username_from_url($result->url);
+      if (!empty($twitter_username)) {
+        // By the way try to get the Twitter username:
+        $twurl = "http://twitter.com/$twitter_username";
+        $q_update = 'UPDATE {field_data_field_twitter} SET field_twitter_url = :twurl WHERE entity_id = :etid AND revision_id = :rvid';
+        // Update the value with the new format:
+        db_query($q_update, array(':twurl' => $twurl, ':etid' => $result->entity_id, ':rvid' => $result->revision_id));
+        watchdog('agrega2_update', 'Updated field_twitter form %tw_old to %tw_new', array('%tw_old' => $result->url, '%tw_new' => $twurl));
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_update_N().
+ * Jacarvajal: Update profile image owner in migrated users.
+ */
+function ag_section_profile_users_update_7002() {
+  $sql = 'UPDATE {file_managed} f, {users} u SET f.uid = u.uid WHERE u.picture = f.fid AND f.uid != u.uid AND f.uid = 1';
+  db_query($sql);
+
+  return t('AG Section Profile Users - Update 7002 was applied');
+}
+
+/**
+ * Implements hook_update_N().
+ * Update facet terms
+ */
+function ag_section_profile_users_update_7003(&$sandbox) {
+
+  //Prepare all variables in first iteration
+  if (!isset($sandbox['total'])) {
+    //Prepare array from query
+    ag_section_profile_users_prepare_batch_solr_users($sandbox);
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = ag_section_profile_users_get_total($sandbox);
+  }
+
+  //Get batch, or number of entities to process each time.
+  $nodes_per_pass = 10;
+  $end = $sandbox['current'] + $nodes_per_pass;
+
+  //Loop. Use db_query_range if any query needs to be split between batches.
+  while($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    //Heavy operations
+    $element = ag_section_profile_users_get_element($sandbox);
+    ag_section_profile_users_update_users_solr($sandbox, $element);
+
+    //Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1, meaning we are done.
+  // Also, avoid division by zero
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @records records. Finished.', array('@records' => $sandbox['total'])));
+  }
+}
+
+/**
+ * Function to get original not parsed terms
+ */
+function ag_section_profile_users_prepare_batch_solr_users(&$sandbox) {
+  $users = array();
+
+  //Get solrid from orquestator
+  $orchestrator = new OS_orchestrator_selection();
+  $params = array(
+    'q' => '*:*',
+    'rows' => 100000,
+    'fields' => array('id', 'idDrupal', 'userCountryStr', 'userProvinceStr', 'userLocalityStr'),
+    'fq' => 'type:USER',
+  );
+  $response = $orchestrator->multipleSelectionOdeFields($params);
+
+  if (!empty($response[1])) {
+    $users = $response[1];
+  }
+
+  // Countries list
+  $field = field_info_field('field_countries');
+  $allowed_values = list_allowed_values($field);
+  $format_dir3_countries = array();
+  foreach ($allowed_values as $key => $value) {
+    $item = normalizeChars($key);
+    $item = strtolower($item);
+    $format_dir3_countries[$item] = array($key, $value);
+  }
+
+  // Provinces list
+  $format_dir3_provinces = array(
+    'alava' => 'Álava',
+    'araba/alava' => 'Álava',
+    'araba' => 'Álava',
+    'albacete' => 'Albacete',
+    'alacant' => 'Alacant/Alicante',
+    'alicante' => 'Alacant/Alicante',
+    'alacant/alicante' => 'Alacant/Alicante',
+    'almeria' => 'Almería',
+    'avila' => 'Ávila',
+    'badajoz' => 'Badajoz',
+    'illes balears' => 'Illes Balears',
+    'islas baleares' => 'Illes Balears',
+    'baleares' => 'Illes Balears',
+    'balears' => 'Illes Balears',
+    'barcelona' => 'Barcelona',
+    'burgos' => 'Burgos',
+    'caceres' => 'Cáceres',
+    'cadiz' => 'Cádiz',
+    'castello' => 'Castelló/Castellón',
+    'castellon' => 'Castelló/Castellón',
+    'castello/castellon' => 'Castelló/Castellón',
+    'ciudad real' => 'Ciudad Real',
+    'cordoba' => 'Córdoba',
+    'a coruña' => 'Coruña, A',
+    'la coruña' => 'Coruña, A',
+    'coruña' => 'Coruña, A',
+    'coruña, a' => 'Coruña, A',
+    'cuenca' => 'Cuenca',
+    'girona' => 'Girona',
+    'gerona' => 'Girona',
+    'granada' => 'Granada',
+    'guadalajara' => 'Guadalajara',
+    'guipuzcoa' => 'Guipúzcoa',
+    'gipuzkoa' => 'Guipúzcoa',
+    'huelva' => 'Huelva',
+    'huesca' => 'Huesca',
+    'jaen' => 'Jaén',
+    'leon' => 'León',
+    'lleida' => 'Lleida',
+    'la rioja' => 'Rioja, La',
+    'rioja' => 'Rioja, La',
+    'rioja, la' => 'Rioja, La',
+    'lugo' => 'Lugo',
+    'madrid' => 'Madrid',
+    'malaga' => 'Málaga',
+    'murcia' => 'Murcia',
+    'navarra' => 'Navarra',
+    'navarra/nafarroa' => 'Navarra',
+    'nafarroa' => 'Navarra',
+    'ourense' => 'Ourense',
+    'orense' => 'Ourense',
+    'asturias' => 'Asturias',
+    'palencia' => 'Palencia',
+    'las palmas' => 'Palmas, Las',
+    'palmas' => 'Palmas, Las',
+    'palmas, las' => 'Palmas, Las',
+    'pontevedra' => 'Pontevedra',
+    'salamanca' => 'Salamanca',
+    'santa cruz de tenerife' => 'Santa Cruz de Tenerife',
+    'tenerife' => 'Santa Cruz de Tenerife',
+    's/c tenerife' => 'Santa Cruz de Tenerife',
+    's/c de tenerife' => 'Santa Cruz de Tenerife',
+    'cantabria' => 'Cantabria',
+    'segovia' => 'Segovia',
+    'sevilla' => 'Sevilla',
+    'soria' => 'Soria',
+    'tarragona' => 'Tarragona',
+    'teruel' => 'Teruel',
+    'toledo' => 'Toledo',
+    'valencia' => 'València/Valencia',
+    'valencia/valencia' => 'València/Valencia',
+    'valladolid' => 'Valladolid',
+    'vizcaya' => 'Vizcaya',
+    'bizkaia' => 'Vizcaya',
+    'zamora' => 'Zamora',
+    'zaragoza' => 'Zaragoza',
+    'ceuta' => 'Ceuta',
+    'melilla' => 'Melilla'
+  );
+
+  // Localities list
+  $format_dir3_localities = array();
+  if (($gestor = fopen(drupal_get_path('module', 'ag_section_profile_users') . "/catalogo_de_localidades.csv", "r")) !== FALSE) {
+    while (($datos = fgetcsv($gestor, 1000, ",")) !== FALSE) {
+      $item = $datos[4];
+      $item = normalizeChars($item);
+      $item = strtolower($item);
+      $format_dir3_localities[$item] = $datos[4];
+    }
+    fclose($gestor);
+  }
+
+  $to_update_user_data = array();
+  $invalid_user_data = array();
+
+  //Create invalid user regional data csv file in sites/default/files directory
+  $public_path = variable_get('file_public_path', conf_path() . '/files');
+  $real_path = drupal_realpath($public_path);
+  $csvfile = $real_path . "/invalid_user_data.csv";
+  $fh = fopen($csvfile, "w");
+
+  foreach ($users as $key => $value) {
+    $to_update_user_data[$value['id']] = $value;
+
+    // Parse countries
+    if (isset($value['userCountryStr'])) {
+      $item = $value['userCountryStr'];
+      $item = trim($item);
+      $item = normalizeChars($item);
+      $item = strtolower($item);
+
+      $dir3_country = '';
+      if (in_array($item, array_keys($format_dir3_countries))) {
+        $dir3_country = $format_dir3_countries[$item][0];
+        $to_update_user_data[$value['id']]['dir3_country'] = $dir3_country;
+      }
+      else {
+        $invalid_user_data[$value['id']] = $value;
+
+      }
+    }
+
+    // Parse provinces
+    if (isset($value['userProvinceStr'])) {
+      $item = $value['userProvinceStr'];
+      $item = trim($item);
+      $item = normalizeChars($item);
+      $item = strtolower($item);
+
+      $dir3_province = '';
+      if (in_array($item, array_keys($format_dir3_provinces))) {
+        $dir3_province = $format_dir3_provinces[$item];
+        $to_update_user_data[$value['id']]['dir3_province'] = $dir3_province;
+      }
+      else {
+        $invalid_user_data[$value['id']] = $value;
+      }
+    }
+
+    // Parse localities
+    if (isset($value['userLocalityStr'])) {
+      $item = $value['userLocalityStr'];
+      $item = trim($item);
+      $item = normalizeChars($item);
+      $item = strtolower($item);
+
+      $dir3_locality = '';
+      if (in_array($item, array_keys($format_dir3_localities))) {
+        $dir3_locality = $format_dir3_localities[$item];
+        $to_update_user_data[$value['id']]['dir3_locality'] = $dir3_locality;
+      }
+      else {
+        $invalid_user_data[$value['id']] = $value;
+      }
+    }
+  }
+
+  // Write file with invalid user regional data
+  if (!empty($invalid_user_data)) {
+    foreach($invalid_user_data as $data) {
+      fputcsv($fh, $data);
+    }
+  }
+
+  //Close invalid user regional data csv file
+  fclose($fh);
+
+  // Restructure elements array
+  $elements = array();
+  foreach ($to_update_user_data as $element) {
+    $elements[] = $element;
+  }
+
+  //Return by storing the array in sandbox variable. It will be static and accessible by all update_7000 batch executions.
+  $sandbox['elements'] = $elements;
+}
+
+/**
+ * Replace language-specific characters by ASCII-equivalents.
+ * @param string $s
+ * @return string
+ */
+function normalizeChars($s) {
+  $replace = array(
+    'ъ'=>'-', 'Ь'=>'-', 'Ъ'=>'-', 'ь'=>'-',
+    'Ă'=>'A', 'Ą'=>'A', 'À'=>'A', 'Ã'=>'A', 'Á'=>'A', 'Æ'=>'A', 'Â'=>'A', 'Å'=>'A', 'Ä'=>'Ae',
+    'Þ'=>'B',
+    'Ć'=>'C', 'ץ'=>'C', 'Ç'=>'C',
+    'È'=>'E', 'Ę'=>'E', 'É'=>'E', 'Ë'=>'E', 'Ê'=>'E',
+    'Ğ'=>'G',
+    'İ'=>'I', 'Ï'=>'I', 'Î'=>'I', 'Í'=>'I', 'Ì'=>'I',
+    'Ł'=>'L',
+    /*'Ñ'=>'N', */'Ń'=>'N',
+    'Ø'=>'O', 'Ó'=>'O', 'Ò'=>'O', 'Ô'=>'O', 'Õ'=>'O', 'Ö'=>'Oe',
+    'Ş'=>'S', 'Ś'=>'S', 'Ș'=>'S', 'Š'=>'S',
+    'Ț'=>'T',
+    'Ù'=>'U', 'Û'=>'U', 'Ú'=>'U', 'Ü'=>'Ue',
+    'Ý'=>'Y',
+    'Ź'=>'Z', 'Ž'=>'Z', 'Ż'=>'Z',
+    'â'=>'a', 'ǎ'=>'a', 'ą'=>'a', 'á'=>'a', 'ă'=>'a', 'ã'=>'a', 'Ǎ'=>'a', 'а'=>'a', 'А'=>'a', 'å'=>'a', 'à'=>'a', 'א'=>'a', 'Ǻ'=>'a', 'Ā'=>'a', 'ǻ'=>'a', 'ā'=>'a', 'ä'=>'ae', 'æ'=>'ae', 'Ǽ'=>'ae', 'ǽ'=>'ae',
+    'б'=>'b', 'ב'=>'b', 'Б'=>'b', 'þ'=>'b',
+    'ĉ'=>'c', 'Ĉ'=>'c', 'Ċ'=>'c', 'ć'=>'c', 'ç'=>'c', 'ц'=>'c', 'צ'=>'c', 'ċ'=>'c', 'Ц'=>'c', 'Č'=>'c', 'č'=>'c', 'Ч'=>'ch', 'ч'=>'ch',
+    'ד'=>'d', 'ď'=>'d', 'Đ'=>'d', 'Ď'=>'d', 'đ'=>'d', 'д'=>'d', 'Д'=>'D', 'ð'=>'d',
+    'є'=>'e', 'ע'=>'e', 'е'=>'e', 'Е'=>'e', 'Ə'=>'e', 'ę'=>'e', 'ĕ'=>'e', 'ē'=>'e', 'Ē'=>'e', 'Ė'=>'e', 'ė'=>'e', 'ě'=>'e', 'Ě'=>'e', 'Є'=>'e', 'Ĕ'=>'e', 'ê'=>'e', 'ə'=>'e', 'è'=>'e', 'ë'=>'e', 'é'=>'e',
+    'ф'=>'f', 'ƒ'=>'f', 'Ф'=>'f',
+    'ġ'=>'g', 'Ģ'=>'g', 'Ġ'=>'g', 'Ĝ'=>'g', 'Г'=>'g', 'г'=>'g', 'ĝ'=>'g', 'ğ'=>'g', 'ג'=>'g', 'Ґ'=>'g', 'ґ'=>'g', 'ģ'=>'g',
+    'ח'=>'h', 'ħ'=>'h', 'Х'=>'h', 'Ħ'=>'h', 'Ĥ'=>'h', 'ĥ'=>'h', 'х'=>'h', 'ה'=>'h',
+    'î'=>'i', 'ï'=>'i', 'í'=>'i', 'ì'=>'i', 'į'=>'i', 'ĭ'=>'i', 'ı'=>'i', 'Ĭ'=>'i', 'И'=>'i', 'ĩ'=>'i', 'ǐ'=>'i', 'Ĩ'=>'i', 'Ǐ'=>'i', 'и'=>'i', 'Į'=>'i', 'י'=>'i', 'Ї'=>'i', 'Ī'=>'i', 'І'=>'i', 'ї'=>'i', 'і'=>'i', 'ī'=>'i', 'ĳ'=>'ij', 'Ĳ'=>'ij',
+    'й'=>'j', 'Й'=>'j', 'Ĵ'=>'j', 'ĵ'=>'j', 'я'=>'ja', 'Я'=>'ja', 'Э'=>'je', 'э'=>'je', 'ё'=>'jo', 'Ё'=>'jo', 'ю'=>'ju', 'Ю'=>'ju',
+    'ĸ'=>'k', 'כ'=>'k', 'Ķ'=>'k', 'К'=>'k', 'к'=>'k', 'ķ'=>'k', 'ך'=>'k',
+    'Ŀ'=>'l', 'ŀ'=>'l', 'Л'=>'l', 'ł'=>'l', 'ļ'=>'l', 'ĺ'=>'l', 'Ĺ'=>'l', 'Ļ'=>'l', 'л'=>'l', 'Ľ'=>'l', 'ľ'=>'l', 'ל'=>'l',
+    'מ'=>'m', 'М'=>'m', 'ם'=>'m', 'м'=>'m',
+    /*'ñ'=>'n', */'н'=>'n', 'Ņ'=>'n', 'ן'=>'n', 'ŋ'=>'n', 'נ'=>'n', 'Н'=>'n', 'ń'=>'n', 'Ŋ'=>'n', 'ņ'=>'n', 'ŉ'=>'n', 'Ň'=>'n', 'ň'=>'n',
+    'о'=>'o', 'О'=>'o', 'ő'=>'o', 'õ'=>'o', 'ô'=>'o', 'Ő'=>'o', 'ŏ'=>'o', 'Ŏ'=>'o', 'Ō'=>'o', 'ō'=>'o', 'ø'=>'o', 'ǿ'=>'o', 'ǒ'=>'o', 'ò'=>'o', 'Ǿ'=>'o', 'Ǒ'=>'o', 'ơ'=>'o', 'ó'=>'o', 'Ơ'=>'o', 'œ'=>'oe', 'Œ'=>'oe', 'ö'=>'oe',
+    'פ'=>'p', 'ף'=>'p', 'п'=>'p', 'П'=>'p',
+    'ק'=>'q',
+    'ŕ'=>'r', 'ř'=>'r', 'Ř'=>'r', 'ŗ'=>'r', 'Ŗ'=>'r', 'ר'=>'r', 'Ŕ'=>'r', 'Р'=>'r', 'р'=>'r',
+    'ș'=>'s', 'с'=>'s', 'Ŝ'=>'s', 'š'=>'s', 'ś'=>'s', 'ס'=>'s', 'ş'=>'s', 'С'=>'s', 'ŝ'=>'s', 'Щ'=>'sch', 'щ'=>'sch', 'ш'=>'sh', 'Ш'=>'sh', 'ß'=>'ss',
+    'т'=>'t', 'ט'=>'t', 'ŧ'=>'t', 'ת'=>'t', 'ť'=>'t', 'ţ'=>'t', 'Ţ'=>'t', 'Т'=>'t', 'ț'=>'t', 'Ŧ'=>'t', 'Ť'=>'t', '™'=>'tm',
+    'ū'=>'u', 'у'=>'u', 'Ũ'=>'u', 'ũ'=>'u', 'Ư'=>'u', 'ư'=>'u', 'Ū'=>'u', 'Ǔ'=>'u', 'ų'=>'u', 'Ų'=>'u', 'ŭ'=>'u', 'Ŭ'=>'u', 'Ů'=>'u', 'ů'=>'u', 'ű'=>'u', 'Ű'=>'u', 'Ǖ'=>'u', 'ǔ'=>'u', 'Ǜ'=>'u', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'У'=>'u', 'ǚ'=>'u', 'ǜ'=>'u', 'Ǚ'=>'u', 'Ǘ'=>'u', 'ǖ'=>'u', 'ǘ'=>'u', 'ü'=>'ue',
+    'в'=>'v', 'ו'=>'v', 'В'=>'v',
+    'ש'=>'w', 'ŵ'=>'w', 'Ŵ'=>'w',
+    'ы'=>'y', 'ŷ'=>'y', 'ý'=>'y', 'ÿ'=>'y', 'Ÿ'=>'y', 'Ŷ'=>'y',
+    'Ы'=>'y', 'ž'=>'z', 'З'=>'z', 'з'=>'z', 'ź'=>'z', 'ז'=>'z', 'ż'=>'z', 'ſ'=>'z', 'Ж'=>'zh', 'ж'=>'zh'
+  );
+  return strtr($s, $replace);
+}
+
+/**
+ * Return number of operations that will be done.
+ */
+function ag_section_profile_users_get_total($sandbox) {
+  return isset($sandbox['elements']) ? count($sandbox['elements']) : 0;
+}
+
+/**
+ * Gets element with sandbox data.
+ */
+function ag_section_profile_users_get_element($sandbox) {
+  $position = isset($sandbox['current']) ? $sandbox['current'] : 0;
+  return !empty($sandbox['elements']) ? $sandbox['elements'][$position] : array();
+}
+
+/**
+ * Function for update users regional data in SOLR and Drupal
+ */
+function ag_section_profile_users_update_users_solr(&$sandbox, $element) {
+
+  if (!empty($element)) {
+    $status = 1;
+    // Update users regional data in SOLR
+    $OS_orchestrator_useradmin = new OS_orchestrator_useradmin();
+    list($status, $result) = $OS_orchestrator_useradmin->updateRegional(
+      isset($element['dir3_country']) ? $element['dir3_country'] : null,
+      isset($element['dir3_province']) ? $element['dir3_province'] : null,
+      isset($element['dir3_locality']) ? $element['dir3_locality'] : null,
+      $element['id']);
+
+    if ($status == 1) {
+      // Update users regional data in Drupal
+      // Get user profile data
+      $profile = profile2_load_by_user($element['idDrupal'], 'datos_personales');
+      if (!empty($profile)) {
+        $pwrapper = entity_metadata_wrapper('profile2', $profile);
+        $profile_properties = $pwrapper->getPropertyInfo();
+
+        // Update Country
+        if (isset($profile_properties['field_country_personal_fc']) && !empty($profile_properties['field_country_personal_fc']['type']) && $profile_properties['field_country_personal_fc']['type'] == 'field_collection_item') {
+          //Get entity field collection item
+          $fc_entity_item = $pwrapper->$profile_properties['field_country_personal_fc']['bundle']->value();
+
+          $fcwrapper = entity_metadata_wrapper('field_collection_item', $fc_entity_item);
+          $fc_properties = $fcwrapper->getPropertyInfo();
+
+          // Update field_countries with dir3 correct data
+          if (isset($fc_properties['field_countries']) && isset($fc_properties['field_countries']['field']) &&
+            $fc_properties['field_countries']['type'] == 'text' && isset($element['dir3_country'])) {
+            $fcwrapper->field_countries->set($element['dir3_country']);
+            $fcwrapper->save();
+          }
+        }
+
+        // Update Province
+        if (isset($profile_properties['field_province_personal_fc']) && !empty($profile_properties['field_province_personal_fc']['type']) && $profile_properties['field_province_personal_fc']['type'] == 'field_collection_item') {
+          //Get entity field collection item
+          $fc_entity_item = $pwrapper->$profile_properties['field_province_personal_fc']['bundle']->value();
+
+          $fcwrapper = entity_metadata_wrapper('field_collection_item', $fc_entity_item);
+          $fc_properties = $fcwrapper->getPropertyInfo();
+
+          // Update field_province with dir3 correct data
+          if (isset($fc_properties['field_province']) && isset($fc_properties['field_province']['field']) &&
+            $fc_properties['field_province']['type'] == 'text' && isset($element['dir3_province'])) {
+            $fcwrapper->field_province->set($element['dir3_province']);
+            $fcwrapper->save();
+          }
+
+          // Update field_province_dir3 with dir3 correct data
+          if (isset($fc_properties['field_province_dir3']) && isset($fc_properties['field_province_dir3']['field']) &&
+            isset($fc_properties['field_province_dir3']['options list']) && $fc_properties['field_province_dir3']['type'] == 'text' &&
+            isset($element['dir3_province'])) {
+            $field = field_info_field('field_province_dir3');
+            $allowed_values = list_allowed_values($field);
+            $field_value = array_keys($allowed_values, $element['dir3_province']);
+            $fcwrapper->field_province_dir3->set($field_value[0]);
+            $fcwrapper->save();
+          }
+        }
+
+        // Update Locality
+        if (isset($profile_properties['field_locality_personal_fc']) && !empty($profile_properties['field_locality_personal_fc']['type']) && $profile_properties['field_locality_personal_fc']['type'] == 'field_collection_item') {
+          //Get entity field collection item
+          $fc_entity_item = $pwrapper->$profile_properties['field_locality_personal_fc']['bundle']->value();
+
+          $fcwrapper = entity_metadata_wrapper('field_collection_item', $fc_entity_item);
+          $fc_properties = $fcwrapper->getPropertyInfo();
+
+          // Update field_locality with dir3 correct data
+          if (isset($fc_properties['field_locality']) && isset($fc_properties['field_locality']['field']) &&
+            $fc_properties['field_locality']['type'] == 'text' && isset($element['dir3_locality'])) {
+            $fcwrapper->field_locality->set($element['dir3_locality']);
+            $fcwrapper->save();
+          }
+
+          // Update field_locality_dir3 with dir3 correct data
+          if (isset($fc_properties['field_locality_dir3']) && isset($fc_properties['field_locality_dir3']['field']) &&
+            isset($fc_properties['field_locality_dir3']['options list']) && $fc_properties['field_locality_dir3']['type'] == 'text' &&
+            isset($element['dir3_locality'])) {
+            $field = field_info_field('field_locality_dir3');
+            $allowed_values = list_allowed_values($field);
+            $field_value = array_keys($allowed_values, $element['dir3_locality']);
+            $fcwrapper->field_locality_dir3->set($field_value[0]);
+            $fcwrapper->save();
+          }
+        }
+
+      }
+    }
+    else {
+      $error = t('Error: failed to update user (id: @id | idDrupal: @idDrupal) in SOLR', array (
+        '@id' => $element['id'],
+        '@idDrupal' => $element['idDrupal'],
+      ));
+      drupal_set_message($error, 'error');
+      throw new DrupalUpdateException($error);
+    }
+  }
+}

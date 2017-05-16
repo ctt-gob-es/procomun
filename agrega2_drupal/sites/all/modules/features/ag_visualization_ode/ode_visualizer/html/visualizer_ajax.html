@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title></title>
+<head>
+    <script src="../js/libs/jquery.min.js"></script>
+    <script src="../js/libs/tree.jquery.js"></script>
+    <script src="../js/libs/bigscreen.min.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/ode_visualizer_embeded.js"></script>
+    <link rel="stylesheet" href="../css/visualizer.css">
+</head>
+<body>
+<div class="media-object">
+    <div id="loading" style="margin-left: 10px">
+        <br />
+        <br />
+        <img src="../images/ajax-loader.gif"> Cargando visor...
+    </div>
+    <div id="tree" class="img lateral-menu"></div>
+    <div id="body" class="body">
+        <div id="loadingContent" style="width:100%; padding-left:10px; border-left:1px solid #cccccc; background-color:#FFFFFF; z-index:11; float:left;">
+            <br/><br/>
+            <img src="../images/ajax-loader.gif">
+            &nbsp;Cargando contenido...
+        </div>
+        <iframe scrolling="auto" id="content"></iframe>
+
+    </div>
+</div>
+<div id="error"></div>
+
+</body>
+</html>

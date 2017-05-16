@@ -1,0 +1,35 @@
+.wellcome-block {
+    padding: 28px;
+    background-color: #F3F7FA;
+    position: relative;
+}
+
+.wellcome-header {
+}
+
+.wellcome-block .wellcome-subject {
+    font-size: 21px;
+    margin-bottom: 15px;
+    overflow: hidden;
+    display: inline-block;
+    font-family: 'PT Sans Narrow';
+}
+
+.wellcome-body {
+  line-height: 1.25em;
+}
+
+.wellcome-close {
+  display: block;
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  color: #3A7BB5;
+  font-size: 30px;
+  right: 0;
+  top: 0;
+  cursor: pointer;
+}
+.wellcome-close:hover {
+  color: #2B6CA7;
+}

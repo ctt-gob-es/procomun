@@ -1,0 +1,13 @@
+diff --git a/sites/all/modules/patched/og/plugins/entityreference/behavior/OgBehaviorHandler.class.php b/sites/all/modules/patched/og/plugins/entityreference/behavior/OgBehaviorHandler.class.php
+index 7191a68..bb9195a 100644
+--- a/sites/all/modules/patched/og/plugins/entityreference/behavior/OgBehaviorHandler.class.php
++++ b/sites/all/modules/patched/og/plugins/entityreference/behavior/OgBehaviorHandler.class.php
+@@ -271,7 +271,7 @@ class OgBehaviorHandler extends EntityReference_BehaviorHandler_Abstract {
+         continue;
+       }
+ 
+-      if ($field_mode == 'admin' && !user_access('administer group')) {
++      if ($field_mode == 'admin' && user_access('administer group')) {
+         // No need to validate the admin, as the user has no access to it.
+         continue;
+       }

@@ -1,0 +1,12 @@
+<LOM2RDF>
+	<SOURCE_URL>http://www.agrega.es/ont/lom2owl#</SOURCE_URL>
+	<SOURCE_FILE>/opt/XML_2_RDF/Ontology/AgregaOntology.owl</SOURCE_FILE>
+	<XML_Folder>/opt/LOM-ES_metadata</XML_Folder>
+	<OUTPUT_Format>N-TRIPLE</OUTPUT_Format>
+	<OUTPUT_Folder>/opt/XML_2_RDF_OUTPUT</OUTPUT_Folder>
+	<LOM_PREFIX>lomes</LOM_PREFIX>
+	<PORT>123</PORT>
+	<DATASET_NAME>agrega_dataset</DATASET_NAME>
+	<RECORDS>ALL</RECORDS>
+	<DumpFileName>AgregaDump</DumpFileName>
+</LOM2RDF>

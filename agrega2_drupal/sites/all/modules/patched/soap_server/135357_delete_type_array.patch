@@ -1,0 +1,29 @@
+diff --git a/sites/all/modules/contrib/soap_server/soap_server.module b/sites/all/modules/contrib/soap_server/soap_server.module
+index cd1b431..5fccad5 100644
+--- a/sites/all/modules/contrib/soap_server/soap_server.module
++++ b/sites/all/modules/contrib/soap_server/soap_server.module
+@@ -146,14 +146,13 @@ function soap_server_get_wsdl($endpoint) {
+           case 'int':
+           case 'string':
+           case 'struct':
+-          case 'array':
+             $parts .= "
+     <part name='"  . $arg['name'] ."' type='xsd:". $arg['type'] ."' />"; 
+             break;
+           // we can work out how to deal with other parameter types later
+           default:
+             $parts .= "
+-    <part name='". $arg['name'] ."' type='xsd:any'/>";
++    <part name='". $arg['name'] ."' type='xsd:anyType'/>";
+         }    
+       }
+     }
+@@ -164,7 +163,7 @@ function soap_server_get_wsdl($endpoint) {
+     // for most resources
+     $responses .= "
+   <message name='". $method_name ."_response'>
+-    <part name='response_object' type='xsd:struct'/>
++    <part name='response_object' type='xsd:anyType'/>
+   </message>";
+     $port_type_operations .= "
+   <operation name='$method_name'>

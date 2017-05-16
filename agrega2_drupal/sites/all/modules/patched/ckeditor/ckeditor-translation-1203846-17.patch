@@ -1,0 +1,27 @@
+diff --git a/includes/ckeditor.lib.inc b/includes/ckeditor.lib.inc
+index a28c439..49dace4 100644
+--- a/includes/ckeditor.lib.inc
++++ b/includes/ckeditor.lib.inc
+@@ -854,6 +854,9 @@ function ckeditor_profile_settings_compile($global_profile, $profile) {
+     //[#1473010]
+     $settings['scayt_sLang'] = ckeditor_scayt_langcode($conf['lang']);
+   }
++  else {
++    $settings['language'] = $language->language;
++  }
+ 
+   if (isset($conf['forcePasteAsPlainText']) && $conf['forcePasteAsPlainText'] == 't') {
+     $settings['forcePasteAsPlainText'] = TRUE;
+diff --git a/plugins/media/plugin.js b/plugins/media/plugin.js
+index 363f843..9acb379 100644
+--- a/plugins/media/plugin.js
++++ b/plugins/media/plugin.js
+@@ -46,7 +46,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
+ 
+       editor.ui.addButton( 'Media',
+       {
+-        label: 'Add media',
++        label: Drupal.t('Add media'),
+         command: 'media',
+         icon: this.path + 'images/icon.gif'
+       });

@@ -1,0 +1,87 @@
+<?php
+/**
+ * @file
+ * Code for the Ag section notifications feature.
+ */
+
+/**
+ * Implements hook_update_N().
+ * Mark all messages as read, except types 'new_invitation_pending', 'new_member_pending', whose visibility
+ * was already in use. Using classic batch template.
+ */
+function ag_section_notifications_update_7000(&$sandbox) {
+  //Prepare all variables in first iteration
+  if (!isset($sandbox['total'])) {
+    //Prepare elements
+    $sandbox['elements'] = ag_section_notifications_get_all_messages();
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = count($sandbox['elements']);
+    $sandbox['errors'] = 0;
+  }
+
+  //Get batch, or number of entities to process each time.
+  $nodes_per_pass = 20;
+  $end = $sandbox['current'] + $nodes_per_pass;
+
+  $preloaded_batch = entity_load('message', array_slice($sandbox['elements'], $sandbox['current'], $nodes_per_pass));
+
+  //Loop. Use db_query_range if any query needs to be split between batches.
+  while($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    //Heavy operations
+    $number = $sandbox['current'];
+    $mid = $sandbox['elements'][$number];
+    $message = $preloaded_batch[$mid];
+
+    try {
+      ag_section_notifications_mark_message_as_read($message);
+    }
+    catch (EntityMetadataWrapperException $e) {
+      $sandbox['errors'] = isset($sandbox['errors']) ? $sandbox['errors']+1 : 0;
+    }
+
+    //Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1, meaning we are done.
+  // Also, avoid division by zero
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @messages messages and marked as read. Errors: @errors Finished.',
+      array('@messages' => $sandbox['total'], '@errors' => $sandbox['errors'])));
+  }
+}
+
+
+/**
+ * Get a list of all messages that are not of types 'new_invitation_pending', 'new_member_pending'.
+ * Those two types were already using "read/unread" values properly.
+ */
+function ag_section_notifications_get_all_messages() {
+
+  $query = db_select('message', 'm');
+  $query->fields('m',array('mid'));
+  $query->join('field_data_field_message_status', 'fm', 'fm.entity_id = m.mid');
+  $query->condition('fm.field_message_status_value', 0, '=');
+  $query->condition('m.type', array('new_invitation_pending', 'new_member_pending'), 'NOT IN');
+
+  $result = $query->execute();
+  $mids = $result->fetchCol();
+  return $mids;
+}
+
+/**
+ * Mark a message as read using EntityWrappers, changing field_message_status field.
+ */
+function ag_section_notifications_mark_message_as_read($message) {
+  $wp_message = entity_metadata_wrapper('message', $message);
+  $wp_message->field_message_status->set(1);
+  $wp_message->save();
+}

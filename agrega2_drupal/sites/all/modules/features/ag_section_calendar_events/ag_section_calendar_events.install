@@ -1,0 +1,110 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the ag calendar events module.
+ */
+
+
+/**
+ * Implements hook_update_N().
+ * Update events start and end dates
+ */
+function ag_section_calendar_events_update_7000(&$sandbox) {
+  //Prepare all variables in first iteration
+  if (!isset($sandbox['total'])) {
+    //Prepare array from query
+    ag_section_calendar_events_prepare_batch_events($sandbox);
+
+    $sandbox['current'] = 0;
+    $sandbox['total'] = ag_section_calendar_events_get_total($sandbox);
+  }
+
+  //Get batch, or number of entities to process each time.
+  $nodes_per_pass = 10;
+  $end = $sandbox['current'] + $nodes_per_pass;
+
+  $preloaded_batch = node_load_multiple(array_slice($sandbox['elements'], $sandbox['current'], $nodes_per_pass));
+
+  //Loop. Use db_query_range if any query needs to be split between batches.
+  while($sandbox['current'] < $end && $sandbox['current'] < $sandbox['total']) {
+    //Heavy operations
+    $element = ag_section_calendar_events_get_element($sandbox);
+    $node = $preloaded_batch[$element];
+    ag_section_calendar_events_update_event_dates($sandbox, $node);
+
+    //Increase by one.
+    $sandbox['current']++;
+  }
+
+  // Set the value for finished. If current == total then finished will be 1, meaning we are done.
+  // Also, avoid division by zero
+  if ($sandbox['total'] == 0) {
+    $sandbox['#finished'] = 1;
+  }
+  else {
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+  }
+
+
+  if ($sandbox['#finished'] === 1) {
+    drupal_set_message(t('Processed @records records. Finished.', array('@records' => $sandbox['total'])));
+  }
+}
+
+/**
+ * Function to get published events
+ */
+function ag_section_calendar_events_prepare_batch_events(&$sandbox) {
+  $temp_array = array();
+
+  //Get all ode nodes
+  $query = db_select('node', 'n');
+  $query->fields('n',array('nid'));
+  $query->condition('n.status', 1, '=');
+  $query->condition('n.type', 'event', '=');
+
+  $result = $query->execute();
+  $events_nids = $result->fetchCol();
+
+  //Array values
+  $temp_array = $events_nids;
+
+  //Return by storing the array in sandbox variable. It will be static and accessible by all update_7000 batch executions.
+  $sandbox['elements'] = $temp_array;
+}
+
+/**
+ * Return number of operations that will be done.
+ */
+function ag_section_calendar_events_get_total($sandbox) {
+  return isset($sandbox['elements']) ? count($sandbox['elements']) : 0;
+}
+
+/**
+ * Gets element with sandbox data.
+ */
+function ag_section_calendar_events_get_element($sandbox) {
+  $position = isset($sandbox['current']) ? $sandbox['current'] : 0;
+  return !empty($sandbox['elements']) ? $sandbox['elements'][$position] : array();
+}
+
+/**
+ * Function for update start and end dates events
+ */
+function ag_section_calendar_events_update_event_dates(&$sandbox, $node) {
+  if (!empty($node) && is_object($node)) {
+    $form_state = (array) $node;
+
+    $OS_orchestrator_inyection = new OS_orchestrator_inyection();
+
+    list($status, $result) = $OS_orchestrator_inyection->AddEvent($form_state);
+    if ($status != 1) {
+      throw new DrupalUpdateException(t('Error: Event update failed'));
+    }
+  }
+  else {
+    drupal_set_message(t('Error: No event sent'), 'error');
+    throw new DrupalUpdateException(t('Error: No event sent'));
+  }
+}

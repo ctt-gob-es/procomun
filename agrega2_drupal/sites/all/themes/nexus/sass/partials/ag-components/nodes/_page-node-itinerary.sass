@@ -1,0 +1,131 @@
+.page-node-add-itinerary,
+.page-node-edit.node-type-itinerary
+  // Filters.
+  #views-exposed-form-learning-path-content-learning-path-content,
+  #views-exposed-form-learning-path-content-learning-path-interest-content
+    margin-bottom: 1em
+    .views-exposed-widget
+      width: 100%
+    .form-text,
+    #edit-title-field-value,
+    .form-type-select
+      +special-input
+    .chosen-container
+      width: 100% !important
+    label
+      +special-label
+    .views-submit-button input
+      +button($main_blue)
+  .view-display-id-learning_path_content,
+  .view-display-id-learning_path_interest_content
+    .view-content
+      margin-top: 1em
+      &>.item-list>ul>li
+        position: relative
+        border-top: $light_gray 1px solid
+        padding: 15px 0
+        min-height: 100px
+        header
+          max-width: 75%
+      .views-field-title-field
+        margin-bottom: 1em
+        word-wrap: break-word
+        overflow-wrap: break-word
+        word-break: break-word
+      .views-field-default-image
+        float: left
+        margin-right: 15px
+        width: 100px
+        text-align: center
+        min-height: 68px
+      .views-field-type
+        margin-left: 0
+        text-transform: uppercase
+        font-size: 12px
+        display: inline-block
+      .views-field-ops
+        position: absolute
+        right: 0
+        top: 2em
+  .view-display-id-learning_path_interest_content_selected,
+  .view-display-id-learning_path_content_selected
+    .form-actions
+      display: none
+    .views-field-title-field
+      margin-bottom: 1em
+      word-wrap: break-word
+      overflow-wrap: break-word
+      word-break: break-word
+  .flag-action
+    +button-border($green)
+  // Icon for button remove.
+  .unflag-action
+    +button-border($orange)
+  #block-panels-mini-learning-path-interest-content,
+  #block-panels-mini-learning-path-content
+    display: none
+  #edit-actions .item-list
+    position: relative
+    .multi-step-control
+      position: relative
+      margin: 25px 0
+      border-bottom: 1px solid $light_gray
+      padding: 20px 0
+      li
+        display: inline-block
+        a
+          margin: 8px
+          +border-radius(50%)
+          background: $light_gray
+          padding: 7px 12px
+          margin: 5px
+          color: $white
+          text-decoration: none
+          &.active
+            background: $green
+          &:hover
+            background: $dark_green
+            text-decoration: none
+  // Panel Newsletter.
+  .pane-views
+    .view-content
+      margin-top: 2em
+      .views-row
+        clear: both
+        li.published
+          margin-left: 0
+          text-transform: uppercase
+          font-size: 12px
+        header
+          float: left
+        .content
+          float: right
+          clear: none
+          margin-top: 20px
+          a
+            +button-border($green)
+    .pane-title
+      border-bottom: 1px dashed $gray
+      line-height: 27px
+      font-size: 21px
+      padding: 10px 0
+      padding-right: 15px
+      text-transform: uppercase
+    .views-field-ops
+      width: 220px
+      border-left: 0px
+      a
+        float: right
+    .views-field-title-field
+      border-right: 0px
+      a
+        height: auto
+        padding-right: 5px
+// Words overflow.
+a,
+span,
+p,
+div
+  +hyphens()
+  overflow-wrap: break-word
+  word-break: break-word

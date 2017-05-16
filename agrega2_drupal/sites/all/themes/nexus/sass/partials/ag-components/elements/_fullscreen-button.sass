@@ -1,0 +1,39 @@
+.fullscreen-button
+  width: 30px
+  height: 20px
+  margin-top: -20px
+  margin-right: -15px
+  margin-bottom: 15px
+  margin-left: 15px
+  display: block
+  cursor: pointer
+  float: right
+  background: image-url('ico_expandir.png') center no-repeat
+  &.collapse
+    background-image: image-url('ico_colapsar.png')
+.center
+  +transition(margin .5s linear)
+  position: relative
+  z-index: 4
+  .page-404,
+  .page-403
+    .center
+      position: initial
+.expanded
+  margin-left: 0!important
+  margin-right: 0
+  position: relative
+  z-index: 4
+
+//Panels
+.fullscreen
+  +transition(all .5s linear)
+  &.active
+    width: 100%
+.hide-full
+  +transition(all .5s linear)
+  &.active
+    width: 0px
+    padding: 0
+    margin: 0
+    overflow: hidden

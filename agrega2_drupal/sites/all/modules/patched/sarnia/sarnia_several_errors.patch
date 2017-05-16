@@ -1,0 +1,70 @@
+diff --git a/sarnia.field_formatter.inc b/sarnia.field_formatter.inc
+index 4c7020d..fd6200f 100644
+--- a/sarnia.field_formatter.inc
++++ b/sarnia.field_formatter.inc
+@@ -143,6 +143,7 @@ function sarnia_field_formatter_settings_form($field, $instance, $view_mode, $fo
+   // this form element is stripped off in favor of a handler-wide form element.
+   $sarnia_type = sarnia_entity_type_load($instance['entity_type']);
+   $solr_property_options = sarnia_index_get_field_options($sarnia_type['search_api_index']);
++//  $solr_property_options = ['titulo' => 'titulo'];
+   $form['solr_property'] = array(
+     '#type' => 'select',
+     '#title' => t('Solr property'),
+diff --git a/sarnia.info b/sarnia.info
+index 0a8499d..7ab4a03 100644
+--- a/sarnia.info
++++ b/sarnia.info
+@@ -19,3 +19,10 @@ files[] = handlers/handler_sort.inc
+ files[] = plugins/facetapi/SarniaFacetapiTerm.inc
+ files[] = processor.inc
+ files[] = solr_field.inc
++
++; Information added by drupal.org packaging script on 2012-05-03
++version = "7.x-1.1-beta2"
++core = "7.x"
++project = "sarnia"
++datestamp = "1336077076"
++
+diff --git a/service.inc b/service.inc
+index a76423b..e5b6419 100644
+--- a/service.inc
++++ b/service.inc
+@@ -53,7 +53,7 @@ class SarniaSolrService extends SearchApiSolrService {
+    * The special fields "search_api_id" and "search_api_relevance" are also
+    * included.
+    */
+-  protected function getFieldNames(SearchApiIndex $index, $reset = FALSE) {
++  public function getFieldNames(SearchApiIndex $index, $reset = FALSE) {
+     $ret = array();
+ 
+     // Initially, map property Solr field names to themselves.
+@@ -125,7 +125,8 @@ class SarniaSolrService extends SearchApiSolrService {
+   /**
+    * Stash the results as loaded entities.
+    */
+-  protected function postQuery(array &$results, SearchApiQueryInterface $query, Apache_Solr_Response $response) {
++//  protected function postQuery(array &$results, SearchApiQueryInterface $query, Apache_Solr_Response $response) {
++  protected function postQuery(array &$results, SearchApiQueryInterface $query, $response) {
+     parent::postQuery($results, $query, $response);
+     $sarnia_entity_type = sarnia_entity_server_name_load($this->server->machine_name);
+     entity_get_controller($sarnia_entity_type)->stash($results['results']);
+@@ -222,6 +223,7 @@ class SarniaSolrService extends SearchApiSolrService {
+       cache_set($cid, $this->filteredFields[$filter]);
+     }
+ 
++    $this->filteredFields[$filter] = $this->_getFilteredFields($filter, $reset);
+     return $this->filteredFields[$filter];
+   }
+ 
+diff --git a/solr_field.inc b/solr_field.inc
+index 836e3f6..513644e 100644
+--- a/solr_field.inc
++++ b/solr_field.inc
+@@ -42,6 +42,7 @@ class SarniaSearchApiSolrField extends SearchApiSolrField {
+    *   Whether the field is suitable for use as a key.
+    */
+   public function isPossibleKey() {
++//    return TRUE;
+     return !$this->getDynamicBase()
+       && $this->isStored()
+       && !$this->isMultivalued();

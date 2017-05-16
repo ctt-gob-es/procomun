@@ -1,0 +1,10 @@
+name = ag_section_search_filter
+core = 7.x
+package = Agrega2
+dependencies[] = context
+dependencies[] = ctools
+dependencies[] = facetapi
+features[context][] = search_filter_list
+features[ctools][] = context:context:3
+features[features_api][] = api:2
+mtime = 1436863131

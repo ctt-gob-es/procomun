@@ -1,0 +1,130 @@
+<?php
+/**
+ * @file
+ * Code for the ag_section_content_type_learning_resource feature.
+ */
+
+include_once 'ag_section_content_type_learning_resource.features.inc';
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function ag_section_content_type_learning_resource_preprocess_node(&$vars) {
+  //Apply only to TDC recurso_de_aprendizaje
+  if (isset($vars['type']) && $vars['type'] == 'recurso_de_aprendizaje') {
+    //Count number of visits and set as variable for template.
+    if (isset($vars['nid'])) {
+      $total_visits = ag_section_content_type_learning_resource_get_node_view_count($vars['nid']);
+      $vars['page_views'] = $total_visits;
+
+      //Get like number
+      $flags_number = flag_get_counts('node', $vars['nid']);
+      $like_number = (isset($flags_number['like']) ? $flags_number['like'] : '0');
+      $vars['like_count'] = $like_number;
+
+      //Get fivestar stars rating
+      $votes = fivestar_get_votes('node', $vars['nid'], 'vote', NULL);
+
+      $field_config = field_info_instance('node', 'field_valora_el_recurso', 'recurso_de_aprendizaje');
+      $stars = isset($field_config['settings']['stars']) ? $field_config['settings']['stars'] : 5;
+
+      $average = isset($votes['average']['value']) ? (($votes['average']['value']/100) * $stars) : 0;
+      $vars['fivestar_average'] = $average;
+    }
+  }
+}
+
+/**
+* Get count of visits/views of a node, registered by nodeviewcount module.
+*/
+function ag_section_content_type_learning_resource_get_node_view_count($node_nid) {
+  $query = db_select('nodeviewcount', 'nvc')
+    ->fields('nvc')
+    ->condition('nid', $node_nid, '=')
+    ->execute()
+    ->rowCount();
+
+  return $query;
+}
+
+/**
+* Implements hook_entity_view_alter()
+* Modifies weight of both share in social networks field and service links.
+*/
+function ag_section_content_type_learning_resource_entity_view_alter(&$build, $type) {
+  if ($build['#view_mode'] == 'full' && $build['#entity_type'] == 'node' && $build['#bundle'] == 'recurso_de_aprendizaje') {
+    //Calculate image weight. These two fields must be after it.
+    $weight_image = (isset($build['field_imagen_miniatura']['#weight']) ? $build['field_imagen_miniatura']['#weight'] : 0);
+
+    //Set og_share link weight
+    if (isset($build['og_share']['#weight'])) {
+      $build['og_share']['#weight'] = $weight_image;
+    }
+
+    //Set service links weight
+    if (isset($build['service_links']['#weight'])) {
+      $build['service_links']['#weight'] = $weight_image;
+    }
+  }
+}
+
+/**
+* Implements hook_node_update()
+*/
+function ag_section_content_type_learning_resource_node_presave($node) {
+
+  //Every learning resource must be shared at all times at global community.
+  if (isset($node->type) && $node->type == 'recurso_de_aprendizaje' && !isset($node->nid)) {
+    $global_procomun = variable_get('global_community_procomun', 0);
+    if (!empty($global_procomun)) {
+      // Save the new og_group_refs
+      $w_node = entity_metadata_wrapper('node', $node);
+      $current_og_refs = $w_node->og_group_ref->raw();
+      $current_og_refs = array($global_procomun => $global_procomun);
+
+      $w_node->og_group_ref->set($current_og_refs);
+    }
+  }
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ *
+ * @param $element
+ * @param $form_state
+ * @param $context
+ */
+function ag_section_content_type_learning_resource_field_widget_form_alter(&$element, &$form_state, $context) {
+  global $user;
+  if (isset($element['#bundle'])) {
+    $profile = profile2_load_by_user($user, 'datos_personales');
+    if (!empty($profile)) {
+      $nameSurname = entity_load('field_collection_item', array($profile->field_name_surname['und'][0]['value']));
+      if ($element['#bundle'] == "field_contribuciones") {
+        if ($element['#field_name'] == "field_nombre_y_apellidos") {
+          $element['value']['#default_value'] = $nameSurname{$profile->field_name_surname['und'][0]['value']}->field_profile_name['und'][0]['value']
+            . ' ' . $nameSurname{$profile->field_name_surname['und'][0]['value']}->field_profile_surname['und'][0]['value'];
+        }
+        if ($element['#field_name'] == "field_correo_electr_nico") {
+          $element['email']['#default_value'] = $user->mail;
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_info_alter().
+ * Remove N/A from radio buttons.
+ *
+ * @param $type
+ */
+function ag_section_content_type_learning_resource_element_info_alter(&$type) {
+  $type['radios']['#process'][] = '_ag_section_content_type_learning_resource_remove_radio_na';
+}
+
+function _ag_section_content_type_learning_resource_remove_radio_na($element) {
+  unset($element['#options']['_none']);
+  unset($element['_none']);
+  return $element;
+}
